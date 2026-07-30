@@ -30,5 +30,19 @@ export {
 export type { RenderData, SyncPayload } from "./systems";
 
 // World Generation
-export { ChunkGenerator, WorldManager, TileType, TILE_PROPERTIES } from "./world";
-export type { ChunkData, ChunkLoadCallback, ChunkUnloadCallback, TileProperties } from "./world";
+export {
+  ChunkGenerator,
+  WorldManager,
+  TileType,
+  TILE_PROPERTIES,
+  getTileKey,
+  parseTileKey,
+} from "./world";
+export type {
+  ChunkData,
+  ChunkLoadCallback,
+  ChunkUnloadCallback,
+  TileChangeCallback,
+  TileProperties,
+  TileQuery,
+} from "./world";

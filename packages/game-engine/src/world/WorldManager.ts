@@ -1,5 +1,7 @@
-import { getChunkKey } from "@worldnest/shared";
+import { CHUNK_SIZE, TILE_SIZE, getChunkKey } from "@worldnest/shared";
 import { ChunkGenerator } from "./ChunkGenerator";
+import { TILE_PROPERTIES, TileType } from "./Tilemap";
+import { getTileKey, type TileQuery } from "./TileQuery";
 
 export interface ChunkData {
   chunkX: number;
@@ -9,20 +11,31 @@ export interface ChunkData {
 
 export type ChunkLoadCallback = (chunk: ChunkData) => void;
 export type ChunkUnloadCallback = (chunkX: number, chunkY: number) => void;
+export type TileChangeCallback = (
+  tileX: number,
+  tileY: number,
+  tileType: TileType,
+) => void;
 
 /**
- * WorldManager handles chunk streaming based on player position.
- * Maintains a 3x3 grid of loaded chunks around the player.
+ * WorldManager handles chunk streaming based on player position and owns the
+ * terrain modification overlay.
+ *
+ * Generated terrain stays deterministic: player edits are stored as overrides
+ * keyed by tile coordinate and consulted before the generated tile data, so the
+ * generator (and its determinism tests) never has to know about them.
  */
-export class WorldManager {
+export class WorldManager implements TileQuery {
   private generator: ChunkGenerator;
   private loadedChunks: Map<string, ChunkData> = new Map();
+  private tileOverrides: Map<string, TileType> = new Map();
   private currentCenterX: number = Number.MAX_SAFE_INTEGER;
   private currentCenterY: number = Number.MAX_SAFE_INTEGER;
   private loadRadius: number;
 
   private onChunkLoad?: ChunkLoadCallback;
   private onChunkUnload?: ChunkUnloadCallback;
+  private onTileChanged?: TileChangeCallback;
 
   constructor(seed: number, loadRadius: number = 1) {
     this.generator = new ChunkGenerator(seed);
@@ -32,6 +45,14 @@ export class WorldManager {
   setCallbacks(onLoad: ChunkLoadCallback, onUnload: ChunkUnloadCallback): void {
     this.onChunkLoad = onLoad;
     this.onChunkUnload = onUnload;
+  }
+
+  /**
+   * Register a listener notified whenever a tile override is applied, so the
+   * renderer can repaint a single tile instead of a whole chunk.
+   */
+  setTileChangeCallback(onTileChanged: TileChangeCallback): void {
+    this.onTileChanged = onTileChanged;
   }
 
   getLoadedChunks(): Map<string, ChunkData> {
@@ -86,6 +107,66 @@ export class WorldManager {
         this.loadedChunks.set(key, chunkData);
         this.onChunkLoad?.(chunkData);
       }
+    }
+  }
+
+  /**
+   * Tile type at the given tile coordinates.
+   * Overrides win over generated data. Tiles outside the loaded chunks are
+   * generated on demand — generation is deterministic, so this needs no cache.
+   */
+  getTileAt(tileX: number, tileY: number): TileType {
+    const override = this.tileOverrides.get(getTileKey(tileX, tileY));
+    if (override !== undefined) {
+      return override;
+    }
+
+    const chunkX = Math.floor(tileX / CHUNK_SIZE);
+    const chunkY = Math.floor(tileY / CHUNK_SIZE);
+    const localX = tileX - chunkX * CHUNK_SIZE;
+    const localY = tileY - chunkY * CHUNK_SIZE;
+
+    const chunk = this.loadedChunks.get(getChunkKey(chunkX, chunkY));
+    const tiles = chunk ? chunk.tiles : this.generator.generateChunk(chunkX, chunkY);
+
+    return tiles[localY][localX] as TileType;
+  }
+
+  /**
+   * Whether the tile under the given world pixel coordinates can be walked on.
+   */
+  isWalkableAt(pixelX: number, pixelY: number): boolean {
+    const tileType = this.getTileAt(
+      Math.floor(pixelX / TILE_SIZE),
+      Math.floor(pixelY / TILE_SIZE),
+    );
+    return TILE_PROPERTIES[tileType].walkable;
+  }
+
+  /**
+   * Record a player-caused terrain change. Notifies the tile change listener.
+   */
+  setTileOverride(tileX: number, tileY: number, tileType: TileType): void {
+    this.tileOverrides.set(getTileKey(tileX, tileY), tileType);
+    this.onTileChanged?.(tileX, tileY, tileType);
+  }
+
+  /**
+   * All recorded terrain changes, keyed by `"tileX,tileY"`.
+   * This is the diff persistence needs to store.
+   */
+  getTileOverrides(): Map<string, TileType> {
+    return this.tileOverrides;
+  }
+
+  /**
+   * Bulk-restore terrain changes, e.g. from the database on session start.
+   * Does not fire the tile change listener: callers apply these before the
+   * first chunk is drawn.
+   */
+  applyTileOverrides(entries: Iterable<[string, TileType]>): void {
+    for (const [key, tileType] of entries) {
+      this.tileOverrides.set(key, tileType);
     }
   }
 }
