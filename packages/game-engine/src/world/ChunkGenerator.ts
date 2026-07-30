@@ -30,6 +30,26 @@ const STONE_ELEVATION = 0.6;
 /** Detail value above which a biome's accent tile replaces its surface tile. */
 const ACCENT_DETAIL = 0.5;
 
+/**
+ * Caves are a fifth channel carved into the rock above `STONE_ELEVATION`, which
+ * is well above the water line, so a cave can never flood. Tile ids stay on the
+ * single tile layer: there is no second world dimension to thread through the
+ * override map, persistence and the renderer.
+ */
+const CAVE_SCALE = 0.06;
+const CAVE_THRESHOLD = 0.2;
+
+/** Detail value above which an ore vein replaces the cave floor. */
+const ORE_DETAIL = 0.6;
+
+/** Tile-space neighbours used to find the edge of a cave region. */
+const NEIGHBOUR_OFFSETS = [
+  { dx: 1, dy: 0 },
+  { dx: -1, dy: 0 },
+  { dx: 0, dy: 1 },
+  { dx: 0, dy: -1 },
+];
+
 /** The four noise channels sampled for one point of the world. */
 interface ClimateSample {
   elevation: number;
@@ -52,6 +72,7 @@ export class ChunkGenerator {
   private moistureNoise: NoiseFunction2D;
   private detailNoise: NoiseFunction2D;
   private temperatureNoise: NoiseFunction2D;
+  private caveNoise: NoiseFunction2D;
   private seed: number;
 
   constructor(seed: number) {
@@ -64,6 +85,8 @@ export class ChunkGenerator {
     this.detailNoise = createNoise2D(rng3);
     const rng4 = mulberry32(seed + 3000);
     this.temperatureNoise = createNoise2D(rng4);
+    const rng5 = mulberry32(seed + 4000);
+    this.caveNoise = createNoise2D(rng5);
   }
 
   /**
@@ -112,6 +135,57 @@ export class ChunkGenerator {
     };
   }
 
+  /** Elevation channel on its own, for the neighbour lookups caves need. */
+  private elevationAt(worldX: number, worldY: number): number {
+    return this.noise2D(worldX * ELEVATION_SCALE, worldY * ELEVATION_SCALE);
+  }
+
+  /**
+   * Whether the point is inside a cave: high rock hollowed out by the cave
+   * channel. Only ever true well above the water line, so caves never flood.
+   */
+  private isCaveRegion(worldX: number, worldY: number): boolean {
+    if (this.elevationAt(worldX, worldY) <= STONE_ELEVATION) return false;
+    return this.caveNoise(worldX * CAVE_SCALE, worldY * CAVE_SCALE) > CAVE_THRESHOLD;
+  }
+
+  /**
+   * The cave tile for a point, or `null` when it is not in a cave.
+   *
+   * A cave tile bordering solid rock becomes a wall, so the tunnels read as
+   * carved rather than as a hole in the mountainside; where the mountain slopes
+   * below the rock line the cave simply opens onto the surface, which is how the
+   * player gets in. Ore veins sit in the interior, on the high detail values.
+   */
+  private getCaveTile(
+    worldX: number,
+    worldY: number,
+    detail: number,
+  ): TileType | null {
+    if (!this.isCaveRegion(worldX, worldY)) return null;
+
+    let cavernNeighbours = 0;
+    for (const { dx, dy } of NEIGHBOUR_OFFSETS) {
+      const neighbourX = worldX + dx;
+      const neighbourY = worldY + dy;
+      if (this.isCaveRegion(neighbourX, neighbourY)) {
+        cavernNeighbours++;
+        continue;
+      }
+      // Rock that was not hollowed out: the cave is walled off against it
+      if (this.elevationAt(neighbourX, neighbourY) > STONE_ELEVATION) {
+        return TileType.CAVE_WALL;
+      }
+    }
+
+    // Ore always has a cave tile beside it, so a vein is never a lone speck
+    if (detail > ORE_DETAIL && cavernNeighbours > 0) {
+      return TileType.ORE;
+    }
+
+    return TileType.CAVE_FLOOR;
+  }
+
   private getTileType(worldX: number, worldY: number): TileType {
     const climate = this.sampleClimate(worldX, worldY);
     const { elevation, moisture, detail, temperature } = climate;
@@ -124,6 +198,12 @@ export class ChunkGenerator {
     // Sand near water boundaries
     if (elevation < SAND_ELEVATION) {
       return TileType.SAND;
+    }
+
+    // Caves are carved out of the rock, so they are checked before it
+    const caveTile = this.getCaveTile(worldX, worldY, detail);
+    if (caveTile !== null) {
+      return caveTile;
     }
 
     // Stone at high elevation
