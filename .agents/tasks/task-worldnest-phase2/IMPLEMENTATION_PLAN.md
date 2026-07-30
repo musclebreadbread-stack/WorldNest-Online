@@ -339,7 +339,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase I — Persistence
 
-- [ ] 21. Add migration `002_gameplay_schema.sql`: a `handle_new_user()` trigger
+- [x] 21. Add migration `002_gameplay_schema.sql`: a `handle_new_user()` trigger
       (`security definer`, `search_path = public`) that inserts a `profiles` row plus a `player_state` row on
       `auth.users` insert — today nothing ever creates a profile, so the `player_state` FK is unusable — and
       new tables `world_modifications` (world_id, tile_x, tile_y, tile_type, modified_by, updated_at, PK
@@ -354,7 +354,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `pnpm lint` clean. Confirm by reading that every new table has `enable row level security` and at
       least one `auth.uid()`-scoped write policy.
 
-- [ ] 22. Add the data-access modules: `src/profiles.ts` (`getProfile`, `upsertProfile`),
+- [x] 22. Add the data-access modules: `src/profiles.ts` (`getProfile`, `upsertProfile`),
       `src/playerState.ts` (`loadPlayerState(playerId)`, `savePlayerState(playerId, { x, y, chunk, inventory })`
       using `upsert`), `src/worldMods.ts` (`loadWorldModifications(worldId)`,
       `saveWorldModification(...)`, `loadStructures`, `saveStructure`, `deleteStructure`, `loadCrops`,
@@ -366,7 +366,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/database/src/index.ts`
       Verify: `pnpm build` green; `pnpm lint` clean.
 
-- [ ] 23. Persist and restore a session in the client. In `GameCanvas`, before creating the Phaser game,
+- [x] 23. Persist and restore a session in the client. In `GameCanvas`, before creating the Phaser game,
       load the default world + player state and pass `spawnX`/`spawnY`/`inventory`/`worldId` through the
       `GameBootstrap` registry object from item 4 (fall back to the current 256/256 spawn and an empty
       inventory when Supabase is unconfigured — the existing try/catch tolerance pattern in `AuthProvider`).
@@ -384,7 +384,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase J — Chat
 
-- [ ] 24. Add chat end to end. In `packages/database`: `src/chat.ts` with
+- [x] 24. Add chat end to end. In `packages/database`: `src/chat.ts` with
       `loadRecentMessages(worldId, limit = 50)` and `sendMessage(worldId, senderId, username, body)`
       (writes to `chat_messages`), and extend `RealtimeManager` with `sendChat(body)`, an
       `onChatMessage` callback registered through `setCallbacks`, and a `broadcast` event `"chat"` so
@@ -598,3 +598,75 @@ Goal: develop every remaining developable area of the project, in dependency ord
   equivalent engine-level assertions in `apps/web/src/__tests__/gameWorld.test.ts`.
 - Test totals after item 20: `@worldnest/shared` 11, `@worldnest/game-engine` 127, `@worldnest/web` 37 =
   **175**.
+
+---
+
+## Implementation notes for items 21-24 (deviations worth knowing for items 25-28)
+
+- **`Database` tables needed a `Relationships` field.** postgrest-js 2.111 only treats a table as
+  writable when its type has `Row`/`Insert`/`Update`/`Relationships`; without it every `insert`/`upsert`
+  argument resolved to `never[]`. `Relationships: []` was therefore added to all seven tables in
+  `packages/database/src/types.ts`, including the three from `001`. Item 26 should mention this if it
+  documents the generated types.
+- **Migration 002 adds two things the plan did not list**: a unique constraint on
+  `(world_id, tile_x, tile_y)` for both `structures` and `crops` (the engine already enforces one per
+  tile, and `saveStructure`/`saveCrop` upsert on that constraint), and `on conflict do nothing` in
+  `handle_new_user` so re-running it is safe. `world_modifications.modified_by` is
+  `on delete set null`, so a deleted account does not erase the terrain it changed.
+- `types.ts` also gained `Inserts<T>` and `DbResult<T>`; every data-access function returns
+  `{ data, error }` with a plain `Error`, and `data` is `[]`/`null` rather than absent, so callers never
+  branch on the error just to read the payload.
+- **`packages/database` never imports `@worldnest/game-engine`** (the dependency runs the other way), so
+  `player_state.inventory` is typed as `PersistedInventory` with `itemId: string` — a *type alias*, not an
+  interface, because only aliases satisfy the column's `Record<string, unknown>`. Validation against the
+  item catalogue happens on the client.
+- `@worldnest/shared` gained `isItemId(value: unknown): value is ItemId`; persisted item ids (jsonb slots,
+  `structures.item_id`, `crops.item_id`) are all validated through it, so an item removed from the
+  catalogue drops its rows instead of crashing a session.
+- **Item 23 split into four modules** rather than growing `GameCanvas`/`GameScene` (both were near the
+  ~300-line cap): `apps/web/src/lib/persistence.ts` (`SaveScheduler`, the pure dirty-flag debouncer),
+  `apps/web/src/lib/inventorySnapshot.ts` (`toPersistedInventory`, `parsePersistedInventory`,
+  `restoreInventory`), `apps/web/src/game/loadSession.ts` (all the reads, returns `null` on any failure)
+  and `apps/web/src/game/SessionPersistence.ts` (all the writes). `GameScene` only gained five lines.
+- `GameBootstrap` gained three **optional** fields — `worldId`, `inventory`, `savedWorld` — so
+  `FALLBACK_BOOTSTRAP` and every existing test kept working unchanged. `createSessionPersistence`
+  returns `null` when `worldId` is absent, which is the single switch that turns persistence off for an
+  unconfigured Supabase.
+- **Structures and crops are persisted by diffing the systems' own indexes** once per frame
+  (`BuildSystem.getStructures()` / `PlantSystem.getCrops()`), guarded by a cheap `size` comparison. There
+  is no engine-side "structure created" callback and adding one was not worth it; the same diff also
+  catches a harvested crop and issues the `deleteCrop`. Tile overrides reuse
+  `WorldManager.setTileChangeCallback`, which now both repaints and persists.
+- **A saved position of exactly (0, 0) is ignored.** `handle_new_user` inserts `player_state` with the
+  column defaults, and (0, 0) is not a playable spawn, so `loadSession` treats it as "never saved" and
+  falls back to `DEFAULT_SPAWN_X/Y`. The `inventory` default `'{}'` is handled the same way by
+  `parsePersistedInventory` returning `null`, which is what triggers the `wheat_seed` ×5 starting kit.
+- `restoreInventory` **replaces** the slot array and bumps `version` (the HUD's change signal); it never
+  calls `addItem`, so a returning player does not accumulate the starting kit.
+- **Item 24 uses a dedicated `RealtimeManager.setChatCallback`, not a fourth `setCallbacks` argument.**
+  The player callbacks are registered by `GameScene.setRealtimeManager` while chat is registered by
+  `GameCanvas`; one combined setter would let whichever ran last wipe the other's handlers.
+  `sendChat(body)` *returns* the `ChatMessage` it broadcast, because `broadcast: { self: false }` means the
+  sender never receives its own message and has to add the local copy itself.
+- `ChatMessage` (`id`, `playerId`, `username`, `body`, `createdAt`) lives in `packages/database/src/chat.ts`
+  and is used for both stored history and broadcasts. Broadcast ids are local (`local-<playerId>-<n>`) and
+  only serve as React keys; the durable row gets its own uuid.
+- `apps/web/src/game/ChatBridge.ts` (`wireChat(manager, worldId)`) owns the store wiring and returns a
+  teardown. History is merged with `prependHistory` rather than a `setMessages` replace, because the async
+  load can land after a live message has already arrived.
+- **`PlayerController` now adds every key with capture disabled** (`keyboard.addKey(code, false)` via
+  `addUncapturedKey`). Phaser's default capture calls `preventDefault()`, which would have swallowed every
+  character typed into the chat input — including spaces and the WASD letters. `createCursorKeys()` keeps
+  its capture, since blocking arrow-key page scrolling is still wanted. On top of that, `update()` zeroes
+  the movement keys and every one-shot handler is wrapped in `whenPlaying(...)` while
+  `chatStore.inputFocused` is true. System registration order was not touched.
+- `ChatPanel` sits at `bottom-20 left-4`, above the existing coordinate readout; the composer is disabled
+  with a "Chat unavailable" placeholder until `chatStore.sender` is injected. The 1-per-500 ms limit is a
+  `RateLimiter` instance held in a ref inside the panel, so the UI is the thing that enforces it.
+- **Unverified in the sandbox** (no Supabase project, no display): migration `002` was reviewed and
+  typechecked, not executed; the item 23 reload check (move → reload → respawn with saved inventory) and
+  the item 24 two-tab check (message appears in the other tab, history survives a reload) both need a
+  maintainer with real `.env.local` credentials. Everything reachable without a browser is covered by
+  `persistence.test.ts` and `chat.test.ts`.
+- Test totals after item 24: `@worldnest/shared` 12, `@worldnest/game-engine` 127, `@worldnest/web` 60 =
+  **199**.
