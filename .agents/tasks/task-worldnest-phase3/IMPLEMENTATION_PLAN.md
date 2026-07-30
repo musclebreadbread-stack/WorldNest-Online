@@ -346,7 +346,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase D — Sound and music (items 12-13)
 
-- [ ] 12. Add the audio primitives (decision D9). `apps/web/src/game/audio/soundSpecs.ts`:
+- [x] 12. Add the audio primitives (decision D9). `apps/web/src/game/audio/soundSpecs.ts`:
       `type SoundCue = "pickup" | "harvest" | "plant" | "build" | "deny" | "ui" | "dialogue" | "quest"
       | "shop"` and `SOUND_SPECS: Record<SoundCue, SoundSpec>` where `SoundSpec` is
       `{ waveform: OscillatorType; frequency: number; endFrequency?: number; durationMs: number;
@@ -363,7 +363,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       that the context is not created until the first `play`, that `setMuted(true)` creates no nodes,
       and that `setVolume` scales the scheduled gain.
 
-- [ ] 13. Add the sound manager, procedural music and the audio settings (decision D10).
+- [x] 13. Add the sound manager, procedural music and the audio settings (decision D10).
       `apps/web/src/game/audio/soundDiff.ts` holds the pure part: `diffCues(prev, next):
       SoundCue[]` over a `SoundState` snapshot of `{ inventoryVersion, energy, buildMode,
       chatCount, phase }`. `apps/web/src/game/audio/SoundManager.ts` implements `SceneOverlay`, builds
@@ -382,7 +382,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase E — Mobile and touch controls (items 14-15)
 
-- [ ] 14. Add the virtual input path (decision D11). `apps/web/src/stores/touchStore.ts` holds
+- [x] 14. Add the virtual input path (decision D11). `apps/web/src/stores/touchStore.ts` holds
       `{ active: boolean; axisX: number; axisY: number; interactRequested: boolean;
       buildRequested: boolean }` with `setAxis`, `requestInteract`, `requestBuild` and
       `consumeRequests()`. `apps/web/src/game/inputMerge.ts` holds the pure
@@ -396,7 +396,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       movement, a diagonal axis sets two keys, keyboard input still wins when both are active, and
       `consumeRequests` clears the flags so a single tap fires exactly once.
 
-- [ ] 15. Add the on-screen controls. `apps/web/src/components/TouchControls.tsx` renders a thumb-stick
+- [x] 15. Add the on-screen controls. `apps/web/src/components/TouchControls.tsx` renders a thumb-stick
       (pointer-down/move/up writing a normalised axis into `touchStore`) and E / B / I / M buttons at
       44 px minimum, `pointer-events-auto`, mounted in `GameUI` only when
       `apps/web/src/hooks/useCoarsePointer.ts` reports `matchMedia("(pointer: coarse)")`. Add a Next
@@ -976,3 +976,152 @@ Phases B and C are complete. Commits, one per item, on `feat/mvp-foundation`:
   the centre tile — item 13's `SoundManager` can use the same three fields.
 - `GameScene.ts` is at 216 of the ~300 cap. `PlayerController.ts` is at 233 and grows one row per
   key from here.
+
+---
+
+## Implementation notes for items 12-15 (deviations worth knowing for items 16-31)
+
+Phases D and E are complete. Commits, one per item, on `feat/mvp-foundation`:
+`916b52f` (12), `6756c42` (13), `16aef2e` (14), `36c50eb` (15).
+
+### Gate results after item 15
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 13, game-engine 168, web 190 = **371** (297 after item 11) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed |
+| `docker build -t worldnest:phase3e .` | image builds |
+| `GameScene.ts` | **219** lines (item 13 cost exactly two lines, one of them a comment) |
+| `PlayerController.ts` | **258** lines (item 14 rewrote `update`, added no key) |
+
+No engine package was touched by either phase: items 12-15 are entirely `apps/web`.
+
+### Deviations from the plan text
+
+- **`SoundSynth` has no master gain node; `setVolume` scales each voice's scheduled
+  peak instead.** A master node would keep a graph alive between cues for no gain, and
+  the plan's own verification ("`setVolume` scales the scheduled gain") is only
+  observable this way. The consequence is that a volume change does not affect a cue
+  already sounding — every cue is under 260 ms, so nothing perceptible is lost.
+- **`SoundSynth.resume()` also creates the context**, not only `play()`. It is called
+  from the first pointer or key event, which is precisely the gesture every browser's
+  autoplay policy requires, and `MusicLoop` needs the context clock before any cue has
+  necessarily fired. `now()` deliberately does **not** create one and returns `null`
+  until something has, which is what keeps `MusicLoop` silent instead of scheduling
+  into a context nobody can hear.
+- **`SoundSynth` gained `playTone(ToneRequest)`, `now()` and `destroy()`** beyond the
+  four methods the plan lists. `playTone` is what `MusicLoop` schedules chords with
+  (`startAt` plus a `gainScale` that carries the separate music volume), and `destroy()`
+  closes the audio device on scene shutdown. `ToneRequest extends SoundSpec`, so the
+  cue table and the music share one voice description.
+- **A synth whose context cannot be created stays silent rather than throwing.** The
+  factory call is wrapped, so a browser with audio blocked, or a `jsdom` run without a
+  fake, still plays the game.
+- **`chatStore` gained a monotonic `received` counter, and the sound diff watches that
+  rather than `messages.length`.** The log is capped at `CHAT_HISTORY_LIMIT = 100`, so
+  its length stops growing in a busy room and a length-based diff would go deaf exactly
+  when chat matters most. `prependHistory` does not increment it, so loading a backlog
+  does not fire fifty cues. Two cases were added to `chat.test.ts`; anything resetting
+  `useChatStore.setState({...})` in a test now needs `received: 0`.
+- **`diffCues` layers `harvest` and `pickup`** when a tile pays out, because harvesting
+  spends energy and adds an item in the same frame. Order is fixed (`harvest`,
+  `pickup`, `ui`) so the test can assert an array. `ui` is emitted at most once per
+  frame even when build mode and chat both change. A phase change emits nothing — it
+  steers the music's key, it is not an event worth a chime.
+- **`ENERGY_DROP_EPSILON` is 0.5 and exists only for floating-point noise.**
+  `StatsSystem` never drains energy (it only regenerates towards `maxEnergy`), so any
+  real fall is an action paying its cost. If a later item adds a drain, this threshold
+  is the thing to revisit.
+- **The `deny`, `plant`, `dialogue`, `quest` and `shop` cues exist in `SOUND_SPECS` but
+  nothing plays them yet.** `plant` and `deny` need a signal the diff cannot see (a
+  request that was refused), and the other three belong to items 18, 21 and 23. Adding
+  a cue to the diff is one comparison in `soundDiff.ts`; adding a new sound is one row
+  in `SOUND_SPECS`.
+- **`SoundManager` is registered in the `OverlayStack` even though it draws nothing.**
+  It wants exactly the per-frame contract `SceneOverlay` defines and exactly the fields
+  `OverlayContext` already carries, so `SceneOverlay`'s doc comment was widened from
+  "visual layer" to "per-frame layer". The context was **not** widened: `deltaMs` drives
+  the chord clock, `playerEntity` supplies the inventory version and energy, and
+  `phase` picks the key.
+- **`audioStore` is hydrated by `SoundManager`'s constructor**, not by a component
+  effect. `SettingsPanel` is the only consumer and the scene always boots before the HUD
+  is interactive, so this avoids a second `DocumentLocale`-shaped component for one
+  store. It follows `localeStore`'s rule (defaults in the initial state, browser values
+  in an effect) for the same prerender reason.
+- **`MusicLoop` is a slow four-chord pad, not a melody**, and the progression advances
+  even at zero volume so nudging the slider picks up mid-bar instead of restarting from
+  the root. A key change (day → night) *does* restart at the root. Chords ring 700 ms
+  past the start of the next bar so the pad never gaps.
+- **`mergeInput` lets the keyboard win outright instead of OR-ing the axis in.** OR
+  semantics would set `left` and `right` together when a held key opposes a stale axis,
+  and `MovementSystem` resolves that as standing still — a much worse failure than the
+  stick being ignored while a key is down. Documented in the function and asserted in
+  `input.test.ts`.
+- **Touch requests are consumed *before* `PlayerController`'s typing gate**, so a tap
+  that lands while the chat composer has focus is dropped rather than queued for the
+  frame after the player stops typing. That mirrors what `whenPlaying` does to a
+  keypress.
+- **`TouchControls` renders five buttons, not the four the plan lists.** `B` toggles
+  build mode (keyboard parity) and a separate `Q` button places, because
+  `touchStore.buildRequested` is the *place* action and `B` alone would have left it
+  unreachable on a phone. `Q` is disabled rather than hidden outside build mode, so the
+  grid never reflows under a thumb. `E` interacts, `I` opens the inventory, `M` toggles
+  the minimap.
+- **Only four new locale keys were needed for item 15** (`touch.stick`,
+  `touch.interact`, `touch.place`, `touch.map`): the `B` and `I` buttons reuse
+  `build.title` and `inventory.title` as their `aria-label`s. Item 13 added five
+  (`settings.sound`, `settings.masterVolume`, `settings.musicVolume`, `settings.mute`,
+  `settings.soundHint`). `en` is now at **66 keys**, all 12 catalogues complete and all
+  three i18n parity tests green.
+- **No keybinding changed**, so `README.md` and `docs/SETUP_GUIDE_KR.md` keybinding
+  tables are still accurate and were deliberately left alone. Items 29 and 30 still owe
+  the audio settings, the touch controls and the autoplay-policy troubleshooting entry,
+  and `docs/SETUP_GUIDE_KR.doc` is still one heading (`### 언어 설정`) behind its `.md`
+  from commit `272e15b`.
+- **`globals.css` puts `touch-action: none` on `canvas` and `overscroll-behavior: none`
+  on `body`**, rather than on a class applied to the canvas host. That keeps item 15
+  inside the files the plan lists (`app/game/page.tsx` was not touched) and covers the
+  Phaser canvas wherever it is mounted. The `.touch-safe-area` utility carries the
+  `env(safe-area-inset-*)` padding and is used by `TouchControls` alone.
+- **Prettier**: `pnpm format` was not run. Every touched file was checked with
+  `npx prettier --check`; the only remaining differences are the known
+  `printWidth: 100` vs hand-wrapped-at-88 stale gate. `TouchControls.tsx`,
+  `useCoarsePointer.ts`, `MusicLoop.ts`, `inputMerge.ts`, `layout.tsx`, `globals.css`
+  and every locale file are byte-identical to prettier's output.
+
+### What is verified and what still needs a human
+
+- **Verified by test**: every cue's envelope, the whole WebAudio node graph and its
+  scheduling (against a fake `AudioContext` in
+  `apps/web/src/__tests__/helpers/fakeAudio.ts`), muting creating no nodes at all,
+  volume persistence and corrupt-storage recovery, all eleven diff rules, the chord
+  progression and its key change, `mergeInput`'s deadzone/diagonal/keyboard-priority
+  rules, `touchStore`'s one-tap-one-action contract, and `TouchControls` rendering only
+  for a coarse pointer with a pointer-down writing a clamped normalised axis.
+- **Not verified, and cannot be here**: that the audio is actually *audible* and
+  pleasant (no audio device), and that the controls are usable with a real thumb on a
+  real phone (no touch device, and Playwright cannot reach `/game` because
+  `middleware.ts` redirects an unauthenticated visitor to `/auth`). Both are already on
+  the plan's "needs a maintainer with real credentials and a browser" list.
+
+### Notes for the next delegations
+
+- **Adding a sound cue is two edits**: a row in `SOUND_SPECS` and a comparison in
+  `diffCues`. If the cue needs a signal the diff cannot see, add the field to
+  `SoundState` and to `readSoundState` — the latter takes an `Entity` and is Phaser-free,
+  so it is testable against a world built by `createGameWorld`.
+- **Items 18, 21 and 23 already have their cues**: `dialogue`, `shop` and `quest`.
+- `useTouchStore.consumeRequests()` is the pattern for any future touch action: raise a
+  flag in the store, consume it in `PlayerController.update`, and route it through a
+  cooldown helper. Do **not** call an engine method from a React handler (decision D13).
+- `apps/web/src/hooks/` now exists, holding `useCoarsePointer` only. It is the place for
+  any future browser-capability hook.
+- `TouchControls` is mounted inside `GameUI`'s `pointer-events-none` root, so anything
+  added to it needs `pointer-events-auto` on its wrapper. Its corners use `start-*` /
+  `end-*`, so it mirrors in Arabic like the rest of the HUD.
+- `GameScene.ts` is at 219 of the ~300 cap and `PlayerController.ts` at 258. Items 18,
+  21 and 23 each add a row to `ONE_SHOT_BINDINGS` plus possibly a field on
+  `OneShotActions`; that is about 5 lines each, which fits, but a fourth key-heavy item
+  would be the point to split the bindings table into its own module.
