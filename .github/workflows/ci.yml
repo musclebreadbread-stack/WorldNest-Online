@@ -38,6 +38,12 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      # The Korean guide and its Word-openable mirror are hand-maintained, so a
+      # heading added to one and not the other is caught here rather than by a
+      # reader finding a section missing.
+      - name: Check the Korean guide against its Word mirror
+        run: pnpm docs:check
+
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest

@@ -14,6 +14,7 @@ code { background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 2px 6px; f
 pre { background-color: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 5px; font-family: 'Consolas', monospace; font-size: 10pt; white-space: pre-wrap; }
 blockquote { border-left: 4px solid #4a90d9; margin: 15px 0; padding: 10px 20px; background-color: #ebf8ff; }
 .warning { border-left: 4px solid #ed8936; background-color: #fffaf0; padding: 10px 20px; margin: 15px 0; }
+.danger { border-left: 4px solid #e53e3e; background-color: #fff5f5; padding: 10px 20px; margin: 15px 0; }
 .success { border-left: 4px solid #48bb78; background-color: #f0fff4; padding: 10px 20px; margin: 15px 0; }
 .checkbox { margin: 5px 0; }
 </style>
@@ -23,22 +24,41 @@ blockquote { border-left: 4px solid #4a90d9; margin: 15px 0; padding: 10px 20px;
 <h1>WorldNest Online - 개발자 환경 설정 가이드</h1>
 
 <blockquote>
-이 문서는 WorldNest Online 프로젝트를 로컬에서 실행하기 위해 개발자가 직접 수행해야 하는 모든 설정 단계를 안내합니다.
+이 문서는 WorldNest Online을 실행하고 인터넷에 공개하기 위해 <strong>개발자가 직접 손으로 해야 하는 모든 작업</strong>을 한 곳에 모아 놓은 문서입니다. 코드로 자동화할 수 없는 작업(계정 만들기, SQL 붙여넣기, 대시보드 설정)만 남겨 두었고, 각 단계마다 "무엇이 만들어지는지"와 "어떻게 확인하는지"를 함께 적었습니다.
 </blockquote>
+
+<hr>
+
+<h2>이 가이드로 얻는 것</h2>
+
+<table>
+<tr><th>결과물</th><th>어디서 만들어지는가</th></tr>
+<tr><td>게임 백엔드 (인증·DB·실시간 통신)</td><td>2~3단계, Supabase</td></tr>
+<tr><td>바로 로그인할 수 있는 <strong>테스트 계정 3개</strong></td><td>4단계, SQL 한 번 붙여넣기</td></tr>
+<tr><td>로컬 실행 주소 <code>http://localhost:3000</code></td><td>6단계</td></tr>
+<tr><td><strong>인터넷에 공개된 테스트 서버 링크</strong></td><td>9단계, Vercel</td></tr>
+<tr><td>직접 해야 하는 작업 전체 목록</td><td>10단계 체크리스트</td></tr>
+</table>
+
+<div class="warning">
+⚠️ <strong>테스트 서버 링크는 이 저장소가 자동으로 만들어 줄 수 없습니다.</strong> 배포에는 본인 Vercel 계정과 본인 Supabase 프로젝트가 필요하고, 그 자격 증명은 저장소에 담을 수 없기 때문입니다. 9단계를 따라가면 5~10분 안에 <code>https://&lt;프로젝트이름&gt;.vercel.app</code> 형태의 실제 주소가 나오고, 그 주소를 4단계에서 만든 테스트 계정과 함께 아래 "테스트 계정과 테스트 서버 주소 정리표"에 적어 두면 됩니다. 존재하지 않는 주소를 예시로 적어 두는 것보다 이 방식이 정확합니다.
+</div>
 
 <hr>
 
 <h2>목차</h2>
 
 <ol>
-<li><a href="#1-사전-준비-사항">사전 준비 사항</a></li>
-<li><a href="#2-supabase-프로젝트-생성">Supabase 프로젝트 생성</a></li>
-<li><a href="#3-데이터베이스-테이블-생성">데이터베이스 테이블 생성</a></li>
-<li><a href="#4-환경-변수-설정">환경 변수 설정</a></li>
-<li><a href="#5-프로젝트-설치-및-실행">프로젝트 설치 및 실행</a></li>
-<li><a href="#6-동작-확인">동작 확인</a></li>
-<li><a href="#7-자주-발생하는-문제와-해결-방법">자주 발생하는 문제와 해결 방법</a></li>
-<li><a href="#8-vercel-배포-선택사항">Vercel 배포 (선택사항)</a></li>
+<li>사전 준비 사항</li>
+<li>Supabase 프로젝트 생성</li>
+<li>데이터베이스 마이그레이션 실행</li>
+<li>테스트 계정 만들기</li>
+<li>환경 변수 설정</li>
+<li>프로젝트 설치 및 실행</li>
+<li>동작 확인</li>
+<li>자주 발생하는 문제와 해결 방법</li>
+<li>Vercel 배포 — 테스트 서버 링크 만들기</li>
+<li>직접 해야 하는 작업 체크리스트</li>
 </ol>
 
 <hr>
@@ -73,7 +93,18 @@ blockquote { border-left: 4px solid #4a90d9; margin: 15px 0; padding: 10px 20px;
 <td>Chrome/Edge/Firefox 최신</td>
 <td>-</td>
 </tr>
+<tr>
+<td>Docker</td>
+<td>선택</td>
+<td><code>pnpm db:verify</code>로 SQL을 미리 검증할 때만 필요</td>
+</tr>
 </table>
+
+<p>계정도 세 개 필요합니다: <strong>GitHub</strong>(코드 보관), <strong>Supabase</strong>(백엔드), <strong>Vercel</strong>(배포). 모두 무료 등급으로 충분합니다.</p>
+
+<blockquote>
+💡 게임에 사용되는 그림과 소리는 <strong>모두 실행 중에 코드로 만들어집니다.</strong> 저장소에 이미지·음원 파일이 하나도 없으므로 별도로 내려받거나 라이선스를 확인할 자료가 없습니다.
+</blockquote>
 
 <h3>Node.js 설치 확인</h3>
 
@@ -143,98 +174,39 @@ pnpm --version
 
 <hr>
 
-<h2>3. 데이터베이스 테이블 생성</h2>
+<h2>3. 데이터베이스 마이그레이션 실행</h2>
 
-<p>게임에 필요한 테이블을 Supabase에 생성해야 합니다.</p>
+<p>게임에 필요한 테이블을 Supabase에 만들어야 합니다. 마이그레이션 파일은 저장소의 <code>packages/database/supabase/migrations/</code> 폴더에 있습니다.</p>
 
-<h3>단계별 안내</h3>
+<h3>실행 순서</h3>
+
+<p><strong>순서가 매우 중요합니다.</strong> 아래 순서대로, 한 파일씩 실행하세요.</p>
+
+<table>
+<tr><th>순서</th><th>파일</th><th>만들어지는 것</th></tr>
+<tr><td>1</td><td><code>001_initial_schema.sql</code></td><td><code>profiles</code>, <code>player_state</code>, <code>worlds</code> 테이블과 기본 월드 1행</td></tr>
+<tr><td>2</td><td><code>002_gameplay_schema.sql</code></td><td>회원가입 트리거 + <code>world_modifications</code>, <code>structures</code>, <code>crops</code>, <code>chat_messages</code></td></tr>
+<tr><td>3</td><td><code>003_progression_schema.sql</code></td><td><code>player_state.coins</code> 컬럼과 <code>player_quests</code> 테이블</td></tr>
+<tr><td>4 (선택)</td><td><code>seed/test_accounts.sql</code></td><td>바로 로그인 가능한 테스트 계정 3개 → 4단계</td></tr>
+</table>
+
+<div class="warning">
+⚠️ 순서를 바꾸면 외래 키 오류가 납니다. 특히 <code>002</code>는 <strong>회원가입 시 <code>profiles</code> 행을 자동으로 만들어 주는 트리거</strong>를 설치하는데, 이것이 없으면 저장 기능이 전혀 동작하지 않고 4단계의 테스트 계정도 만들어지지 않습니다.
+</div>
+
+<h3>001 실행 방법</h3>
 
 <ol>
-<li>Supabase 대시보드에서 왼쪽 메뉴의 <strong>SQL Editor</strong> 클릭</li>
+<li>Supabase 대시보드 왼쪽 메뉴에서 <strong>SQL Editor</strong> 클릭</li>
 <li><strong>New query</strong> 클릭</li>
-<li>아래 SQL을 <strong>전체 복사</strong>하여 붙여넣기:</li>
+<li>저장소의 <code>packages/database/supabase/migrations/001_initial_schema.sql</code> 파일을 열어 <strong>전체 복사</strong></li>
+<li>SQL Editor에 붙여넣고 <strong>Run</strong> 버튼 클릭 (또는 Ctrl+Enter)</li>
+<li>"Success. No rows returned" 메시지가 나오면 성공입니다</li>
 </ol>
 
-<pre>-- WorldNest Online - Initial Database Schema
-create extension if not exists "uuid-ossp";
+<h3>002 실행 (필수)</h3>
 
--- 프로필 테이블 (사용자 계정과 연결)
-create table public.profiles (
-  id uuid references auth.users(id) on delete cascade primary key,
-  username text unique not null,
-  avatar text default 'default',
-  created_at timestamptz default now() not null
-);
-
--- 플레이어 상태 테이블 (마지막 위치, 인벤토리 저장)
-create table public.player_state (
-  player_id uuid references public.profiles(id) on delete cascade primary key,
-  x real default 0 not null,
-  y real default 0 not null,
-  chunk text default '0,0' not null,
-  last_online timestamptz default now() not null,
-  inventory jsonb default '{}' not null
-);
-
--- 월드 테이블
-create table public.worlds (
-  id uuid default uuid_generate_v4() primary key,
-  name text not null,
-  seed integer not null,
-  created_at timestamptz default now() not null
-);
-
--- RLS(행 수준 보안) 활성화
-alter table public.profiles enable row level security;
-alter table public.player_state enable row level security;
-alter table public.worlds enable row level security;
-
--- 프로필 정책
-create policy "Users can view all profiles"
-  on public.profiles for select using (true);
-
-create policy "Users can update their own profile"
-  on public.profiles for update using (auth.uid() = id);
-
-create policy "Users can insert their own profile"
-  on public.profiles for insert with check (auth.uid() = id);
-
--- 플레이어 상태 정책
-create policy "Users can view their own player state"
-  on public.player_state for select using (auth.uid() = player_id);
-
-create policy "Users can update their own player state"
-  on public.player_state for update using (auth.uid() = player_id);
-
-create policy "Users can insert their own player state"
-  on public.player_state for insert with check (auth.uid() = player_id);
-
--- 월드 정책
-create policy "Anyone can view worlds"
-  on public.worlds for select using (true);
-
-create policy "Authenticated users can create worlds"
-  on public.worlds for insert with check (auth.role() = 'authenticated');
-
--- 기본 월드 삽입
-insert into public.worlds (name, seed) values ('Default World', 42);</pre>
-
-<ol start="4">
-<li><strong>Run</strong> 버튼 클릭 (또는 Ctrl+Enter)</li>
-<li>"Success. No rows returned" 메시지가 나오면 성공!</li>
-</ol>
-
-<h3>두 번째 마이그레이션 실행 (필수)</h3>
-
-<p>게임플레이(지형 변경, 건축물, 농작물, 채팅)를 저장하려면 <strong>두 번째 마이그레이션도 반드시</strong> 실행해야 합니다.</p>
-
-<ol>
-<li>저장소의 <code>packages/database/supabase/migrations/002_gameplay_schema.sql</code> 파일을 텍스트 에디터로 열기</li>
-<li>내용을 <strong>전체 복사</strong></li>
-<li>Supabase <strong>SQL Editor</strong> → <strong>New query</strong> 에 붙여넣고 <strong>Run</strong> 클릭</li>
-</ol>
-
-<p>이 마이그레이션이 만드는 것:</p>
+<p>같은 방법으로 <code>002_gameplay_schema.sql</code>을 <strong>New query</strong>에 붙여넣고 실행합니다.</p>
 
 <table>
 <tr><th>항목</th><th>설명</th></tr>
@@ -245,17 +217,70 @@ insert into public.worlds (name, seed) values ('Default World', 42);</pre>
 <tr><td><code>chat_messages</code></td><td>채팅 기록</td></tr>
 </table>
 
-<div class="warning">
-⚠️ <code>001</code> → <code>002</code> 순서로 실행해야 합니다. 순서를 바꾸면 외래 키 오류가 발생합니다.
-</div>
+<h3>003 실행 (필수)</h3>
+
+<p>같은 방법으로 <code>003_progression_schema.sql</code>을 실행합니다. 이 마이그레이션이 없으면 게임은 정상적으로 돌아가지만 <strong>코인과 퀘스트 진행 상황만 새로고침할 때마다 사라집니다.</strong></p>
+
+<table>
+<tr><th>항목</th><th>설명</th></tr>
+<tr><td><code>player_state.coins</code></td><td>소지한 코인. 별도 테이블 대신 컬럼 하나로 둔 이유는 이 행이 이미 자동 저장 때마다 기록되기 때문입니다</td></tr>
+<tr><td><code>player_quests</code></td><td>퀘스트별 상태(<code>available</code>/<code>active</code>/<code>completed</code>)와 진행도. 본인만 읽고 쓸 수 있습니다</td></tr>
+</table>
 
 <h3>확인 방법</h3>
 
-<p>왼쪽 메뉴에서 <strong>Table Editor</strong> 클릭 → <code>profiles</code>, <code>player_state</code>, <code>worlds</code>, <code>world_modifications</code>, <code>structures</code>, <code>crops</code>, <code>chat_messages</code> 7개 테이블이 보이면 정상입니다.</p>
+<p>왼쪽 메뉴에서 <strong>Table Editor</strong> 클릭 → <code>profiles</code>, <code>player_state</code>, <code>worlds</code>, <code>world_modifications</code>, <code>structures</code>, <code>crops</code>, <code>chat_messages</code>, <code>player_quests</code> <strong>8개 테이블</strong>이 보이면 정상입니다. <code>player_state</code> 테이블을 열어 <code>coins</code> 컬럼이 있는지도 확인하세요.</p>
+
+<h3>Docker가 있다면 미리 검증하기</h3>
+
+<p>Supabase에 붙여넣기 전에, 마이그레이션 3개와 시드가 실제로 오류 없이 적용되는지 로컬에서 확인할 수 있습니다.</p>
+
+<pre>pnpm db:verify</pre>
+
+<p>일회용 PostgreSQL 컨테이너를 띄워 <code>001</code> → <code>002</code> → <code>003</code> → 시드를 순서대로 적용하고, 트리거가 정말로 행을 만들었는지, 보안 정책이 빠지지 않았는지, 시드 계정의 비밀번호가 실제로 검증되는지까지 확인한 뒤 컨테이너를 지웁니다. 실무에서 쓰는 프로젝트에 SQL을 붙여넣기 전 리허설로 쓰기 좋습니다.</p>
 
 <hr>
 
-<h2>4. 환경 변수 설정</h2>
+<h2>4. 테스트 계정 만들기</h2>
+
+<p>회원가입을 손으로 반복하지 않고 바로 로그인해서 테스트할 수 있도록, 확인 완료 상태의 계정 3개를 만들어 주는 SQL을 준비해 두었습니다. 멀티플레이(다른 플레이어 표시, 채팅)를 확인하려면 계정이 두 개 이상 필요하기 때문에 3개입니다.</p>
+
+<h3>만들어지는 계정 3개</h3>
+
+<table>
+<tr><th>이메일</th><th>비밀번호</th><th>사용자 이름</th></tr>
+<tr><td><code>tester1@worldnest.test</code></td><td><code>worldnest123</code></td><td><code>Tester1</code></td></tr>
+<tr><td><code>tester2@worldnest.test</code></td><td><code>worldnest123</code></td><td><code>Tester2</code></td></tr>
+<tr><td><code>tester3@worldnest.test</code></td><td><code>worldnest123</code></td><td><code>Tester3</code></td></tr>
+</table>
+
+<p>이메일 인증(<code>email_confirmed_at</code>)이 이미 완료된 상태로 만들어지므로, 메일함을 확인하는 단계가 없습니다. 실제로 존재하지 않는 <code>@worldnest.test</code> 주소를 쓰는 이유도 그것입니다.</p>
+
+<h3>실행 방법</h3>
+
+<ol>
+<li>저장소의 <code>packages/database/supabase/seed/test_accounts.sql</code> 파일을 열어 <strong>전체 복사</strong></li>
+<li>Supabase <strong>SQL Editor</strong> → <strong>New query</strong> 에 붙여넣고 <strong>Run</strong></li>
+<li>성공하면 6단계 이후 <code>/auth</code> 화면에서 위 이메일·비밀번호로 바로 <strong>Sign In</strong> 할 수 있습니다</li>
+</ol>
+
+<div class="warning">
+⚠️ <strong>반드시 <code>002</code>를 먼저 실행한 뒤에 실행하세요.</strong> 이 시드는 프로필과 플레이어 상태 행을 직접 만들지 않고, <code>002</code>가 설치한 회원가입 트리거가 만들어 주도록 맡깁니다. <code>002</code> 없이 실행하면 계정은 생기지만 저장이 되지 않습니다.
+</div>
+
+<p>여러 번 실행해도 안전합니다(모든 문장이 <code>on conflict do nothing</code>). 계정을 지우려면 파일 맨 아래 주석 처리된 정리 블록의 주석을 풀고 실행하면 되고, 이때 그 계정들이 만든 건축물·작물도 함께 삭제됩니다.</p>
+
+<h3>반드시 지켜야 할 주의사항</h3>
+
+<div class="danger">
+🚨 <strong>이 시드는 개발·테스트 전용입니다. 실제로 운영하는 프로젝트에는 절대 실행하지 마세요.</strong> <code>worldnest123</code>이라는 비밀번호가 이 저장소에 그대로 공개되어 있으므로, 저장소를 볼 수 있는 누구나 해당 프로젝트에 로그인할 수 있습니다. 테스트가 끝나면 계정을 삭제하고, 외부에 공개하는 서버에는 시드를 실행하지 않은 상태로 두세요.
+</div>
+
+<p>같은 내용이 파일 첫 주석과 <code>packages/database/supabase/seed/README.md</code>에도 적혀 있습니다.</p>
+
+<hr>
+
+<h2>5. 환경 변수 설정</h2>
 
 <h3>단계별 안내</h3>
 
@@ -284,7 +309,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 
 <hr>
 
-<h2>5. 프로젝트 설치 및 실행</h2>
+<h2>6. 프로젝트 설치 및 실행</h2>
 
 <pre># 1. 저장소 클론 (이미 했다면 건너뛰기)
 git clone https://github.com/musclebreadbread-stack/WorldNest-Online.git
@@ -296,7 +321,7 @@ git checkout feat/mvp-foundation
 # 3. 모든 패키지 의존성 설치
 pnpm install
 
-# 4. 환경 변수 설정 (위 4번 단계 완료 확인)
+# 4. 환경 변수 설정 (위 5번 단계 완료 확인)
 
 # 5. 개발 서버 시작
 pnpm dev</pre>
@@ -315,20 +340,19 @@ pnpm dev</pre>
 
 <hr>
 
-<h2>6. 동작 확인</h2>
+<h2>7. 동작 확인</h2>
 
 <h3>회원가입 테스트</h3>
 
 <ol>
 <li>http://localhost:3000/auth 접속</li>
-<li>Username, Email, Password 입력</li>
-<li><strong>Sign Up</strong> 클릭</li>
-<li>회원가입 성공 시 자동으로 <code>/game</code> 페이지로 이동</li>
+<li>4단계 시드를 실행했다면 <code>tester1@worldnest.test</code> / <code>worldnest123</code> 으로 바로 <strong>Sign In</strong></li>
+<li>새 계정을 만들려면 Username, Email, Password 를 입력하고 <strong>Sign Up</strong></li>
+<li>성공 시 자동으로 <code>/game</code> 페이지로 이동합니다</li>
 </ol>
 
 <blockquote>
-💡 <strong>팁</strong>: Supabase 기본 설정에서는 이메일 인증이 필요할 수 있습니다.
-개발 중에는 Supabase 대시보드 → Authentication → Settings → <strong>Confirm email</strong> 을 OFF로 설정하면 편합니다.
+💡 <strong>팁</strong>: Supabase 기본 설정에서는 새로 만든 계정에 이메일 인증이 필요할 수 있습니다. 개발 중에는 아래 방법으로 꺼 두면 편합니다. (시드로 만든 계정은 이미 인증 완료 상태라 영향 없음)
 </blockquote>
 
 <h3>이메일 인증 끄기 (개발용)</h3>
@@ -341,15 +365,18 @@ pnpm dev</pre>
 <li><strong>Save</strong> 클릭</li>
 </ol>
 
+<p>외부에 공개할 때는 다시 ON으로 돌려놓으세요.</p>
+
 <h3>게임 화면 확인</h3>
 
 <p>회원가입/로그인 성공 후 <code>/game</code> 페이지에서:</p>
 
 <ul>
-<li>초록색/갈색/파란색 타일로 구성된 월드가 표시됨</li>
+<li>초록색·갈색·파란색 타일로 구성된 월드가 표시됨</li>
 <li>WASD 또는 화살표 키로 캐릭터 이동 가능 (물 타일은 통과되지 않음)</li>
 <li>이동하면 주변 청크가 자동으로 로드됨</li>
 <li>화면 상단에 <code>Day 1 · 07:20 · dawn</code> 형식의 월드 시계가 표시됨</li>
+<li>지형은 6가지 기후대(툰드라·타이가·초원·숲·사바나·사막)로 나뉘어 있고, 높은 산에는 <strong>동굴</strong>이 뚫려 있습니다. 동굴 안에서만 광석을 캘 수 있고, 광석은 상점에서 가장 비싸게 팔립니다</li>
 </ul>
 
 <h3>조작 방법</h3>
@@ -359,31 +386,87 @@ pnpm dev</pre>
 <tr><td><code>WASD</code> / 화살표</td><td>이동</td></tr>
 <tr><td><code>1</code>~<code>8</code></td><td>핫바 슬롯 선택</td></tr>
 <tr><td><code>I</code></td><td>인벤토리 열기/닫기</td></tr>
-<tr><td><code>E</code> / <code>Space</code></td><td>바라보는 타일과 상호작용 (채집 / 밭 갈기 / 씨앗 심기 / 수확)</td></tr>
+<tr><td><code>E</code> / <code>Space</code></td><td>바라보는 타일과 상호작용 (채집 / 밭 갈기 / 씨앗 심기 / 수확), NPC에게 말 걸기</td></tr>
 <tr><td><code>B</code></td><td>건축 모드 전환</td></tr>
 <tr><td><code>Q</code> / 마우스 좌클릭</td><td>선택한 아이템 설치 (건축 모드에서만)</td></tr>
+<tr><td><code>M</code></td><td>우측 상단 미니맵 켜기/끄기</td></tr>
+<tr><td><code>J</code></td><td>퀘스트 목록 열기/닫기</td></tr>
+<tr><td><code>P</code></td><td>설정 패널 열기/닫기 (언어·소리 설정)</td></tr>
+<tr><td><code>1</code>~<code>4</code></td><td>대화 중 선택지 고르기</td></tr>
+<tr><td><code>Esc</code></td><td>맨 위에 열린 창 닫기 (대화 → 상점 → 퀘스트 → 인벤토리 → 설정 → 건축 모드 순)</td></tr>
 <tr><td><code>Enter</code> / <code>Esc</code></td><td>채팅 입력창 포커스 / 해제</td></tr>
 </table>
 
-<h3>저장 기능 확인 (마이그레이션 002 필요)</h3>
+<h3>터치 조작 (스마트폰·태블릿)</h3>
+
+<p>터치 기기로 접속하면 화면에 조작 버튼이 <strong>자동으로 나타납니다</strong>(마우스가 있는 기기에서는 나타나지 않습니다). 왼쪽 아래 조이스틱으로 이동하고, 오른쪽 버튼으로 <code>E</code>(상호작용), <code>B</code>(건축 모드), <code>Q</code>(설치), <code>I</code>(인벤토리), <code>M</code>(미니맵), <code>J</code>(퀘스트)를 대신합니다. 조이스틱을 끌어도 페이지가 스크롤되거나 확대되지 않도록 처리되어 있습니다.</p>
+
+<h3>마을 NPC · 상점 · 퀘스트</h3>
+
+<p>시작 지점 근처에 NPC 3명이 고정된 자리에 서 있습니다. <code>E</code> 키로 말을 걸 수 있습니다.</p>
+
+<table>
+<tr><th>NPC</th><th>역할</th></tr>
+<tr><td>정원사 핍</td><td>농사 안내 (대화만)</td></tr>
+<tr><td>상점 주인 주노</td><td>상점 열기. 가격은 고정이며 판매가는 항상 구매가보다 낮습니다(무한 차익 거래 불가). 플레이어 간 거래는 없습니다.</td></tr>
+<tr><td>탐험가 에이다</td><td>퀘스트 3개 수령·보고 (<code>J</code> 키로 진행 상황 확인)</td></tr>
+</table>
+
+<p>퀘스트는 나무 5개 모으기, 울타리 2개 세우기, 핍에게 인사하기 세 가지입니다. 보고할 때 아이템은 사라지지 않고(에이다에게 "보여 주는" 것), 보상을 넣을 칸이 부족하면 아예 접수되지 않고 퀘스트가 그대로 남습니다. 시작 코인은 50개입니다.</p>
+
+<h3>언어 설정</h3>
+
+<p>UI는 12개 언어(en, ko, ja, zh, es, fr, de, pt, ar, hi, th, vi)를 지원합니다. 첫 접속 시 브라우저 언어를 자동으로 감지하고, <code>P</code> 키 또는 우측 상단 설정 버튼에서 직접 바꿀 수 있습니다. 선택한 언어는 해당 기기에만 저장되며(<code>localStorage</code>), 아랍어는 오른쪽에서 왼쪽으로 표시됩니다.</p>
+
+<h3>소리 설정</h3>
+
+<p>효과음과 배경 음악도 파일이 아니라 실행 중에 만들어집니다. <code>P</code> 설정 패널에서 전체 음량, 음악 음량, 음소거를 조절할 수 있고 이 값도 기기에 저장됩니다. 배경 음악은 낮과 밤에 따라 화음이 바뀝니다.</p>
+
+<blockquote>
+💡 <strong>처음 클릭하거나 키를 누르기 전까지는 소리가 나지 않습니다.</strong> 모든 브라우저가 사용자 조작 없이 소리를 재생하는 것을 막기 때문이며, 고장이 아닙니다.
+</blockquote>
+
+<h3>저장 기능 확인</h3>
 
 <ol>
 <li>캐릭터를 이동시키고 나무/돌을 채집</li>
+<li>상점에서 물건을 하나 사거나 팔고, 에이다에게 퀘스트를 하나 받기</li>
 <li>브라우저를 새로고침(F5)</li>
-<li>마지막 위치와 인벤토리가 그대로 복원되면 정상입니다</li>
+<li>마지막 위치, 인벤토리, <strong>코인, 퀘스트 진행 상황</strong>이 그대로 복원되면 정상입니다</li>
 </ol>
+
+<p>코인과 퀘스트가 복원되지 않으면 <code>003</code> 마이그레이션이 실행되지 않은 것입니다.</p>
 
 <h3>멀티플레이 확인</h3>
 
 <ol>
-<li>브라우저 탭 두 개(또는 시크릿 창)에서 서로 다른 계정으로 로그인</li>
+<li>브라우저 탭 두 개(또는 시크릿 창)에서 <strong>서로 다른 계정</strong>으로 로그인 (예: 한쪽은 <code>tester1@worldnest.test</code>, 다른 쪽은 <code>tester2@worldnest.test</code>)</li>
 <li>한쪽에서 이동하면 다른 쪽 화면에서 이름표가 붙은 캐릭터가 따라 움직임</li>
 <li>한쪽에서 채팅을 보내면 다른 쪽에 즉시 표시되고, 새로고침해도 기록이 남아 있어야 합니다</li>
 </ol>
 
+<h3>보호자·교사용 안내 (10~18세 대상)</h3>
+
+<p>이 게임은 10~18세를 대상으로 만들어졌고, 다음 항목은 <strong>코드에 있는 테스트로 강제되고 있습니다.</strong> "그렇게 만들 생각이었다"가 아니라, 어기면 빌드가 실패한다는 뜻입니다.</p>
+
+<table>
+<tr><th>항목</th><th>현재 상태</th></tr>
+<tr><td>폭력 표현</td><td>없음. 전투·체력 감소·적 캐릭터가 존재하지 않습니다</td></tr>
+<tr><td>확률형 보상·뽑기·도박</td><td>없음. 무작위 보상이 하나도 없고 모든 상점 가격이 고정입니다</td></tr>
+<tr><td>현금 결제</td><td>없음. 결제 경로가 아예 구현되어 있지 않습니다</td></tr>
+<tr><td>플레이어 간 거래</td><td>없음. 거래·시장 기능이 없어 다른 사람의 재화에 영향을 줄 수 없습니다</td></tr>
+<tr><td>대화 내용</td><td>NPC 대화 3종 모두 연령에 맞는 친근한 내용이며 12개 언어 전체가 검수 대상입니다</td></tr>
+<tr><td>채팅</td><td>플레이어 간 채팅이 있습니다. <strong>자동 필터링은 없으므로</strong>, 공개 서버로 운영할 때는 보호자·운영자의 확인이 필요합니다</td></tr>
+<tr><td>개인정보</td><td>이메일과 사용자 이름만 저장합니다</td></tr>
+</table>
+
+<blockquote>
+기술적 배경: 이 게임은 <strong>클라이언트가 신뢰 주체</strong>인 구조여서 코인·인벤토리·퀘스트 진행도를 마음먹으면 조작할 수 있습니다(치팅 방지는 범위 밖). 플레이어 간 거래를 넣지 않은 이유가 바로 이것입니다. 거래가 있으면 한 사람의 조작이 다른 사람의 재화까지 오염시키지만, 지금은 그 영향이 본인 저장 데이터에서 끝납니다.
+</blockquote>
+
 <hr>
 
-<h2>7. 자주 발생하는 문제와 해결 방법</h2>
+<h2>8. 자주 발생하는 문제와 해결 방법</h2>
 
 <h3>"Missing Supabase URL or anon key" 에러</h3>
 
@@ -400,7 +483,7 @@ pnpm dev</pre>
 
 <p><strong>원인</strong>: 데이터베이스 테이블이 생성되지 않음</p>
 
-<p><strong>해결</strong>: 3번 단계의 SQL(<code>001</code> → <code>002</code> 순서)을 Supabase SQL Editor에서 다시 실행</p>
+<p><strong>해결</strong>: 3번 단계의 SQL(<code>001</code> → <code>002</code> → <code>003</code> 순서)을 Supabase SQL Editor에서 다시 실행</p>
 
 <h3>pnpm install 실패</h3>
 
@@ -416,15 +499,37 @@ pnpm install</pre>
 
 <p><strong>원인</strong>: 이메일 인증이 필요한 상태</p>
 
-<p><strong>해결</strong>: Supabase 대시보드 → Authentication → Settings → Confirm email → OFF</p>
+<p><strong>해결</strong>: Supabase 대시보드 → Authentication → Providers → Email → Confirm email → OFF. 또는 4단계 시드로 만든 계정(이미 인증 완료)으로 로그인하세요.</p>
 
 <h3>이동/채집한 내용이 새로고침하면 사라짐</h3>
 
 <p><strong>원인</strong>: 마이그레이션 <code>002</code>가 실행되지 않아 <code>profiles</code> 행이 만들어지지 않음</p>
 
-<p><strong>해결</strong>: 3번 단계의 <code>002_gameplay_schema.sql</code>을 실행한 뒤 <strong>다시 회원가입</strong>하세요.
-트리거는 실행된 이후에 생성되는 계정에만 적용됩니다.
-(기존 계정은 Supabase → Authentication → Users 에서 삭제 후 재가입하면 됩니다)</p>
+<p><strong>해결</strong>: 3번 단계의 <code>002_gameplay_schema.sql</code>을 실행한 뒤 <strong>다시 회원가입</strong>하세요. 트리거는 실행된 이후에 생성되는 계정에만 적용됩니다. (기존 계정은 Supabase → Authentication → Users 에서 삭제 후 재가입하면 됩니다)</p>
+
+<h3>코인과 퀘스트만 복원되지 않음</h3>
+
+<p><strong>원인</strong>: 마이그레이션 <code>003</code>이 실행되지 않아 <code>player_state.coins</code>와 <code>player_quests</code>가 없음</p>
+
+<p><strong>해결</strong>: <code>003_progression_schema.sql</code>을 실행하세요. 위치·인벤토리는 <code>002</code>만으로도 저장되기 때문에 "일부만 복원되는" 증상으로 나타납니다. 이 경우 재가입은 필요하지 않습니다.</p>
+
+<h3>배포한 주소에서 로그인이 계속 로그인 화면으로 되돌아옴</h3>
+
+<p><strong>원인</strong>: 배포한 도메인이 Supabase Auth의 허용 목록에 없음. <strong>배포에서 가장 흔한 실패</strong>입니다.</p>
+
+<p><strong>해결</strong>: 9-4단계대로 Supabase <strong>Authentication → URL Configuration</strong> 의 <strong>Site URL</strong>과 <strong>Redirect URLs</strong> 에 배포 주소를 추가하세요. <code>localhost</code>로 되돌아가는 증상도 원인이 같습니다.</p>
+
+<h3>Vercel 빌드가 모듈을 찾을 수 없다며 실패</h3>
+
+<p><strong>원인</strong>: <code>@worldnest/shared</code> 등 워크스페이스 패키지를 먼저 빌드하지 않았음. 보통 Vercel의 <strong>Root Directory</strong> 설정이 저장소 루트에 있는 <code>vercel.json</code>과 어긋나서 생깁니다.</p>
+
+<p><strong>해결</strong>: 9-2단계의 표대로 설정하세요. Root Directory를 저장소 루트로 두면 <code>vercel.json</code>이 그대로 적용됩니다. <code>apps/web</code>으로 지정했다면 설치·빌드 명령을 직접 입력해야 하며, 두 명령 모두 워크스페이스 루트에서 실행되어야 합니다.</p>
+
+<h3>소리가 나지 않음</h3>
+
+<p><strong>원인</strong>: 브라우저의 자동 재생 정책. 첫 클릭·키 입력 전에는 소리를 낼 수 없습니다.</p>
+
+<p><strong>해결</strong>: 화면을 한 번 클릭하거나 키를 눌러 보세요. 그래도 나지 않으면 <code>P</code> 설정 패널의 음소거와 음량, 그리고 기기 자체의 음량을 확인하세요.</p>
 
 <h3>게임 화면이 검은색으로 나옴</h3>
 
@@ -449,63 +554,184 @@ PORT=3001 pnpm dev</pre>
 
 <hr>
 
-<h2>8. Vercel 배포 (선택사항)</h2>
+<h2>9. Vercel 배포 — 테스트 서버 링크 만들기</h2>
 
-<p>게임을 인터넷에 공개하려면 Vercel에 배포할 수 있습니다.</p>
+<p>여기까지 오면 로컬에서는 게임이 돌아갑니다. 이 단계는 <strong>다른 사람에게 보낼 수 있는 공개 주소</strong>를 만드는 과정입니다. 영어 상세 문서는 <code>docs/DEPLOYMENT.md</code>이며, 아래는 같은 내용의 한국어 요약입니다.</p>
 
-<h3>단계별 안내</h3>
+<p>2~4단계(Supabase 프로젝트·마이그레이션·테스트 계정)를 먼저 끝내야 합니다. 배포된 게임도 같은 Supabase 프로젝트를 사용합니다.</p>
+
+<h3>배포 전 로컬 확인</h3>
+
+<p>Vercel이 실행하는 것과 <strong>똑같은 명령</strong>을 먼저 돌려 보면, 배포가 실패하는 두 가지 원인(잠금 파일 불일치, 워크스페이스 패키지 빌드 순서)을 미리 걸러낼 수 있습니다.</p>
+
+<pre>pnpm install --frozen-lockfile                       # Vercel의 설치 단계와 동일
+pnpm exec turbo run build --filter=@worldnest/web... # 웹 앱 + 의존 패키지 4개
+pnpm test:e2e                                        # 운영 서버(next start) 대상 스모크 테스트</pre>
+
+<p>명령 끝의 <code>...</code>이 <code>@worldnest/shared</code>, <code>@worldnest/ui</code>, <code>@worldnest/database</code>, <code>@worldnest/game-engine</code>을 먼저 빌드하게 만드는 부분입니다. 이 네 개가 없으면 웹 앱은 컴파일되지 않습니다.</p>
+
+<blockquote>
+💡 <code>next start</code> 실행 시 <code>output: "standalone"</code> 관련 경고가 뜨는 것은 <strong>정상</strong>입니다. Docker 이미지용 설정이며 Vercel과 <code>next start</code> 모두 무시합니다.
+</blockquote>
+
+<h3>9-1. GitHub에 브랜치 올리기</h3>
+
+<p>Vercel은 내 컴퓨터가 아니라 GitHub에 있는 코드를 배포합니다.</p>
+
+<pre>git push -u origin feat/mvp-foundation</pre>
+
+<p>기본 브랜치는 Production 배포가 되고, 그 외 브랜치는 각각 Preview 주소를 받습니다.</p>
+
+<h3>9-2. Vercel에 저장소 가져오기</h3>
 
 <ol>
 <li>https://vercel.com 가입 (GitHub 계정으로)</li>
-<li><strong>New Project</strong> → GitHub 저장소 선택</li>
-<li><strong>Framework Preset</strong>: <code>Next.js</code> 선택</li>
-<li><strong>Root Directory</strong>: <code>apps/web</code> 입력</li>
-<li><strong>Environment Variables</strong> 설정:
-<ul>
-<li><code>NEXT_PUBLIC_SUPABASE_URL</code> = 본인 Supabase URL</li>
-<li><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> = 본인 anon key</li>
-</ul>
-</li>
-<li><strong>Deploy</strong> 클릭</li>
+<li><strong>Add New → Project</strong> → GitHub 저장소 <code>WorldNest-Online</code> 선택</li>
+<li><strong>Root Directory</strong>는 <strong>저장소 루트 그대로 둡니다.</strong> 그래야 저장소에 포함된 <code>vercel.json</code>이 적용됩니다.</li>
 </ol>
 
-<h3>Build 설정</h3>
+<table>
+<tr><th>항목</th><th>값 (<code>vercel.json</code>에서 자동 적용)</th></tr>
+<tr><td>Framework Preset</td><td><code>nextjs</code></td></tr>
+<tr><td>Install Command</td><td><code>pnpm install --frozen-lockfile</code></td></tr>
+<tr><td>Build Command</td><td><code>pnpm exec turbo run build --filter=@worldnest/web...</code></td></tr>
+<tr><td>Output Directory</td><td><code>apps/web/.next</code></td></tr>
+</table>
+
+<ol start="4">
+<li>아래 9-3의 환경 변수를 <strong>첫 빌드 전에</strong> 등록한 뒤 <strong>Deploy</strong> 클릭</li>
+</ol>
+
+<p>Vercel은 Root Directory로 지정한 폴더에서 <code>vercel.json</code>을 읽습니다. 굳이 <code>apps/web</code>으로 지정하려면 루트의 <code>vercel.json</code>은 무시되므로 아래 값을 직접 입력해야 합니다.</p>
 
 <table>
-<tr>
-<th>항목</th>
-<th>값</th>
-</tr>
-<tr>
-<td>Build Command</td>
-<td><code>cd ../.. &amp;&amp; pnpm build --filter @worldnest/web</code></td>
-</tr>
-<tr>
-<td>Output Directory</td>
-<td><code>.next</code></td>
-</tr>
-<tr>
-<td>Install Command</td>
-<td><code>cd ../.. &amp;&amp; pnpm install</code></td>
-</tr>
+<tr><th>항목</th><th>Root Directory를 <code>apps/web</code>으로 둘 때</th></tr>
+<tr><td>Install Command</td><td><code>cd ../.. &amp;&amp; pnpm install --frozen-lockfile</code></td></tr>
+<tr><td>Build Command</td><td><code>cd ../.. &amp;&amp; pnpm exec turbo run build --filter=@worldnest/web...</code></td></tr>
+<tr><td>Output Directory</td><td><code>.next</code></td></tr>
 </table>
+
+<h3>9-3. 환경 변수 등록</h3>
+
+<p><strong>Settings → Environment Variables</strong> 에서 두 개를 등록하고, 각각 <strong>Production / Preview / Development 세 곳 모두</strong> 체크하세요.</p>
+
+<table>
+<tr><th>이름</th><th>값</th></tr>
+<tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>2단계에서 복사한 Project URL</td></tr>
+<tr><td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td><td>2단계에서 복사한 anon public 키</td></tr>
+</table>
+
+<p>값이 없어도 빌드는 성공합니다. 대신 계정·채팅·저장이 모두 꺼진 1인 플레이 상태가 되므로, 그런 증상이면 이 단계를 확인하세요. 값을 바꾼 뒤에는 <strong>반드시 재배포</strong>해야 합니다(빌드 시점에 값이 코드에 박히기 때문).</p>
+
+<h3>9-4. Supabase 리다이렉트 URL 등록 (가장 많이 놓치는 단계)</h3>
+
+<p>Supabase는 등록되지 않은 주소로는 로그인 후 돌려보내 주지 않습니다. 이 단계를 빠뜨리면 <strong>로그인이 성공한 것처럼 보이다가 다시 로그인 화면으로 돌아가거나, <code>localhost:3000</code>으로 이동합니다.</strong></p>
+
+<p>Supabase 대시보드 → <strong>Authentication</strong> → <strong>URL Configuration</strong>:</p>
+
+<table>
+<tr><th>항목</th><th>넣을 값</th></tr>
+<tr><td><strong>Site URL</strong></td><td>배포된 주소 (예: <code>https://worldnest-online.vercel.app</code>)</td></tr>
+<tr><td><strong>Redirect URLs</strong></td><td><code>https://worldnest-online.vercel.app/**</code>, 커스텀 도메인이 있으면 그 주소, Preview 배포용 와일드카드, 로컬 작업용 <code>http://localhost:3000/**</code></td></tr>
+</table>
+
+<p>게임을 열게 될 모든 주소를 넣으세요. Preview 배포는 커밋마다 주소가 바뀌므로 와일드카드가 편합니다.</p>
+
+<h3>9-5. 커스텀 도메인 (선택)</h3>
+
+<p><strong>Settings → Domains → Add</strong> 에서 도메인을 넣고, Vercel이 알려 주는 DNS 레코드를 등록합니다 (서브도메인은 <code>CNAME</code>, 루트 도메인은 안내되는 <code>A</code> 레코드). 인증서 발급이 끝나면 <strong>9-4단계로 돌아가 새 도메인도 허용 목록에 추가</strong>하세요. 다른 건 다 되는데 로그인만 안 되는 경우는 거의 항상 이것입니다.</p>
+
+<h3>배포 후 확인 목록</h3>
+
+<p>배포된 주소를 열고 아래를 직접 확인하세요. 모두 브라우저와 실제 자격 증명이 필요해 자동 테스트로 대신할 수 없는 항목입니다.</p>
+
+<div class="checkbox">☐ 첫 화면이 뜨고 <strong>Play Now</strong> 로 <code>/auth</code> 로 이동</div>
+<div class="checkbox">☐ <code>tester1@worldnest.test</code> / <code>worldnest123</code> 으로 로그인 → <code>/game</code> 진입 (로그인 화면으로 되돌아오면 9-4단계 재확인)</div>
+<div class="checkbox">☐ 월드가 그려지고 시계가 표시되며 WASD로 이동, 물에서 막힘</div>
+<div class="checkbox">☐ <code>E</code> 채집, <code>M</code> 미니맵, <code>P</code> 설정에서 언어 변경 확인</div>
+<div class="checkbox">☐ NPC에게 말 걸기 → 주노 상점, 에이다 퀘스트, <code>J</code> 퀘스트 목록</div>
+<div class="checkbox">☐ 첫 클릭 이후 소리가 들림</div>
+<div class="checkbox">☐ 이동·구매·퀘스트 수령 후 <strong>새로고침</strong> → 위치·인벤토리·코인·퀘스트 복원</div>
+<div class="checkbox">☐ 다른 브라우저(또는 시크릿 창)에서 <code>tester2@worldnest.test</code> 로 로그인 → 서로 보이고 채팅됨</div>
+<div class="checkbox">☐ 스마트폰으로 접속 → 터치 조작 버튼이 나타나고 동작함</div>
+
+<h3>테스트 계정과 테스트 서버 주소 정리표</h3>
+
+<p>배포가 끝나면 아래 표를 채워서 테스터에게 전달하세요. 계정은 4단계 시드가 만들어 주고, 주소는 9단계에서 본인 Vercel 계정이 발급합니다.</p>
+
+<table>
+<tr><th>항목</th><th>값</th></tr>
+<tr><td>로컬 주소</td><td><code>http://localhost:3000</code></td></tr>
+<tr><td><strong>테스트 서버 주소</strong></td><td><code>https://__________.vercel.app</code> ← 9-2단계 배포 완료 후 Vercel이 알려 주는 주소를 적으세요</td></tr>
+<tr><td>테스트 계정 1</td><td><code>tester1@worldnest.test</code> / <code>worldnest123</code></td></tr>
+<tr><td>테스트 계정 2</td><td><code>tester2@worldnest.test</code> / <code>worldnest123</code></td></tr>
+<tr><td>테스트 계정 3</td><td><code>tester3@worldnest.test</code> / <code>worldnest123</code></td></tr>
+</table>
+
+<div class="danger">
+🚨 이 계정과 비밀번호는 저장소에 공개되어 있습니다. <strong>테스트용으로만</strong> 쓰고, 테스트가 끝나면 삭제하세요. 외부에 오래 공개할 서버라면 시드를 실행하지 말고 직접 만든 계정을 쓰세요.
+</div>
 
 <hr>
 
-<h2>체크리스트 요약</h2>
+<h2>10. 직접 해야 하는 작업 체크리스트</h2>
 
-<p>아래 항목을 모두 완료했는지 확인하세요:</p>
+<p>여기까지의 모든 수동 작업을 한 표로 모았습니다. 위에서 아래로 진행하면 됩니다.</p>
 
-<div class="checkbox">☐ Node.js 22+ 설치됨</div>
-<div class="checkbox">☐ pnpm 10+ 활성화됨 (<code>corepack enable</code>)</div>
-<div class="checkbox">☐ Supabase 프로젝트 생성됨</div>
-<div class="checkbox">☐ Supabase에서 마이그레이션 <code>001</code> 실행됨 (테이블 3개 생성)</div>
-<div class="checkbox">☐ Supabase에서 마이그레이션 <code>002</code> 실행됨 (테이블 7개 + 회원가입 트리거)</div>
-<div class="checkbox">☐ <code>.env.local</code> 파일에 Supabase URL과 anon key 입력됨</div>
-<div class="checkbox">☐ <code>pnpm install</code> 성공</div>
-<div class="checkbox">☐ <code>pnpm dev</code> 실행 후 http://localhost:3000 접속 가능</div>
-<div class="checkbox">☐ 회원가입 및 로그인 정상 동작</div>
-<div class="checkbox">☐ <code>/game</code> 페이지에서 월드 표시됨</div>
+<h3>전체 체크리스트</h3>
+
+<table>
+<tr><th>#</th><th>해야 하는 작업</th><th>어디서</th><th>결과물</th><th>확인 방법</th></tr>
+<tr><td>1</td><td>Node.js 22+ 설치</td><td>내 PC</td><td><code>node</code> 명령 사용 가능</td><td><code>node --version</code></td></tr>
+<tr><td>2</td><td>pnpm 10+ 활성화</td><td>내 PC</td><td><code>pnpm</code> 명령 사용 가능</td><td><code>pnpm --version</code></td></tr>
+<tr><td>3</td><td>저장소 클론 + <code>pnpm install</code></td><td>내 PC</td><td><code>node_modules</code> 설치 완료</td><td>오류 없이 종료</td></tr>
+<tr><td>4</td><td>GitHub·Supabase·Vercel 계정 준비</td><td>웹</td><td>로그인 가능한 계정 3개</td><td>각 대시보드 접속</td></tr>
+<tr><td>5</td><td>Supabase 프로젝트 생성</td><td>Supabase</td><td>프로젝트 1개</td><td>대시보드에 프로젝트 표시</td></tr>
+<tr><td>6</td><td>Project URL·anon key 복사</td><td>Supabase Settings → API</td><td>값 2개</td><td>메모해 둠</td></tr>
+<tr><td>7</td><td><code>001_initial_schema.sql</code> 실행</td><td>SQL Editor</td><td>테이블 3개 + 기본 월드</td><td>Table Editor에 3개</td></tr>
+<tr><td>8</td><td><code>002_gameplay_schema.sql</code> 실행</td><td>SQL Editor</td><td>회원가입 트리거 + 테이블 4개</td><td>Table Editor에 7개</td></tr>
+<tr><td>9</td><td><code>003_progression_schema.sql</code> 실행</td><td>SQL Editor</td><td><code>coins</code> 컬럼 + <code>player_quests</code></td><td>Table Editor에 8개, <code>coins</code> 존재</td></tr>
+<tr><td>10</td><td>(선택) <code>seed/test_accounts.sql</code> 실행</td><td>SQL Editor</td><td>테스트 계정 3개</td><td>Authentication → Users 에 3명</td></tr>
+<tr><td>11</td><td>(선택) <code>pnpm db:verify</code> 로 SQL 리허설</td><td>내 PC + Docker</td><td>SQL 검증 통과</td><td>종료 코드 0</td></tr>
+<tr><td>12</td><td>Confirm email OFF (개발 중)</td><td>Authentication → Providers</td><td>메일 인증 없이 가입 가능</td><td>새 계정 가입 즉시 로그인됨</td></tr>
+<tr><td>13</td><td><code>.env.local</code> 작성</td><td>내 PC</td><td>환경 변수 2개</td><td><code>pnpm dev</code> 후 에러 없음</td></tr>
+<tr><td>14</td><td><code>pnpm dev</code> 로 로컬 실행</td><td>내 PC</td><td><code>http://localhost:3000</code></td><td><code>/auth</code> 화면 표시</td></tr>
+<tr><td>15</td><td>로그인 후 게임 동작 확인</td><td>브라우저</td><td>월드·이동·채집</td><td>7단계 항목 통과</td></tr>
+<tr><td>16</td><td>저장 확인 (새로고침)</td><td>브라우저</td><td>위치·인벤토리·코인·퀘스트 복원</td><td>새로고침 후 그대로</td></tr>
+<tr><td>17</td><td>멀티플레이·채팅 확인</td><td>브라우저 2개</td><td>서로 보이고 채팅됨</td><td>이름표와 메시지 표시</td></tr>
+<tr><td>18</td><td><code>git push</code> 로 브랜치 올리기</td><td>내 PC</td><td>GitHub에 브랜치</td><td>GitHub에서 확인</td></tr>
+<tr><td>19</td><td>Vercel에 저장소 가져오기 + Deploy</td><td>Vercel</td><td><strong>공개 테스트 서버 주소</strong></td><td>배포 URL 접속됨</td></tr>
+<tr><td>20</td><td>Vercel 환경 변수 3개 환경에 등록</td><td>Vercel Settings</td><td>배포본이 Supabase에 연결</td><td>로그인 화면이 정상 동작</td></tr>
+<tr><td>21</td><td>Supabase Site URL·Redirect URLs 등록</td><td>Authentication → URL Config</td><td>배포 주소로 로그인 성공</td><td>로그인 후 <code>/game</code> 유지</td></tr>
+<tr><td>22</td><td>(선택) 커스텀 도메인 연결 + 21번 재등록</td><td>Vercel + Supabase</td><td>내 도메인</td><td>도메인으로 로그인 성공</td></tr>
+<tr><td>23</td><td>배포 후 확인 목록 통과</td><td>브라우저·스마트폰</td><td>서비스 가능 상태</td><td>9단계 체크박스 전부</td></tr>
+<tr><td>24</td><td>계정·주소 정리표 작성 후 전달</td><td>문서</td><td>테스터에게 줄 정보</td><td>표가 채워짐</td></tr>
+<tr><td>25</td><td>테스트 종료 후 시드 계정 삭제</td><td>SQL Editor</td><td>공개 비밀번호 제거</td><td>Users 목록에서 사라짐</td></tr>
+</table>
+
+<h3>자동으로 검증되는 것과 사람이 확인해야 하는 것</h3>
+
+<p>혼동을 줄이기 위해 정리합니다. 아래 왼쪽은 명령 한 줄로 확인되므로 손으로 볼 필요가 없습니다.</p>
+
+<table>
+<tr><th>자동 (명령으로 확인)</th><th>내용</th></tr>
+<tr><td><code>pnpm lint</code></td><td>코드 규칙</td></tr>
+<tr><td><code>pnpm build</code></td><td>5개 패키지 빌드</td></tr>
+<tr><td><code>pnpm test</code></td><td>단위·통합 테스트 전체</td></tr>
+<tr><td><code>pnpm test:e2e</code></td><td>운영 빌드 대상 브라우저 스모크 테스트</td></tr>
+<tr><td><code>pnpm db:verify</code></td><td>마이그레이션 3개 + 시드가 실제 PostgreSQL에 적용되는지</td></tr>
+<tr><td><code>pnpm docs:check</code></td><td>이 문서와 Word 사본(<code>.doc</code>)의 목차 일치</td></tr>
+</table>
+
+<table>
+<tr><th>사람이 확인해야 하는 것</th><th>이유</th></tr>
+<tr><td>시드 계정으로 실제 로그인</td><td>인증 서버(GoTrue)는 로컬 검증 대상이 아닙니다</td></tr>
+<tr><td>배포된 주소 전체 흐름</td><td>Vercel 계정과 도메인이 필요합니다</td></tr>
+<tr><td>소리가 실제로 들리는지</td><td>검증 환경에 음향 장치가 없습니다</td></tr>
+<tr><td>터치 조작 실제 사용감</td><td>실제 터치 기기가 필요합니다</td></tr>
+<tr><td>화면 배치·색감</td><td>사람 눈으로만 판단할 수 있습니다</td></tr>
+<tr><td>공개 서버의 채팅 관리</td><td>자동 필터가 없어 운영자 확인이 필요합니다</td></tr>
+</table>
 
 <hr>
 
@@ -516,11 +742,13 @@ PORT=3001 pnpm dev</pre>
 <ol>
 <li>GitHub Issues에 버그 리포트 작성</li>
 <li>브라우저 콘솔 에러 메시지 포함</li>
-<li><code>.env.local</code> 값은 <strong>절대 공유하지 마세요</strong></li>
+<li><code>.env.local</code> 값과 anon key는 <strong>절대 공유하지 마세요</strong></li>
 </ol>
+
+<p>관련 문서: <code>docs/DEPLOYMENT.md</code> (배포 상세), <code>docs/DEVELOPMENT.md</code> (개발·확장), <code>docs/ARCHITECTURE.md</code> (구조 설계), <code>packages/database/supabase/seed/README.md</code> (테스트 계정 시드).</p>
 
 <hr>
 
-<p><em>이 문서는 WorldNest Online MVP (feat/mvp-foundation) 기준으로 작성되었습니다.</em></p>
+<p><em>이 문서는 WorldNest Online (feat/mvp-foundation) 기준으로 작성되었습니다. 같은 내용을 Markdown으로 보려면 <code>docs/SETUP_GUIDE_KR.md</code> 파일을 사용하세요. 두 파일의 목차는 <code>pnpm docs:check</code> 로 항상 일치하는지 검사합니다.</em></p>
 
 </body></html>
