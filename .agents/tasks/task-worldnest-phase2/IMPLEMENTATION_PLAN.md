@@ -280,7 +280,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase G — Farming
 
-- [ ] 17. Add farming to the engine. Add `TileType.FARMLAND = 6` with properties (walkable, buildable,
+- [x] 17. Add farming to the engine. Add `TileType.FARMLAND = 6` with properties (walkable, buildable,
       not harvestable, brown) — reachable only through the override layer, so `ChunkGenerator` and its
       determinism tests are untouched. Add `CropComponent` (`itemId`, `plantedAtMinute`, `stageCount`,
       `minutesPerStage`, `stage`, `tileX`, `tileY`), `PlantSystem` (tills `GRASS`→`FARMLAND` with a hoe-less
@@ -301,7 +301,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes and
       `chunk-generator.test.ts` is unchanged and still green.
 
-- [ ] 18. Render crops and farmland: generate `tile_6` (farmland) and `crop_wheat_0..3` placeholder textures
+- [x] 18. Render crops and farmland: generate `tile_6` (farmland) and `crop_wheat_0..3` placeholder textures
       in `BootScene`, register `PlantSystem` + `CropGrowthSystem`, and let the `RenderSystem`-driven
       `syncSprites()` pick up crop entities (depth 50, texture from `SpriteComponent.textureKey` +
       `CropComponent.stage`). Seed the starting inventory with `wheat_seed` ×5 so the loop is playable.
@@ -311,7 +311,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase H — Building
 
-- [ ] 19. Add placement to the engine: `StructureComponent` (`itemId`, `tileX`, `tileY`, `collidable`) and
+- [x] 19. Add placement to the engine: `StructureComponent` (`itemId`, `tileX`, `tileY`, `collidable`) and
       `BuildSystem` (`["position", "interaction", "inventory"]`) constructed with the `TileQuery` and an
       entity factory. On a build request (a new `buildRequested` flag on `InteractionComponent`) it checks
       `TILE_PROPERTIES[target].buildable`, that no structure already occupies the tile, and that the selected
@@ -328,7 +328,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       the three barrels, `packages/game-engine/src/__tests__/build.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes, `collision.test.ts` still passes.
 
-- [ ] 20. Client build mode: `B` toggles build mode in `uiStore`, a ghost preview sprite follows the faced
+- [x] 20. Client build mode: `B` toggles build mode in `uiStore`, a ghost preview sprite follows the faced
       tile (green/red tint from a `canPlace` check), left-click or `Q` sets `buildRequested`, structures
       render through `syncSprites()` (depth 60), and a small `BuildMenu` lists placeable items from the
       inventory. Generate `structure_fence` / `structure_chest` textures in `BootScene`.
@@ -532,3 +532,69 @@ Goal: develop every remaining developable area of the project, in dependency ord
   `(20, 14)` facing east into the stone tile `(21, 14)` — a deterministic pair for `WORLD_SEED = 42`;
   there is no forest within the first few chunks, so use stone for tile-harvest tests.
 - Test totals after item 16: `@worldnest/shared` 10, `@worldnest/game-engine` 101, `@worldnest/web` 31 = 142.
+
+---
+
+## Implementation notes for items 17-20 (deviations worth knowing for items 21-28)
+
+- **Crop catalogue** lives in a new file `packages/game-engine/src/world/Crops.ts`
+  (`CropDefinition`, `CROP_DEFINITIONS`, `isSeed`), keyed by **seed** item id, and is exported from the
+  world and package barrels. `CropComponent.itemId` is therefore the *seed* (`wheat_seed`), not the
+  produce — the produce and its quantity come from `CROP_DEFINITIONS[seed]`. Item 22/23 only need to
+  persist `item_id` (the seed), `planted_at_minute` and the tile to rehydrate a crop exactly.
+  `wheat_seed` grows in 4 stages of 30 game minutes (30 real seconds each) into 2 `wheat`.
+- **`PlantSystem` owns the tile-keyed crop index** and implements a `CropSource` interface
+  (`getCropAt`, `removeCrop`) that is injected into `HarvestSystem` as its optional third constructor
+  argument — the same "system owns the map, consumer takes the interface" pattern item 19 prescribed for
+  structures. `PlantSystem.spawnCrop(seedItemId, tileX, tileY, plantedAtMinute)` is public so item 23 can
+  restore saved crops without consuming a seed; `getCrops()` exposes the diff to persist.
+- **`BuildSystem` owns the structure occupancy index** and implements `StructureQuery`
+  (`packages/game-engine/src/world/StructureQuery.ts`: `hasStructureAt`, `isBlockedByStructure`), which is
+  `CollisionSystem`'s new optional second constructor argument. `spawnStructure(itemId, tileX, tileY)` and
+  `getStructures()` are the equivalents for item 23. `BuildSystem.canPlaceAt(inventory, tileX, tileY)` is
+  public so the client's build ghost and the placement rules cannot drift apart.
+- **Request-flag ordering matters.** `PlantSystem` clears `interactRequested` only when it actually tilled
+  or sowed, so an interact it ignores still reaches `HarvestSystem` in the same frame; `HarvestSystem`
+  clears it unconditionally as the last consumer. Registration order is now
+  Time → Input → Collision → Movement → Chunk → Interpolation → Stats → **Plant → CropGrowth → Build** →
+  Harvest → NetworkSync → Render. Item 24's chat gate must not reorder these.
+- `InteractionComponent` gained `buildRequested` plus `lastBuildAt` (a second cooldown stamp, mirroring
+  `lastInteractAt`), consumed by `BuildSystem`.
+- `AddEntity` / `RemoveEntityById` callback types live in `packages/game-engine/src/ecs/World.ts` and are
+  re-exported from the package barrel; that is how planting and building create entities without a
+  reference to the `World`.
+- `ItemDefinition` gained `structureCollidable` and `structureTextureKey`; `packages/shared/src/items.ts`
+  also exports `isPlaceableStructure(itemId)` and `PLACEABLE_ITEM_IDS`. `placeableTile` is still unused —
+  `BuildSystem` places structure entities only, so a tile-placing item would need a small extra branch.
+- **Sprite handling moved out of `GameScene`** into `apps/web/src/game/SpriteSync.ts` (`GameScene` was
+  already at 314 lines, over the ~300 cap). It owns sprite create/update/destroy and all per-kind
+  presentation: depth 100 local player / 99 remote / 60 structures / 50 crops and everything else, the
+  remote tint, and the crop texture lookup `` `${sprite.textureKey}_${crop.stage}` ``. New renderable
+  entity kinds now only need a rule there. `CropGrowthSystem` writes the stage into
+  `SpriteComponent.frame`, which is what that lookup reads.
+- The build ghost lives in `apps/web/src/game/BuildGhost.ts` (depth 61, alpha 0.55, green/red tint from
+  `canPlaceAt`), following `DayNightOverlay`'s pattern; `GameScene.update` drives it from
+  `useUIStore.getState().buildMode`.
+- `PlayerController` gained `B` (toggle build mode via `uiStore`) and `Q` **plus left-click**
+  (`Phaser.Input.Events.POINTER_DOWN`) for placing, both gated on build mode and on the same 250 ms
+  cooldown. `uiStore` gained `buildMode`, `setBuildMode`, `toggleBuildMode`.
+- `BuildMenu` is deliberately **read-only** (it lists the placeable hotbar slots and highlights the
+  selected one): the engine's `InventoryComponent` owns selection, and letting React write it would
+  desync the mirror in `gameStore`.
+- `BootScene` now also generates `tile_6` (farmland furrows), `crop_wheat_0..3` from `CROP_DEFINITIONS`
+  and one texture per `PLACEABLE_ITEM_IDS` entry keyed by `structureTextureKey`.
+- New players start with `wheat_seed` ×5 (`STARTING_WHEAT_SEEDS` in `createGameWorld`) in slot 0, which
+  shifted existing assertions in `gameWorld.test.ts` and `hudBridge.test.ts` to slot 1. Item 23 should
+  only seed the starting inventory when no saved inventory exists.
+- **Do not run `pnpm format`.** `.prettierrc` sets `printWidth: 100` while the whole tree is hand-wrapped
+  at ~88, so `pnpm format` rewrites 49 unrelated files. It was run once here and reverted. Item 26's
+  verification step ("`pnpm format` leaves the tree clean") needs either a `printWidth: 88` config change
+  or a deliberate one-off formatting commit of its own.
+- Deterministic terrain used by the new web tests for `WORLD_SEED = 42`: standing on tile `(20, 14)` and
+  facing **west** into tile `(19, 14)` is grass-on-grass, which the farming and building wiring tests use;
+  facing **east** into `(21, 14)` is the stone pair the harvest test already used.
+- Manual browser checks for items 18 and 20 (plant → watch stages → harvest wheat; place a fence and fail
+  to walk through it) could not be performed in the sandbox — no display. They are covered by the
+  equivalent engine-level assertions in `apps/web/src/__tests__/gameWorld.test.ts`.
+- Test totals after item 20: `@worldnest/shared` 11, `@worldnest/game-engine` 127, `@worldnest/web` 37 =
+  **175**.
