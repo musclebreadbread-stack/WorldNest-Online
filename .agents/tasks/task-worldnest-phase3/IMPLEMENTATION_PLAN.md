@@ -263,7 +263,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase B — Minimap (items 7-8)
 
-- [ ] 7. Add the pure minimap sampler to the engine (decision D6).
+- [x] 7. Add the pure minimap sampler to the engine (decision D6).
       `packages/game-engine/src/world/minimap.ts` exporting
       `interface MinimapSample { originTileX: number; originTileY: number; size: number; tiles:
       Uint8Array }` and `sampleMinimap(tileQuery: TileQuery, centerTileX: number, centerTileY: number,
@@ -275,7 +275,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       and `tiles.length === size ** 2`, that the centre index holds the centre tile, that an applied
       tile override shows through the sample, and that negative centre coordinates resolve correctly.
 
-- [ ] 8. Add the minimap overlay and the `M` binding. `apps/web/src/game/Minimap.ts` implements
+- [x] 8. Add the minimap overlay and the `M` binding. `apps/web/src/game/Minimap.ts` implements
       `SceneOverlay`: a `Phaser.GameObjects.Graphics` at `setScrollFactor(0)`, depth 900, top-right,
       2 px per tile over a 24-tile radius, filled from `sampleMinimap` using
       `TILE_PROPERTIES[t].color`, with a white dot for the local player and tinted dots for every
@@ -292,7 +292,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase C — Internationalisation (items 9-11)
 
-- [ ] 9. Build the i18n foundation with English and Korean (decision D7).
+- [x] 9. Build the i18n foundation with English and Korean (decision D7).
       `apps/web/src/i18n/messages/en.ts` is the source of truth: a flat
       `export const en = { ... } as const` covering the landing page, auth page, HUD, hotbar,
       inventory, build menu, chat, clock phases, item display names and settings — aim for one key per
@@ -316,7 +316,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       returns itself, that `{name}` interpolation works, that `resolveLocale("ko-KR")` is `ko` and
       `resolveLocale("xx")` is `en`, and that `dir` is `rtl` only for `ar`.
 
-- [ ] 10. Add the remaining ten locales and right-to-left support. One file per locale under
+- [x] 10. Add the remaining ten locales and right-to-left support. One file per locale under
       `apps/web/src/i18n/messages/`, each a complete translation of the `en` key set:
       `ja`, `zh`, `es`, `fr`, `de`, `pt`, `ar`, `hi`, `th`, `vi`. Register them in
       `apps/web/src/i18n/index.ts`. In `apps/web/app/globals.css` add the RTL adjustments the HUD
@@ -329,7 +329,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       has exactly the `en` keys, no value is empty, and no value still equals the English string for a
       locale other than `en` (catches copy-paste gaps).
 
-- [ ] 11. Route every UI string through the catalogue and add the settings panel. Replace the literals
+- [x] 11. Route every UI string through the catalogue and add the settings panel. Replace the literals
       in the landing page, auth page, game page loading states and every HUD component with `t(...)`,
       and add `apps/web/src/components/SettingsPanel.tsx` (a `@worldnest/ui` `Card` with a language
       `<select>` listing all 12 locales by endonym) opened from a gear button in `GameUI`'s top-right
@@ -855,3 +855,124 @@ were not changed. Do not hard-code any of these in a test — use
   there for item 8 if it ever wants to paint biomes rather than tiles.
 - Adding a locale, sound cue or overlay does not touch `GameScene` beyond one line, which is the
   whole point of item 6: it now sits at 214 lines with ~85 lines of headroom.
+
+---
+
+## Implementation notes for items 7-11 (deviations worth knowing for items 12-31)
+
+Phases B and C are complete. Commits, one per item, on `feat/mvp-foundation`:
+`080492e` (7), `e12acd0` (8), `ce49abd` (9), `bab46c5` (10), `eb5f58a` (11), plus `272e15b`
+(`docs:` — two stale keybinding tables, see below).
+
+### Gate results after item 11
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 13, game-engine 168, web 116 = **297** (244 after item 6) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed, against the English catalogue |
+| `docker build -t worldnest:phase3c .` | image builds |
+| `GameScene.ts` | **216** lines (item 8 cost exactly one registration line) |
+
+### Deviations from the plan text
+
+- **Item 7 also exports `minimapTileAt(sample, x, y)`.** `TILE_PROPERTIES` is a
+  `Record<TileType, …>`, so indexing it with a raw `Uint8Array` element fails `noImplicitAny` in
+  the web build. The accessor returns `TileType | undefined` (`undefined` outside the window),
+  which is both the cast site and a bounds check, and the tests use it instead of doing index
+  arithmetic by hand.
+- **Item 8 split the minimap in two**: `Minimap.ts` (Phaser) and **`minimapLayout.ts`**
+  (Phaser-free geometry: `MINIMAP_RADIUS_TILES`, `MINIMAP_PIXELS_PER_TILE`, `MINIMAP_MARGIN`,
+  `minimapPixelSize`, `fixedScreenPosition`, `minimapAnchor`, `minimapDotOffset`, `tileOf`). This
+  exists because of a real trap: `setScrollFactor(0)` stops an object scrolling but **not** the
+  camera zoom from scaling it about the camera midpoint — the same problem `DayNightOverlay`
+  solves with `OVERSCAN`. `GameScene` runs at `setZoom(2)`, so a naive top-right anchor lands
+  half off-screen. `fixedScreenPosition` inverts that transform and the graphics is drawn at
+  `setScale(1 / zoom)`, which makes one drawing unit one screen pixel. It is covered by
+  `apps/web/src/__tests__/minimapLayout.test.ts` (9 cases) — the Phaser class itself is still
+  only reachable by eye.
+- **`Minimap` takes the `World` by constructor injection**, not from `OverlayContext`. It needs
+  remote player positions and the context deliberately does not carry the world; injection matches
+  how `BuildGhost` takes its `BuildSystem`. Remote dots use `SpriteSync`'s `REMOTE_PLAYER_TINT`
+  (`0xff8a80`) so a dot and its sprite are the same colour. `BIOME_DEFINITIONS[b].minimapColor` is
+  still unused: the map paints tiles, not biomes, which is what makes water, caves and ore legible.
+- **`minimapOpen` defaults to `true`** and the overlay forces a redraw when it is reopened. Depth
+  is 900, the same as the day/night tint, and the minimap is registered after it, so it draws on
+  top and is not dimmed at night.
+- **`ONE_SHOT_BINDINGS` handlers take a `OneShotActions` object, not the controller.** TypeScript
+  `private` is class-scoped, not module-scoped, so a module-level table calling
+  `controller.requestInteract()` would have forced those two methods public. The table rows call
+  `actions.interact()` / `actions.build()` and the constructor supplies the object. **Items 18, 21
+  and 23 add a row plus, if needed, a field on `OneShotActions`.** `M` (item 8) and `P` (item 11)
+  are already rows.
+- **Item 9's `en` catalogue has 57 keys, not 70-90.** One key per string that actually exists in
+  the UI today; keys with no consumer were left out rather than invented, so the later phases add
+  their own (dialogue, quests, shop, audio settings, touch labels). Nothing in the design depends
+  on the count.
+- **`resolveLocale` also handles underscores and script subtags** (`es_MX`, `zh-Hans-CN`), and is
+  case-insensitive.
+- **`localeStore` starts at `en` and is hydrated from an effect.** Every route is `"use client"`
+  but Next still prerenders them, so reading `navigator`/`localStorage` in the store's initial
+  state would be a hydration mismatch. `DocumentLocale` (mounted in `app/providers.tsx`) calls
+  `hydrate()` once and then keeps `documentElement.lang`/`dir` in step. The store carries a
+  `hydrated` flag; `detectLocale()` is exported and tested on its own.
+- **Endonyms live in `LOCALE_LABELS`, not in the catalogues.** They are the same in every locale,
+  which would have broken item 10's "no value equals the English one" assertion for a legitimate
+  reason.
+- **The item-10 parity test allows exactly two locale-agnostic keys**, listed in
+  `LOCALE_AGNOSTIC_KEYS`: `auth.emailPlaceholder` (`you@example.com`) and `hud.coordinates`
+  (`X: {x} Y: {y}`, Cartesian axis labels). Every other key in all 11 non-English catalogues is
+  asserted to differ from English. A third test asserts each locale keeps exactly the
+  placeholders English uses, which catches a translated `{count}`.
+- **Item 11 replaced `formatClock(snapshot)` with `formatTime(snapshot)`.** Word order differs per
+  locale, so `ClockHud` composes `clock.format` with `{day}`, `{time}` and a translated
+  `{phase}`; only `HH:MM` is formatted in code. `formatClock.test.ts` was rewritten accordingly
+  and now also asserts the composed English and Korean readouts.
+- **Two `Record`s map engine/shared enums to keys**, both in `src/i18n/index.ts`:
+  `ITEM_NAME_KEYS: Record<ItemId, MessageKey>` and `CLOCK_PHASE_KEYS: Record<DayPhase, MessageKey>`.
+  Written as records rather than `` `item.${id}` `` templates so **adding an item to
+  `@worldnest/shared` fails to compile until it has a translation key** — which is the cheap
+  version of the item-18 check, and the pattern items 16-23 should copy for dialogue, quest and
+  NPC keys (decision D8). `ITEM_DEFINITIONS[id].displayName` is now the developer-facing label
+  only; no HUD component reads it.
+- **`gameStore` now exports `ConnectionStatus`**, so `GameUI` can key its status messages off the
+  same union instead of repeating the three string literals a third time.
+- **RTL is Tailwind logical utilities plus two CSS rules.** `GameUI` corner panels moved from
+  `left-4`/`right-4` to `start-4`/`end-4` (Tailwind 3.4 supports them); `globals.css` adds
+  `.hud-numeric` (`direction: ltr; unicode-bidi: isolate`) for coordinates, chunk indices, slot
+  quantities and bar values, which the bidi algorithm would otherwise reorder inside Arabic, and
+  `.hud-bubble` for chat. Centre-anchored HUD (clock, status bars, hotbar) needed nothing, as the
+  plan predicted. The Phaser minimap does not mirror — a canvas has no `dir` — and that is
+  recorded as accepted, not fixed.
+- **`StatusBars` labels went from `HP`/`EN` to full words** (`hud.health`, `hud.energy`) and the
+  label column from `w-10` to `w-16`. Two-letter abbreviations collide with English in several
+  Latin-script locales, which is exactly what the parity test forbids.
+- **`SettingsPanel` renders beside `InventoryPanel`** in one centred flex row, so both can be open
+  at once without overlapping. It is the first component covered by
+  `@testing-library/react` (`settingsPanel.test.tsx`, 5 cases); there is no Vitest setup file, so
+  it calls `cleanup()` in `afterEach` itself and uses plain assertions rather than `jest-dom`
+  matchers. **Item 13 extends this panel with the audio controls** — add rows inside the same
+  `Card`, and the existing test file already has the render harness.
+- **One extra `docs:` commit** (`272e15b`) added `M` and `P` to the keybinding tables in
+  `README.md` and `docs/SETUP_GUIDE_KR.md` plus a short language-settings section, because both
+  tables became wrong the moment item 11 landed. Only table rows and one `###` heading in the
+  Korean guide were touched; `docs/SETUP_GUIDE_KR.doc` was **not** updated, so **item 31's
+  `check-kr-doc-sync.mjs` will flag the new `### 언어 설정` heading** — mirror it there.
+
+### Notes for the next delegations
+
+- Adding a language is now: one file under `src/i18n/messages/`, one line in `MESSAGES`, one line
+  in `LOCALE_LABELS`. The compiler demands a complete key set (`LocaleMessages`), and the parity
+  test demands the values differ from English.
+- Adding a user-visible string is: one key in `en.ts`, then the build fails for all 11 other
+  catalogues until it is translated. Budget for that in items 12-23 — it is 12 edits per string,
+  which is the price decision D8 was chosen to pay once rather than per feature.
+- `useTranslation()` returns `{ t, locale, dir, setLocale }` and subscribes to the store, so a
+  language change re-renders without a reload. Non-React code (Phaser overlays, the engine) should
+  hold **keys** and let a React panel resolve them; nothing in the engine holds a key yet.
+- `OverlayContext` was not widened. `deltaMs` is now genuinely used (the minimap's 500 ms redraw
+  throttle), `worldManager` is used as a `TileQuery` by `sampleMinimap`, and `playerEntity` gives
+  the centre tile — item 13's `SoundManager` can use the same three fields.
+- `GameScene.ts` is at 216 of the ~300 cap. `PlayerController.ts` is at 233 and grows one row per
+  key from here.
