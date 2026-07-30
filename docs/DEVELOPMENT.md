@@ -151,6 +151,12 @@ Anything a system needs from outside the ECS is injected through its constructor
 
 Systems are registered in `apps/web/src/game/createGameWorld.ts`, and **registration order is execution order**:
 
+```
+time → input → collision → movement → chunk → interpolation → stats →
+npc → shop → quest → plant → cropGrowth → build → harvest →
+networkSync → animation → render
+```
+
 ```typescript
 world.addSystem(systems.time);
 world.addSystem(systems.input);
@@ -160,7 +166,7 @@ world.addSystem(systems.movement);
 world.addSystem(new HealthSystem());
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md#system-execution-order) for the full pipeline and why each position matters.
+Add the system to the `GameWorldSystems` interface **in the position it runs**, because `gameWorld.test.ts` asserts `Object.keys(context.systems)` equals the order documented in [ARCHITECTURE.md](ARCHITECTURE.md#system-execution-order) — so registering a system without documenting it fails the suite, and vice versa. That guide also explains why each position matters; the load-bearing ones are collision between input and movement, and npc/shop/quest before plant.
 
 ### 4. Export from Package
 
@@ -211,10 +217,16 @@ export enum TileType {
   STONE = 4,
   FLOWERS = 5,
   FARMLAND = 6,
-  // Add your new type:
-  PATH = 7,
+  SNOW = 7,
+  CAVE_FLOOR = 8,
+  CAVE_WALL = 9,
+  ORE = 10,
+  // Add your new type at the end:
+  PATH = 11,
 }
 ```
+
+**Append; never renumber.** Tile ids are persisted as `world_modifications.tile_type` smallints, so changing an existing value silently rewrites every saved world.
 
 ### 2. Define Tile Properties
 
@@ -234,7 +246,7 @@ export const TILE_PROPERTIES: Record<TileType, TileProperties> = {
 };
 ```
 
-Add a `TILE_HARVEST_YIELD` entry too if the tile is `harvestable` — that table maps a tile to `{ itemId, quantity, energyCost }`, and harvesting replaces the tile with grass through the override layer.
+Add a `TILE_HARVEST_YIELD` entry too if the tile is `harvestable` — that table maps a tile to `{ itemId, quantity, energyCost, replacementTile? }`. Harvesting replaces the tile through the override layer, with grass unless `replacementTile` says otherwise (`ORE` sets it to `CAVE_FLOOR`, so mining underground does not leave a patch of grassland in a cave).
 
 ### 3. Decide Where the Tile Comes From
 
@@ -245,7 +257,7 @@ There are two options, and the second one is usually right:
 
 ### 4. Add a Texture
 
-`apps/web/src/game/scenes/BootScene.ts` generates one placeholder texture per tile type, keyed `tile_<TileType>` — that is what `ChunkRenderer` draws. Replace `generateTileset()` with real artwork loaded from `apps/web/public/assets/` when art exists; the keys must stay the same.
+`apps/web/src/game/scenes/BootScene.ts` generates one placeholder texture per tile type, keyed `tile_<TileType>` — that is what `ChunkRenderer` draws. The list comes from `Object.values(TileType)`, so a new tile automatically gets a flat `TILE_PROPERTIES[t].color` texture; add a branch to `drawTileDetail(graphics, tileType)` if you want it to look like anything more. Replace `generateTileset()` with real artwork loaded from `apps/web/public/assets/` when art exists; the keys must stay the same.
 
 ## How to Extend the World Generator
 
@@ -253,13 +265,19 @@ The world generator lives in `packages/game-engine/src/world/`.
 
 ### ChunkGenerator
 
-`ChunkGenerator.generateChunk(chunkX, chunkY)` returns a `CHUNK_SIZE x CHUNK_SIZE` grid of tile types from three seeded simplex-noise layers:
+`ChunkGenerator.generateChunk(chunkX, chunkY)` returns a `CHUNK_SIZE x CHUNK_SIZE` grid of tile types from **five** seeded simplex-noise layers:
 
-- **elevation** (`scale 0.02`) — water, sand and stone thresholds
-- **moisture** (`scale 0.015`) — forest placement
-- **detail** (`scale 0.1`) — flower patches
+| Layer | Seed offset | Scale | Decides |
+|-------|-------------|-------|---------|
+| elevation | `seed` | 0.02 | water, sand and stone thresholds, and a lapse rate on temperature |
+| moisture | `+ 1000` | 0.015 | half of the biome classification |
+| detail | `+ 2000` | 0.1 | accent-tile scatter, ore veins |
+| temperature | `+ 3000` | 0.008 | the other half of the classification |
+| caves | `+ 4000` | 0.06 | which high rock is hollowed out |
 
-Each layer is seeded from `WORLD_SEED` (`seed`, `seed + 1000`, `seed + 2000` through `mulberry32`), so generation is a pure function of the seed and the world coordinate. To add a feature: sample another layer, combine it in `getTileType()`, and keep it deterministic.
+Each is seeded from `WORLD_SEED` through `mulberry32`, so generation is a pure function of the seed and the world coordinate. To add a feature: sample another layer at its own seed offset, combine it in `getTileType()`, and keep it deterministic.
+
+Dry land is not chosen by the generator directly — `classifyBiome(elevation, moisture, temperature)` in `world/Biomes.ts` picks a `Biome`, and `BIOME_DEFINITIONS[biome]` supplies its `surfaceTile` and `accentTile`. To add a biome: add the enum member, add its definition (the `Record` is total, so the build fails until you do), and add a branch in `classifyBiome`. Keep it pure — that is what lets `biomes.test.ts` cover the whole noise cube without generating a chunk. Expect the determinism tests and any test with a literal tile coordinate to shift; `apps/web/src/__tests__/helpers/terrain.ts` exists so the web suite searches for the terrain it needs instead.
 
 ### WorldManager
 
@@ -288,15 +306,95 @@ Each layer is seeded from `WORLD_SEED` (`seed`, `seed + 1000`, `seed + 2000` thr
 | Farming | `PlantSystem`, `CropGrowthSystem`, `world/Crops.ts` | `CropComponent.itemId` is the **seed**; stage is a function of the clock, not of frames |
 | Building | `BuildSystem`, `StructureComponent`, `world/StructureQuery.ts` | Owns the occupancy index that `CollisionSystem` reads as walls |
 | Animation | `AnimationComponent`, `AnimationSystem`, `animation/animationOps.ts` | Direction from the dominant movement axis; `directionalTextureKey()` builds the `player_<dir>_<n>` key both `BootScene` and `SpriteSync` use |
-| Persistence | `apps/web/src/lib/persistence.ts`, `game/loadSession.ts`, `game/SessionPersistence.ts` | `SaveScheduler` debounces; structures and crops are diffed from the owning systems' indexes |
+| Persistence | `apps/web/src/lib/persistence.ts`, `game/loadSession.ts`, `game/SessionPersistence.ts`, `lib/questSnapshot.ts` | `SaveScheduler` debounces; structures and crops are diffed from the owning systems' indexes; coins ride the `player_state` upsert and quests get their own write |
 | Chat | `packages/database/src/chat.ts`, `realtime.ts`, `apps/web/src/game/ChatBridge.ts` | Broadcast for latency, a row for durability |
+| Biomes and caves | `world/Biomes.ts`, `world/ChunkGenerator.ts` | `classifyBiome` is pure; caves are a fifth noise channel on the single tile layer |
+| Minimap | `world/minimap.ts` (engine), `game/Minimap.ts` + `game/minimapLayout.ts` (client) | Sampling is a pure engine function; the layout module exists because camera zoom scales a `scrollFactor(0)` object |
+| NPCs and dialogue | `world/NpcCatalogue.ts`, `world/npcPlacement.ts`, `dialogue/`, `systems/NpcSystem.ts` | Static, deterministic placement; every string is an i18n **key** |
+| Shop and coins | `packages/shared/src/economy.ts`, `shop/shopOps.ts`, `systems/ShopSystem.ts` | Fixed prices, `sell < buy` enforced by test, no player-to-player trading |
+| Quests | `quests/questDefinitions.ts`, `quests/questOps.ts`, `systems/QuestSystem.ts` | Objectives are polled, never pushed; a turn-in that would not fit is refused whole |
+| Audio | `game/audio/{soundSpecs,SoundSynth,soundDiff,SoundManager,MusicLoop}.ts` | Synthesised WebAudio; cues come from a per-frame state diff |
+| Touch input | `stores/touchStore.ts`, `game/inputMerge.ts`, `components/TouchControls.tsx` | Virtual axis merged with the keyboard, which wins outright |
+| Input gating | `game/keyBindings.ts`, `game/panelStack.ts` | `isHudModal()` gates movement and toggles; `closeTopmostPanel()` gives `Esc` its precedence |
+| i18n | `src/i18n/`, `stores/localeStore.ts`, `components/DocumentLocale.tsx` | `en` is the source of truth; five parity tests guard the twelve catalogues |
+
+## How to Add a Translatable String or a Language
+
+Every user-visible string is a key. There are no literals in the UI, and the engine holds keys too — that is what lets twelve languages share one dialogue graph.
+
+### A new string
+
+1. Add the key to `apps/web/src/i18n/messages/en.ts`. It is the source of truth, and `MessageKey = keyof typeof en`.
+2. The build now **fails for all eleven other catalogues** until each has a translation. That is 12 edits per string, and it is the price paid once instead of per feature.
+3. Use it with `const { t } = useTranslation()` and `t("your.key", { name })`.
+
+The three parity tests will also fail if a value is empty, if it is byte-identical to the English one (add it to `LOCALE_AGNOSTIC_KEYS` only when that is genuinely correct — there are three such keys), or if it uses different `{placeholders}` than English.
+
+> Watch for false friends: `Item` is byte-identical in Portuguese and `Shop` in German, so those became `Objeto` and `Laden`. A bare NPC given name has the same problem, which is why every NPC name carries their role ("Pip the Gardener", "정원사 핍").
+
+### A new language
+
+Three edits, and the compiler enforces completeness:
+
+1. `apps/web/src/i18n/messages/<locale>.ts` — a full `LocaleMessages` record.
+2. `LOCALES` and `MESSAGES` in `apps/web/src/i18n/index.ts`.
+3. `LOCALE_LABELS` in the same file — the endonym, which lives there rather than in the catalogues because it is the same in every language.
+
+Add the locale to `RTL_LOCALES` if it is right-to-left. The HUD already uses Tailwind logical utilities (`start-*` / `end-*`) and `.hud-numeric` for digits, so mirroring generally needs no new CSS; the Phaser canvas does not mirror at all.
+
+## How to Add a Dialogue Tree, an NPC or a Quest
+
+### A dialogue tree
+
+Add an entry to `DIALOGUE_DEFINITIONS` in `packages/game-engine/src/dialogue/dialogueDefinitions.ts`. Nodes hold a `textKey` and up to **four** options, each with a `labelKey` and either a `next` node id or an `action` (`close`, `openShop`, `offerQuest`, `turnInQuest`). Constraints the tests enforce for you: the root must exist, every `next` must resolve inside the same tree, every node must be leaveable, and no node may have a fifth option (the UI binds `1`-`4`).
+
+Then add every key to all twelve catalogues — the i18n suite asserts each one resolves and is translated.
+
+### An NPC
+
+Add a `NpcDefinition` to `NPC_DEFINITIONS` with an anchor tile, a `dialogueId` and a `role`. `resolveNpcTile` snaps the anchor to the nearest walkable, buildable, non-cave tile, so the anchor is a wish rather than a guarantee — never hard-code the resulting tile in a test; search `NpcSystem.getNpcs()` instead. `NPC_COLORS` in `apps/web/src/game/scenes/npcTextures.ts` is keyed by role, so a new role fails to compile until it has a colour and no NPC can ship faceless.
+
+### A quest
+
+Add a `QuestDefinition` to `QUEST_DEFINITIONS` with a `titleKey`, `descriptionKey`, a `giverNpcId` that exists, one objective (`collect`, `build` or `talk`) and its rewards. **The giver's dialogue tree must offer and take it in**: `quests.test.ts` asserts `dialogueQuestIds()` equals `Object.keys(QUEST_DEFINITIONS)`, so a quest with no way to take it, or an offer for a quest that does not exist, fails the suite. Objectives are polled from state the engine already owns, so a fourth kind needs a new poll in `questOps.pollProgress`, not an event.
+
+## How to Add a Scene Overlay
+
+Anything wanting a per-frame tick inside `GameScene` — visual or not — implements `SceneOverlay`:
+
+```typescript
+// apps/web/src/game/WeatherOverlay.ts
+import type { OverlayContext, SceneOverlay } from "./SceneOverlay";
+
+export class WeatherOverlay implements SceneOverlay {
+  update(ctx: OverlayContext): void {
+    // ctx: { phase, buildMode, playerEntity, worldManager, deltaMs }
+  }
+
+  destroy(): void {}
+}
+```
+
+Register it with one line in `GameScene.create()`: `this.weather = this.overlays.add(new WeatherOverlay(this));` — `add<T>` returns its argument, so the scene keeps a typed handle. `update` and `destroy` are fanned out by the stack, so the scene never grows a branch per layer.
+
+Take anything else the overlay needs (the `World`, a system, a counter) through the **constructor**. Do not widen `OverlayContext`; `Minimap`, `BuildGhost` and `SoundManager` all follow that rule.
+
+## How to Add a Sound Cue
+
+Two edits, sometimes three:
+
+1. A row in `SOUND_SPECS` (`apps/web/src/game/audio/soundSpecs.ts`) — waveform, start/end frequency, duration, gain. Pure data, no WebAudio import, so the table is testable on its own.
+2. A comparison in `diffCues` (`audio/soundDiff.ts`), which turns a per-frame `SoundState` diff into cues.
+3. If the diff cannot see the signal, add the field to `SoundState` **and** to `readSoundState`. The latter takes an `Entity` and is Phaser-free, so it is testable against a world built by `createGameWorld`. Two cues needed this: `plant` and `build` change the *world*, not the player, so `readSoundState` takes an optional `WorldCounts { crops(); structures() }` injected by `GameScene`.
+
+Never call `playSound()` from a system. Cues are derived from state, which is what keeps the engine free of an event bus.
 
 ## How to Add New UI Features
 
 UI components live in two places:
 
 - `packages/ui/` - Reusable, game-agnostic components (`Button`, `Card`)
-- `apps/web/src/components/` - Game-specific UI (`ClockHud`, `HotBar`, `InventoryPanel`, `StatusBars`, `BuildMenu`, `ChatPanel`, `SignOutButton`)
+- `apps/web/src/components/` - Game-specific UI: `ClockHud`, `HotBar`, `ItemSlot`, `InventoryPanel`, `StatusBars`, `BuildMenu`, `ChatPanel`, `SignOutButton`, `SettingsPanel`, `CoinCounter`, `DialoguePanel`, `ShopPanel`, `QuestLog`, `QuestTracker`, `TouchControls`, `DocumentLocale`
 
 ### Getting Game State into React
 
@@ -330,7 +428,22 @@ export function EnergyReadout() {
 
 Mount it in `GameUI.tsx` inside a positioned wrapper. `GameUI` is `pointer-events-none` overall, so any interactive block needs `pointer-events-auto`.
 
-Keyboard shortcuts do **not** belong in React: all key handling lives in `apps/web/src/game/PlayerController.ts`. Bind keys there with capture disabled (`addUncapturedKey`) and wrap one-shot handlers in `whenPlaying(...)` so they are ignored while the chat composer has focus.
+### Getting a React Action into the Engine
+
+Never mutate ECS state from a React handler. A panel calls an **injected callback** that sets a request field on a component, and the owning system consumes it on the next frame; `dialogueStore` / `shopStore` / `questStore` / `chatStore.sender` are four instances of one template. Adding a fifth:
+
+1. Add the request field to the component and consume it in the owning system, bumping `version` **only** when the change was accepted (and a `refusals` counter when it was not — that is what the `deny` cue is played from).
+2. Add the store with nullable callback fields and public wrappers that no-op before injection, plus a `setSnapshot` fed by one `HudBridge` event.
+3. Add a bridge under `apps/web/src/game/` that injects the callbacks against the player's component.
+4. If the panel is modal, add it to `panelStack.ts` — two lines, and it joins both the `Esc` precedence order and the input gate.
+
+Any test that resets one of those stores with `setState({...})` must clear its callbacks too.
+
+### Keyboard and touch
+
+Keyboard shortcuts do **not** belong in React. Key handling lives in `apps/web/src/game/keyBindings.ts`: add a row to `ONE_SHOT_BINDINGS` (`{ keyCode, handler }`) and, if it needs one, a field on `OneShotActions`, which `PlayerController` supplies. Keys are bound with capture disabled (`addUncapturedKey`) and one-shot handlers are wrapped in `whenPlaying(...)` so they are ignored while a modal panel is open or the chat composer has focus.
+
+For a touch equivalent, raise a flag in `touchStore`, consume it in `PlayerController.update` before the typing gate, and route it through the same cooldown helper the key uses — never straight to an engine method.
 
 ### Adding a Shared UI Component
 
@@ -344,12 +457,20 @@ Keyboard shortcuts do **not** belong in React: all key handling lives in `apps/w
 |-------|---------|-------|
 | `@worldnest/shared` | `pnpm --filter @worldnest/shared test` | Tunables, coordinate helpers, item catalogue |
 | `@worldnest/game-engine` | `pnpm --filter @worldnest/game-engine test` | ECS core plus every system, with fake `TileQuery`/clock injections |
-| `@worldnest/web` | `pnpm --filter @worldnest/web test` | Stores, pure helpers, and Phaser-free ECS wiring driven through `createGameWorld` under jsdom |
+| `@worldnest/web` | `pnpm --filter @worldnest/web test` | Stores, pure helpers, React panels via `@testing-library/react`, and Phaser-free ECS wiring driven through `createGameWorld` under jsdom |
 | E2E | `pnpm test:e2e` | Playwright smoke specs against a production build |
+| SQL | `pnpm db:verify` | Every migration and the seed against a dockerised Postgres |
+| Docs | `pnpm docs:check` | The Korean guide and its Word mirror have the same headings |
 
 `pnpm test` runs the three Vitest suites through Turborepo and stays browser-free; Playwright is deliberately excluded so it can be run separately (and in its own CI job).
 
 The web tests never import Phaser. `createGameWorld` is Phaser-free on purpose, so gameplay wiring is asserted at the ECS level; anything that genuinely needs a canvas belongs in the Playwright layer.
+
+Three things to know before writing a web test:
+
+- **Importing Phaser under jsdom throws** (inside `checkInverseAlpha`). If a suite needs to reason about something, that something must live in a module that does not import Phaser — which is why `panelStack.ts` and `minimapLayout.ts` are separate from `keyBindings.ts` and `Minimap.ts`.
+- There is **no Vitest setup file**, so component tests call `cleanup()` in their own `afterEach` and use plain assertions rather than `jest-dom` matchers.
+- Playwright cannot reach `/game`: `middleware.ts` redirects an unauthenticated visitor to `/auth`, and the smoke suite has no credentials. The jsdom suites therefore carry all of the UI weight.
 
 ## Project Scripts Reference
 
@@ -363,6 +484,7 @@ The web tests never import Phaser. `createGameWorld` is Phaser-free on purpose, 
 | `pnpm test:e2e` | Run the Playwright smoke specs (needs `pnpm build` first) |
 | `pnpm lint` | Run ESLint across all packages |
 | `pnpm db:verify` | Apply the migrations to a throwaway dockerised Postgres and assert the schema |
+| `pnpm docs:check` | Assert `docs/SETUP_GUIDE_KR.md` and its `.doc` mirror have matching headings |
 | `pnpm format` | Format all files with Prettier |
 
 > `pnpm format` currently rewrites files it did not need to: `.prettierrc` sets `printWidth: 100` while the tree is hand-wrapped at ~88 columns. Until that is reconciled in a dedicated formatting commit, check only what you touched: `npx prettier --check <your files>`.
@@ -383,5 +505,9 @@ pnpm --filter @worldnest/shared build
 - **Chunks not generating?** Verify `WORLD_SEED` is consistent. Different seeds produce different worlds.
 - **Realtime not connecting?** Check Supabase credentials in `.env.local` and ensure the project is active.
 - **Nothing persists?** Confirm migration `002` ran. Persistence switches itself off when there is no `worldId`, which is what happens when `worlds` has no `Default World` row.
-- **Typing in chat walks the player?** The gate is `chatStore.inputFocused`, read by `PlayerController`. New key bindings must go through `whenPlaying(...)`.
+- **Coins or quests not coming back?** Confirm migration `003` ran. `pnpm db:verify` is the quickest way to prove all three apply.
+- **Typing in chat walks the player?** The gate is `chatStore.inputFocused`, read through `panelStack.isTyping()`. New key bindings must go through `whenPlaying(...)`.
+- **No sound?** Expected until the first click or keypress: every browser blocks audio before a user gesture, and `SoundSynth` deliberately does not create its `AudioContext` until then. After that, check the mute toggle in the settings panel (`P`).
+- **A string shows as `hud.something` in the UI?** `translate()` falls back to English and then to the key itself, so a bare key on screen means it is missing from `en.ts`.
 - **Turborepo cache stale?** Run `pnpm build --force` to bypass the cache.
+- **`pnpm docs:check` failing?** The Korean guide and its `.doc` mirror have diverged. Both files are hand-maintained: apply the same headings to both, in the same order.

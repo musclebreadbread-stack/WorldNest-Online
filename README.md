@@ -25,10 +25,13 @@ worldnest-online/
 │   ├── shared/               # Shared types, constants, utilities
 │   ├── database/             # Supabase client, auth, realtime, migrations
 │   └── ui/                   # Shared React UI components
-├── docs/                     # Architecture & development documentation
+├── docs/                     # Architecture, development, deployment, 한국어 설정 가이드
+├── e2e/                      # Playwright smoke specs
+├── scripts/                  # verify-sql.sh, check-kr-doc-sync.mjs
 ├── .github/workflows/        # CI/CD configuration
 ├── turbo.json                # Turborepo task configuration
 ├── pnpm-workspace.yaml       # Workspace package definitions
+├── vercel.json               # Install/build commands for the Vercel deployment
 └── Dockerfile                # Multi-stage production build
 ```
 
@@ -36,16 +39,25 @@ worldnest-online/
 
 | Area | What is implemented |
 |------|--------------------|
-| World | Deterministic simplex-noise terrain streamed as 16x16 chunks, seven tile types, a modification overlay for every player-caused change |
+| World | Deterministic simplex-noise terrain streamed as 16x16 chunks, eleven tile types, a modification overlay for every player-caused change |
+| Biomes | Six climate zones (tundra, taiga, grassland, forest, savanna, desert) from a temperature channel, with elevation acting as a lapse rate |
+| Caves | Tunnels carved into the mountains by a fifth noise channel, always open to the surface, with ore veins inside them |
 | Movement | Per-axis collision with wall sliding, WASD/arrow input, directional walk animation |
 | Day/night | A shared world clock derived from wall-clock time (24 real minutes per in-game day), dawn/day/dusk/night tinting and a clock HUD |
 | Survival | Health and energy with night-boosted regeneration, energy costs on every interaction |
 | Gathering | Harvest forest, stone and flower tiles into a 20-slot inventory with an 8-slot hotbar |
 | Farming | Till grass into farmland, sow seeds, watch crops grow off the shared clock, harvest the produce |
 | Building | Build mode with a green/red placement ghost; placed structures become real obstacles |
+| NPCs | Three villagers, statically and deterministically placed, with branching dialogue trees in every supported language |
+| Economy | A coin wallet and an NPC shop with fixed prices. Selling always pays less than buying, so there is no arbitrage loop, and there is no trading between players |
+| Quests | Three starter quests (collect, build, talk) with a quest log and an on-screen tracker |
+| Minimap | A corner map sampled in the engine and painted in Phaser, showing terrain and every nearby player |
 | Multiplayer | Supabase Presence + Broadcast, smoothed remote players with floating name tags, a live player counter |
 | Chat | Instant broadcast delivery plus durable history, client-side rate limiting, and a keyboard gate so typing never moves the player |
-| Persistence | Position, inventory, terrain diff, structures and crops restored on sign-in and autosaved while playing |
+| Audio | Sound effects and a day/night-aware music pad, both synthesised at runtime — there is not one binary asset in the repository |
+| Languages | 12 complete UI translations with browser detection, a language picker, and right-to-left support for Arabic |
+| Mobile | An on-screen thumb-stick and action buttons that appear on coarse-pointer devices |
+| Persistence | Position, inventory, coins, quest progress, terrain diff, structures and crops restored on sign-in and autosaved while playing |
 | Accounts | Email sign-up/sign-in, a middleware-guarded `/game` route, and in-game sign-out |
 
 ## Quick Start
@@ -70,13 +82,20 @@ pnpm install
 cp .env.example .env.local
 # Edit .env.local with your Supabase credentials
 
-# Run both SQL migrations in the Supabase SQL Editor, in order:
+# Run all three SQL migrations in the Supabase SQL Editor, in this order:
 #   packages/database/supabase/migrations/001_initial_schema.sql
 #   packages/database/supabase/migrations/002_gameplay_schema.sql
+#   packages/database/supabase/migrations/003_progression_schema.sql
+#
+# Optional, development only — three ready-to-use test logins:
+#   packages/database/supabase/seed/test_accounts.sql
 
 # Start development servers
 pnpm dev
 ```
+
+Have Docker? `pnpm db:verify` applies all four files to a throwaway Postgres and asserts the schema,
+so you can check the SQL before pasting it into a project that matters.
 
 The game will be available at `http://localhost:3000`. Without Supabase credentials it still boots as a single-player sandbox — authentication, chat and persistence switch themselves off.
 
@@ -114,17 +133,21 @@ right to left.
 | `pnpm test` | Run unit tests across the monorepo (Vitest, browser-free) |
 | `pnpm test:e2e` | Run the Playwright smoke specs against a production build |
 | `pnpm lint` | Run ESLint on all packages |
-| `pnpm format` | Format all files with Prettier |
+| `pnpm db:verify` | Apply every migration and the seed to a throwaway dockerised Postgres and assert the schema |
+| `pnpm docs:check` | Assert the Korean guide and its Word mirror have matching headings |
+| `pnpm format` | Format all files with Prettier (see the caveat in [DEVELOPMENT.md](docs/DEVELOPMENT.md#project-scripts-reference)) |
 
 ## Architecture Overview
 
 WorldNest Online uses a **client-authoritative** architecture with server validation via Supabase Realtime:
 
-- **ECS Game Engine** - Custom Entity Component System drives all game logic. Entities are composed of reusable components looked up by string type (`position`, `velocity`, `sprite`, `inventory`, `interaction`, ...) and processed by fourteen independent systems whose registration order is their execution order.
+- **ECS Game Engine** - Custom Entity Component System drives all game logic. Entities are composed of reusable components looked up by string type (`position`, `velocity`, `sprite`, `inventory`, `interaction`, `dialogue`, `quest`, ...) and processed by seventeen independent systems whose registration order is their execution order.
 
-- **Chunk Streaming** - The world is divided into 16x16 tile chunks generated procedurally using simplex noise with a configurable world seed. Chunks load/unload dynamically based on player proximity.
+- **Chunk Streaming** - The world is divided into 16x16 tile chunks generated procedurally from five seeded simplex-noise channels and a configurable world seed. Chunks load/unload dynamically based on player proximity.
 
-- **Supabase Realtime** - Multiplayer synchronization uses Supabase Presence (player state) and Broadcast (positions and chat) channels for low-latency communication between clients. The client is authoritative by design; anti-cheat is out of scope.
+- **React never touches the ECS** - HUD panels call an injected callback that sets a request field on a component, and the owning system decides on the next frame. That is what lets a refused trade or quest turn-in change nothing at all.
+
+- **Supabase Realtime** - Multiplayer synchronization uses Supabase Presence (player state) and Broadcast (positions and chat) channels for low-latency communication between clients. The client is authoritative by design; **anti-cheat is out of scope**, so coins, inventory, harvests and quest progress are all forgeable. That is precisely why the economy is a fixed-price NPC shop with no player-to-player trading — a cheat stays inside one save file instead of leaking into everyone else's.
 
 - **Persistence** - Terrain is regenerated from the seed rather than stored, so only the diff is persisted: changed tiles, structures, crops, player position and inventory.
 

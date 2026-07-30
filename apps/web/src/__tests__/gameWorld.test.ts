@@ -48,7 +48,39 @@ const BOOTSTRAP = {
   spawnY: DEFAULT_SPAWN_Y,
 };
 
+/**
+ * The registration order documented in `docs/ARCHITECTURE.md`, "System Execution
+ * Order". Insertion order is execution order and several positions are
+ * load-bearing, so the guide and the code are pinned to each other here: change
+ * one without the other and this test fails.
+ */
+const DOCUMENTED_SYSTEM_ORDER = [
+  "time",
+  "input",
+  "collision",
+  "movement",
+  "chunk",
+  "interpolation",
+  "stats",
+  "npc",
+  "shop",
+  "quest",
+  "plant",
+  "cropGrowth",
+  "build",
+  "harvest",
+  "networkSync",
+  "animation",
+  "render",
+];
+
 describe("createGameWorld", () => {
+  it("should register its systems in the order the architecture guide documents", () => {
+    const context = createGameWorld(BOOTSTRAP);
+
+    expect(Object.keys(context.systems)).toEqual(DOCUMENTED_SYSTEM_ORDER);
+  });
+
   it("should build a local player entity from the bootstrap identity", () => {
     const { playerEntity } = createGameWorld(BOOTSTRAP);
     const position = playerEntity.getComponent<PositionComponent>("position")!;
