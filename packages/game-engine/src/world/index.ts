@@ -8,6 +8,8 @@ export type {
 } from "./WorldManager";
 export { TileType, TILE_PROPERTIES, TILE_HARVEST_YIELD } from "./Tilemap";
 export type { TileProperties, TileHarvestYield } from "./Tilemap";
+export { Biome, BIOME_DEFINITIONS, classifyBiome } from "./Biomes";
+export type { BiomeDefinition } from "./Biomes";
 export { CROP_DEFINITIONS, isSeed } from "./Crops";
 export type { CropDefinition } from "./Crops";
 export { getTileKey, parseTileKey } from "./TileQuery";

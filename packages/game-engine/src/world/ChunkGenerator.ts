@@ -1,5 +1,6 @@
 import { createNoise2D, type NoiseFunction2D } from "simplex-noise";
 import { CHUNK_SIZE } from "@worldnest/shared";
+import { BIOME_DEFINITIONS, classifyBiome, type Biome } from "./Biomes";
 import { TileType } from "./Tilemap";
 
 /**
@@ -15,14 +16,42 @@ function mulberry32(seed: number): () => number {
   };
 }
 
+/** Noise sampling scales. Temperature is the broadest so climate bands are wide. */
+const ELEVATION_SCALE = 0.02;
+const MOISTURE_SCALE = 0.015;
+const DETAIL_SCALE = 0.1;
+const TEMPERATURE_SCALE = 0.008;
+
+/** Elevation thresholds, unchanged from the pre-biome generator. */
+const WATER_ELEVATION = -0.3;
+const SAND_ELEVATION = -0.1;
+const STONE_ELEVATION = 0.6;
+
+/** Detail value above which a biome's accent tile replaces its surface tile. */
+const ACCENT_DETAIL = 0.5;
+
+/** The four noise channels sampled for one point of the world. */
+interface ClimateSample {
+  elevation: number;
+  moisture: number;
+  detail: number;
+  temperature: number;
+}
+
 /**
  * ChunkGenerator produces deterministic tile data for a given chunk coordinate.
  * Uses simplex noise layered at multiple frequencies for varied terrain.
+ *
+ * Elevation decides water, shore and rock; a temperature channel joins moisture
+ * to classify the biome (see `Biomes.ts`), which then decides what the dry land
+ * is made of. Every channel is seeded from the world seed, so the whole world
+ * stays reproducible from that one number.
  */
 export class ChunkGenerator {
   private noise2D: NoiseFunction2D;
   private moistureNoise: NoiseFunction2D;
   private detailNoise: NoiseFunction2D;
+  private temperatureNoise: NoiseFunction2D;
   private seed: number;
 
   constructor(seed: number) {
@@ -33,6 +62,8 @@ export class ChunkGenerator {
     this.moistureNoise = createNoise2D(rng2);
     const rng3 = mulberry32(seed + 2000);
     this.detailNoise = createNoise2D(rng3);
+    const rng4 = mulberry32(seed + 3000);
+    this.temperatureNoise = createNoise2D(rng4);
   }
 
   /**
@@ -55,54 +86,54 @@ export class ChunkGenerator {
     return tiles;
   }
 
+  /**
+   * Biome at the given tile. Derived, never stored: callers that want the biome
+   * of an edited tile still get the biome of the land it sits in.
+   */
+  getBiomeAt(worldX: number, worldY: number): Biome {
+    const climate = this.sampleClimate(worldX, worldY);
+    return classifyBiome(climate.elevation, climate.moisture, climate.temperature);
+  }
+
+  /** All noise channels for one point, sampled once so callers stay consistent. */
+  private sampleClimate(worldX: number, worldY: number): ClimateSample {
+    return {
+      // Primary terrain shape
+      elevation: this.noise2D(worldX * ELEVATION_SCALE, worldY * ELEVATION_SCALE),
+      // How wet the land is, one half of the biome classification
+      moisture: this.moistureNoise(worldX * MOISTURE_SCALE, worldY * MOISTURE_SCALE),
+      // Small-scale variation that scatters a biome's accent tile
+      detail: this.detailNoise(worldX * DETAIL_SCALE, worldY * DETAIL_SCALE),
+      // Broad climate bands, the other half of the classification
+      temperature: this.temperatureNoise(
+        worldX * TEMPERATURE_SCALE,
+        worldY * TEMPERATURE_SCALE,
+      ),
+    };
+  }
+
   private getTileType(worldX: number, worldY: number): TileType {
-    // Scale coordinates for noise sampling
-    const scale = 0.02;
-    const moistureScale = 0.015;
-    const detailScale = 0.1;
+    const climate = this.sampleClimate(worldX, worldY);
+    const { elevation, moisture, detail, temperature } = climate;
 
-    // Sample elevation noise (primary terrain shape)
-    const elevation = this.noise2D(worldX * scale, worldY * scale);
-
-    // Sample moisture noise (determines biome variation)
-    const moisture = this.moistureNoise(
-      worldX * moistureScale,
-      worldY * moistureScale,
-    );
-
-    // Sample detail noise (small-scale variation)
-    const detail = this.detailNoise(
-      worldX * detailScale,
-      worldY * detailScale,
-    );
-
-    // Determine tile type based on noise values
     // Water at low elevation
-    if (elevation < -0.3) {
+    if (elevation < WATER_ELEVATION) {
       return TileType.WATER;
     }
 
     // Sand near water boundaries
-    if (elevation < -0.1) {
+    if (elevation < SAND_ELEVATION) {
       return TileType.SAND;
     }
 
     // Stone at high elevation
-    if (elevation > 0.6) {
+    if (elevation > STONE_ELEVATION) {
       return TileType.STONE;
     }
 
-    // Forest in moist areas with moderate elevation
-    if (moisture > 0.2 && elevation > 0.1) {
-      return TileType.FOREST;
-    }
-
-    // Flowers in certain detail noise patterns
-    if (detail > 0.5 && moisture > -0.1) {
-      return TileType.FLOWERS;
-    }
-
-    // Default to grass
-    return TileType.GRASS;
+    // Everything else is dry land, so the biome decides what it is made of
+    const biome = classifyBiome(elevation, moisture, temperature);
+    const definition = BIOME_DEFINITIONS[biome];
+    return detail > ACCENT_DETAIL ? definition.accentTile : definition.surfaceTile;
   }
 }
