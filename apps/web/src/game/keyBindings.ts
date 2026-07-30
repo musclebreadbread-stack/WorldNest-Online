@@ -48,6 +48,10 @@ const ONE_SHOT_BINDINGS: OneShotBinding[] = [
     handler: () => useUIStore.getState().toggleMinimap(),
   },
   {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.J,
+    handler: () => useUIStore.getState().toggleQuestLog(),
+  },
+  {
     keyCode: Phaser.Input.Keyboard.KeyCodes.P,
     handler: () => useUIStore.getState().toggleSettings(),
   },

@@ -12,6 +12,8 @@ import { CoinCounter } from "./CoinCounter";
 import { DialoguePanel } from "./DialoguePanel";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
+import { QuestLog } from "./QuestLog";
+import { QuestTracker } from "./QuestTracker";
 import { SettingsPanel } from "./SettingsPanel";
 import { ShopPanel } from "./ShopPanel";
 import { SignOutButton } from "./SignOutButton";
@@ -41,9 +43,10 @@ export function GameUI() {
 
   return (
     <div className="pointer-events-none absolute inset-0">
-      {/* Top-centre: world clock */}
-      <div className="absolute left-1/2 top-4 -translate-x-1/2 pointer-events-auto">
+      {/* Top-centre: world clock, with the job in hand beneath it */}
+      <div className="absolute left-1/2 top-4 flex -translate-x-1/2 flex-col items-center gap-2 pointer-events-auto">
         <ClockHud />
+        <QuestTracker />
       </div>
 
       {/* Top-right: connection status, player count and settings */}
@@ -126,6 +129,7 @@ export function GameUI() {
       {/* Centre: inventory, shop and settings panels, side by side */}
       <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-4 pointer-events-auto">
         <InventoryPanel />
+        <QuestLog />
         <ShopPanel />
         <SettingsPanel />
       </div>

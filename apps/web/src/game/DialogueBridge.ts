@@ -1,5 +1,6 @@
 import type { DialogueAction, DialogueComponent, Entity } from "@worldnest/game-engine";
 import { useDialogueStore } from "../stores/dialogueStore";
+import { useQuestStore } from "../stores/questStore";
 import { useShopStore } from "../stores/shopStore";
 
 /**
@@ -55,6 +56,16 @@ function routeAction(action: DialogueAction | undefined, npcId: string | null): 
 
   if (action.kind === "openShop") {
     useShopStore.getState().open(npcId);
+    return true;
+  }
+
+  if (action.kind === "offerQuest") {
+    useQuestStore.getState().accept(action.questId);
+    return true;
+  }
+
+  if (action.kind === "turnInQuest") {
+    useQuestStore.getState().turnIn(action.questId);
     return true;
   }
 

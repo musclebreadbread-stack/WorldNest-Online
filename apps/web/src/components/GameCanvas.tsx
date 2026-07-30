@@ -5,6 +5,7 @@ import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
 import { useUIStore } from "../stores/uiStore";
 import { useDialogueStore } from "../stores/dialogueStore";
+import { useQuestStore } from "../stores/questStore";
 import { useShopStore } from "../stores/shopStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
@@ -15,6 +16,7 @@ import {
   INVENTORY_CHANGED_EVENT,
   PLAYERS_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  QUESTS_CHANGED_EVENT,
   SHOP_CHANGED_EVENT,
   STATS_CHANGED_EVENT,
   WALLET_CHANGED_EVENT,
@@ -23,6 +25,7 @@ import {
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type PlayersChangedEvent,
+  type QuestsChangedEvent,
   type ShopChangedEvent,
   type StatsChangedEvent,
   type WalletChangedEvent,
@@ -51,6 +54,7 @@ export function GameCanvas() {
   const setClock = useUIStore((s) => s.setClock);
   const setDialogue = useDialogueStore((s) => s.setSnapshot);
   const setShop = useShopStore((s) => s.setSnapshot);
+  const setQuests = useQuestStore((s) => s.setSnapshot);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
 
@@ -113,6 +117,11 @@ export function GameCanvas() {
       setShop(event);
     });
 
+    // Mirror the quest log into its store
+    game.events.on(QUESTS_CHANGED_EVENT, (event: QuestsChangedEvent) => {
+      setQuests(event);
+    });
+
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
       switch (event.type) {
@@ -148,6 +157,7 @@ export function GameCanvas() {
     setClock,
     setDialogue,
     setShop,
+    setQuests,
     user,
   ]);
 

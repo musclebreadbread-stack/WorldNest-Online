@@ -17,6 +17,7 @@ import { HudBridge } from "../HudBridge";
 import { Minimap } from "../Minimap";
 import { NetworkBridge } from "../NetworkBridge";
 import { PlayerController } from "../PlayerController";
+import { wireQuests } from "../QuestBridge";
 import { wireShop } from "../ShopBridge";
 import { SpriteSync } from "../SpriteSync";
 import { BuildGhost } from "../BuildGhost";
@@ -133,13 +134,15 @@ export class GameScene extends Phaser.Scene {
 
     // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
-    // Dialogue answers and shop trades travel back the other way, through
-    // injected callbacks (decision D13)
+    // Dialogue answers, shop trades and quest requests travel back the other
+    // way, through injected callbacks (decision D13)
     const unwireDialogue = wireDialogue(this.playerEntity);
     const unwireShop = wireShop(this.playerEntity);
+    const unwireQuests = wireQuests(this.playerEntity);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       unwireDialogue();
       unwireShop();
+      unwireQuests();
       this.overlays.destroy();
       this.spriteSync.destroy();
       this.persistence?.flush();

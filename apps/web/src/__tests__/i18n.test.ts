@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ITEM_IDS } from "@worldnest/shared";
-import { DIALOGUE_DEFINITIONS, NPC_DEFINITIONS } from "@worldnest/game-engine";
+import {
+  DIALOGUE_DEFINITIONS,
+  NPC_DEFINITIONS,
+  QUEST_DEFINITIONS,
+  QUEST_IDS,
+} from "@worldnest/game-engine";
 import {
   ITEM_NAME_KEYS,
   DEFAULT_LOCALE,
@@ -24,10 +29,15 @@ const EN_KEYS = Object.keys(en) as MessageKey[];
 
 /**
  * Keys whose value is legitimately the same in every language: an example email
- * address and the Cartesian axis labels. Everything else must differ from
- * English, which is what catches a copy-pasted catalogue.
+ * address, the Cartesian axis labels, and a bare "3 / 5" progress fraction, which
+ * is two numbers and a slash in every language the game speaks. Everything else
+ * must differ from English, which is what catches a copy-pasted catalogue.
  */
-const LOCALE_AGNOSTIC_KEYS: MessageKey[] = ["auth.emailPlaceholder", "hud.coordinates"];
+const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
+  "auth.emailPlaceholder",
+  "hud.coordinates",
+  "quest.progress",
+];
 
 describe("message catalogue", () => {
   it("should list twelve locales with English first", () => {
@@ -85,6 +95,21 @@ describe("message catalogue", () => {
           for (const locale of LOCALES) {
             expect(translate(locale, key), `${locale} ${key}`).not.toBe(key);
           }
+        }
+      }
+    }
+  });
+
+  it("should resolve every engine quest key in every locale", () => {
+    for (const questId of QUEST_IDS) {
+      const definition = QUEST_DEFINITIONS[questId];
+
+      for (const key of [definition.titleKey, definition.descriptionKey]) {
+        expect(isMessageKey(key), `${questId} ${key}`).toBe(true);
+        if (!isMessageKey(key)) continue;
+
+        for (const locale of LOCALES) {
+          expect(translate(locale, key), `${locale} ${key}`).not.toBe(key);
         }
       }
     }

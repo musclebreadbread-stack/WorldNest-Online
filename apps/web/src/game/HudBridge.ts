@@ -4,6 +4,7 @@ import type {
   Entity,
   InventoryComponent,
   PositionComponent,
+  QuestComponent,
   ShopComponent,
   StatsComponent,
   TimeComponent,
@@ -14,12 +15,14 @@ import {
   DIALOGUE_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  QUESTS_CHANGED_EVENT,
   SHOP_CHANGED_EVENT,
   STATS_CHANGED_EVENT,
   WALLET_CHANGED_EVENT,
   type DialogueChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
+  type QuestsChangedEvent,
   type ShopChangedEvent,
   type StatsChangedEvent,
   type WalletChangedEvent,
@@ -47,6 +50,8 @@ export class HudBridge {
    * publishes nothing on the first frame. */
   private lastDialogueVersion = 0;
   private lastCoins = -1;
+  /** Same rule as the dialogue version: an untouched quest log publishes nothing. */
+  private lastQuestVersion = 0;
   /** Same rule as the dialogue version: an untouched shop publishes nothing. */
   private lastShopVersion = 0;
 
@@ -65,6 +70,7 @@ export class HudBridge {
     this.emitDialogue();
     this.emitWallet();
     this.emitShop();
+    this.emitQuests();
   }
 
   private emitPosition(): void {
@@ -146,6 +152,26 @@ export class HudBridge {
       nameKey: definition?.nameKey ?? null,
     };
     this.emitter.emit(SHOP_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Publish the quest log whenever `QuestSystem` accepted a change — a quest
+   * taken on, progress moving, or a hand-in paid out.
+   *
+   * The entries are copied on the way out so React's snapshot cannot be mutated
+   * from under it by the next frame, exactly as the inventory mirror is.
+   */
+  private emitQuests(): void {
+    const quest = this.playerEntity.getComponent<QuestComponent>("quest");
+    if (!quest || quest.version === this.lastQuestVersion) return;
+
+    this.lastQuestVersion = quest.version;
+    const entries: QuestsChangedEvent["entries"] = {};
+    for (const [questId, entry] of Object.entries(quest.entries)) {
+      entries[questId] = { ...entry };
+    }
+    const payload: QuestsChangedEvent = { entries };
+    this.emitter.emit(QUESTS_CHANGED_EVENT, payload);
   }
 
   /**

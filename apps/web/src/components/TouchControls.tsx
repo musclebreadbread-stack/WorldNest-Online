@@ -27,6 +27,7 @@ export function TouchControls() {
   const toggleBuildMode = useUIStore((s) => s.toggleBuildMode);
   const toggleInventory = useUIStore((s) => s.toggleInventory);
   const toggleMinimap = useUIStore((s) => s.toggleMinimap);
+  const toggleQuestLog = useUIStore((s) => s.toggleQuestLog);
   const requestInteract = useTouchStore((s) => s.requestInteract);
   const requestBuild = useTouchStore((s) => s.requestBuild);
   const { t } = useTranslation();
@@ -57,6 +58,9 @@ export function TouchControls() {
         />
         <TouchButton glyph="I" label={t("inventory.title")} onPress={toggleInventory} />
         <TouchButton glyph="M" label={t("touch.map")} onPress={toggleMinimap} />
+        {/* The quest log is the one panel a phone player also needs, since jobs
+            are how the game explains itself. */}
+        <TouchButton glyph="J" label={t("quest.title")} onPress={toggleQuestLog} />
       </div>
     </div>
   );

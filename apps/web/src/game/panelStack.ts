@@ -30,10 +30,11 @@ export function isHudModal(): boolean {
  * Close whatever is on top, and report whether anything was closed.
  *
  * Precedence is "most modal first": a conversation owns the keyboard outright,
- * then the shop it can lead to, then the panels a player opens for themselves,
- * and build mode last because it is a mode rather than a window. One press closes
- * exactly one thing. Chat is not in the list — the composer blurs itself on
- * `Escape`, which is why the key handler returns early while it has focus.
+ * then the shop it can lead to, then the windows a player opens for themselves
+ * (quest log, inventory, settings), and build mode last because it is a mode
+ * rather than a window. One press closes exactly one thing. Chat is not in the
+ * list — the composer blurs itself on `Escape`, which is why the key handler
+ * returns early while it has focus.
  */
 export function closeTopmostPanel(): boolean {
   if (isDialogueOpen()) {
@@ -46,6 +47,10 @@ export function closeTopmostPanel(): boolean {
   }
 
   const ui = useUIStore.getState();
+  if (ui.questLogOpen) {
+    ui.setQuestLogOpen(false);
+    return true;
+  }
   if (ui.inventoryOpen) {
     ui.setInventoryOpen(false);
     return true;

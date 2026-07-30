@@ -7,6 +7,7 @@ import type {
   ClockSnapshot,
   DialogueOption,
   InventorySlot,
+  QuestEntry,
 } from "@worldnest/game-engine";
 
 export const PLAYERS_CHANGED_EVENT = "players-changed";
@@ -63,6 +64,19 @@ export const SHOP_CHANGED_EVENT = "shop-changed";
 export interface ShopChangedEvent {
   openNpcId: string | null;
   nameKey: string | null;
+}
+
+export const QUESTS_CHANGED_EVENT = "quests-changed";
+
+/**
+ * Every quest the player knows about, keyed by quest id.
+ *
+ * Only the entries cross the bridge: the catalogue itself is static, so the quest
+ * log imports `QUEST_DEFINITIONS` and looks up the (translatable) title and
+ * description keys for itself.
+ */
+export interface QuestsChangedEvent {
+  entries: Record<string, QuestEntry>;
 }
 
 export const DIALOGUE_CHANGED_EVENT = "dialogue-changed";

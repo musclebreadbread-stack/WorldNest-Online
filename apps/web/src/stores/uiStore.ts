@@ -11,6 +11,8 @@ interface UIState {
   minimapOpen: boolean;
   /** The settings panel (language, and audio from item 13), toggled with `P`. */
   settingsOpen: boolean;
+  /** The quest log, toggled with `J`. */
+  questLogOpen: boolean;
 
   setClock: (clock: ClockSnapshot) => void;
   setInventoryOpen: (inventoryOpen: boolean) => void;
@@ -21,6 +23,8 @@ interface UIState {
   toggleMinimap: () => void;
   setSettingsOpen: (settingsOpen: boolean) => void;
   toggleSettings: () => void;
+  setQuestLogOpen: (questLogOpen: boolean) => void;
+  toggleQuestLog: () => void;
 }
 
 /**
@@ -33,6 +37,7 @@ export const useUIStore = create<UIState>((set) => ({
   buildMode: false,
   minimapOpen: true,
   settingsOpen: false,
+  questLogOpen: false,
 
   setClock: (clock) => set({ clock }),
 
@@ -51,4 +56,8 @@ export const useUIStore = create<UIState>((set) => ({
   setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
 
   toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
+
+  setQuestLogOpen: (questLogOpen) => set({ questLogOpen }),
+
+  toggleQuestLog: () => set((state) => ({ questLogOpen: !state.questLogOpen })),
 }));

@@ -3,6 +3,7 @@ import type {
   DialogueComponent,
   Entity,
   InventoryComponent,
+  QuestComponent,
   ShopComponent,
   StatsComponent,
 } from "@worldnest/game-engine";
@@ -26,6 +27,13 @@ export interface SoundState {
   dialogueVersion: number;
   /** `ShopComponent.version`; bumped by an accepted trade and by open/close. */
   shopVersion: number;
+  /** `QuestComponent.version`; bumped by a quest taken on, progressed or paid out. */
+  questVersion: number;
+  /**
+   * Requests the engine turned down, shop and quest together. Only the total
+   * matters: one refusal is one apologetic chime whatever refused it.
+   */
+  refusalCount: number;
   phase: DayPhase;
 }
 
@@ -60,6 +68,10 @@ export function diffCues(prev: SoundState | null, next: SoundState): SoundCue[] 
   // A till chime for a trade — and for the panel opening, which is the same
   // "coins are involved now" moment to a player
   if (next.shopVersion > prev.shopVersion) cues.push("shop");
+  // A quest taken on, moved along or handed in
+  if (next.questVersion > prev.questVersion) cues.push("quest");
+  // Last, so a refused purchase is heard after whatever else the frame did
+  if (next.refusalCount > prev.refusalCount) cues.push("deny");
 
   return cues;
 }
@@ -78,6 +90,7 @@ export function readSoundState(
   const stats = playerEntity.getComponent<StatsComponent>("stats");
   const dialogue = playerEntity.getComponent<DialogueComponent>("dialogue");
   const shop = playerEntity.getComponent<ShopComponent>("shop");
+  const quest = playerEntity.getComponent<QuestComponent>("quest");
 
   return {
     inventoryVersion: inventory?.version ?? 0,
@@ -86,6 +99,8 @@ export function readSoundState(
     chatCount,
     dialogueVersion: dialogue?.version ?? 0,
     shopVersion: shop?.version ?? 0,
+    questVersion: quest?.version ?? 0,
+    refusalCount: (shop?.refusals ?? 0) + (quest?.refusals ?? 0),
     phase,
   };
 }

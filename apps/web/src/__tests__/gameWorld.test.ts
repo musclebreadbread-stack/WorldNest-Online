@@ -4,6 +4,7 @@ import {
   CROP_DEFINITIONS,
   InputComponent,
   PositionComponent,
+  QUEST_DEFINITIONS,
   TILE_PROPERTIES,
   TileType,
   WorldManager,
@@ -19,13 +20,16 @@ import type {
   CropComponent,
   DialogueComponent,
   Entity,
+  Facing,
   InteractionComponent,
   InventoryComponent,
   NpcComponent,
+  QuestComponent,
   RemoteInterpolationComponent,
   StatsComponent,
+  WalletComponent,
 } from "@worldnest/game-engine";
-import { TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
+import { STARTING_COINS, TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
 import {
   createGameWorld,
   createRemotePlayerEntity,
@@ -439,6 +443,126 @@ describe("NPC wiring", () => {
     expect(position.x + collider.width / 2).toBeLessThanOrEqual(
       NPC.npcTileX * TILE_SIZE,
     );
+  });
+});
+
+describe("quest wiring", () => {
+  /**
+   * Stand next to a named NPC, facing them. Their tile comes from a spiral search
+   * over generated terrain, so it is searched for rather than written down, and
+   * any of the four neighbours will do.
+   */
+  function approachTo(npcId: string) {
+    const probe = createGameWorld(BOOTSTRAP);
+    probe.world.update(1 / 60);
+
+    const npcEntity = probe.world.getEntity(npcEntityId(npcId));
+    if (!npcEntity) throw new Error(`${npcId} was never placed`);
+    const npc = npcEntity.getComponent<NpcComponent>("npc")!;
+
+    const neighbours: Array<[number, number, Facing]> = [
+      [-1, 0, "right"],
+      [1, 0, "left"],
+      [0, -1, "down"],
+      [0, 1, "up"],
+    ];
+
+    for (const [dx, dy, facing] of neighbours) {
+      const tileX = npc.tileX + dx;
+      const tileY = npc.tileY + dy;
+      if (probe.systems.npc.getNpcAt(tileX, tileY)) continue;
+      if (!TILE_PROPERTIES[probe.worldManager.getTileAt(tileX, tileY)].walkable) continue;
+
+      return {
+        facing,
+        spawnX: tileX * TILE_SIZE + TILE_SIZE / 2,
+        spawnY: tileY * TILE_SIZE + TILE_SIZE / 2,
+      };
+    }
+
+    throw new Error(`no walkable tile beside ${npcId}`);
+  }
+
+  it("should run a whole quest from the giver's dialogue to the reward", () => {
+    const approach = approachTo("questgiver_ada");
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: approach.spawnX,
+      spawnY: approach.spawnY,
+    });
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    const dialogue =
+      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const quest = context.playerEntity.getComponent<QuestComponent>("quest")!;
+    const inventory =
+      context.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const wallet = context.playerEntity.getComponent<WalletComponent>("wallet")!;
+    interaction.facing = approach.facing;
+
+    // Walk up and press E: Ada starts talking
+    interaction.interactRequested = true;
+    context.world.update(1 / 60);
+    expect(dialogue.activeNpcId).toBe("questgiver_ada");
+
+    // Taking the quest on is a request, exactly as the dialogue action raises it
+    quest.requestedOffer = "collect_wood";
+    context.world.update(1 / 60);
+    expect(quest.entries.collect_wood).toEqual({ state: "active", progress: 0 });
+
+    // Progress is polled off the inventory, so gathering is all it takes
+    addItem(inventory, "wood", 5);
+    context.world.update(1 / 60);
+    expect(quest.entries.collect_wood.progress).toBe(5);
+
+    const rewards = QUEST_DEFINITIONS.collect_wood.rewards;
+    const seedReward = rewards.items[0];
+    quest.requestedTurnIn = "collect_wood";
+    context.world.update(1 / 60);
+
+    expect(quest.entries.collect_wood.state).toBe("completed");
+    expect(wallet.coins).toBe(STARTING_COINS + rewards.coins);
+    expect(countItem(inventory, seedReward.itemId)).toBe(
+      STARTING_WHEAT_SEEDS + seedReward.quantity,
+    );
+    expect(quest.refusals).toBe(0);
+  });
+
+  it("should finish a talk objective by actually going and talking", () => {
+    const approach = approachTo("villager_pip");
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: approach.spawnX,
+      spawnY: approach.spawnY,
+    });
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    const quest = context.playerEntity.getComponent<QuestComponent>("quest")!;
+    interaction.facing = approach.facing;
+
+    quest.requestedOffer = "greet_pip";
+    context.world.update(1 / 60);
+    expect(quest.entries.greet_pip.progress).toBe(0);
+
+    // NpcSystem reports the greeting and QuestSystem, one system later, records it
+    interaction.interactRequested = true;
+    context.world.update(1 / 60);
+
+    expect(quest.entries.greet_pip.progress).toBe(1);
+  });
+
+  it("should refuse a hand-in whose objective is not met, and keep the quest", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    const quest = context.playerEntity.getComponent<QuestComponent>("quest")!;
+    const wallet = context.playerEntity.getComponent<WalletComponent>("wallet")!;
+
+    quest.requestedOffer = "collect_wood";
+    quest.requestedTurnIn = "collect_wood";
+    context.world.update(1 / 60);
+
+    expect(quest.entries.collect_wood.state).toBe("active");
+    expect(wallet.coins).toBe(STARTING_COINS);
+    expect(quest.refusals).toBe(1);
   });
 });
 

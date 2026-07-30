@@ -14,6 +14,7 @@ import {
   StatsComponent,
   InteractionComponent,
   DialogueComponent,
+  QuestComponent,
   ShopComponent,
   WalletComponent,
   AnimationComponent,
@@ -26,6 +27,7 @@ import {
   StatsSystem,
   NpcSystem,
   ShopSystem,
+  QuestSystem,
   PlantSystem,
   CropGrowthSystem,
   BuildSystem,
@@ -98,6 +100,7 @@ export interface GameWorldSystems {
   stats: StatsSystem;
   npc: NpcSystem;
   shop: ShopSystem;
+  quest: QuestSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
   build: BuildSystem;
@@ -172,7 +175,18 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
 
   // NPCs own their own occupancy index; composed with the structures below so a
   // villager is as solid as a fence without collision knowing either exists.
-  const npc = new NpcSystem(worldManager, (entity) => world.addEntity(entity));
+  // Starting a conversation is also reported to the quest layer, which is how a
+  // `talk` objective is judged — a visit is a moment, not a state to poll.
+  const npc = new NpcSystem(
+    worldManager,
+    (entity) => world.addEntity(entity),
+    undefined,
+    (npcId) => quest.recordTalk(npcId),
+  );
+
+  // Quests poll the inventory themselves and the structure index through this
+  // getter, so no system has to announce anything.
+  const quest = new QuestSystem((itemId) => build.countStructures(itemId));
 
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
@@ -191,6 +205,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // Opening a shop is something a conversation asks for, so it is resolved one
     // system after the conversation itself
     shop: new ShopSystem(),
+    // Quests run after both, so a quest taken on in a conversation and a
+    // greeting that finishes one both land in the frame they happened
+    quest,
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
     build,
@@ -213,6 +230,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.stats);
   world.addSystem(systems.npc);
   world.addSystem(systems.shop);
+  world.addSystem(systems.quest);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
   world.addSystem(systems.build);
@@ -249,6 +267,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new DialogueComponent())
     .addComponent(new WalletComponent(STARTING_COINS))
     .addComponent(new ShopComponent())
+    .addComponent(new QuestComponent())
     .addComponent(new AnimationComponent());
 
   world.addEntity(playerEntity);

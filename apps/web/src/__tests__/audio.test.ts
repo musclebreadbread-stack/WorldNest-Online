@@ -365,6 +365,8 @@ const QUIET: SoundState = {
   chatCount: 2,
   dialogueVersion: 6,
   shopVersion: 3,
+  questVersion: 2,
+  refusalCount: 1,
   phase: "day",
 };
 
@@ -432,6 +434,16 @@ describe("diffCues", () => {
   it("should emit shop for a trade or for the shop panel opening", () => {
     expect(diffCues(QUIET, { ...QUIET, shopVersion: 4 })).toEqual(["shop"]);
     expect(diffCues(QUIET, { ...QUIET, shopVersion: 3 })).toEqual([]);
+  });
+
+  it("should emit quest for a quest taken on, progressed or handed in", () => {
+    expect(diffCues(QUIET, { ...QUIET, questVersion: 3 })).toEqual(["quest"]);
+    expect(diffCues(QUIET, { ...QUIET, questVersion: 2 })).toEqual([]);
+  });
+
+  it("should emit deny for a request the engine turned down", () => {
+    expect(diffCues(QUIET, { ...QUIET, refusalCount: 2 })).toEqual(["deny"]);
+    expect(diffCues(QUIET, { ...QUIET, refusalCount: 1 })).toEqual([]);
   });
 
   it("should not emit anything for a phase change on its own", () => {
