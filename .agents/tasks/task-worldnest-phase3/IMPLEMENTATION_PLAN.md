@@ -668,7 +668,7 @@ table have to exist first.
 
 ## Phase J — Documentation, deployment, the Korean guide and the final gate (items 28-31)
 
-- [ ] 28. Write the deployment guide and pin the Vercel build. `docs/DEPLOYMENT.md` takes a maintainer
+- [x] 28. Write the deployment guide and pin the Vercel build. `docs/DEPLOYMENT.md` takes a maintainer
       from a fresh clone to a live public URL: prerequisites (Node 22, pnpm 10, GitHub, Vercel,
       Supabase accounts); create the Supabase project and copy the URL and anon key; run `001`, `002`,
       `003` and optionally the test-accounts seed in the SQL Editor; disable email confirmation for
@@ -688,7 +688,7 @@ table have to exist first.
       dependencies, and `pnpm test:e2e` (whose `webServer` is `pnpm --filter @worldnest/web start`)
       passes 3/3, which is the same production server Vercel runs.
 
-- [ ] 29. Update the English documentation for everything Phase 3 added. `docs/ARCHITECTURE.md`: the
+- [x] 29. Update the English documentation for everything Phase 3 added. `docs/ARCHITECTURE.md`: the
       biome and cave layers with their noise channels and thresholds, the four new tile types, the
       minimap sampler, the NPC/dialogue/quest/shop systems with their place in the registration order,
       the audio and touch-input paths, the i18n design, migration `003` with its RLS shape, the
@@ -708,7 +708,7 @@ table have to exist first.
       to repad the markdown tables, leave them compact and consistent with their neighbours as Phase 2
       item 26 did (`pnpm format` is still a stale gate — do not run it).
 
-- [ ] 30. Rewrite the Korean guide as the single consolidated manual-work document, and make the `.doc`
+- [x] 30. Rewrite the Korean guide as the single consolidated manual-work document, and make the `.doc`
       mirror checkable (decision D18). `docs/SETUP_GUIDE_KR.md` gains: a `003` migration section; a
       "테스트 계정 시드" section explaining that pasting `seed/test_accounts.sql` into the SQL Editor
       creates three ready-to-use logins (`tester1@worldnest.test` / `worldnest123`) and that it must
@@ -730,7 +730,7 @@ table have to exist first.
       Verify: `pnpm docs:check` — exits 0 and prints the matched heading count; deliberately break one
       heading once to confirm it exits non-zero, then restore it. `pnpm lint` stays clean.
 
-- [ ] 31. Final gate. Run every check and record the results, then append an
+- [x] 31. Final gate. Run every check and record the results, then append an
       "Implementation notes" section to this plan file covering the deviations from the plan text, in
       the same style as the five Phase 2 sections, so the next delegation inherits an accurate record.
       Files: `.agents/tasks/task-worldnest-phase3/IMPLEMENTATION_PLAN.md`
@@ -1679,3 +1679,166 @@ Fixed uuids `11111111-2222-4333-8444-55555555000{1,2,3}`, `email_confirmed_at` s
   rather than a gap.
 - Nothing in items 24-27 changed a component, a system or the registration order, so item 29's
   documented-order test still uses the 17-system list from the items 19-23 notes unchanged.
+
+---
+
+## Implementation notes for items 28-31 (the final phase)
+
+Phase J is complete, and with it **the whole Phase 3 plan: all 31 items are done.** Commits on
+`feat/mvp-foundation`, in order: `5624b7a` (28), `65fd81a` (29), `a2700fd` (30), and the `docs:`
+commit carrying this section (31).
+
+### Final gate results
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, **0 cached** (cache cleared first), no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 24, game-engine 263, web **290** = **577** (576 after item 27; the 213 baseline is now 2.7x) |
+| `pnpm test:e2e` | 3/3 chromium specs, actually executed against `next start` |
+| `pnpm db:verify` | 6 SQL files applied, 18 assertions, exit 0 |
+| `pnpm docs:check` | **62 headings** match between the `.md` and the `.doc` |
+| `docker build -t worldnest:phase3 .` | image builds |
+
+The only new test is item 29's registration-order assertion, which is the point: items 28, 30 and 31
+are documentation and tooling, and the code they describe was already covered.
+
+File sizes against the ~300-line cap are unchanged by this phase — no source file was touched except
+`gameWorld.test.ts` (639 → 673, a test file, already over the cap before this phase).
+
+### Deviations from the plan text
+
+- **Item 28 documents the Vercel Root Directory as the *repository root*, not `apps/web`.** The plan
+  asked for both a root `vercel.json` and a Root Directory of `apps/web`, and those two are mutually
+  exclusive: Vercel reads `vercel.json` from whatever the Root Directory is set to, so a root file is
+  simply ignored when the setting points at `apps/web`. The guide therefore makes the root the primary
+  path (which is what `vercel.json` configures) and keeps the `apps/web` + `cd ../..` recipe — the one
+  the old Korean guide had — as a documented alternative table. The mismatch between the two is also
+  now a troubleshooting row in both guides, because it is exactly how the
+  `Cannot find module '@worldnest/shared'` build failure happens.
+- **`vercel.json` carries no `$schema` key.** The obvious `"$schema": "https://openapi.vercel.sh/vercel.json"`
+  line could not be written from this environment. Nothing depends on it; it is editor autocomplete only.
+- **Item 28 added a "Deploying the container instead" appendix** the plan did not ask for, because the
+  `Dockerfile` exists and its one real trap deserves writing down: `NEXT_PUBLIC_*` values are inlined
+  at **build** time, so passing them to `docker run` does nothing unless they were also present during
+  `docker build`.
+- **The `next start` standalone warning was reproduced verbatim while verifying item 28**
+  (`⚠ "next start" does not work with "output: standalone" configuration`), so the sentence calling it
+  expected and harmless is quoting something that actually happened rather than predicting it.
+- **Item 29 continued `ARCHITECTURE.md`'s own D-numbering (D9-D19) instead of importing this plan's
+  D1-D18.** The two schemes would have collided on every number — that file's D1 is "collision as a
+  velocity veto", this plan's D1 is biomes. The mapping, for anyone cross-reading: plan D1→doc D9,
+  D2→D10, D6→D11, D7→D12, D9→D14, D10→D15, D11→D16, D12→D17, D14→D18, D15→D19, and plan D13 kept its
+  number because `ARCHITECTURE.md` had no D13 and the seam is referred to as "D13" in four places in
+  the code comments. Plan D8 became doc D8's replacement text ("one migration per phase").
+- **The documented-order test pins `Object.keys(context.systems)`, not `World`'s internal list.**
+  `World.systems` is private with no accessor, and adding one purely for a test would widen the engine's
+  public surface for a documentation check. The record's literal order and the `world.addSystem` calls
+  sit ten lines apart in one file, so they cannot plausibly drift from each other; what *could* drift is
+  the doc, and that is what the test catches.
+- **The engine has 21 components and 17 systems**, not the 20 the hand-off note estimated.
+  `ARCHITECTURE.md`'s component table now lists all 21 (`NpcComponent`, `DialogueComponent`,
+  `WalletComponent`, `ShopComponent`, `QuestComponent` were the additions).
+- **No policy count appears in any document**, per the items 24-27 note. `ARCHITECTURE.md` says
+  explicitly to treat `pnpm db:verify` as the authoritative statement, and explains why: a number in
+  prose drifts, and a dropped policy is a silent security regression.
+- **`CONTRIBUTING.md` was the last place still advertising `pnpm format`** ("Run `pnpm format` before
+  committing, or configure your editor to format on save"). It now says the opposite, with the reason
+  and the `npx prettier --check` workaround, and its check-suite step lists `test:e2e`, `db:verify`,
+  `docs:check` and `docker build` with when each applies. That closes a real trap: a contributor
+  following the old line would have produced a ~49-file diff.
+- **Prettier and emphasis**: prettier normalises `*emphasis*` to `_emphasis_`. New prose uses `_`, and
+  the one pre-existing `*modifications*` in `ARCHITECTURE.md` was converted too, so that file is now
+  clean apart from table repadding. `docs/DEPLOYMENT.md`, `README.md`, `CONTRIBUTING.md`,
+  `docs/SETUP_GUIDE_KR.md` and `scripts/check-kr-doc-sync.mjs` are all **byte-identical to prettier's
+  output except for markdown-table padding** (`check-kr-doc-sync.mjs` is byte-identical, full stop —
+  `npx prettier --check` passes on it). Two edits were needed to get the Korean guide there: a blank
+  line before the ordered lists that follow `**해결**:`, and the closing italic footer. `pnpm format`
+  was not run.
+- **Item 30's Korean guide is a rewrite, not an edit.** It went from 8 sections to 10, and the section
+  numbering shifted (the old "3. 데이터베이스 테이블 생성" pasted `001`'s SQL inline; the new
+  "3. 데이터베이스 마이그레이션 실행" points at all three files instead, because inlining one migration
+  and linking the others was how the document went stale in the first place). New sections: **4. 테스트
+  계정 만들기** and **10. 직접 해야 하는 작업 체크리스트**, plus **9** rebuilt as the full
+  fresh-clone-to-live-URL path with the Auth redirect step as its own numbered sub-step (9-4) and a
+  cross-reference from the troubleshooting row.
+- **The `### 언어 설정` debt from `272e15b` is cleared.** Both files were rewritten together and
+  `pnpm docs:check` passes at 62 headings, so the pair starts from parity.
+- **Troubleshooting stayed as eleven `###` subsections rather than becoming a table.** A table would
+  have cut the mirror's heading count by nine, but each entry has a 원인 + multi-step 해결 shape that a
+  table cell reads badly, and the `.doc`'s existing style is subsection-per-problem. Three entries are
+  new: the Auth allow-list, the Vercel monorepo root directory, and the autoplay policy. A fourth was
+  added beyond the plan — "코인과 퀘스트만 복원되지 않음" — because a missing `003` produces a
+  *partial* restore, which reads like a bug rather than a missing migration.
+- **Headings in both files deliberately avoid inline code, links and bold.** The normaliser strips all
+  three (and HTML tags and entities), so it would not matter, but a heading whose plain text is its
+  markup is one less thing to get wrong when mirroring by hand.
+- **`check-kr-doc-sync.mjs` skips fenced code blocks in the markdown.** Without that, a `## ` inside a
+  shell block would be read as a heading and could never be mirrored. It reports the **first**
+  divergence rather than a diff, because with the headings in order the first mismatch is always the
+  edit that was not mirrored. Both failure modes were exercised during item 30 and then restored: a
+  **renamed** heading (`### 소리 설정` → `### 소리 설정 (임시 변경)`, caught at heading 34) and an
+  **inserted** heading (caught at 35).
+- **The `.doc` gained one CSS class, `.danger`** (red, `#e53e3e`), used for the two places the
+  development-only nature of the seed password has to be impossible to skim past. Everything else uses
+  the existing `.warning` / `.success` / `.checkbox` / `blockquote` vocabulary.
+- **`pnpm db:verify` is still not in CI, and the `services: postgres` option from the items 24-27
+  notes was considered and rejected.** `scripts/verify-sql.sh` starts its own container and runs every
+  statement through `docker exec … psql`, with `docker cp` to get the SQL inside; a `services:` block
+  provides a Postgres on the host network instead, so adopting it means rewriting the script to take a
+  connection string and to stop being runnable by a maintainer who has only Docker. That is a real
+  change to the thing being verified, not a CI tweak, so `docs:check` went into the existing `ci` job
+  alone. Recorded as a deferral, not a gap.
+
+### No fabricated deployment URL — read this before promising one
+
+Nothing in this pipeline could create a live test server, and nothing pretended to. There is no
+Vercel credential and no reachable hosted Supabase project in the sandbox, so a URL written here
+would be a URL that 404s. Instead:
+
+- `docs/DEPLOYMENT.md` and `docs/SETUP_GUIDE_KR.md` section 9 take a maintainer from a fresh clone to
+  their own live URL, and the three commands Vercel itself runs were **executed here** and pass.
+- The Korean guide ends section 9 with a fill-in table
+  ("테스트 계정과 테스트 서버 주소 정리표") holding the local address, the three seeded accounts
+  verbatim, and a blank `https://__________.vercel.app` line to complete after deploying.
+- The "이 가이드로 얻는 것" box at the top of the Korean guide says plainly, in the first screen a
+  reader sees, that the link cannot be generated for them and why.
+
+### What still needs a maintainer with real credentials and a browser
+
+Unchanged in substance from the earlier phases, now written down in both guides as checklists rather
+than as caveats:
+
+1. **The seeded accounts signing in through GoTrue.** `pnpm db:verify` proves the rows, the identities
+   and the password hash are right; it cannot prove GoTrue accepts them, because the `auth` schema in
+   the harness is a test double.
+2. **The deployed URL end to end** — sign-up, `/game`, reload-persistence, two tabs for chat and
+   remote players. `docs/DEPLOYMENT.md` step 10 and the Korean guide's "배포 후 확인 목록" are the
+   same nine checks in two languages.
+3. **The Supabase Auth Site URL / redirect allow-list actually letting sign-in through.** This is the
+   single most common deployment failure and it is the one thing no local check can see.
+4. **That the audio is audible and pleasant** (no audio device here) and **that the touch controls work
+   under a real thumb** (no touch device, and Playwright cannot reach `/game`).
+5. **Visual layout and colour** on a real screen, including the shop and quest panels on a phone.
+6. **Chat moderation on a public server.** There is no automated profanity filter; the Korean guide's
+   보호자·교사용 안내 table says so explicitly rather than leaving it implied.
+
+### Deferred, and still true after item 31
+
+Everything in "Assumptions and known gaps" above stands. The short list of what a Phase 4 would pick
+up, in the order the code makes it cheap:
+
+- **Anti-cheat / server authority.** Postgres RPC or Edge Functions. Every other item on this list is
+  smaller than this one.
+- **A real cave dimension** (a layer key threaded through the override map, `world_modifications`,
+  chunk keys, the renderer and persistence) and **NPC wandering or schedules**, both of which need
+  server coordination.
+- **Biome-dependent crops, weather, temperature effects.** The temperature channel and `getBiomeAt`
+  already exist, so these are additive.
+- **A `build` objective baseline.** A player holding two fences completes `build_fence` instantly;
+  fixing it means persisting a per-entry baseline, and `player_quests` stores only `state` and
+  `progress`.
+- **`placeableTile` on `ItemDefinition` is still unused.**
+- **Reconciling `.prettierrc` with the tree's wrapping** — one mechanical commit, still outstanding,
+  and until it lands `pnpm format` remains a trap that `CONTRIBUTING.md` now warns about.
+- **`pnpm db:verify` in CI**, if the script is first taught to accept a connection string.
