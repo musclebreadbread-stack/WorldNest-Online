@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
 import { RealtimeManager } from "@worldnest/database";
@@ -15,6 +15,7 @@ export function GameCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const realtimeRef = useRef<RealtimeManager | null>(null);
+  const [gameReady, setGameReady] = useState(false);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
   const user = useAuthStore((s) => s.user);
 
@@ -34,6 +35,11 @@ export function GameCanvas() {
         setPlayerPosition(data.x, data.y, data.chunkX, data.chunkY);
       },
     );
+
+    // Track when the game scene is ready so the realtime wiring effect can fire
+    game.events.once("game-ready", () => {
+      setGameReady(true);
+    });
   }, [setPlayerPosition]);
 
   useEffect(() => {
@@ -49,7 +55,7 @@ export function GameCanvas() {
 
   // Wire RealtimeManager to the GameScene once user is authenticated and game is ready
   useEffect(() => {
-    if (!user || !gameRef.current) return;
+    if (!user || !gameRef.current || !gameReady) return;
 
     const game = gameRef.current;
 
@@ -79,7 +85,7 @@ export function GameCanvas() {
         realtimeRef.current = null;
       }
     };
-  }, [user]);
+  }, [user, gameReady]);
 
   return <div ref={containerRef} className="h-full w-full" />;
 }

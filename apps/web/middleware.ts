@@ -9,7 +9,7 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   // Supabase stores auth in cookies with the pattern `sb-<project-ref>-auth-token`
   const hasAuthCookie = request.cookies.getAll().some(
-    (cookie) => cookie.name.includes("auth-token") || cookie.name.includes("sb-") && cookie.name.includes("-auth-token"),
+    (cookie) => /^sb-.*-auth-token/.test(cookie.name),
   );
 
   if (!hasAuthCookie) {
