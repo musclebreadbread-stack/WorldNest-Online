@@ -13,9 +13,11 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0"
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --max-warnings=0",
+    "test": "vitest run"
   },
   "devDependencies": {
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.10"
   }
 }

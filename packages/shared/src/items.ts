@@ -1,0 +1,41 @@
+/**
+ * Item catalogue shared by the game engine (inventory, harvest yields) and the
+ * database layer (the `inventory` jsonb column). `shared` is the only package
+ * both of them depend on, so the catalogue lives here.
+ */
+export type ItemId =
+  | "wood"
+  | "stone"
+  | "fiber"
+  | "flower"
+  | "wheat_seed"
+  | "wheat"
+  | "fence"
+  | "chest";
+
+export interface ItemDefinition {
+  id: ItemId;
+  displayName: string;
+  stackSize: number;
+  /**
+   * Numeric `TileType` this item turns its target tile into when placed.
+   * Kept as a plain number because `TileType` lives in `@worldnest/game-engine`,
+   * which depends on this package.
+   */
+  placeableTile?: number;
+  /** Set when the item places a structure entity rather than changing the tile. */
+  placeableStructure?: boolean;
+}
+
+export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
+  wood: { id: "wood", displayName: "Wood", stackSize: 99 },
+  stone: { id: "stone", displayName: "Stone", stackSize: 99 },
+  fiber: { id: "fiber", displayName: "Fiber", stackSize: 99 },
+  flower: { id: "flower", displayName: "Flower", stackSize: 99 },
+  wheat_seed: { id: "wheat_seed", displayName: "Wheat Seed", stackSize: 50 },
+  wheat: { id: "wheat", displayName: "Wheat", stackSize: 99 },
+  fence: { id: "fence", displayName: "Fence", stackSize: 50, placeableStructure: true },
+  chest: { id: "chest", displayName: "Chest", stackSize: 10, placeableStructure: true },
+};
+
+export const ITEM_IDS = Object.keys(ITEM_DEFINITIONS) as ItemId[];

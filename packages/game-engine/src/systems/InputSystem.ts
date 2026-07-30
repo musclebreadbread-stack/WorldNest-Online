@@ -1,10 +1,9 @@
+import { PLAYER_SPEED } from "@worldnest/shared";
 import { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import { InputComponent } from "../components/InputComponent";
 import { VelocityComponent } from "../components/VelocityComponent";
 import { PlayerComponent } from "../components/PlayerComponent";
-
-const PLAYER_SPEED = 200; // pixels per second
 
 /**
  * InputSystem translates keyboard input state into velocity for the local player.
