@@ -11,6 +11,7 @@ import {
 const EXPECTED_IDS: ItemId[] = [
   "wood",
   "stone",
+  "ore",
   "fiber",
   "flower",
   "wheat_seed",
@@ -31,6 +32,17 @@ describe("ITEM_DEFINITIONS", () => {
       expect(definition.displayName.length).toBeGreaterThan(0);
       expect(definition.stackSize).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  it("should carry the ore mined from cave tiles", () => {
+    // Mining ore is the only source of this item, so the cave tiles in the
+    // generator and the catalogue have to agree on its id
+    expect(ITEM_DEFINITIONS.ore).toEqual({
+      id: "ore",
+      displayName: "Ore",
+      stackSize: 99,
+    });
+    expect(isItemId("ore")).toBe(true);
   });
 
   it("should recognise catalogue ids and reject anything else", () => {

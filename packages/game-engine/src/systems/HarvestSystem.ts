@@ -26,8 +26,9 @@ export type SetTileOverride = (
  * A crop growing on the faced tile is harvested first; otherwise the tile itself
  * must be harvestable, the entity must have the energy for it and room for the
  * yield, or the request is dropped without consuming the tile. Successful tile
- * harvests replace the tile with grass through the modification overlay, never by
- * touching the generator.
+ * harvests replace the tile with the yield's `replacementTile` (grass unless the
+ * catalogue says otherwise) through the modification overlay, never by touching
+ * the generator.
  */
 export class HarvestSystem extends System {
   private tileQuery: TileQuery;
@@ -76,7 +77,7 @@ export class HarvestSystem extends System {
 
     addItem(inventory, yieldEntry.itemId, yieldEntry.quantity);
     stats.energy -= yieldEntry.energyCost;
-    this.setTileOverride(tileX, tileY, TileType.GRASS);
+    this.setTileOverride(tileX, tileY, yieldEntry.replacementTile ?? TileType.GRASS);
   }
 
   /**

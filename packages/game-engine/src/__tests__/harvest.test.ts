@@ -127,6 +127,19 @@ describe("HarvestSystem", () => {
     expect(countItem(flowerHarness.inventory, "flower")).toBe(1);
   });
 
+  it("should yield ore and leave cave floor behind, not grass", () => {
+    const harness = createHarness(TileType.ORE);
+    harness.interaction.interactRequested = true;
+
+    harness.system.update([harness.entity], 1 / 60);
+
+    expect(countItem(harness.inventory, "ore")).toBe(1);
+    // Mining underground must not plant grassland in the dark
+    expect(harness.overrides).toEqual([
+      [TARGET_TILE_X, PLAYER_TILE, TileType.CAVE_FLOOR],
+    ]);
+  });
+
   it("should clear the request but change nothing on a non-harvestable tile", () => {
     const harness = createHarness(TileType.WATER);
     harness.interaction.interactRequested = true;

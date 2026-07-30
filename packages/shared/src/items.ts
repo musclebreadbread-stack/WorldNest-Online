@@ -6,6 +6,7 @@
 export type ItemId =
   | "wood"
   | "stone"
+  | "ore"
   | "fiber"
   | "flower"
   | "wheat_seed"
@@ -34,6 +35,7 @@ export interface ItemDefinition {
 export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
   wood: { id: "wood", displayName: "Wood", stackSize: 99 },
   stone: { id: "stone", displayName: "Stone", stackSize: 99 },
+  ore: { id: "ore", displayName: "Ore", stackSize: 99 },
   fiber: { id: "fiber", displayName: "Fiber", stackSize: 99 },
   flower: { id: "flower", displayName: "Flower", stackSize: 99 },
   wheat_seed: { id: "wheat_seed", displayName: "Wheat Seed", stackSize: 50 },

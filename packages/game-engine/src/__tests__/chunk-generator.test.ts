@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ChunkGenerator } from "../world/ChunkGenerator";
+import { TileType } from "../world/Tilemap";
 import { CHUNK_SIZE } from "@worldnest/shared";
 
 describe("ChunkGenerator", () => {
@@ -60,8 +61,11 @@ describe("ChunkGenerator", () => {
     expect(differences).toBeGreaterThan(0);
   });
 
-  it("should only generate valid tile types (0-5)", () => {
+  it("should only generate known tile types, and never farmland", () => {
     const generator = new ChunkGenerator(42);
+    const knownTiles = new Set<TileType>(
+      Object.values(TileType).filter((v) => typeof v === "number") as TileType[],
+    );
 
     // Generate several chunks to check a wide range
     for (let cx = -2; cx <= 2; cx++) {
@@ -69,8 +73,9 @@ describe("ChunkGenerator", () => {
         const tiles = generator.generateChunk(cx, cy);
         for (const row of tiles) {
           for (const tile of row) {
-            expect(tile).toBeGreaterThanOrEqual(0);
-            expect(tile).toBeLessThanOrEqual(5);
+            expect(knownTiles.has(tile as TileType)).toBe(true);
+            // Farmland only ever comes from the modification overlay
+            expect(tile).not.toBe(TileType.FARMLAND);
           }
         }
       }
