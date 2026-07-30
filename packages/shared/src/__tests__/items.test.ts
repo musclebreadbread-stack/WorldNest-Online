@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { ITEM_DEFINITIONS, ITEM_IDS, type ItemId } from "../items";
+import {
+  ITEM_DEFINITIONS,
+  ITEM_IDS,
+  PLACEABLE_ITEM_IDS,
+  isPlaceableStructure,
+  type ItemId,
+} from "../items";
 
 const EXPECTED_IDS: ItemId[] = [
   "wood",
@@ -30,5 +36,15 @@ describe("ITEM_DEFINITIONS", () => {
     expect(ITEM_DEFINITIONS.fence.placeableStructure).toBe(true);
     expect(ITEM_DEFINITIONS.chest.placeableStructure).toBe(true);
     expect(ITEM_DEFINITIONS.wood.placeableStructure).toBeUndefined();
+  });
+
+  it("should give every placeable structure a texture key", () => {
+    expect(PLACEABLE_ITEM_IDS).toEqual(["fence", "chest"]);
+
+    for (const id of PLACEABLE_ITEM_IDS) {
+      expect(isPlaceableStructure(id)).toBe(true);
+      expect(ITEM_DEFINITIONS[id].structureTextureKey).toBeTruthy();
+    }
+    expect(isPlaceableStructure("wood")).toBe(false);
   });
 });

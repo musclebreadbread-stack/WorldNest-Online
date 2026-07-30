@@ -22,6 +22,7 @@ export {
   StatsComponent,
   InteractionComponent,
   CropComponent,
+  StructureComponent,
 } from "./components";
 export type { KeyState, InventorySlot } from "./components";
 
@@ -57,6 +58,8 @@ export {
   cropEntityId,
   cropStageAt,
   isCropMature,
+  BuildSystem,
+  structureEntityId,
 } from "./systems";
 export type {
   RenderData,
@@ -91,6 +94,7 @@ export type {
   TileHarvestYield,
   CropDefinition,
   TileQuery,
+  StructureQuery,
   ClockSnapshot,
   DayPhase,
 } from "./world";

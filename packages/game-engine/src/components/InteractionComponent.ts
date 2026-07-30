@@ -11,11 +11,16 @@ export class InteractionComponent extends Component {
   public interactRequested: boolean;
   /** Wall-clock ms of the last request; the input layer uses it as a cooldown. */
   public lastInteractAt: number;
+  /** Asked to place the selected item on the faced tile this frame. */
+  public buildRequested: boolean;
+  public lastBuildAt: number;
 
   constructor(facing: Facing = "down") {
     super("interaction");
     this.facing = facing;
     this.interactRequested = false;
     this.lastInteractAt = 0;
+    this.buildRequested = false;
+    this.lastBuildAt = 0;
   }
 }

@@ -1,9 +1,11 @@
+import { TILE_SIZE } from "@worldnest/shared";
 import { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import { PositionComponent } from "../components/PositionComponent";
 import { VelocityComponent } from "../components/VelocityComponent";
 import { ColliderComponent } from "../components/ColliderComponent";
 import type { TileQuery } from "../world/TileQuery";
+import type { StructureQuery } from "../world/StructureQuery";
 
 /**
  * CollisionSystem vetoes movement into non-walkable tiles.
@@ -11,13 +13,18 @@ import type { TileQuery } from "../world/TileQuery";
  * It runs between InputSystem and MovementSystem and zeroes the offending
  * velocity axis, so MovementSystem stays a plain integrator. Because the axes
  * are tested independently, walking diagonally into a wall slides along it.
+ *
+ * Player-placed structures are vetoed the same way, through the occupancy index
+ * `BuildSystem` maintains, so a fence blocks movement without changing the tile.
  */
 export class CollisionSystem extends System {
   private tileQuery: TileQuery;
+  private structures?: StructureQuery;
 
-  constructor(tileQuery: TileQuery) {
+  constructor(tileQuery: TileQuery, structures?: StructureQuery) {
     super(["position", "velocity", "collider"]);
     this.tileQuery = tileQuery;
+    this.structures = structures;
   }
 
   update(entities: Entity[], deltaTime: number): void {
@@ -57,10 +64,21 @@ export class CollisionSystem extends System {
     halfHeight: number,
   ): boolean {
     return (
-      !this.tileQuery.isWalkableAt(x - halfWidth, y - halfHeight) ||
-      !this.tileQuery.isWalkableAt(x + halfWidth, y - halfHeight) ||
-      !this.tileQuery.isWalkableAt(x - halfWidth, y + halfHeight) ||
-      !this.tileQuery.isWalkableAt(x + halfWidth, y + halfHeight)
+      this.isSolidAt(x - halfWidth, y - halfHeight) ||
+      this.isSolidAt(x + halfWidth, y - halfHeight) ||
+      this.isSolidAt(x - halfWidth, y + halfHeight) ||
+      this.isSolidAt(x + halfWidth, y + halfHeight)
+    );
+  }
+
+  /** Whether the world pixel is inside a non-walkable tile or a solid structure. */
+  private isSolidAt(pixelX: number, pixelY: number): boolean {
+    if (!this.tileQuery.isWalkableAt(pixelX, pixelY)) return true;
+    if (!this.structures) return false;
+
+    return this.structures.isBlockedByStructure(
+      Math.floor(pixelX / TILE_SIZE),
+      Math.floor(pixelY / TILE_SIZE),
     );
   }
 }
