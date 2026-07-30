@@ -70,6 +70,21 @@ export class BuildSystem extends System implements StructureQuery {
   }
 
   /**
+   * How many structures of a kind stand in the world. Injected into `QuestSystem`
+   * so a `build` objective can be judged by polling this index, with no event.
+   */
+  countStructures(itemId: ItemId): number {
+    let total = 0;
+
+    for (const entity of this.structures.values()) {
+      const structure = entity.getComponent<StructureComponent>("structure")!;
+      if (structure.itemId === itemId) total++;
+    }
+
+    return total;
+  }
+
+  /**
    * Whether the selected item could be placed on a tile. Shared with the client's
    * build ghost so the preview and the placement rules can never disagree.
    */

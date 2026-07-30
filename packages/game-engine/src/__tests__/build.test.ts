@@ -171,6 +171,21 @@ describe("BuildSystem", () => {
       harness.system.canPlaceAt(harness.inventory, TARGET_TILE_X, PLAYER_TILE),
     ).toBe(false);
   });
+
+  // What a `build` quest objective is judged by, polled rather than evented
+  it("should count the placed structures of one kind", () => {
+    const harness = createHarness();
+
+    expect(harness.system.countStructures("fence")).toBe(0);
+
+    harness.system.spawnStructure("fence", 1, 1);
+    harness.system.spawnStructure("fence", 2, 1);
+    harness.system.spawnStructure("chest", 3, 1);
+
+    expect(harness.system.countStructures("fence")).toBe(2);
+    expect(harness.system.countStructures("chest")).toBe(1);
+    expect(harness.system.countStructures("wood")).toBe(0);
+  });
 });
 
 describe("CollisionSystem with structures", () => {

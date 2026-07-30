@@ -24,6 +24,7 @@ export {
   CropComponent,
   DialogueComponent,
   NpcComponent,
+  QuestComponent,
   ShopComponent,
   WalletComponent,
   StructureComponent,
@@ -35,6 +36,8 @@ export type {
   KeyState,
   InventorySlot,
   AnimationState,
+  QuestEntry,
+  QuestState,
   ShopTrade,
   ShopTradeKind,
 } from "./components";
@@ -53,6 +56,30 @@ export {
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
 export type { Wallet } from "./shop";
+
+// Quests (pure; titles and descriptions are i18n keys — decision D8)
+export {
+  QUEST_DEFINITIONS,
+  QUEST_IDS,
+  activateQuest,
+  completeQuest,
+  getEntry,
+  getQuest,
+  isObjectiveMet,
+  objectiveProgress,
+  objectiveTarget,
+  offerQuest,
+  pollProgress,
+  recordTalk,
+} from "./quests";
+export type {
+  QuestDefinition,
+  QuestLog,
+  QuestObjective,
+  QuestProgressSource,
+  QuestReward,
+  QuestRewardItem,
+} from "./quests";
 
 // Interaction helpers
 export { FACING_OFFSETS, getFacedTile } from "./interaction";
@@ -108,6 +135,7 @@ export {
   NpcSystem,
   npcEntityId,
   ShopSystem,
+  QuestSystem,
   AnimationSystem,
 } from "./systems";
 export type {
@@ -118,6 +146,8 @@ export type {
   SetTileOverride,
   CropSource,
   MinuteGetter,
+  StructureCounter,
+  TalkListener,
 } from "./systems";
 
 // World Generation

@@ -16,6 +16,8 @@ export { InteractionComponent } from "./InteractionComponent";
 export { CropComponent } from "./CropComponent";
 export { DialogueComponent } from "./DialogueComponent";
 export { NpcComponent } from "./NpcComponent";
+export { QuestComponent } from "./QuestComponent";
+export type { QuestEntry, QuestState } from "./QuestComponent";
 export { ShopComponent } from "./ShopComponent";
 export type { ShopTrade, ShopTradeKind } from "./ShopComponent";
 export { WalletComponent } from "./WalletComponent";

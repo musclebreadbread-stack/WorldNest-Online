@@ -20,6 +20,15 @@ export function npcEntityId(npcId: string): string {
 }
 
 /**
+ * Told that the player has just started talking to an NPC.
+ *
+ * The seam quest `talk` objectives hang off: a visit is a moment rather than a
+ * state, so it cannot be polled the way an inventory can. `QuestSystem` supplies
+ * this and runs one system later, so a greeting lands in the frame it happened.
+ */
+export type TalkListener = (npcId: string) => void;
+
+/**
  * NpcSystem places the catalogue's NPCs and runs every conversation.
  *
  * It spawns on its first update rather than in the constructor, so the terrain it
@@ -37,6 +46,7 @@ export class NpcSystem extends System implements StructureQuery {
   private tileQuery: TileQuery;
   private addEntity: AddEntity;
   private definitions: readonly NpcDefinition[];
+  private onTalk?: TalkListener;
   /** Placed NPCs keyed by `"tileX,tileY"`. */
   private npcs: Map<string, Entity> = new Map();
   private spawned = false;
@@ -45,11 +55,13 @@ export class NpcSystem extends System implements StructureQuery {
     tileQuery: TileQuery,
     addEntity: AddEntity,
     definitions: readonly NpcDefinition[] = NPC_DEFINITIONS,
+    onTalk?: TalkListener,
   ) {
     super(["position", "interaction", "dialogue"]);
     this.tileQuery = tileQuery;
     this.addEntity = addEntity;
     this.definitions = definitions;
+    this.onTalk = onTalk;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -179,6 +191,9 @@ export class NpcSystem extends System implements StructureQuery {
       advanceDialogue(dialogue, 0);
     } else {
       openDialogue(dialogue, npc.npcId, npc.dialogueId);
+      // Reported on opening only: saying hello once is what a `talk` objective
+      // asks for, and every later option is the same conversation.
+      this.onTalk?.(npc.npcId);
     }
 
     return true;

@@ -232,7 +232,7 @@ describe("NpcSystem placement", () => {
 
 describe("NpcSystem conversations", () => {
   /** Put one NPC on a known tile with a player facing it. */
-  function createHarness() {
+  function createHarness(onTalk?: (npcId: string) => void) {
     const tileQuery = new FakeTileQuery();
     const system = new NpcSystem(tileQuery, () => undefined, [
       {
@@ -244,7 +244,7 @@ describe("NpcSystem conversations", () => {
         textureKey: "npc_villager",
         role: "villager",
       },
-    ]);
+    ], onTalk);
     const talker = createTalker(4, 4, "right");
 
     return { ...talker, system, tileQuery };
@@ -329,6 +329,35 @@ describe("NpcSystem conversations", () => {
     system.update([entity], 1 / 60);
 
     expect(dialogue.version).toBe(0);
+  });
+
+  // The seam a quest `talk` objective hangs off: a visit cannot be polled
+  it("should report a greeting once, when the conversation opens", () => {
+    const greeted: string[] = [];
+    const { entity, interaction, system } = createHarness((npcId) =>
+      greeted.push(npcId),
+    );
+
+    interaction.interactRequested = true;
+    system.update([entity], 1 / 60);
+    // A second interact advances the same conversation; it is not a new hello
+    interaction.interactRequested = true;
+    system.update([entity], 1 / 60);
+
+    expect(greeted).toEqual(["villager_pip"]);
+  });
+
+  it("should not report a greeting for an interact aimed at empty ground", () => {
+    const greeted: string[] = [];
+    const { entity, interaction, system } = createHarness((npcId) =>
+      greeted.push(npcId),
+    );
+    interaction.facing = "left";
+
+    interaction.interactRequested = true;
+    system.update([entity], 1 / 60);
+
+    expect(greeted).toEqual([]);
   });
 });
 
