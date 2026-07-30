@@ -2,6 +2,7 @@
 
 import { useGameStore } from "../stores/gameStore";
 import { BuildMenu } from "./BuildMenu";
+import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
@@ -43,6 +44,11 @@ export function GameUI() {
         </div>
       </div>
 
+      {/* Bottom-left: chat log and composer, above the coordinates */}
+      <div className="absolute bottom-20 left-4 pointer-events-auto">
+        <ChatPanel />
+      </div>
+
       {/* Bottom-left: coordinates */}
       <div className="absolute bottom-4 left-4 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-xs text-white font-mono">
@@ -54,7 +60,8 @@ export function GameUI() {
       {/* Bottom-right: controls hint */}
       <div className="absolute bottom-4 right-4 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
-          WASD / Arrows · 1-8 hotbar · I inventory · E harvest / plant · B build
+          WASD / Arrows · 1-8 hotbar · I inventory · E harvest / plant · B build ·
+          Enter chat
         </div>
       </div>
 

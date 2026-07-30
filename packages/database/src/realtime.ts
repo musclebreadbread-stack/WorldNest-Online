@@ -1,6 +1,7 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { PRESENCE_INTERVAL_MS } from "@worldnest/shared";
 import { createSupabaseClient } from "./client";
+import { CHAT_MESSAGE_MAX_LENGTH, type ChatMessage } from "./chat";
 
 export interface PlayerPosition {
   x: number;
@@ -19,6 +20,7 @@ export interface PlayerPresence {
 export type PlayerJoinedCallback = (player: PlayerPresence) => void;
 export type PlayerLeftCallback = (playerId: string) => void;
 export type PlayerMovedCallback = (playerId: string, position: PlayerPosition) => void;
+export type ChatMessageCallback = (message: ChatMessage) => void;
 
 /**
  * Realtime multiplayer module using Supabase Realtime Presence and Broadcast.
@@ -33,6 +35,8 @@ export class RealtimeManager {
   private onPlayerJoined?: PlayerJoinedCallback;
   private onPlayerLeft?: PlayerLeftCallback;
   private onPlayerMoved?: PlayerMovedCallback;
+  private onChatMessage?: ChatMessageCallback;
+  private chatSequence = 0;
 
   constructor(playerId: string, username: string) {
     this.playerId = playerId;
@@ -51,6 +55,17 @@ export class RealtimeManager {
     this.onPlayerJoined = onJoined;
     this.onPlayerLeft = onLeft;
     this.onPlayerMoved = onMoved;
+  }
+
+  /**
+   * Register the incoming chat handler.
+   *
+   * Deliberately separate from `setCallbacks`: the player callbacks are wired by
+   * the Phaser scene while chat is wired by React, and a single setter taking
+   * all four would let whichever ran last clear the other's handlers.
+   */
+  setChatCallback(onChat: ChatMessageCallback): void {
+    this.onChatMessage = onChat;
   }
 
   /**
@@ -91,6 +106,14 @@ export class RealtimeManager {
       };
       if (playerId !== this.playerId) {
         this.onPlayerMoved?.(playerId, position);
+      }
+    });
+
+    // Listen for chat broadcasts
+    this.channel.on("broadcast", { event: "chat" }, ({ payload }) => {
+      const message = payload as ChatMessage;
+      if (message.playerId !== this.playerId) {
+        this.onChatMessage?.(message);
       }
     });
 
@@ -142,6 +165,28 @@ export class RealtimeManager {
         position,
       },
     });
+  }
+
+  /**
+   * Broadcast a chat message to everyone else in the room and return the
+   * message that was sent, so the sender can show it immediately — broadcast is
+   * configured with `self: false`, so it never echoes back.
+   *
+   * The id is local: the durable row written by `sendMessage` gets its own, and
+   * these ids only ever serve as React keys within this session.
+   */
+  sendChat(body: string): ChatMessage {
+    const message: ChatMessage = {
+      id: `local-${this.playerId}-${++this.chatSequence}`,
+      playerId: this.playerId,
+      username: this.username,
+      body: body.slice(0, CHAT_MESSAGE_MAX_LENGTH),
+      createdAt: new Date().toISOString(),
+    };
+
+    this.channel?.send({ type: "broadcast", event: "chat", payload: message });
+
+    return message;
   }
 
   /**

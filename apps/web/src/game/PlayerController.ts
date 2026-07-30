@@ -8,6 +8,7 @@ import type {
   InventoryComponent,
 } from "@worldnest/game-engine";
 import { HOTBAR_SLOTS } from "@worldnest/shared";
+import { useChatStore } from "../stores/chatStore";
 import { useUIStore } from "../stores/uiStore";
 
 /** Minimum gap between interaction requests, so a held key does not spam. */
@@ -34,39 +35,48 @@ export class PlayerController {
 
     this.cursors = keyboard.createCursorKeys();
     this.moveKeys = {
-      W: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-      A: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-      S: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-      D: keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+      W: addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.W),
+      A: addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.A),
+      S: addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.S),
+      D: addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.D),
     };
 
     // Number keys 1..8 select the matching hotbar slot
     for (let index = 0; index < HOTBAR_SLOTS; index++) {
-      const key = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE + index);
-      key.on("down", () => this.selectHotbarSlot(index));
+      const key = addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.ONE + index);
+      key.on("down", this.whenPlaying(() => this.selectHotbarSlot(index)));
     }
 
-    keyboard
-      .addKey(Phaser.Input.Keyboard.KeyCodes.I)
-      .on("down", () => useUIStore.getState().toggleInventory());
+    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.I).on(
+      "down",
+      this.whenPlaying(() => useUIStore.getState().toggleInventory()),
+    );
 
-    keyboard
-      .addKey(Phaser.Input.Keyboard.KeyCodes.B)
-      .on("down", () => useUIStore.getState().toggleBuildMode());
+    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.B).on(
+      "down",
+      this.whenPlaying(() => useUIStore.getState().toggleBuildMode()),
+    );
 
     // E and Space both act on the faced tile
     for (const keyCode of [
       Phaser.Input.Keyboard.KeyCodes.E,
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     ]) {
-      keyboard.addKey(keyCode).on("down", () => this.requestInteract());
+      addUncapturedKey(keyboard, keyCode).on(
+        "down",
+        this.whenPlaying(() => this.requestInteract()),
+      );
     }
 
     // Q and left-click place the selected item, but only in build mode
-    keyboard
-      .addKey(Phaser.Input.Keyboard.KeyCodes.Q)
-      .on("down", () => this.requestBuild());
-    scene.input.on(Phaser.Input.Events.POINTER_DOWN, () => this.requestBuild());
+    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.Q).on(
+      "down",
+      this.whenPlaying(() => this.requestBuild()),
+    );
+    scene.input.on(
+      Phaser.Input.Events.POINTER_DOWN,
+      this.whenPlaying(() => this.requestBuild()),
+    );
   }
 
   /** Poll held keys into the input component. Call once per frame. */
@@ -74,6 +84,16 @@ export class PlayerController {
     if (!this.cursors || !this.moveKeys) return;
 
     const input = this.playerEntity.getComponent<InputComponent>("input")!;
+
+    // While the chat input has focus the movement keys are typing, not walking
+    if (isTyping()) {
+      input.keys.up = false;
+      input.keys.down = false;
+      input.keys.left = false;
+      input.keys.right = false;
+      return;
+    }
+
     input.keys.up = this.cursors.up.isDown || this.moveKeys.W.isDown;
     input.keys.down = this.cursors.down.isDown || this.moveKeys.S.isDown;
     input.keys.left = this.cursors.left.isDown || this.moveKeys.A.isDown;
@@ -134,6 +154,35 @@ export class PlayerController {
 
     selectSlot(inventory, index);
   }
+
+  /** Wrap a key handler so it is ignored while the player is typing in chat. */
+  private whenPlaying(handler: () => void): () => void {
+    return () => {
+      if (isTyping()) return;
+
+      handler();
+    };
+  }
+}
+
+/** Whether the chat composer currently holds keyboard focus. */
+function isTyping(): boolean {
+  return useChatStore.getState().inputFocused;
+}
+
+/**
+ * Bind a key without Phaser's default capture.
+ *
+ * Capture calls `preventDefault()` on the browser event, which would swallow
+ * every character typed into the chat input — including spaces and the letters
+ * bound to game actions. None of these keys have browser behaviour worth
+ * suppressing, unlike the arrow keys bound by `createCursorKeys`.
+ */
+function addUncapturedKey(
+  keyboard: Phaser.Input.Keyboard.KeyboardPlugin,
+  keyCode: number,
+): Phaser.Input.Keyboard.Key {
+  return keyboard.addKey(keyCode, false);
 }
 
 /** Facing implied by the currently held movement keys, or `null` when idle. */

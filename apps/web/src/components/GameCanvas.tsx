@@ -6,6 +6,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useUIStore } from "../stores/uiStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
+import { wireChat } from "../game/ChatBridge";
 import {
   CLOCK_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
@@ -28,6 +29,9 @@ export function GameCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const realtimeRef = useRef<RealtimeManager | null>(null);
+  const unwireChatRef = useRef<(() => void) | null>(null);
+  /** World the session persists to, or `null` without a database. */
+  const worldIdRef = useRef<string | null>(null);
   const [gameReady, setGameReady] = useState(false);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
   const addOnlinePlayer = useGameStore((s) => s.addOnlinePlayer);
@@ -51,6 +55,7 @@ export function GameCanvas() {
 
     // Saved world and player state, or null when Supabase is unconfigured
     const session = await loadSession(user?.id ?? null);
+    worldIdRef.current = session?.worldId ?? null;
 
     const game = createPhaserGame(containerRef.current, {
       playerId: user?.id ?? "local",
@@ -147,6 +152,9 @@ export function GameCanvas() {
       realtimeRef.current = manager;
 
       scene.setRealtimeManager(manager);
+      // Chat is wired from React rather than the scene: the composer lives in
+      // the HUD, and history has to be loaded before the first message arrives.
+      unwireChatRef.current = wireChat(manager, worldIdRef.current);
       manager.joinRoom("default");
     };
 
@@ -160,6 +168,8 @@ export function GameCanvas() {
 
     return () => {
       game.events.off("game-ready", wireRealtime);
+      unwireChatRef.current?.();
+      unwireChatRef.current = null;
       if (realtimeRef.current) {
         realtimeRef.current.leaveRoom();
         realtimeRef.current = null;
