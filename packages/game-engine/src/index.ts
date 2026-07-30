@@ -4,6 +4,7 @@ export { Entity } from "./ecs/Entity";
 export type { EntityChangeListener } from "./ecs/Entity";
 export { Component } from "./ecs/Component";
 export { System } from "./ecs/System";
+export type { AddEntity, RemoveEntityById } from "./ecs/World";
 
 // Components
 export {
@@ -20,6 +21,7 @@ export {
   InventoryComponent,
   StatsComponent,
   InteractionComponent,
+  CropComponent,
 } from "./components";
 export type { KeyState, InventorySlot } from "./components";
 
@@ -50,6 +52,11 @@ export {
   TimeSystem,
   StatsSystem,
   HarvestSystem,
+  PlantSystem,
+  CropGrowthSystem,
+  cropEntityId,
+  cropStageAt,
+  isCropMature,
 } from "./systems";
 export type {
   RenderData,
@@ -57,6 +64,8 @@ export type {
   NowFn,
   PhaseGetter,
   SetTileOverride,
+  CropSource,
+  MinuteGetter,
 } from "./systems";
 
 // World Generation
@@ -66,6 +75,8 @@ export {
   TileType,
   TILE_PROPERTIES,
   TILE_HARVEST_YIELD,
+  CROP_DEFINITIONS,
+  isSeed,
   getTileKey,
   parseTileKey,
   WorldClock,
@@ -78,6 +89,7 @@ export type {
   TileChangeCallback,
   TileProperties,
   TileHarvestYield,
+  CropDefinition,
   TileQuery,
   ClockSnapshot,
   DayPhase,

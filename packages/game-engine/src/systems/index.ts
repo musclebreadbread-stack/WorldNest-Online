@@ -13,3 +13,7 @@ export { StatsSystem } from "./StatsSystem";
 export type { PhaseGetter } from "./StatsSystem";
 export { HarvestSystem } from "./HarvestSystem";
 export type { SetTileOverride } from "./HarvestSystem";
+export { PlantSystem, cropEntityId } from "./PlantSystem";
+export type { CropSource } from "./PlantSystem";
+export { CropGrowthSystem, cropStageAt, isCropMature } from "./CropGrowthSystem";
+export type { MinuteGetter } from "./CropGrowthSystem";

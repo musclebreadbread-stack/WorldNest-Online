@@ -13,3 +13,4 @@ export { InventoryComponent } from "./InventoryComponent";
 export type { InventorySlot } from "./InventoryComponent";
 export { StatsComponent } from "./StatsComponent";
 export { InteractionComponent } from "./InteractionComponent";
+export { CropComponent } from "./CropComponent";

@@ -10,6 +10,11 @@ export enum TileType {
   FOREST = 3,
   STONE = 4,
   FLOWERS = 5,
+  /**
+   * Tilled soil. Only ever produced by the modification overlay (planting), never
+   * by the generator, so terrain generation stays deterministic.
+   */
+  FARMLAND = 6,
 }
 
 export interface TileProperties {
@@ -74,6 +79,14 @@ export const TILE_PROPERTIES: Record<TileType, TileProperties> = {
     harvestable: true,
     name: "flowers",
     color: 0xe91e63,
+  },
+  [TileType.FARMLAND]: {
+    walkable: true,
+    collidable: false,
+    buildable: true,
+    harvestable: false,
+    name: "farmland",
+    color: 0x8d6e63,
   },
 };
 

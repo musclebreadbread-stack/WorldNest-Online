@@ -3,6 +3,13 @@ import { System } from "./System";
 import type { EntityChangeListener } from "./Entity";
 
 /**
+ * Entity creation and removal handed to systems that spawn entities (planting,
+ * building) so they can stay decoupled from the World itself.
+ */
+export type AddEntity = (entity: Entity) => void;
+export type RemoveEntityById = (entityId: string) => void;
+
+/**
  * World class for the ECS framework.
  * The world manages all entities and systems.
  * Uses query caching to avoid O(N*S) filtering every frame.
