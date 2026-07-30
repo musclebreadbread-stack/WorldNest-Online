@@ -157,9 +157,29 @@ insert into public.worlds (name, seed) values ('Default World', 42);
 4. **Run** 버튼 클릭 (또는 Ctrl+Enter)
 5. "Success. No rows returned" 메시지가 나오면 성공!
 
+### 두 번째 마이그레이션 실행 (필수)
+
+게임플레이(지형 변경, 건축물, 농작물, 채팅)를 저장하려면 **두 번째 마이그레이션도 반드시** 실행해야 합니다.
+
+1. 저장소의 `packages/database/supabase/migrations/002_gameplay_schema.sql` 파일을 텍스트 에디터로 열기
+2. 내용을 **전체 복사**
+3. Supabase **SQL Editor** → **New query** 에 붙여넣고 **Run** 클릭
+
+이 마이그레이션이 만드는 것:
+
+| 항목 | 설명 |
+|------|------|
+| `handle_new_user()` 트리거 | 회원가입 시 `profiles`와 `player_state` 행을 자동 생성합니다. 이것이 없으면 저장 기능이 전혀 동작하지 않습니다. |
+| `world_modifications` | 플레이어가 변경한 타일만 저장 (지형 자체는 시드로 재생성) |
+| `structures` | 설치한 울타리·상자 등 건축물 |
+| `crops` | 심은 작물 (씨앗 종류 + 심은 시각) |
+| `chat_messages` | 채팅 기록 |
+
+> ⚠️ `001` → `002` 순서로 실행해야 합니다. 순서를 바꾸면 외래 키 오류가 발생합니다.
+
 ### 확인 방법
 
-왼쪽 메뉴에서 **Table Editor** 클릭 → `profiles`, `player_state`, `worlds` 3개 테이블이 보이면 정상입니다.
+왼쪽 메뉴에서 **Table Editor** 클릭 → `profiles`, `player_state`, `worlds`, `world_modifications`, `structures`, `crops`, `chat_messages` 7개 테이블이 보이면 정상입니다.
 
 ---
 
@@ -249,8 +269,33 @@ pnpm dev
 
 회원가입/로그인 성공 후 `/game` 페이지에서:
 - 초록색/갈색/파란색 타일로 구성된 월드가 표시됨
-- WASD 또는 화살표 키로 캐릭터 이동 가능
+- WASD 또는 화살표 키로 캐릭터 이동 가능 (물 타일은 통과되지 않음)
 - 이동하면 주변 청크가 자동으로 로드됨
+- 화면 상단에 `Day 1 · 07:20 · dawn` 형식의 월드 시계가 표시됨
+
+### 조작 방법
+
+| 키 | 동작 |
+|----|------|
+| `WASD` / 화살표 | 이동 |
+| `1`~`8` | 핫바 슬롯 선택 |
+| `I` | 인벤토리 열기/닫기 |
+| `E` / `Space` | 바라보는 타일과 상호작용 (채집 / 밭 갈기 / 씨앗 심기 / 수확) |
+| `B` | 건축 모드 전환 |
+| `Q` / 마우스 좌클릭 | 선택한 아이템 설치 (건축 모드에서만) |
+| `Enter` / `Esc` | 채팅 입력창 포커스 / 해제 |
+
+### 저장 기능 확인 (마이그레이션 002 필요)
+
+1. 캐릭터를 이동시키고 나무/돌을 채집
+2. 브라우저를 새로고침(F5)
+3. 마지막 위치와 인벤토리가 그대로 복원되면 정상입니다
+
+### 멀티플레이 확인
+
+1. 브라우저 탭 두 개(또는 시크릿 창)에서 서로 다른 계정으로 로그인
+2. 한쪽에서 이동하면 다른 쪽 화면에서 이름표가 붙은 캐릭터가 따라 움직임
+3. 한쪽에서 채팅을 보내면 다른 쪽에 즉시 표시되고, 새로고침해도 기록이 남아 있어야 합니다
 
 ---
 
@@ -269,7 +314,7 @@ pnpm dev
 
 **원인**: 데이터베이스 테이블이 생성되지 않음
 
-**해결**: 3번 단계의 SQL을 Supabase SQL Editor에서 다시 실행
+**해결**: 3번 단계의 SQL(`001` → `002` 순서)을 Supabase SQL Editor에서 다시 실행
 
 ### pnpm install 실패
 
@@ -287,6 +332,14 @@ pnpm install
 **원인**: 이메일 인증이 필요한 상태
 
 **해결**: Supabase 대시보드 → Authentication → Settings → Confirm email → OFF
+
+### 이동/채집한 내용이 새로고침하면 사라짐
+
+**원인**: 마이그레이션 `002`가 실행되지 않아 `profiles` 행이 만들어지지 않음
+
+**해결**: 3번 단계의 `002_gameplay_schema.sql`을 실행한 뒤 **다시 회원가입**하세요.
+트리거는 실행된 이후에 생성되는 계정에만 적용됩니다.
+(기존 계정은 Supabase → Authentication → Users 에서 삭제 후 재가입하면 됩니다)
 
 ### 게임 화면이 검은색으로 나옴
 
@@ -342,7 +395,8 @@ PORT=3001 pnpm dev
 - [ ] Node.js 22+ 설치됨
 - [ ] pnpm 10+ 활성화됨 (`corepack enable`)
 - [ ] Supabase 프로젝트 생성됨
-- [ ] Supabase에서 SQL 마이그레이션 실행됨 (테이블 3개 생성)
+- [ ] Supabase에서 마이그레이션 `001` 실행됨 (테이블 3개 생성)
+- [ ] Supabase에서 마이그레이션 `002` 실행됨 (테이블 7개 + 회원가입 트리거)
 - [ ] `.env.local` 파일에 Supabase URL과 anon key 입력됨
 - [ ] `pnpm install` 성공
 - [ ] `pnpm dev` 실행 후 http://localhost:3000 접속 가능
