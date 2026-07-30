@@ -493,7 +493,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 Ordered before quests because quest rewards pay coins, so `WalletComponent` and the shared price
 table have to exist first.
 
-- [ ] 19. Add the price table to `@worldnest/shared` (decision D14).
+- [x] 19. Add the price table to `@worldnest/shared` (decision D14).
       `packages/shared/src/economy.ts`: `interface ItemPrice { buy: number; sell: number }`,
       `ITEM_PRICES: Partial<Record<ItemId, ItemPrice>>` covering wood, stone, ore, fiber, flower,
       wheat, wheat_seed, fence and chest, `isTradable(itemId)`, `TRADABLE_ITEM_IDS` and
@@ -506,7 +506,7 @@ table have to exist first.
       buy-then-sell arbitrage loop exists, and that a wheat seed costs less than the wheat it yields
       times its yield quantity, so farming is profitable but bounded.
 
-- [ ] 20. Add the wallet and shop to the engine. `packages/game-engine/src/components/`
+- [x] 20. Add the wallet and shop to the engine. `packages/game-engine/src/components/`
       gains `WalletComponent` (`coins`) and `ShopComponent`
       (`{ openNpcId: string | null; requestedTrade: { kind: "buy" | "sell"; itemId: ItemId;
       quantity: number } | null; version: number }`). `packages/game-engine/src/shop/shopOps.ts` holds
@@ -526,7 +526,7 @@ table have to exist first.
       item and credits the sell price, that selling an item you do not hold changes nothing, and that
       a non-tradable item is refused.
 
-- [ ] 21. Add the shop UI. Add `WALLET_CHANGED_EVENT` and `SHOP_CHANGED_EVENT` to `events.ts`, emitted
+- [x] 21. Add the shop UI. Add `WALLET_CHANGED_EVENT` and `SHOP_CHANGED_EVENT` to `events.ts`, emitted
       from `HudBridge` on coin and shop-version changes. Add `apps/web/src/stores/shopStore.ts` (the
       open shop plus an injected `trade(kind, itemId, quantity)`),
       `apps/web/src/components/ShopPanel.tsx` (buy/sell columns from `ITEM_PRICES`, quantities of 1
@@ -545,7 +545,7 @@ table have to exist first.
 
 ## Phase H — Quests (items 22-23)
 
-- [ ] 22. Add quests to the engine. `packages/game-engine/src/quests/questDefinitions.ts`:
+- [x] 22. Add quests to the engine. `packages/game-engine/src/quests/questDefinitions.ts`:
       `type QuestObjective = { kind: "collect"; itemId: ItemId; count: number } | { kind: "build";
       itemId: ItemId; count: number } | { kind: "talk"; npcId: string }`,
       `interface QuestDefinition { id: string; titleKey: string; descriptionKey: string;
@@ -573,7 +573,7 @@ table have to exist first.
       every quest's `giverNpcId` exists in `NPC_DEFINITIONS` and every reward `itemId` is a catalogue
       item.
 
-- [ ] 23. Add the quest UI and hook quests into dialogue. Add `QUESTS_CHANGED_EVENT` and emit it from
+- [x] 23. Add the quest UI and hook quests into dialogue. Add `QUESTS_CHANGED_EVENT` and emit it from
       `HudBridge` on `QuestComponent.version`. Add `apps/web/src/stores/questStore.ts` (entries plus an
       injected `turnIn(questId)`), `apps/web/src/components/QuestLog.tsx` (toggled by `J`, listing
       title/description/progress from `t(...)`) and `apps/web/src/components/QuestTracker.tsx` (the
@@ -1291,3 +1291,230 @@ breaking the suite.
   seam in `ARCHITECTURE.md`; "how to add a dialogue tree" and the new system order in
   `DEVELOPMENT.md`; and for the keybinding tables, `1`-`4` now double as dialogue answers and `E`
   starts a conversation. No new *single-purpose* key was added, so the tables only need that note.
+
+---
+
+## Implementation notes for items 19-23 (deviations worth knowing for items 24-31)
+
+Phases G and H are complete. Commits on `feat/mvp-foundation`, in order:
+`605386d` (`refactor:` — the `PlayerController` extraction the item 16-18 notes asked for),
+`8b22633` (19), `7cf9f1a` (20), `9d538bf` (21), `ee93f92` (22), `c57592a` (23),
+`23ef033` (`fix:` — structures on NPC tiles), `80aec4b` (`feat:` — the last three unplayed sound
+cues), `d659570` (`docs:` — the two keybinding tables), `6281f8e` (`refactor:` — `createGameWorld`
+back under the line cap).
+
+### Gate results after item 23
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 24, game-engine 263, web 271 = **558** (442 after item 18) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed |
+| `docker build -t worldnest:phase3h .` | image builds |
+| `GameScene.ts` | **236** lines (items 21-23 cost 13: two bridges and the sound counts) |
+| `PlayerController.ts` | **169** lines (was 282; see the extraction below) |
+| `createGameWorld.ts` | **282** lines (327 before the last commit — see below) |
+
+### The blocker cleared first: `PlayerController` was split in two, then three
+
+The item 16-18 notes were right that `PlayerController.ts` (282 lines) had no room for `Esc` and
+`J`. It is now three files:
+
+- **`apps/web/src/game/keyBindings.ts`** — `ONE_SHOT_BINDINGS`, `OneShotActions`,
+  `bindOneShotKeys(keyboard, actions)`, `whenPlaying`, `addUncapturedKey` and the number-key
+  handler. Imports Phaser.
+- **`apps/web/src/game/panelStack.ts`** — `isTyping()`, `isHudModal()` and
+  `closeTopmostPanel()`. **Phaser-free on purpose**, the same split `Minimap.ts` /
+  `minimapLayout.ts` uses: the first attempt kept these in `keyBindings.ts` and the jsdom suite
+  died on `Cannot set properties of null (setting 'fillStyle')` because importing Phaser under
+  jsdom fails inside `checkInverseAlpha`. Anything a test needs to reason about must not sit in a
+  module that imports Phaser.
+- **`PlayerController.ts`** — movement polling, facing, and the three request helpers.
+
+`PlayerController` now hands `bindOneShotKeys` an object of actions (`interact`, `build`,
+`selectHotbarSlot`), which is how the table stays module-level without making those helpers public.
+
+### Deviations from the plan text
+
+- **Item 19 also exports `getItemPrice` and `tradeValue`.** `tradeValue(kind, itemId, quantity)` is
+  the single place a price is multiplied and the only place a quantity is validated, so the engine's
+  `tradeQuote` is a one-line delegate and buying and selling cannot drift apart. It takes `itemId`
+  as `unknown` and narrows with `isItemId`, because the value reaching it may have come from
+  persisted data.
+- **The economy test repeats the wheat yield as a local constant** (`WHEAT_PER_SEED = 2`).
+  `CROP_DEFINITIONS` lives in `@worldnest/game-engine`, which depends on `@worldnest/shared` and not
+  the other way round, so the plan's "a wheat seed costs less than the wheat it yields times its
+  yield quantity" assertion cannot import the real yield. The constant is commented as the mirror it
+  is; if the crop changes, that assertion is what fails.
+- **Prices**: wood 8/3, stone 10/4, fiber 6/2, flower 12/5, **ore 30/14**, wheat_seed 10/3,
+  wheat 20/9, fence 20/6, chest 60/20. `STARTING_COINS = 50`. Ore is deliberately the most valuable
+  raw material (a test asserts it beats every surface material), which is what makes the caves from
+  item 4 worth walking into. A sown seed costs 10 and yields 2 wheat worth 9 each, so farming pays
+  +8 per seed — profitable, fixed, and not compounding.
+- **`ShopComponent` carries five request/state fields, not the three the plan lists**:
+  `openNpcId`, `requestedOpenNpcId`, `closeRequested`, `requestedTrade`, `refusals`, `version`. The
+  plan implied React would write `openNpcId` directly; that would have left nothing to bump
+  `version`, so `HudBridge` would never have published the panel. Shaped exactly like
+  `DialogueComponent` instead: React asks, `ShopSystem` decides. `QuestComponent` gained
+  `requestedOffer` and `refusals` for the same two reasons.
+- **`refusals` is a counter, not a boolean, on both components.** It is what the `deny` sound is
+  played from, and a count means two refusals in a row are two chimes rather than one. `version` is
+  bumped **only** by accepted changes, which is what keeps the HUD from re-rendering on a no-op.
+- **`ShopSystem` refuses any trade while `openNpcId` is `null`.** A click that lands the frame after
+  the panel closed therefore spends nothing. Consumption order inside the frame is open → trade →
+  close, so a request pair that arrives together still behaves like a player would expect.
+- **`shopOps` exports `canTrade` beyond the plan's three functions**, so the panel's disabled state
+  and the engine's refusal come from one rule. The panel does **not** call it — it would need an
+  `InventoryComponent` and the HUD only has the mirror — but the engine test asserts `canTrade`
+  agrees with what `buy`/`sell` actually do, and the panel's own affordability check (coins for a
+  purchase, held count for a sale) is the subset it can compute. The space check stays engine-side.
+- **Item 21 added `apps/web/src/game/ShopBridge.ts` and item 23 `QuestBridge.ts`**, rather than
+  piling the store injection into `DialogueBridge`. `DialogueBridge` still owns **action routing**
+  (`routeAction`), which is the seam the item 16-18 notes pointed at: it reads the picked option's
+  action out of `dialogueStore`, opens the shop or raises the quest request, and then closes the
+  conversation. `openShop`, `offerQuest` and `turnInQuest` all end the chat, because the engine
+  leaves the node where it was and a panel that visibly does nothing reads as broken.
+- **Coins live in `gameStore`, not `shopStore`.** They are player state like the inventory and stats
+  mirrors, and `CoinCounter` needs them with no shop open. `shopStore` holds only the open shop plus
+  the three injected callbacks.
+- **`Esc` precedence is dialogue → shop → quest log → inventory → settings → build mode**, one press
+  per press, and `closeTopmostPanel()` returns whether it closed anything. Chat is not in the list:
+  the composer blurs itself on `Escape`, so the key handler returns early while it has focus, which
+  is also why `Enter`/`Esc` for chat still works exactly as before.
+- **`isHudModal()` replaced `isTyping() || isDialogueOpen()`** in both the key gate and the movement
+  gate, and now includes an open shop. The player stands still while trading, and `E` cannot start a
+  conversation through the shop panel.
+- **`ShopPanel` renders four buttons per row** (buy 1, buy 10, sell 1, sell 10) for all nine items.
+  Prices repeat across items — wood and wheat_seed both sell for 3 — so a test querying by
+  `title` must scope to one row; `shop.test.tsx` has a `woodRow()` helper doing exactly that, and
+  every button's `aria-label` names the item so a screen reader is not left guessing either.
+- **Item 22's quest ids are the ones Ada's tree already used** (`collect_wood`, `build_fence`,
+  `greet_pip`), and `quests.test.ts` asserts `dialogueQuestIds().sort()` equals
+  `Object.keys(QUEST_DEFINITIONS).sort()`. Objectives: 5 wood, 2 fences, one greeting for Pip.
+  `build_fence` needs 2 fences at 20 coins each against 50 starting coins, so it teaches the shop
+  and cannot be brute-forced on day one.
+- **`questOps` exports `pollProgress` and `getEntry` beyond the plan's five functions.** Polling is
+  a rule (only active quests, publish only real movement) and it belonged next to the others rather
+  than inside the system.
+- **`activateQuest` accepts a quest that was never offered.** Ada offers and accepts in a single
+  option — her tree has no "yes please" node — so `QuestSystem.accept` calls `offerQuest` then
+  `activateQuest`, and asking again for a quest already taken counts as a refusal rather than a
+  silent no-op.
+- **A `build` objective counts every matching structure in the world, with no baseline.** A player
+  who already had two fences standing when they take `build_fence` completes it immediately. A
+  per-entry baseline would fix that but would have to be persisted (item 27 stores `state` and
+  `progress` only), so this is recorded as a known simplification rather than solved.
+- **Reward space is checked by replaying the additions on a copy of the inventory**
+  (`rewardsFit`), not with one `hasSpaceFor` per stack: two rewards can each fit alone and not fit
+  together. A turn-in that would not fit is refused whole and the quest stays active, which is the
+  same promise `HarvestSystem` makes. **Turning a quest in does not consume the collected items** —
+  the objective is polled from the inventory, so "show it to Ada" is the honest wording and it is
+  what the description keys say in all twelve languages.
+- **`NpcSystem`'s talk hook is `onTalk?: TalkListener` as the fourth constructor argument**, called
+  only when a conversation *opens*, not on every option. `QuestSystem.recordTalk(npcId)` collects
+  them into a pending set and applies them on its next update, then clears it unconditionally — a
+  greeting nobody was there to hear is dropped rather than queued.
+- **System order is now** Time → Input → Collision → Movement → Chunk → Interpolation → Stats →
+  **Npc → Shop → Quest** → Plant → CropGrowth → Build → Harvest → NetworkSync → Animation → Render,
+  and `GameWorldSystems` lists them in that order. **Item 29's documented-order test must use this
+  list.** Npc before Shop and Quest is what lets a conversation's shop or quest land in the frame it
+  was asked for; all three before Plant is what stops an interact aimed at an NPC from tilling the
+  ground under them.
+- **`createGameWorld` constructs `npc` before `build`** so `BuildSystem` can take the NPC index as a
+  second occupancy source (the `fix:` commit below), and `npc`'s `onTalk` closure refers to `quest`,
+  which is declared after it. That is legal because the reference is inside an arrow function, and it
+  is the only construction cycle in the file.
+- **`createGameWorld.ts` hit 327 lines** with the two components and the third system, over the ~300
+  cap. `apps/web/src/game/savedWorld.ts` now holds `SavedStructure`, `SavedCrop`, `SavedWorldState`
+  and `restoreSavedWorld`; `createGameWorld` re-exports the three types, so `loadSession`,
+  `SessionPersistence` and `persistence.test.ts` were not touched. **Item 27 should add its
+  `quests`/`coins` bootstrap fields with that budget in mind** — the file is at 282.
+- **i18n**: `en` went from 88 keys to **115** (11 shop, 1 `hud.coins`, 15 quest), all twelve
+  catalogues complete, and `hud.controls` was updated once with both `J` and `Esc`. The i18n suite
+  gained a quest-key loop beside the dialogue and NPC ones, exactly as the item 16-18 notes asked,
+  so `titleKey`/`descriptionKey` are now under the same D8 guard. **`quest.progress`
+  (`{current} / {target}`) is the third entry in `LOCALE_AGNOSTIC_KEYS`** — two numbers and a slash
+  are the same in every language the game speaks, and the "must differ from English" rule
+  legitimately cannot hold for it.
+- **Translation traps hit and avoided**: `Item` is byte-identical in Portuguese, and `Shop` in
+  German, so those became `Objeto` and `Laden`. Every other new value differs from English in all
+  eleven locales.
+
+### The deliberately-left work, now done
+
+- **`NpcSystem.onTalk`** (item 16-18 notes) — implemented, and covered both in `npc.test.ts` and
+  end-to-end in `gameWorld.test.ts`, where the player walks up to Pip and finishes `greet_pip` by
+  actually talking to him.
+- **`BuildSystem.canPlaceAt` ignoring NPCs** (`23ef033`) — `BuildSystem` now takes an optional third
+  argument, a `StructureQuery` of *other* occupancy, and `createGameWorld` passes the `NpcSystem`.
+  A fence can no longer be placed on a villager and the build ghost agrees. `spawnStructure` is
+  deliberately **not** guarded, because restoring a saved structure must never silently drop a row.
+- **Every sound cue is now played** (`80aec4b`). `SOUND_SPECS` had nine cues and four were dead.
+  `shop` came with item 21 and `quest` with item 23 (one `SoundState` field, one line in
+  `readSoundState`, one comparison in `diffCues` each, as predicted). The last three needed a little
+  more:
+  - **`deny`** reads `SoundState.refusalCount`, the sum of `ShopComponent.refusals` and
+    `QuestComponent.refusals`. One counter for both, because one refusal is one apologetic chime
+    whatever refused it.
+  - **`plant`** and **`build`** cannot be seen from any component on the player: both spend an item
+    and then the *world* changes. `readSoundState` takes an optional fifth argument,
+    `WorldCounts { crops(): number; structures(): number }`, and `SoundManager` takes it by
+    constructor injection from `GameScene`
+    (`plant.getCrops().size` / `build.getStructures().size`). `OverlayContext` was **not** widened,
+    following the precedent set for `Minimap` and `BuildGhost`.
+  - Sowing and placing **replace** the `pickup` chirp rather than layering with it, since the
+    inventory bump they cause is the item being spent. Cue order is now `harvest`, `pickup`,
+    `plant`, `build`, `ui`, `dialogue`, `shop`, `quest`, `deny`. **Anything constructing a
+    `SoundState` literal in a test now needs `cropCount`, `structureCount`, `shopVersion`,
+    `questVersion` and `refusalCount`.**
+- **One `docs:` commit** (`d659570`) added `J`, `Esc` and `1`-`4` to the keybinding tables in
+  `README.md` and `docs/SETUP_GUIDE_KR.md`, plus a short NPC/shop/quest paragraph in each. Only
+  table rows and body text were touched — **no new heading**, deliberately, so item 30's
+  `check-kr-doc-sync.mjs` inherits no new debt beyond the `### 언어 설정` heading commit `272e15b`
+  already owes `docs/SETUP_GUIDE_KR.doc`.
+
+### What is verified and what still needs a human
+
+- **Verified by test**: the whole price table's invariants (`sell < buy` for every item, farming
+  profitable but bounded, ore the most valuable material); buying, selling, refusal on coins,
+  refusal on a full backpack **without taking the coins**, refusal of an unheld item, refusal of an
+  untradable item, and the buy-then-sell round trip always losing money; the shop's open/trade/close
+  request cycle including a trade with no shop open; the wallet and shop HUD events firing once per
+  change; the `openShop` action routing and an action-less option still walking the graph; the whole
+  `Esc` precedence stack; the panel rendering, its disabled rows and the injected trade's arguments;
+  every quest rule (offer, accept, re-accept refused, polled collect and build progress, recorded
+  talk progress, clamping, pay-out exactly once, refusal on an unmet objective, refusal when the
+  reward would not fit while keeping the quest); the quest ids agreeing with Ada's dialogue tree and
+  every giver and reward item existing; the quest HUD event publishing a *copy* of the entries; the
+  quest log's empty state, states, progress, hand-in gating and Korean rendering; the tracker showing
+  only the first active quest; the three new sound-cue rules; a fence being refused on an NPC's
+  tile; and end-to-end in `gameWorld.test.ts`, with no Phaser: face Ada → `E` → accept → gather →
+  hand in → coins and items landed and the entry is `completed`, plus the same for Pip's greeting.
+- **Not verified, and cannot be here**: that the shop and quest panels *look* right and fit on a
+  small screen (no display), and that the new cues are pleasant (no audio device). Playwright still
+  cannot reach `/game` because `middleware.ts` redirects an unauthenticated visitor to `/auth`, so
+  the jsdom suites carry all of the UI weight. **Nothing in items 19-23 needs Supabase**: coins and
+  quests are not persisted yet — that is item 27, against migration `003` from item 26.
+
+### Notes for the next delegations
+
+- **Item 26/27 (persistence)**: `WalletComponent.coins` is a plain integer and `QuestComponent.entries`
+  is `Record<string, { state, progress }>` — already the shape `player_state.coins` and
+  `player_quests` want. `QUEST_IDS` and `getQuest()` are exported for the "drop a quest id the
+  catalogue no longer knows" validation, the way `isItemId` guards persisted items. Seeding rules to
+  copy: `createGameWorld` grants `STARTING_COINS` unconditionally today, so item 27 has to make that
+  conditional on nothing having been saved, exactly as it does for the starting seeds.
+- **Item 29 (docs)**: the registration-order test must use the 17-system list above. Worth
+  documenting: the injected-callback seam now has five instances (`chatStore.sender`,
+  `touchStore` flags, `dialogueStore`, `shopStore`, `questStore`), all four stores following one
+  template — nullable callback fields, wrappers that no-op before injection, a `setSnapshot` fed by
+  one `HudBridge` event, and a module-level `isXOpen()` predicate for the input gate. Anything
+  resetting one with `setState({...})` in a test must clear its callbacks too.
+- **Item 30 (Korean guide)**: the shop's safety posture is the part worth writing down for a
+  parent-facing audience — fixed prices, no player-to-player trading, no random rewards, no
+  real-money path — and it is already asserted by tests rather than merely intended.
+- `HudBridge` now publishes eight events. It is at 200 lines; a ninth is fine, but the per-event
+  `lastX` fields are the pattern to keep following rather than a generic diff map.
+- `apps/web/src/game/panelStack.ts` is where any new panel joins the `Esc` order and the input gate.
+  Adding one is two lines there plus a row in `ONE_SHOT_BINDINGS`.
