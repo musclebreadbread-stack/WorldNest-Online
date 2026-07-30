@@ -148,6 +148,69 @@ describe("World", () => {
     expect(system.lastEntities).toHaveLength(1);
     expect(system.lastEntities[0].id).toBe("e1");
   });
+
+  it("should invalidate query cache when entities are added", () => {
+    const world = new World();
+    const system = new TestSystem();
+    world.addSystem(system);
+
+    const e1 = new Entity("e1");
+    e1.addComponent(new TestComponent(0));
+    world.addEntity(e1);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(1);
+
+    // Add a second matching entity
+    const e2 = new Entity("e2");
+    e2.addComponent(new TestComponent(10));
+    world.addEntity(e2);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(2);
+  });
+
+  it("should invalidate query cache when entities are removed", () => {
+    const world = new World();
+    const system = new TestSystem();
+    world.addSystem(system);
+
+    const e1 = new Entity("e1");
+    e1.addComponent(new TestComponent(0));
+    const e2 = new Entity("e2");
+    e2.addComponent(new TestComponent(5));
+
+    world.addEntity(e1);
+    world.addEntity(e2);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(2);
+
+    world.removeEntity("e1");
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(1);
+    expect(system.lastEntities[0].id).toBe("e2");
+  });
+
+  it("should allow manual cache invalidation", () => {
+    const world = new World();
+    const system = new TestSystem();
+    world.addSystem(system);
+
+    const entity = new Entity("e1");
+    world.addEntity(entity);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(0);
+
+    // Add component after entity is in world (requires manual invalidation)
+    entity.addComponent(new TestComponent(0));
+    world.invalidateQueryCache();
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(1);
+  });
 });
 
 describe("System", () => {

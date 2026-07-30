@@ -1,59 +1,74 @@
 /**
  * Database type definitions for Supabase.
+ * Aligned with the actual SQL migration (001_initial_schema.sql).
  * These will be auto-generated from the Supabase schema in production.
  */
 export interface Database {
   public: {
     Tables: {
-      players: {
+      profiles: {
         Row: {
           id: string;
-          name: string;
+          username: string;
           avatar: string;
-          level: number;
-          position_x: number;
-          position_y: number;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
-          id?: string;
-          name: string;
+          id: string;
+          username: string;
           avatar?: string;
-          level?: number;
-          position_x?: number;
-          position_y?: number;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
-          name?: string;
+          username?: string;
           avatar?: string;
-          level?: number;
-          position_x?: number;
-          position_y?: number;
           created_at?: string;
-          updated_at?: string;
+        };
+      };
+      player_state: {
+        Row: {
+          player_id: string;
+          x: number;
+          y: number;
+          chunk: string;
+          last_online: string;
+          inventory: Record<string, unknown>;
+        };
+        Insert: {
+          player_id: string;
+          x?: number;
+          y?: number;
+          chunk?: string;
+          last_online?: string;
+          inventory?: Record<string, unknown>;
+        };
+        Update: {
+          player_id?: string;
+          x?: number;
+          y?: number;
+          chunk?: string;
+          last_online?: string;
+          inventory?: Record<string, unknown>;
         };
       };
       worlds: {
         Row: {
           id: string;
-          seed: number;
           name: string;
+          seed: number;
           created_at: string;
         };
         Insert: {
           id?: string;
-          seed: number;
           name: string;
+          seed: number;
           created_at?: string;
         };
         Update: {
           id?: string;
-          seed?: number;
           name?: string;
+          seed?: number;
           created_at?: string;
         };
       };

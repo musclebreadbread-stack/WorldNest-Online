@@ -17,10 +17,12 @@ import {
 } from "@worldnest/game-engine";
 import { CHUNK_SIZE, TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
 import type { ChunkData } from "@worldnest/game-engine";
+import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 
 /**
  * GameScene is the main game scene.
  * Creates the tilemap from chunk data, renders player sprites, handles camera follow.
+ * Wires ECS NetworkSync payloads to RealtimeManager for multiplayer broadcasting.
  */
 export class GameScene extends Phaser.Scene {
   private ecsWorld!: World;
@@ -32,9 +34,25 @@ export class GameScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdKeys!: { W: Phaser.Input.Keyboard.Key; A: Phaser.Input.Keyboard.Key; S: Phaser.Input.Keyboard.Key; D: Phaser.Input.Keyboard.Key };
   private otherPlayers: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  private realtimeManager: RealtimeManager | null = null;
 
   constructor() {
     super({ key: "GameScene" });
+  }
+
+  /**
+   * Set the realtime manager for multiplayer communication.
+   * Should be called after the scene is created but before the game loop needs it.
+   */
+  setRealtimeManager(manager: RealtimeManager): void {
+    this.realtimeManager = manager;
+
+    // Wire up callbacks for remote players
+    manager.setCallbacks(
+      (player) => this.addRemotePlayer(player.playerId, player.position.x, player.position.y),
+      (playerId) => this.removeRemotePlayer(playerId),
+      (playerId, position) => this.updateRemotePlayer(playerId, position.x, position.y),
+    );
   }
 
   create(): void {
@@ -121,6 +139,9 @@ export class GameScene extends Phaser.Scene {
     // Update ECS
     this.ecsWorld.update(deltaSeconds);
 
+    // Flush network sync payloads to realtime manager
+    this.flushNetworkPayloads();
+
     // Sync sprite position with ECS position
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     this.playerSprite.setPosition(position.x, position.y);
@@ -134,29 +155,60 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Flush pending network sync payloads to the RealtimeManager.
+   */
+  private flushNetworkPayloads(): void {
+    if (!this.realtimeManager) return;
+
+    const payloads = this.networkSync.getPendingPayloads();
+    for (const payload of payloads) {
+      const position = this.playerEntity.getComponent<PositionComponent>("position")!;
+      const broadcastPosition: PlayerPosition = {
+        x: payload.x,
+        y: payload.y,
+        chunkX: position.chunkX,
+        chunkY: position.chunkY,
+      };
+      this.realtimeManager.broadcastPosition(broadcastPosition);
+    }
+  }
+
   private onChunkLoad(chunk: ChunkData): void {
     const key = `${chunk.chunkX},${chunk.chunkY}`;
     const chunkPixelSize = CHUNK_SIZE * TILE_SIZE;
     const offsetX = chunk.chunkX * chunkPixelSize;
     const offsetY = chunk.chunkY * chunkPixelSize;
 
-    const container = this.add.container(offsetX, offsetY);
+    // Use a RenderTexture for batch rendering instead of one Sprite per tile.
+    // All tiles are drawn once into the texture, reducing game objects from 256 to 1 per chunk.
+    const renderTexture = this.add.renderTexture(
+      offsetX,
+      offsetY,
+      chunkPixelSize,
+      chunkPixelSize,
+    );
+    renderTexture.setOrigin(0, 0);
 
-    // Render each tile in the chunk
+    // Use a temporary sprite to stamp each tile at the correct scale
+    const scale = TILE_SIZE / 16; // Textures are 16x16, scale to TILE_SIZE
+    const stampSprite = this.make.sprite({ key: "tile_0", add: false });
+    stampSprite.setOrigin(0, 0);
+    stampSprite.setScale(scale);
+
     for (let y = 0; y < CHUNK_SIZE; y++) {
       for (let x = 0; x < CHUNK_SIZE; x++) {
         const tileType = chunk.tiles[y][x] as TileType;
-        const tileSprite = this.add.sprite(
-          x * TILE_SIZE + TILE_SIZE / 2,
-          y * TILE_SIZE + TILE_SIZE / 2,
-          `tile_${tileType}`,
-        );
-        tileSprite.setScale(TILE_SIZE / 16); // Scale 16px tiles to TILE_SIZE
-        container.add(tileSprite);
+        stampSprite.setTexture(`tile_${tileType}`);
+        renderTexture.draw(stampSprite, x * TILE_SIZE, y * TILE_SIZE);
       }
     }
 
-    container.setDepth(0);
+    stampSprite.destroy();
+    renderTexture.setDepth(0);
+
+    // Store as a container wrapper for consistent cleanup
+    const container = this.add.container(0, 0, [renderTexture]);
     this.chunkLayers.set(key, container);
 
     console.log(`[WorldNest] Chunk loaded: ${key}`);
