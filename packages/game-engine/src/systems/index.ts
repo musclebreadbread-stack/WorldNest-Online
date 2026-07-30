@@ -6,3 +6,4 @@ export type { RenderData } from "./RenderSystem";
 export { NetworkSyncSystem } from "./NetworkSyncSystem";
 export type { SyncPayload } from "./NetworkSyncSystem";
 export { InterpolationSystem } from "./InterpolationSystem";
+export { CollisionSystem } from "./CollisionSystem";

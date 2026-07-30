@@ -15,6 +15,7 @@ export {
   InputComponent,
   NetworkComponent,
   RemoteInterpolationComponent,
+  ColliderComponent,
 } from "./components";
 export type { KeyState } from "./components";
 
@@ -26,6 +27,7 @@ export {
   RenderSystem,
   NetworkSyncSystem,
   InterpolationSystem,
+  CollisionSystem,
 } from "./systems";
 export type { RenderData, SyncPayload } from "./systems";
 
