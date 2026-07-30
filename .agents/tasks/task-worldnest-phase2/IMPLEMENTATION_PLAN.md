@@ -403,7 +403,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase K — Animation and account polish
 
-- [ ] 25. Add directional animation plus the missing account controls. Engine: `AnimationComponent`
+- [x] 25. Add directional animation plus the missing account controls. Engine: `AnimationComponent`
       (`state: "idle" | "walk"`, `direction`, `elapsed`, `frameIndex`, `frameDurationMs`) and
       `AnimationSystem` (`["velocity", "animation", "sprite"]`) that derives state/direction from velocity,
       advances `frameIndex` on a timer, and writes `SpriteComponent.frame` — tests: idle at zero velocity,
@@ -421,7 +421,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase L — Documentation and end-to-end tests
 
-- [ ] 26. Correct and extend the docs, which currently drift from the code in two confirmed ways:
+- [x] 26. Correct and extend the docs, which currently drift from the code in two confirmed ways:
       `docs/DEVELOPMENT.md` shows `update(world, deltaTime)` and `entity.getComponent(HealthComponent)`
       (the real signatures are `update(entities, deltaTime)` and `getComponent<T>("type")`), and
       `docs/ARCHITECTURE.md` documents tables `characters` / `world_state` / `chat_messages` that never
@@ -433,7 +433,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm format` leaves the tree clean and `pnpm lint` passes; spot-check that every code
       snippet in `docs/DEVELOPMENT.md` matches a real signature in `packages/game-engine/src`.
 
-- [ ] 27. Add the Playwright E2E layer the README already advertises. Add `@playwright/test` at the root,
+- [x] 27. Add the Playwright E2E layer the README already advertises. Add `@playwright/test` at the root,
       `playwright.config.ts` (webServer `pnpm --filter @worldnest/web start`, baseURL
       `http://localhost:3000`, chromium only), `e2e/smoke.spec.ts` covering: the landing page renders the
       "WorldNest Online" heading and a Play Now link; `/game` unauthenticated redirects to `/auth`; the auth
@@ -446,7 +446,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       in this sandbox, still commit the config, specs and CI job, verify `npx playwright test --list`
       enumerates the 3 specs, and report E2E execution as deferred to CI.
 
-- [ ] 28. Final gate. Run the full check suite and confirm nothing regressed across all phases.
+- [x] 28. Final gate. Run the full check suite and confirm nothing regressed across all phases.
       Files: none
       Verify: `pnpm lint && pnpm build && pnpm test` — 5 lint tasks clean, 5 builds succeed, and the
       Vitest total is well above the 29-test baseline with `@worldnest/game-engine`,
@@ -670,3 +670,142 @@ Goal: develop every remaining developable area of the project, in dependency ord
   `persistence.test.ts` and `chat.test.ts`.
 - Test totals after item 24: `@worldnest/shared` 12, `@worldnest/game-engine` 127, `@worldnest/web` 60 =
   **199**.
+
+---
+
+## Implementation notes for items 25-28 (final delegation; the plan is now complete)
+
+### Item 25 — animation and account polish
+
+- `AnimationComponent` carries one field the plan text did not list: **`frameCount`** (default 2). The walk
+  cycle has to know how many frames to wrap at, and putting it on the component keeps `AnimationSystem`
+  free of magic numbers and lets a future 4-frame sprite work without touching the system.
+  `DEFAULT_FRAME_DURATION_MS = 160` and `DEFAULT_FRAME_COUNT = 2` are exported alongside it.
+- The transition logic lives in a new pure module, `packages/game-engine/src/animation/animationOps.ts`
+  (`advanceAnimation`, `directionFromDelta`, `directionalTextureKey`), mirroring the
+  `inventory/inventoryOps.ts` split — components stay pure data and the system only applies the ops.
+  It is exported from the package barrel.
+- **`directionalTextureKey(textureKey, direction, frameIndex)` is the single definition of the
+  `player_<dir>_<n>` key format.** `BootScene` generates textures with it and `SpriteSync` resolves with
+  it, so the two cannot drift. Any future spritesheet work should keep going through it.
+- **Remote players animate through `InterpolationSystem`, not `AnimationSystem`.** Giving remote entities a
+  `VelocityComponent` (which is what `AnimationSystem` requires) would have made `MovementSystem` integrate
+  it and fight the smoothing, and `CollisionSystem` would have started probing tiles for them. Instead
+  `InterpolationSystem` calls the same `advanceAnimation` helper with the distance it just moved the entity
+  and writes `SpriteComponent.frame`. Remote entities therefore have `animation` but no `velocity`; a test
+  in `gameWorld.test.ts` pins that.
+- `AnimationSystem` is registered **after** `NetworkSyncSystem` and immediately before `RenderSystem`:
+  order is now Time → Input → Collision → Movement → Chunk → Interpolation → Stats → Plant → CropGrowth →
+  Build → Harvest → NetworkSync → **Animation** → Render. Running it after collision/movement is what makes
+  a player held against a wall read as `idle` instead of walking on the spot.
+- Idle keeps the last direction and resets `frameIndex`/`elapsed` to 0, so a stopped player stays aimed at
+  the tile they are about to interact with, matching `InteractionComponent.facing`.
+- `BootScene.generatePlayerSprite()` now emits 8 textures (4 directions × 2 frames) plus the bare `player`
+  key, kept as the idle-facing-down fallback for the first sprite created before any animation update.
+  Eyes are drawn for `down`, one eye for `left`/`right`, none for `up`; the legs and body shift by 1 px on
+  frame 1 so the stride reads at 2× scale.
+- **Username labels live in `apps/web/src/game/NameTags.ts`**, owned and driven by `SpriteSync` (its `sync`
+  and `destroy` delegate). `GameScene` gained **zero** lines — it was already at 297 of the ~300 cap.
+  Labels are depth 110, `origin(0.5, 1)`, 24 px above the entity, and only created for
+  `player` components with `isLocal === false`.
+- The sign-out control is its own component, `apps/web/src/components/SignOutButton.tsx`, mounted in
+  `GameUI`'s top-right stack. It lazily imports `signOut` (the `AuthProvider` tolerance pattern), then
+  clears `authStore` and routes to `/auth` **whether or not the call succeeded**, so an unconfigured
+  Supabase still logs you out locally.
+
+### Item 26 — documentation
+
+- `docs/DEVELOPMENT.md` was rewritten around the real API. The `HealthComponent`/`HealthSystem` example now
+  uses `super("health")`, `super(["health"])`, `update(entities, deltaTime)` and
+  `getComponent<HealthComponent>("health")`, and the test example builds a bare `Entity` and calls
+  `system.update([entity], 1)` — there is no `world.createEntity()` or `world.getEntitiesWith(Class)` in
+  this codebase and the old doc invented both. New sections: an "ECS API in one page" table, constructor
+  injection, registration order, a `WorldManager` member table, a gameplay-subsystem cheat sheet, the
+  HUD-event recipe (`events.ts` → `HudBridge` → `GameCanvas` → store), why key bindings belong in
+  `PlayerController`, and a testing table.
+- `docs/ARCHITECTURE.md` lost the invented `characters` / `world_state` tables and now documents `001`
+  (profiles, player_state, worlds) and `002` (trigger, world_modifications, structures, crops,
+  chat_messages) with their real columns and RLS shape, including the `Relationships: []` requirement and
+  the two policy gaps inherited from `001`. Added: the numbered 14-system pipeline with a "why it sits
+  here" column, the component table with type keys, D1-D8, the three-channel React↔Phaser↔ECS seam, the
+  depth-layer table, the tile table with real `walkable`/`buildable`/`harvestable` values, and sections for
+  the clock, inventory, farming, building, animation, persistence and chat.
+- **Two facts in the old docs were simply wrong about terrain and are now correct**: `STONE` is
+  `walkable: true` (water is the only blocking tile), and the noise thresholds are elevation `< -0.3`
+  water, `< -0.1` sand, `> 0.6` stone, moisture `> 0.2` + elevation `> 0.1` forest, detail `> 0.5` +
+  moisture `> -0.1` flowers.
+- `README.md` gained a feature table, a controls table, the `test:e2e` script, the two-migration setup step
+  and a note that the game boots without Supabase; the ECS blurb now says "components looked up by string
+  type" and "fourteen systems, registration order is execution order".
+- `docs/SETUP_GUIDE_KR.md` gained a mandatory "두 번째 마이그레이션 실행" section (what `002` creates and
+  why `handle_new_user` is the thing that makes saving work at all), a controls table, save and two-tab
+  multiplayer verification steps, a new troubleshooting entry for "changes disappear after reload" that
+  tells the reader to re-register after running `002` (the trigger only fires for accounts created after
+  it), the 7-table Table Editor check and two checklist lines. **`docs/SETUP_GUIDE_KR.doc` received every
+  one of those edits** as HTML so the Word-openable mirror stays in sync.
+- **Formatting was verified per-file, not with `pnpm format`.** The plan's expectation is stale: neither
+  `printWidth: 100` (49 files rewritten) nor `88` (39 files) leaves the tree clean, because the code is
+  hand-wrapped at ~88 while every markdown file uses compact, unpadded tables that prettier repads. New
+  code files were checked with `npx prettier --check <files>` and are clean; edited files were kept
+  consistent with their neighbours (hand-wrapped at ~88), and the markdown was left compact. The caveat
+  and the `npx prettier --check <your files>` workaround are now written down in `docs/DEVELOPMENT.md`
+  under the scripts table, so the next contributor does not rediscover it. Reconciling the config remains a
+  deliberate one-off commit someone can make later.
+
+### Item 27 — Playwright E2E
+
+- **The E2E suite runs and passes in this sandbox** (3/3 chromium): `npx playwright install chromium`
+  succeeded despite an "OS is not officially supported" warning, and it fell back to the ubuntu24.04-x64
+  build. Nothing was deferred to CI.
+- `playwright.config.ts` uses `webServer: pnpm --filter @worldnest/web start` against
+  `http://localhost:3000`, chromium only, `reuseExistingServer` off in CI, `reporter: "github"` in CI.
+  `next start` prints `⚠ "next start" does not work with "output: standalone"` because `next.config.js`
+  sets standalone output for the Dockerfile — it warns but serves correctly, and the specs pass. Switching
+  the webServer to `node .next/standalone/server.js` would also need the static assets copied the way the
+  Dockerfile does, which is not worth it for a smoke suite.
+- The specs assert the three behaviours the plan listed. Two selector details worth keeping: the landing
+  heading is split across elements (`World<span>Nest</span> Online`) so it is matched by accessible name,
+  and the "Play Now" link's `href` is asserted as `/auth` because the user is signed out.
+- `pnpm test:e2e` is a **root** script only; `turbo run test` is untouched, so `pnpm test` stays
+  browser-free at 213 tests.
+- CI gained a second job, `e2e`, with `needs: ci`. It installs, runs `npx playwright install --with-deps
+  chromium`, builds, runs the specs and uploads `playwright-report/` as an artifact on failure or success.
+  `playwright-report/`, `test-results/` and `playwright/.cache/` are gitignored.
+
+### Item 28 — final gate
+
+All four commands green on `feat/mvp-foundation`:
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, "No ESLint warnings or errors" |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | `@worldnest/shared` 12, `@worldnest/game-engine` 139, `@worldnest/web` 62 = **213** |
+| `pnpm test:e2e` | 3/3 chromium smoke specs |
+| `docker build -t worldnest:phase2 .` | image built and tagged |
+
+Test growth over the project: 29 baseline → 142 (item 16) → 175 (item 20) → 199 (item 24) → **213**.
+
+### Still outstanding for a maintainer with real credentials
+
+Nothing in the plan is unimplemented, but four checks cannot be performed without a Supabase project and a
+browser session, and they are the same ones earlier delegations flagged:
+
+1. **Run migrations `001` and `002`** against a real project. `002` has only ever been reviewed and
+   typechecked. Confirm the `on_auth_user_created` trigger fires and that a fresh sign-up gets both a
+   `profiles` and a `player_state` row.
+2. **Item 23 reload check** — move, harvest, reload, and confirm the position, inventory, terrain diff,
+   structures and crops all come back.
+3. **Item 24 two-tab check** — a message sent in one tab appears in the other, and history survives a
+   reload; also confirm the remote player's name tag and walk animation (item 25) render for the other tab.
+4. **Visual pass on the placeholder art** — the directional player frames, farmland furrows, crop stages
+   and structures were only verified through the texture-generation code, since the sandbox has no display.
+
+### Deferred beyond item 28 (unchanged from the plan's "known gaps")
+
+NPCs and dialogue, quests, a trading/economy system, sound and music, mobile/touch controls, UI i18n, a
+minimap, and biome-level generator work (temperature layers, caves). `placeableTile` on `ItemDefinition`
+is still defined but unused — `BuildSystem` places structure entities only. Anti-cheat remains out of
+scope: the client is authoritative by design. Also open: reconciling `.prettierrc` with the tree's actual
+wrapping in a dedicated formatting commit, and giving `worlds`/`player_state` the policies `001` omitted if
+cross-player state reads are ever needed.
