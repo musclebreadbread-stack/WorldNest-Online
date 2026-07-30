@@ -5,19 +5,19 @@ import {
   PositionComponent,
   VelocityComponent,
   NetworkComponent,
-  PlayerComponent,
   RemoteInterpolationComponent,
   TimeComponent,
   NetworkSyncSystem,
   RenderSystem,
   WorldManager,
 } from "@worldnest/game-engine";
-import type { ChunkData, RenderData } from "@worldnest/game-engine";
+import type { ChunkData } from "@worldnest/game-engine";
 import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
 import { HudBridge } from "../HudBridge";
 import { PlayerController } from "../PlayerController";
+import { SpriteSync } from "../SpriteSync";
 import {
   createGameWorld,
   createRemotePlayerEntity,
@@ -28,11 +28,6 @@ import {
   type GameBootstrap,
 } from "../createGameWorld";
 import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../events";
-
-const LOCAL_PLAYER_DEPTH = 100;
-const REMOTE_PLAYER_DEPTH = 99;
-const REMOTE_PLAYER_TINT = 0xff8a80;
-const SPRITE_SCALE = 2;
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
   playerId: "local",
@@ -58,8 +53,8 @@ export class GameScene extends Phaser.Scene {
   private dayNight!: DayNightOverlay;
   private hudBridge!: HudBridge;
   private playerController!: PlayerController;
-  /** Phaser sprites keyed by ECS entity id, driven by RenderSystem.renderData. */
-  private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
+  private spriteSync!: SpriteSync;
   private realtimeManager: RealtimeManager | null = null;
 
   constructor() {
@@ -114,17 +109,21 @@ export class GameScene extends Phaser.Scene {
     );
 
     // Prime the ECS once so chunks load and the render pass creates sprites
+    this.spriteSync = new SpriteSync(this, this.ecsWorld);
     this.ecsWorld.update(0);
-    this.syncSprites();
+    this.spriteSync.sync(this.renderSystem.renderData);
 
     // Day/night tint and the React HUD bridge
     this.dayNight = new DayNightOverlay(this);
     this.dayNight.setPhase(this.getClockSnapshot().phase);
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.dayNight.destroy());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.dayNight.destroy();
+      this.spriteSync.destroy();
+    });
 
     // Setup camera on the local player sprite created by the render pass
-    const localSprite = this.sprites.get(this.playerEntity.id)!;
+    const localSprite = this.spriteSync.get(this.playerEntity.id)!;
     this.cameras.main.startFollow(localSprite, true, 0.1, 0.1);
     this.cameras.main.setZoom(2);
 
@@ -155,7 +154,7 @@ export class GameScene extends Phaser.Scene {
     this.flushNetworkPayloads();
 
     // Mirror ECS render data onto Phaser sprites
-    this.syncSprites();
+    this.spriteSync.sync(this.renderSystem.renderData);
 
     // Day/night tint follows the world clock phase
     this.dayNight.setPhase(this.getClockSnapshot().phase);
@@ -221,51 +220,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
-   * Create or update the Phaser sprite for every entity the RenderSystem reported,
-   * and destroy sprites whose entity is gone. This is the only place sprites are
-   * positioned, so ECS state is the single source of truth.
-   */
-  private syncSprites(): void {
-    const seen = new Set<string>();
-
-    for (const data of this.renderSystem.renderData) {
-      seen.add(data.entityId);
-      const sprite = this.sprites.get(data.entityId) ?? this.createSprite(data);
-
-      if (sprite.texture.key !== data.textureKey) {
-        sprite.setTexture(data.textureKey);
-      }
-      sprite.setPosition(data.x, data.y);
-      sprite.setVisible(data.visible);
-    }
-
-    for (const [entityId, sprite] of this.sprites) {
-      if (!seen.has(entityId)) {
-        sprite.destroy();
-        this.sprites.delete(entityId);
-      }
-    }
-  }
-
-  private createSprite(data: RenderData): Phaser.GameObjects.Sprite {
-    const sprite = this.add.sprite(data.x, data.y, data.textureKey);
-    sprite.setScale(SPRITE_SCALE);
-
-    const player = this.ecsWorld
-      .getEntity(data.entityId)
-      ?.getComponent<PlayerComponent>("player");
-    const isLocal = player?.isLocal ?? false;
-
-    sprite.setDepth(isLocal ? LOCAL_PLAYER_DEPTH : REMOTE_PLAYER_DEPTH);
-    if (player && !isLocal) {
-      sprite.setTint(REMOTE_PLAYER_TINT);
-    }
-
-    this.sprites.set(data.entityId, sprite);
-    return sprite;
-  }
-
-  /**
    * Add a remote player as a real ECS entity so it shares the render path
    * and gets network smoothing from the InterpolationSystem.
    */
@@ -298,7 +252,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
-   * Remove a remote player entity; its sprite is cleaned up by `syncSprites`.
+   * Remove a remote player entity; its sprite is cleaned up by the sprite sync.
    */
   removeRemotePlayer(playerId: string): void {
     const entityId = remotePlayerEntityId(playerId);

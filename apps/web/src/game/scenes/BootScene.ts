@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { TileType, TILE_PROPERTIES } from "@worldnest/game-engine";
+import { CROP_DEFINITIONS, TileType, TILE_PROPERTIES } from "@worldnest/game-engine";
 
 /**
  * BootScene handles asset loading and generation of placeholder graphics.
@@ -22,11 +22,14 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Generate tileset texture programmatically (16x16 per tile, 6 tiles)
+    // Generate tileset texture programmatically (16x16 per tile, 7 tiles)
     this.generateTileset();
 
     // Generate player sprite (simple colored rectangles for 4 directions)
     this.generatePlayerSprite();
+
+    // Generate one placeholder per crop growth stage
+    this.generateCropSprites();
 
     // Transition to game scene
     this.scene.start("GameScene");
@@ -42,6 +45,7 @@ export class BootScene extends Phaser.Scene {
       TileType.FOREST,
       TileType.STONE,
       TileType.FLOWERS,
+      TileType.FARMLAND,
     ];
 
     for (const tileType of tileTypes) {
@@ -66,6 +70,11 @@ export class BootScene extends Phaser.Scene {
       } else if (tileType === TileType.STONE) {
         graphics.fillStyle(0x9e9e9e, 1);
         graphics.fillRect(3, 3, 10, 10);
+      } else if (tileType === TileType.FARMLAND) {
+        // Ploughed furrows
+        graphics.fillStyle(0x6d4c41, 1);
+        graphics.fillRect(1, 4, 14, 2);
+        graphics.fillRect(1, 10, 14, 2);
       }
 
       graphics.generateTexture(`tile_${tileType}`, tileSize, tileSize);
@@ -92,5 +101,38 @@ export class BootScene extends Phaser.Scene {
 
     graphics.generateTexture("player", size, size);
     graphics.destroy();
+  }
+
+  /**
+   * One texture per crop growth stage, keyed `<textureKey>_<stage>`, which is
+   * what `SpriteSync` looks up from the crop's stage. Sprouts grow taller with
+   * each stage and turn golden when mature.
+   */
+  private generateCropSprites(): void {
+    const size = 16;
+
+    for (const definition of Object.values(CROP_DEFINITIONS)) {
+      if (!definition) continue;
+
+      for (let stage = 0; stage < definition.stageCount; stage++) {
+        const mature = stage === definition.stageCount - 1;
+        const height = 3 + stage * 4;
+        const graphics = this.add.graphics();
+
+        graphics.fillStyle(mature ? 0xfbc02d : 0x66bb6a, 1);
+        graphics.fillRect(7, size - height - 1, 2, height);
+        if (stage > 0) {
+          graphics.fillRect(4, size - height + 1, 3, 2);
+          graphics.fillRect(9, size - height + 3, 3, 2);
+        }
+        if (mature) {
+          graphics.fillStyle(0xf9a825, 1);
+          graphics.fillCircle(8, size - height - 1, 3);
+        }
+
+        graphics.generateTexture(`${definition.textureKey}_${stage}`, size, size);
+        graphics.destroy();
+      }
+    }
   }
 }

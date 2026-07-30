@@ -20,11 +20,15 @@ import {
   ChunkSystem,
   InterpolationSystem,
   StatsSystem,
+  PlantSystem,
+  CropGrowthSystem,
   HarvestSystem,
   NetworkSyncSystem,
   RenderSystem,
   WorldManager,
+  addItem,
 } from "@worldnest/game-engine";
+import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
 
 /**
@@ -45,6 +49,8 @@ export interface GameWorldSystems {
   chunk: ChunkSystem;
   interpolation: InterpolationSystem;
   stats: StatsSystem;
+  plant: PlantSystem;
+  cropGrowth: CropGrowthSystem;
   harvest: HarvestSystem;
   networkSync: NetworkSyncSystem;
   render: RenderSystem;
@@ -78,6 +84,9 @@ export const DEFAULT_SPAWN_Y = 336;
 /** Player collision box, slightly smaller than a tile so doorways feel forgiving. */
 export const PLAYER_COLLIDER_SIZE = 24;
 
+/** Seeds handed to a new player so the farming loop is playable immediately. */
+export const STARTING_WHEAT_SEEDS = 5;
+
 /**
  * Build the ECS world, its systems and the local player entity.
  * Deliberately free of Phaser imports so the wiring can be reasoned about
@@ -94,6 +103,19 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   const timeComponent = new TimeComponent();
   clockEntity.addComponent(timeComponent);
 
+  // Terrain edits go through the override layer, never into the generator
+  const setTileOverride = (tileX: number, tileY: number, tileType: TileType) =>
+    worldManager.setTileOverride(tileX, tileY, tileType);
+
+  // Planting owns the crop index, which harvesting reads to find what is growing
+  const plant = new PlantSystem(
+    worldManager,
+    setTileOverride,
+    (entity) => world.addEntity(entity),
+    (entityId) => world.removeEntity(entityId),
+    () => timeComponent.snapshot.totalMinutes,
+  );
+
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
@@ -105,10 +127,11 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
     stats: new StatsSystem(() => timeComponent.snapshot.phase),
-    // Terrain edits go through the override layer, never into the generator
-    harvest: new HarvestSystem(worldManager, (tileX, tileY, tileType) =>
-      worldManager.setTileOverride(tileX, tileY, tileType),
-    ),
+    plant,
+    cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
+    // Planting runs first and only consumes the request when it acted, so an
+    // interact it ignores still reaches harvesting this same frame.
+    harvest: new HarvestSystem(worldManager, setTileOverride, plant),
     networkSync: new NetworkSyncSystem(SYNC_INTERVAL_MS),
     render: new RenderSystem(),
   };
@@ -120,9 +143,14 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.chunk);
   world.addSystem(systems.interpolation);
   world.addSystem(systems.stats);
+  world.addSystem(systems.plant);
+  world.addSystem(systems.cropGrowth);
   world.addSystem(systems.harvest);
   world.addSystem(systems.networkSync);
   world.addSystem(systems.render);
+
+  const inventory = new InventoryComponent();
+  addItem(inventory, "wheat_seed", STARTING_WHEAT_SEEDS);
 
   const playerEntity = new Entity(LOCAL_PLAYER_ENTITY_ID);
   playerEntity
@@ -133,7 +161,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new InputComponent())
     .addComponent(new NetworkComponent())
     .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
-    .addComponent(new InventoryComponent())
+    .addComponent(inventory)
     .addComponent(new StatsComponent())
     .addComponent(new InteractionComponent());
 

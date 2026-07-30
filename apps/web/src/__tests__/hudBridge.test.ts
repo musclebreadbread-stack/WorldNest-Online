@@ -69,7 +69,8 @@ describe("HudBridge", () => {
 
     expect(emitter.countOf(INVENTORY_CHANGED_EVENT)).toBe(2);
     const last = emitter.events.at(-1)!.payload as InventoryChangedEvent;
-    expect(last.slots[0]).toEqual({ itemId: "wood", quantity: 2 });
+    // Slot 0 holds the starting seeds, so the wood lands in the next free slot
+    expect(last.slots[1]).toEqual({ itemId: "wood", quantity: 2 });
     expect(last.selectedSlot).toBe(0);
   });
 
