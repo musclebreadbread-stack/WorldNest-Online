@@ -8,7 +8,9 @@ import {
   InputComponent,
   NetworkComponent,
   RemoteInterpolationComponent,
+  ColliderComponent,
   InputSystem,
+  CollisionSystem,
   MovementSystem,
   ChunkSystem,
   InterpolationSystem,
@@ -30,6 +32,7 @@ export interface GameBootstrap {
 
 export interface GameWorldSystems {
   input: InputSystem;
+  collision: CollisionSystem;
   movement: MovementSystem;
   chunk: ChunkSystem;
   interpolation: InterpolationSystem;
@@ -53,6 +56,9 @@ export const LOCAL_PLAYER_ENTITY_ID = "local-player";
 export const DEFAULT_SPAWN_X = 256;
 export const DEFAULT_SPAWN_Y = 256;
 
+/** Player collision box, slightly smaller than a tile so doorways feel forgiving. */
+export const PLAYER_COLLIDER_SIZE = 24;
+
 /**
  * Build the ECS world, its systems and the local player entity.
  * Deliberately free of Phaser imports so the wiring can be reasoned about
@@ -66,6 +72,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
 
   const systems: GameWorldSystems = {
     input: new InputSystem(),
+    // Collision runs between input and movement: it vetoes velocity before it is
+    // integrated, which gives per-axis wall sliding for free.
+    collision: new CollisionSystem(worldManager),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
@@ -74,6 +83,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   };
 
   world.addSystem(systems.input);
+  world.addSystem(systems.collision);
   world.addSystem(systems.movement);
   world.addSystem(systems.chunk);
   world.addSystem(systems.interpolation);
@@ -87,7 +97,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new SpriteComponent("player", 0, true))
     .addComponent(new PlayerComponent(bootstrap.playerId, bootstrap.username, true))
     .addComponent(new InputComponent())
-    .addComponent(new NetworkComponent());
+    .addComponent(new NetworkComponent())
+    .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE));
 
   world.addEntity(playerEntity);
 
