@@ -7,3 +7,5 @@ export { NetworkSyncSystem } from "./NetworkSyncSystem";
 export type { SyncPayload } from "./NetworkSyncSystem";
 export { InterpolationSystem } from "./InterpolationSystem";
 export { CollisionSystem } from "./CollisionSystem";
+export { TimeSystem } from "./TimeSystem";
+export type { NowFn } from "./TimeSystem";

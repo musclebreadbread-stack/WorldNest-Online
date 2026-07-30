@@ -16,6 +16,7 @@ export {
   NetworkComponent,
   RemoteInterpolationComponent,
   ColliderComponent,
+  TimeComponent,
 } from "./components";
 export type { KeyState } from "./components";
 
@@ -28,8 +29,9 @@ export {
   NetworkSyncSystem,
   InterpolationSystem,
   CollisionSystem,
+  TimeSystem,
 } from "./systems";
-export type { RenderData, SyncPayload } from "./systems";
+export type { RenderData, SyncPayload, NowFn } from "./systems";
 
 // World Generation
 export {
@@ -39,6 +41,8 @@ export {
   TILE_PROPERTIES,
   getTileKey,
   parseTileKey,
+  WorldClock,
+  PHASE_START_HOURS,
 } from "./world";
 export type {
   ChunkData,
@@ -47,4 +51,6 @@ export type {
   TileChangeCallback,
   TileProperties,
   TileQuery,
+  ClockSnapshot,
+  DayPhase,
 } from "./world";
