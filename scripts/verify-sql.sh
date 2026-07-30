@@ -25,6 +25,12 @@ SQL_SRC="$REPO_ROOT/packages/database/supabase"
 # security regression otherwise.
 EXPECTED_POLICIES_AFTER_002=23
 
+# The seeded test accounts, and the predicate that finds exactly them - the
+# trigger probe above is also a `@worldnest.test` address.
+EXPECTED_TESTERS=3
+TESTER_COUNT="select count(*) from auth.users where email like 'tester%@worldnest.test'"
+TESTER_IDS="select id from auth.users where email like 'tester%@worldnest.test'"
+
 failures=0
 
 cleanup() {
@@ -120,6 +126,30 @@ expect "trigger provisioned player_state" \
 expect "trigger used the metadata username" \
   "$(query "select username from public.profiles
      where id = '11111111-1111-1111-1111-111111111111';")" "TriggerProbe"
+
+echo "== applying the test-account seed =="
+apply "seed" /sql/seed/test_accounts.sql
+# Applied twice on purpose: the seed claims to be idempotent, so prove it.
+apply "seed (re-run)" /sql/seed/test_accounts.sql
+
+expect "seed accounts" "$(query "$TESTER_COUNT")" "$EXPECTED_TESTERS"
+expect "seed profiles" \
+  "$(query "select count(*) from public.profiles where id in ($TESTER_IDS);")" \
+  "$EXPECTED_TESTERS"
+expect "seed player_state" \
+  "$(query "select count(*) from public.player_state where player_id in ($TESTER_IDS);")" \
+  "$EXPECTED_TESTERS"
+expect "seed identities" \
+  "$(query "select count(*) from auth.identities
+     where provider = 'email' and provider_id like 'tester%@worldnest.test';")" \
+  "$EXPECTED_TESTERS"
+expect "seed confirmed" \
+  "$(query "$TESTER_COUNT and email_confirmed_at is not null;")" "$EXPECTED_TESTERS"
+# The password is the point of the seed: if this hash does not verify, the
+# account exists but nobody can sign in with it.
+expect "seed password verifies" \
+  "$(query "$TESTER_COUNT and encrypted_password = crypt('worldnest123', encrypted_password);")" \
+  "$EXPECTED_TESTERS"
 
 echo
 if [ "$failures" -ne 0 ]; then
