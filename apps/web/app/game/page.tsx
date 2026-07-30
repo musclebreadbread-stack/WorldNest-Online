@@ -1,13 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { GameUI } from "../../src/components/GameUI";
+
+// Dynamically import GameCanvas to avoid SSR issues with Phaser (requires window)
+const GameCanvas = dynamic(
+  () => import("../../src/components/GameCanvas").then((mod) => ({ default: mod.GameCanvas })),
+  { ssr: false, loading: () => <div className="flex h-full w-full items-center justify-center text-white">Loading game...</div> },
+);
+
 export default function GamePage() {
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* Phaser canvas will be mounted here */}
-      <div id="game-container" className="h-full w-full" />
-      <div className="absolute left-4 top-4 rounded bg-black/50 px-3 py-1 text-sm text-white">
-        WorldNest Online - Game View
-      </div>
+      <GameCanvas />
+      <GameUI />
     </main>
   );
 }

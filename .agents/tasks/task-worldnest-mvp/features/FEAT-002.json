@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Implement the ECS game engine core, Phaser 3 integration with the Next.js app, procedural world generation with chunk streaming, player entity with movement controls, and Supabase auth + realtime multiplayer sync. This is the core gameplay MVP.",
-  "status": "pending",
+  "status": "completed",
   "steps": [
     "Implement the ECS framework in packages/game-engine/src/ecs/: World.ts (entity registry, system loop, component storage), Entity.ts (unique ID, component map), Component.ts (base component interface), System.ts (base system with update method and entity queries). Use a simple bitmasked archetype approach for efficient queries.",
     "Create core components in packages/game-engine/src/components/: PositionComponent.ts (x, y, chunk), VelocityComponent.ts (vx, vy), SpriteComponent.ts (textureKey, frame, visible), PlayerComponent.ts (playerId, username, isLocal), ChunkComponent.ts (chunkX, chunkY, tiles[][]), InputComponent.ts (keys pressed state), NetworkComponent.ts (lastSync, dirty flag).",
@@ -36,5 +36,5 @@
     "Run 'pnpm --filter @worldnest/web dev' and verify the app starts and game page loads without console errors"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 24 unit tests pass (ECS: 12, movement: 7, chunk-generator: 5). Used simplex-noise v4 with createNoise2D API. Phaser is loaded via next/dynamic to avoid SSR issues. TILE_PROPERTIES import was cleaned up in GameScene (only TileType enum needed for rendering). The database package exports both auth and realtime modules. vitest v4.1.10 installed successfully for game-engine tests. turbo test pipeline depends on build (runs tsc first then vitest). No .env configured so auth functions gracefully handle missing Supabase credentials. ESLint warning about missing Next.js plugin config is pre-existing from FEAT-001."
 }

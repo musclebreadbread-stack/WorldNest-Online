@@ -6,12 +6,15 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@worldnest/shared": "workspace:*"
+    "@worldnest/shared": "workspace:*",
+    "simplex-noise": "^4.0.3"
   },
   "devDependencies": {
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.10"
   }
 }
