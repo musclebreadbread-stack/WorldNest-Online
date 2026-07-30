@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { DayPhase } from "@worldnest/game-engine";
+import type { OverlayContext, SceneOverlay } from "./SceneOverlay";
 
 /** Colour and opacity of the screen tint for each phase of the day. */
 const PHASE_TINTS: Record<DayPhase, { color: number; alpha: number }> = {
@@ -24,7 +25,7 @@ const TWEEN_DURATION_MS = 1000;
  * DayNightOverlay tints the viewport according to the world clock phase.
  * Phase changes are tweened so dawn/dusk fade in instead of popping.
  */
-export class DayNightOverlay {
+export class DayNightOverlay implements SceneOverlay {
   private scene: Phaser.Scene;
   private rectangle: Phaser.GameObjects.Rectangle;
   private phase: DayPhase | null = null;
@@ -47,6 +48,10 @@ export class DayNightOverlay {
     this.rectangle.setAlpha(0);
 
     scene.scale.on(Phaser.Scale.Events.RESIZE, this.handleResize, this);
+  }
+
+  update(ctx: OverlayContext): void {
+    this.setPhase(ctx.phase);
   }
 
   /** Fade to the tint for `phase`; a no-op while the phase is unchanged. */

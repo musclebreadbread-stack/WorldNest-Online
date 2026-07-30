@@ -8,6 +8,7 @@ import type {
   PositionComponent,
 } from "@worldnest/game-engine";
 import { ITEM_DEFINITIONS, TILE_SIZE } from "@worldnest/shared";
+import type { OverlayContext, SceneOverlay } from "./SceneOverlay";
 
 const GHOST_DEPTH = 61;
 const GHOST_ALPHA = 0.55;
@@ -22,7 +23,7 @@ const SPRITE_SCALE = 2;
  * The green/red tint comes straight from `BuildSystem.canPlaceAt`, so the preview
  * and the placement rules can never drift apart.
  */
-export class BuildGhost {
+export class BuildGhost implements SceneOverlay {
   private sprite: Phaser.GameObjects.Sprite;
   private playerEntity: Entity;
   private buildSystem: BuildSystem;
@@ -39,7 +40,7 @@ export class BuildGhost {
   }
 
   /** Reposition and re-tint the ghost. Call once per frame. */
-  update(buildMode: boolean): void {
+  update({ buildMode }: OverlayContext): void {
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
     const selected = getSelectedItem(inventory);
     const textureKey = selected

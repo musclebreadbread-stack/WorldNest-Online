@@ -2,37 +2,33 @@ import Phaser from "phaser";
 import {
   World,
   Entity,
-  PositionComponent,
   VelocityComponent,
   NetworkComponent,
-  RemoteInterpolationComponent,
   TimeComponent,
-  NetworkSyncSystem,
   RenderSystem,
   WorldManager,
 } from "@worldnest/game-engine";
-import type { BuildSystem, ChunkData } from "@worldnest/game-engine";
-import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
+import type { ChunkData } from "@worldnest/game-engine";
+import type { RealtimeManager } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
 import { HudBridge } from "../HudBridge";
+import { NetworkBridge } from "../NetworkBridge";
 import { PlayerController } from "../PlayerController";
 import { SpriteSync } from "../SpriteSync";
 import { BuildGhost } from "../BuildGhost";
+import { OverlayStack, type OverlayContext } from "../SceneOverlay";
 import {
   createSessionPersistence,
   type SessionPersistence,
 } from "../SessionPersistence";
 import {
   createGameWorld,
-  createRemotePlayerEntity,
-  remotePlayerEntityId,
   BOOTSTRAP_REGISTRY_KEY,
   DEFAULT_SPAWN_X,
   DEFAULT_SPAWN_Y,
   type GameBootstrap,
 } from "../createGameWorld";
-import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../events";
 import { useUIStore } from "../../stores/uiStore";
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
@@ -46,26 +42,30 @@ const FALLBACK_BOOTSTRAP: GameBootstrap = {
  * GameScene is the main game scene.
  * Owns the Phaser side of the game: chunk textures, sprites, camera and input,
  * while all simulation lives in the ECS world built by `createGameWorld`.
- * Wires ECS NetworkSync payloads to RealtimeManager for multiplayer broadcasting.
+ *
+ * Everything that is not Phaser lives beside it: multiplayer plumbing in
+ * `NetworkBridge`, HUD publishing in `HudBridge`, input in `PlayerController`,
+ * and every visual layer as a `SceneOverlay` in `this.overlays` — so adding a
+ * layer costs one registration line rather than another block in `update`.
  */
 export class GameScene extends Phaser.Scene {
   private ecsWorld!: World;
   private worldManager!: WorldManager;
-  private networkSync!: NetworkSyncSystem;
   private renderSystem!: RenderSystem;
-  private buildSystem!: BuildSystem;
   private playerEntity!: Entity;
   private clockEntity!: Entity;
   private chunkRenderer!: ChunkRenderer;
   private dayNight!: DayNightOverlay;
   private hudBridge!: HudBridge;
   private playerController!: PlayerController;
-  private buildGhost!: BuildGhost;
+  /** Every visual layer, updated and destroyed as one. */
+  private overlays = new OverlayStack();
+  /** Realtime broadcasting and remote player entities. */
+  private network!: NetworkBridge;
   /** Writes position, inventory and world changes back to Supabase. */
   private persistence: SessionPersistence | null = null;
   /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
   private spriteSync!: SpriteSync;
-  private realtimeManager: RealtimeManager | null = null;
 
   constructor() {
     super({ key: "GameScene" });
@@ -73,26 +73,11 @@ export class GameScene extends Phaser.Scene {
 
   /**
    * Set the realtime manager for multiplayer communication.
-   * Should be called after the scene is created but before the game loop needs it.
+   * Should be called after the scene is created but before the game loop needs
+   * it; `GameCanvas` calls this once the session is authenticated.
    */
   setRealtimeManager(manager: RealtimeManager): void {
-    this.realtimeManager = manager;
-
-    // Wire up callbacks for remote players
-    manager.setCallbacks(
-      (player) =>
-        this.addRemotePlayer(
-          player.playerId,
-          player.username,
-          player.position.x,
-          player.position.y,
-        ),
-      (playerId) => this.removeRemotePlayer(playerId),
-      (playerId, position) => this.updateRemotePlayer(playerId, position.x, position.y),
-    );
-
-    // Seed the manager with the real spawn point so joinRoom does not track (0, 0)
-    void manager.updatePresence(this.getLocalPlayerPosition());
+    this.network.setTransport(manager);
   }
 
   create(): void {
@@ -102,11 +87,15 @@ export class GameScene extends Phaser.Scene {
     const context = createGameWorld(bootstrap);
     this.ecsWorld = context.world;
     this.worldManager = context.worldManager;
-    this.networkSync = context.systems.networkSync;
     this.renderSystem = context.systems.render;
-    this.buildSystem = context.systems.build;
     this.playerEntity = context.playerEntity;
     this.clockEntity = context.clockEntity;
+    this.network = new NetworkBridge(
+      this.ecsWorld,
+      this.playerEntity,
+      context.systems.networkSync,
+      this.game.events,
+    );
 
     // Saved state was already restored by createGameWorld; from here on every
     // change is written back through this layer.
@@ -130,14 +119,16 @@ export class GameScene extends Phaser.Scene {
     this.ecsWorld.update(0);
     this.spriteSync.sync(this.renderSystem.renderData);
 
-    // Day/night tint and the React HUD bridge
-    this.dayNight = new DayNightOverlay(this);
+    // Visual layers, in draw order. Each one only reads the overlay context.
+    this.dayNight = this.overlays.add(new DayNightOverlay(this));
     this.dayNight.setPhase(this.getClockSnapshot().phase);
+    this.overlays.add(new BuildGhost(this, this.playerEntity, context.systems.build));
+
+    // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      this.dayNight.destroy();
+      this.overlays.destroy();
       this.spriteSync.destroy();
-      this.buildGhost.destroy();
       this.persistence?.flush();
       this.persistence?.destroy();
     });
@@ -149,9 +140,6 @@ export class GameScene extends Phaser.Scene {
 
     // Keyboard bindings (movement, hotbar, panels, build mode)
     this.playerController = new PlayerController(this, this.playerEntity);
-
-    // Placement preview for build mode
-    this.buildGhost = new BuildGhost(this, this.playerEntity, this.buildSystem);
 
     // Emit ready event for React integration
     this.game.events.emit("game-ready");
@@ -173,17 +161,14 @@ export class GameScene extends Phaser.Scene {
     // Update ECS
     this.ecsWorld.update(deltaSeconds);
 
-    // Flush network sync payloads to realtime manager
-    this.flushNetworkPayloads();
+    // Flush network sync payloads to the realtime manager
+    this.network.flushNetworkPayloads();
 
     // Mirror ECS render data onto Phaser sprites
     this.spriteSync.sync(this.renderSystem.renderData);
 
-    // Day/night tint follows the world clock phase
-    this.dayNight.setPhase(this.getClockSnapshot().phase);
-
-    // Build preview follows the faced tile while build mode is on
-    this.buildGhost.update(useUIStore.getState().buildMode);
+    // Day/night tint, build preview and every other visual layer
+    this.overlays.update(this.getOverlayContext(delta));
 
     // Autosave position/inventory and push new structures and crops
     this.persistence?.update();
@@ -197,6 +182,17 @@ export class GameScene extends Phaser.Scene {
     return this.clockEntity.getComponent<TimeComponent>("time")!.snapshot;
   }
 
+  /** The per-frame state every overlay is allowed to read. */
+  private getOverlayContext(deltaMs: number): OverlayContext {
+    return {
+      phase: this.getClockSnapshot().phase,
+      buildMode: useUIStore.getState().buildMode,
+      playerEntity: this.playerEntity,
+      worldManager: this.worldManager,
+      deltaMs,
+    };
+  }
+
   /**
    * Read the bootstrap payload published by React, falling back to a local
    * anonymous player when the game runs without an authenticated session.
@@ -208,90 +204,11 @@ export class GameScene extends Phaser.Scene {
     return bootstrap ?? FALLBACK_BOOTSTRAP;
   }
 
-  /**
-   * Flush pending network sync payloads to the RealtimeManager.
-   */
-  private flushNetworkPayloads(): void {
-    if (!this.realtimeManager) return;
-
-    const payloads = this.networkSync.getPendingPayloads();
-    for (const payload of payloads) {
-      const position = this.playerEntity.getComponent<PositionComponent>("position")!;
-      const broadcastPosition: PlayerPosition = {
-        x: payload.x,
-        y: payload.y,
-        chunkX: position.chunkX,
-        chunkY: position.chunkY,
-      };
-      this.realtimeManager.broadcastPosition(broadcastPosition);
-      // Presence is throttled inside the manager; late joiners need it to be current
-      void this.realtimeManager.updatePresence(broadcastPosition);
-    }
-  }
-
-  /** Current local player position in the shape the realtime layer expects. */
-  private getLocalPlayerPosition(): PlayerPosition {
-    const position = this.playerEntity.getComponent<PositionComponent>("position")!;
-    return {
-      x: position.x,
-      y: position.y,
-      chunkX: position.chunkX,
-      chunkY: position.chunkY,
-    };
-  }
-
   private onChunkLoad(chunk: ChunkData): void {
     this.chunkRenderer.drawChunk(chunk);
   }
 
   private onChunkUnload(chunkX: number, chunkY: number): void {
     this.chunkRenderer.removeChunk(chunkX, chunkY);
-  }
-
-  /**
-   * Add a remote player as a real ECS entity so it shares the render path
-   * and gets network smoothing from the InterpolationSystem.
-   */
-  addRemotePlayer(playerId: string, username: string, x: number, y: number): void {
-    const entityId = remotePlayerEntityId(playerId);
-    if (this.ecsWorld.getEntity(entityId)) return;
-
-    this.ecsWorld.addEntity(createRemotePlayerEntity(playerId, username, x, y));
-    this.emitPlayersChanged({ type: "join", playerId, username, x, y });
-  }
-
-  /**
-   * Write a remote player's latest network position as the interpolation target.
-   */
-  updateRemotePlayer(playerId: string, x: number, y: number): void {
-    const entity = this.ecsWorld.getEntity(remotePlayerEntityId(playerId));
-    if (!entity) {
-      // A position broadcast can arrive before the presence join event
-      this.addRemotePlayer(playerId, playerId, x, y);
-      return;
-    }
-
-    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    )!;
-    interpolation.targetX = x;
-    interpolation.targetY = y;
-
-    this.emitPlayersChanged({ type: "move", playerId, x, y });
-  }
-
-  /**
-   * Remove a remote player entity; its sprite is cleaned up by the sprite sync.
-   */
-  removeRemotePlayer(playerId: string): void {
-    const entityId = remotePlayerEntityId(playerId);
-    if (!this.ecsWorld.getEntity(entityId)) return;
-
-    this.ecsWorld.removeEntity(entityId);
-    this.emitPlayersChanged({ type: "leave", playerId });
-  }
-
-  private emitPlayersChanged(event: PlayersChangedEvent): void {
-    this.game.events.emit(PLAYERS_CHANGED_EVENT, event);
   }
 }
