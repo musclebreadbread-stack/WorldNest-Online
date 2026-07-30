@@ -4,24 +4,33 @@ import {
   Entity,
   PositionComponent,
   VelocityComponent,
-  SpriteComponent,
-  PlayerComponent,
   InputComponent,
   NetworkComponent,
-  MovementSystem,
-  InputSystem,
-  ChunkSystem,
   NetworkSyncSystem,
   WorldManager,
-  TileType,
 } from "@worldnest/game-engine";
-import { CHUNK_SIZE, TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
 import type { ChunkData } from "@worldnest/game-engine";
 import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
+import { ChunkRenderer } from "../ChunkRenderer";
+import {
+  createGameWorld,
+  BOOTSTRAP_REGISTRY_KEY,
+  DEFAULT_SPAWN_X,
+  DEFAULT_SPAWN_Y,
+  type GameBootstrap,
+} from "../createGameWorld";
+
+const FALLBACK_BOOTSTRAP: GameBootstrap = {
+  playerId: "local",
+  username: "Player",
+  spawnX: DEFAULT_SPAWN_X,
+  spawnY: DEFAULT_SPAWN_Y,
+};
 
 /**
  * GameScene is the main game scene.
- * Creates the tilemap from chunk data, renders player sprites, handles camera follow.
+ * Owns the Phaser side of the game: chunk textures, sprites, camera and input,
+ * while all simulation lives in the ECS world built by `createGameWorld`.
  * Wires ECS NetworkSync payloads to RealtimeManager for multiplayer broadcasting.
  */
 export class GameScene extends Phaser.Scene {
@@ -30,9 +39,14 @@ export class GameScene extends Phaser.Scene {
   private networkSync!: NetworkSyncSystem;
   private playerEntity!: Entity;
   private playerSprite!: Phaser.GameObjects.Sprite;
-  private chunkLayers: Map<string, Phaser.GameObjects.Container> = new Map();
+  private chunkRenderer!: ChunkRenderer;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasdKeys!: { W: Phaser.Input.Keyboard.Key; A: Phaser.Input.Keyboard.Key; S: Phaser.Input.Keyboard.Key; D: Phaser.Input.Keyboard.Key };
+  private wasdKeys!: {
+    W: Phaser.Input.Keyboard.Key;
+    A: Phaser.Input.Keyboard.Key;
+    S: Phaser.Input.Keyboard.Key;
+    D: Phaser.Input.Keyboard.Key;
+  };
   private otherPlayers: Map<string, Phaser.GameObjects.Sprite> = new Map();
   private realtimeManager: RealtimeManager | null = null;
 
@@ -49,48 +63,32 @@ export class GameScene extends Phaser.Scene {
 
     // Wire up callbacks for remote players
     manager.setCallbacks(
-      (player) => this.addRemotePlayer(player.playerId, player.position.x, player.position.y),
+      (player) =>
+        this.addRemotePlayer(player.playerId, player.position.x, player.position.y),
       (playerId) => this.removeRemotePlayer(playerId),
       (playerId, position) => this.updateRemotePlayer(playerId, position.x, position.y),
     );
   }
 
   create(): void {
-    // Setup ECS world
-    this.ecsWorld = new World();
-    this.worldManager = new WorldManager(WORLD_SEED, 1);
+    const bootstrap = this.getBootstrap();
 
-    // Set up chunk callbacks
+    // Build the ECS world, systems and the local player entity
+    const context = createGameWorld(bootstrap);
+    this.ecsWorld = context.world;
+    this.worldManager = context.worldManager;
+    this.networkSync = context.systems.networkSync;
+    this.playerEntity = context.playerEntity;
+
+    // Chunk rendering
+    this.chunkRenderer = new ChunkRenderer(this);
     this.worldManager.setCallbacks(
       (chunk) => this.onChunkLoad(chunk),
       (chunkX, chunkY) => this.onChunkUnload(chunkX, chunkY),
     );
 
-    // Create systems
-    const inputSystem = new InputSystem();
-    const movementSystem = new MovementSystem();
-    const chunkSystem = new ChunkSystem(this.worldManager);
-    this.networkSync = new NetworkSyncSystem(50);
-
-    this.ecsWorld.addSystem(inputSystem);
-    this.ecsWorld.addSystem(movementSystem);
-    this.ecsWorld.addSystem(chunkSystem);
-    this.ecsWorld.addSystem(this.networkSync);
-
-    // Create local player entity
-    this.playerEntity = new Entity("local-player");
-    this.playerEntity
-      .addComponent(new PositionComponent(256, 256))
-      .addComponent(new VelocityComponent(0, 0))
-      .addComponent(new SpriteComponent("player", 0, true))
-      .addComponent(new PlayerComponent("local", "Player", true))
-      .addComponent(new InputComponent())
-      .addComponent(new NetworkComponent());
-
-    this.ecsWorld.addEntity(this.playerEntity);
-
     // Create player sprite
-    this.playerSprite = this.add.sprite(256, 256, "player");
+    this.playerSprite = this.add.sprite(bootstrap.spawnX, bootstrap.spawnY, "player");
     this.playerSprite.setScale(2);
     this.playerSprite.setDepth(100);
 
@@ -156,6 +154,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
+   * Read the bootstrap payload published by React, falling back to a local
+   * anonymous player when the game runs without an authenticated session.
+   */
+  private getBootstrap(): GameBootstrap {
+    const bootstrap = this.registry.get(BOOTSTRAP_REGISTRY_KEY) as
+      | GameBootstrap
+      | undefined;
+    return bootstrap ?? FALLBACK_BOOTSTRAP;
+  }
+
+  /**
    * Flush pending network sync payloads to the RealtimeManager.
    */
   private flushNetworkPayloads(): void {
@@ -175,54 +184,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   private onChunkLoad(chunk: ChunkData): void {
-    const key = `${chunk.chunkX},${chunk.chunkY}`;
-    const chunkPixelSize = CHUNK_SIZE * TILE_SIZE;
-    const offsetX = chunk.chunkX * chunkPixelSize;
-    const offsetY = chunk.chunkY * chunkPixelSize;
-
-    // Use a RenderTexture for batch rendering instead of one Sprite per tile.
-    // All tiles are drawn once into the texture, reducing game objects from 256 to 1 per chunk.
-    const renderTexture = this.add.renderTexture(
-      offsetX,
-      offsetY,
-      chunkPixelSize,
-      chunkPixelSize,
-    );
-    renderTexture.setOrigin(0, 0);
-
-    // Use a temporary sprite to stamp each tile at the correct scale
-    const scale = TILE_SIZE / 16; // Textures are 16x16, scale to TILE_SIZE
-    const stampSprite = this.make.sprite({ key: "tile_0", add: false });
-    stampSprite.setOrigin(0, 0);
-    stampSprite.setScale(scale);
-
-    for (let y = 0; y < CHUNK_SIZE; y++) {
-      for (let x = 0; x < CHUNK_SIZE; x++) {
-        const tileType = chunk.tiles[y][x] as TileType;
-        stampSprite.setTexture(`tile_${tileType}`);
-        renderTexture.draw(stampSprite, x * TILE_SIZE, y * TILE_SIZE);
-      }
-    }
-
-    stampSprite.destroy();
-    renderTexture.setDepth(0);
-
-    // Store as a container wrapper for consistent cleanup
-    const container = this.add.container(0, 0, [renderTexture]);
-    this.chunkLayers.set(key, container);
-
-    console.log(`[WorldNest] Chunk loaded: ${key}`);
+    this.chunkRenderer.drawChunk(chunk);
   }
 
   private onChunkUnload(chunkX: number, chunkY: number): void {
-    const key = `${chunkX},${chunkY}`;
-    const container = this.chunkLayers.get(key);
-    if (container) {
-      container.destroy(true);
-      this.chunkLayers.delete(key);
-    }
-
-    console.log(`[WorldNest] Chunk unloaded: ${key}`);
+    this.chunkRenderer.removeChunk(chunkX, chunkY);
   }
 
   /**

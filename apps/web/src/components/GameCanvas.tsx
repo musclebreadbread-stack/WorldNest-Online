@@ -18,14 +18,23 @@ export function GameCanvas() {
   const [gameReady, setGameReady] = useState(false);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
   const user = useAuthStore((s) => s.user);
+  const authLoading = useAuthStore((s) => s.loading);
 
   const initGame = useCallback(async () => {
     if (gameRef.current || !containerRef.current) return;
 
     // Dynamic import to avoid SSR issues (Phaser requires window)
     const { createPhaserGame } = await import("../game/PhaserGame");
+    const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } = await import(
+      "../game/createGameWorld"
+    );
 
-    const game = createPhaserGame(containerRef.current);
+    const game = createPhaserGame(containerRef.current, {
+      playerId: user?.id ?? "local",
+      username: user?.username ?? "Player",
+      spawnX: DEFAULT_SPAWN_X,
+      spawnY: DEFAULT_SPAWN_Y,
+    });
     gameRef.current = game;
 
     // Listen for player position updates
@@ -40,9 +49,13 @@ export function GameCanvas() {
     game.events.once("game-ready", () => {
       setGameReady(true);
     });
-  }, [setPlayerPosition]);
+  }, [setPlayerPosition, user]);
 
   useEffect(() => {
+    // Wait until the session has resolved so the player entity gets the real
+    // user id/username rather than the anonymous fallback.
+    if (authLoading) return;
+
     initGame();
 
     return () => {
@@ -51,7 +64,7 @@ export function GameCanvas() {
         gameRef.current = null;
       }
     };
-  }, [initGame]);
+  }, [initGame, authLoading]);
 
   // Wire RealtimeManager to the GameScene once user is authenticated and game is ready
   useEffect(() => {
