@@ -1,21 +1,39 @@
 "use client";
 
+import type { MessageKey } from "../i18n";
+import { useTranslation } from "../i18n/useTranslation";
 import { useGameStore } from "../stores/gameStore";
+import type { ConnectionStatus } from "../stores/gameStore";
+import { useUIStore } from "../stores/uiStore";
 import { BuildMenu } from "./BuildMenu";
 import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
+import { SettingsPanel } from "./SettingsPanel";
 import { SignOutButton } from "./SignOutButton";
 import { StatusBars } from "./StatusBars";
+
+const CONNECTION_KEYS: Record<ConnectionStatus, MessageKey> = {
+  connected: "hud.connected",
+  connecting: "hud.connecting",
+  disconnected: "hud.disconnected",
+};
 
 /**
  * GameUI provides a React overlay UI for chat, inventory button, and player info.
  * Renders on top of the Phaser canvas using absolute positioning.
+ *
+ * Corner-anchored panels are positioned with the logical `start-*` / `end-*`
+ * utilities rather than `left-*` / `right-*`, so an Arabic layout mirrors instead
+ * of stacking two panels in the same corner. The centre-anchored ones need
+ * nothing: their anchor is the midpoint.
  */
 export function GameUI() {
   const { playerX, playerY, chunkX, chunkY, connectionStatus, onlinePlayers } =
     useGameStore();
+  const toggleSettings = useUIStore((s) => s.toggleSettings);
+  const { t } = useTranslation();
 
   return (
     <div className="pointer-events-none absolute inset-0">
@@ -24,8 +42,8 @@ export function GameUI() {
         <ClockHud />
       </div>
 
-      {/* Top-right: connection status and player count */}
-      <div className="absolute right-4 top-4 flex flex-col gap-2 pointer-events-auto">
+      {/* Top-right: connection status, player count and settings */}
+      <div className="absolute end-4 top-4 flex flex-col items-stretch gap-2 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-sm text-white">
           <div className="flex items-center gap-2">
             <span
@@ -37,33 +55,46 @@ export function GameUI() {
                     : "bg-red-400"
               }`}
             />
-            <span className="capitalize">{connectionStatus}</span>
+            <span>{t(CONNECTION_KEYS[connectionStatus])}</span>
           </div>
           <div className="mt-1 text-xs text-gray-300">
-            Players online: {onlinePlayers.size}
+            {t("hud.playersOnline", { count: onlinePlayers.size })}
           </div>
         </div>
+        <button
+          type="button"
+          onClick={toggleSettings}
+          aria-label={t("settings.open")}
+          title={t("settings.title")}
+          className="rounded bg-black/70 px-3 py-2 text-xs text-gray-200 transition-colors hover:bg-black/90 hover:text-white"
+        >
+          {t("settings.title")}
+        </button>
         <SignOutButton />
       </div>
 
       {/* Bottom-left: chat log and composer, above the coordinates */}
-      <div className="absolute bottom-20 left-4 pointer-events-auto">
+      <div className="absolute bottom-20 start-4 pointer-events-auto">
         <ChatPanel />
       </div>
 
       {/* Bottom-left: coordinates */}
-      <div className="absolute bottom-4 left-4 pointer-events-auto">
-        <div className="rounded bg-black/70 px-3 py-2 text-xs text-white font-mono">
-          <div>X: {Math.round(playerX)} Y: {Math.round(playerY)}</div>
-          <div>Chunk: {chunkX}, {chunkY}</div>
+      <div className="absolute bottom-4 start-4 pointer-events-auto">
+        <div className="hud-numeric rounded bg-black/70 px-3 py-2 text-xs text-white font-mono">
+          <div>
+            {t("hud.coordinates", {
+              x: Math.round(playerX),
+              y: Math.round(playerY),
+            })}
+          </div>
+          <div>{t("hud.chunk", { chunkX, chunkY })}</div>
         </div>
       </div>
 
       {/* Bottom-right: controls hint */}
-      <div className="absolute bottom-4 right-4 pointer-events-auto">
-        <div className="rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
-          WASD / Arrows · 1-8 hotbar · I inventory · E harvest / plant · B build ·
-          Enter chat
+      <div className="absolute bottom-4 end-4 pointer-events-auto">
+        <div className="max-w-xs rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
+          {t("hud.controls")}
         </div>
       </div>
 
@@ -78,13 +109,14 @@ export function GameUI() {
       </div>
 
       {/* Right-centre: build mode helper */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-auto">
+      <div className="absolute end-4 top-1/2 -translate-y-1/2 pointer-events-auto">
         <BuildMenu />
       </div>
 
-      {/* Centre: inventory panel */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+      {/* Centre: inventory and settings panels */}
+      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-4 pointer-events-auto">
         <InventoryPanel />
+        <SettingsPanel />
       </div>
     </div>
   );

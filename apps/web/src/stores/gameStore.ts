@@ -5,6 +5,9 @@ import { INVENTORY_SLOTS, MAX_ENERGY } from "@worldnest/shared";
 /** Matches StatsComponent's default, used until the game emits its first update. */
 const DEFAULT_MAX_HEALTH = 100;
 
+/** Realtime channel state, mirrored from the database layer for the HUD. */
+export type ConnectionStatus = "disconnected" | "connecting" | "connected";
+
 export interface OnlinePlayer {
   playerId: string;
   username: string;
@@ -18,7 +21,7 @@ interface GameState {
   chunkX: number;
   chunkY: number;
   onlinePlayers: Map<string, OnlinePlayer>;
-  connectionStatus: "disconnected" | "connecting" | "connected";
+  connectionStatus: ConnectionStatus;
   /** Mirror of the local player's InventoryComponent slots. */
   inventorySlots: Array<InventorySlot | null>;
   selectedSlot: number;
@@ -29,7 +32,7 @@ interface GameState {
   maxEnergy: number;
 
   setPlayerPosition: (x: number, y: number, chunkX: number, chunkY: number) => void;
-  setConnectionStatus: (status: "disconnected" | "connecting" | "connected") => void;
+  setConnectionStatus: (status: ConnectionStatus) => void;
   setInventory: (
     slots: Array<InventorySlot | null>,
     selectedSlot: number,

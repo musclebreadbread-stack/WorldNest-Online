@@ -45,6 +45,10 @@ const ONE_SHOT_BINDINGS: OneShotBinding[] = [
     keyCode: Phaser.Input.Keyboard.KeyCodes.M,
     handler: () => useUIStore.getState().toggleMinimap(),
   },
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.P,
+    handler: () => useUIStore.getState().toggleSettings(),
+  },
   // E and Space both act on the faced tile
   {
     keyCode: Phaser.Input.Keyboard.KeyCodes.E,

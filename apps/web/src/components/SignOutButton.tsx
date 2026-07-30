@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "../i18n/useTranslation";
 import { useAuthStore } from "../stores/authStore";
 
 /**
@@ -16,6 +17,7 @@ export function SignOutButton() {
   const router = useRouter();
   const clear = useAuthStore((state) => state.clear);
   const [signingOut, setSigningOut] = useState(false);
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -37,7 +39,7 @@ export function SignOutButton() {
       disabled={signingOut}
       className="rounded bg-black/70 px-3 py-2 text-xs text-gray-200 transition-colors hover:bg-black/90 hover:text-white disabled:opacity-50"
     >
-      {signingOut ? "Signing out..." : "Sign out"}
+      {signingOut ? t("hud.signingOut") : t("hud.signOut")}
     </button>
   );
 }

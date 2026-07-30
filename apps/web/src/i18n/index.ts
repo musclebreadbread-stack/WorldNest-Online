@@ -1,3 +1,5 @@
+import type { DayPhase } from "@worldnest/game-engine";
+import type { ItemId } from "@worldnest/shared";
 import { ar } from "./messages/ar";
 import { de } from "./messages/de";
 import { en } from "./messages/en";
@@ -84,6 +86,36 @@ export const MESSAGES: Record<Locale, Partial<LocaleMessages>> = {
 
 /** The default, and the fallback for every untranslated key. */
 export const DEFAULT_LOCALE: Locale = "en";
+
+/**
+ * Display-name key for every catalogue item.
+ *
+ * A `Record` rather than a `` `item.${id}` `` template so both directions are
+ * checked: adding an item to `@worldnest/shared` fails to compile until it has a
+ * translation key, and a typo in a key fails against `MessageKey`.
+ */
+export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
+  wood: "item.wood",
+  stone: "item.stone",
+  ore: "item.ore",
+  fiber: "item.fiber",
+  flower: "item.flower",
+  wheat_seed: "item.wheat_seed",
+  wheat: "item.wheat",
+  fence: "item.fence",
+  chest: "item.chest",
+};
+
+/**
+ * Name key for each phase of the world clock. The engine reports the phase as a
+ * `DayPhase`; the translation of it lives here, not in the engine.
+ */
+export const CLOCK_PHASE_KEYS: Record<DayPhase, MessageKey> = {
+  dawn: "clock.phase.dawn",
+  day: "clock.phase.day",
+  dusk: "clock.phase.dusk",
+  night: "clock.phase.night",
+};
 
 export type TranslateParams = Record<string, string | number>;
 

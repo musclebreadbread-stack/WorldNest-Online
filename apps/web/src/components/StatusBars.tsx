@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "../i18n/useTranslation";
 import { useGameStore } from "../stores/gameStore";
 
 interface BarProps {
@@ -15,13 +16,13 @@ function Bar({ label, value, max, colorClass }: BarProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="w-10 text-[10px] uppercase tracking-wide text-gray-300">
+      <span className="w-16 text-[10px] uppercase tracking-wide text-gray-300">
         {label}
       </span>
       <div className="h-2.5 w-32 overflow-hidden rounded-full bg-white/20">
         <div className={`h-full ${colorClass}`} style={{ width: `${percent}%` }} />
       </div>
-      <span className="w-14 text-right font-mono text-[10px] text-gray-200">
+      <span className="hud-numeric w-14 text-end font-mono text-[10px] text-gray-200">
         {Math.round(value)}/{max}
       </span>
     </div>
@@ -34,11 +35,22 @@ function Bar({ label, value, max, colorClass }: BarProps) {
  */
 export function StatusBars() {
   const { health, maxHealth, energy, maxEnergy } = useGameStore();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-1 rounded bg-black/70 px-3 py-2">
-      <Bar label="HP" value={health} max={maxHealth} colorClass="bg-red-500" />
-      <Bar label="EN" value={energy} max={maxEnergy} colorClass="bg-amber-400" />
+      <Bar
+        label={t("hud.health")}
+        value={health}
+        max={maxHealth}
+        colorClass="bg-red-500"
+      />
+      <Bar
+        label={t("hud.energy")}
+        value={energy}
+        max={maxEnergy}
+        colorClass="bg-amber-400"
+      />
     </div>
   );
 }

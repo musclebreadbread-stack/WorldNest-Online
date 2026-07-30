@@ -159,6 +159,7 @@ describe("uiStore", () => {
       inventoryOpen: false,
       buildMode: false,
       minimapOpen: true,
+      settingsOpen: false,
     });
   });
 
@@ -215,5 +216,20 @@ describe("uiStore", () => {
     expect(state.minimapOpen).toBe(false);
     expect(state.inventoryOpen).toBe(false);
     expect(state.buildMode).toBe(false);
+  });
+
+  it("should toggle and explicitly set the settings panel", () => {
+    useUIStore.getState().toggleSettings();
+    expect(useUIStore.getState().settingsOpen).toBe(true);
+
+    useUIStore.getState().toggleSettings();
+    expect(useUIStore.getState().settingsOpen).toBe(false);
+
+    useUIStore.getState().setSettingsOpen(true);
+    const state = useUIStore.getState();
+    expect(state.settingsOpen).toBe(true);
+    // Opening settings leaves the rest of the HUD as it was
+    expect(state.inventoryOpen).toBe(false);
+    expect(state.minimapOpen).toBe(true);
   });
 });

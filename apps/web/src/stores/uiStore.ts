@@ -9,6 +9,8 @@ interface UIState {
   buildMode: boolean;
   /** The corner minimap, toggled with `M`. Read by the Phaser overlay. */
   minimapOpen: boolean;
+  /** The settings panel (language, and audio from item 13), toggled with `P`. */
+  settingsOpen: boolean;
 
   setClock: (clock: ClockSnapshot) => void;
   setInventoryOpen: (inventoryOpen: boolean) => void;
@@ -17,6 +19,8 @@ interface UIState {
   toggleBuildMode: () => void;
   setMinimapOpen: (minimapOpen: boolean) => void;
   toggleMinimap: () => void;
+  setSettingsOpen: (settingsOpen: boolean) => void;
+  toggleSettings: () => void;
 }
 
 /**
@@ -28,6 +32,7 @@ export const useUIStore = create<UIState>((set) => ({
   inventoryOpen: false,
   buildMode: false,
   minimapOpen: true,
+  settingsOpen: false,
 
   setClock: (clock) => set({ clock }),
 
@@ -42,4 +47,8 @@ export const useUIStore = create<UIState>((set) => ({
   setMinimapOpen: (minimapOpen) => set({ minimapOpen }),
 
   toggleMinimap: () => set((state) => ({ minimapOpen: !state.minimapOpen })),
+
+  setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
+
+  toggleSettings: () => set((state) => ({ settingsOpen: !state.settingsOpen })),
 }));

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CHAT_MESSAGE_MAX_LENGTH } from "@worldnest/database";
+import { useTranslation } from "../i18n/useTranslation";
 import { useChatStore } from "../stores/chatStore";
 import { RateLimiter } from "../lib/rateLimit";
 
@@ -22,6 +23,7 @@ export function ChatPanel() {
   const inputFocused = useChatStore((s) => s.inputFocused);
   const setInputFocused = useChatStore((s) => s.setInputFocused);
   const sender = useChatStore((s) => s.sender);
+  const { t } = useTranslation();
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const limiter = useRef(new RateLimiter());
@@ -62,7 +64,7 @@ export function ChatPanel() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="w-fit max-w-full rounded bg-black/70 px-2 py-1 text-white"
+              className="hud-bubble w-fit max-w-full rounded bg-black/70 px-2 py-1 text-white"
             >
               <span className="font-semibold text-emerald-300">
                 {message.username}
@@ -89,9 +91,9 @@ export function ChatPanel() {
               event.currentTarget.blur();
             }
           }}
-          placeholder={sender ? "Press Enter to chat" : "Chat unavailable"}
+          placeholder={sender ? t("chat.placeholder") : t("chat.unavailable")}
           disabled={!sender}
-          aria-label="Chat message"
+          aria-label={t("chat.ariaLabel")}
           className="w-full rounded bg-black/70 px-2 py-1 text-white outline-none
             ring-emerald-400/60 placeholder:text-gray-400 focus:ring-1
             disabled:placeholder:text-gray-500"

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@worldnest/ui";
+import { useTranslation } from "../i18n/useTranslation";
 import { useGameStore } from "../stores/gameStore";
 import { useUIStore } from "../stores/uiStore";
 import { ItemSlot } from "./ItemSlot";
@@ -16,6 +17,7 @@ export function InventoryPanel() {
   const setInventoryOpen = useUIStore((s) => s.setInventoryOpen);
   const inventorySlots = useGameStore((s) => s.inventorySlots);
   const selectedSlot = useGameStore((s) => s.selectedSlot);
+  const { t } = useTranslation();
 
   return (
     <AnimatePresence>
@@ -29,7 +31,9 @@ export function InventoryPanel() {
           {/* Card's own title is styled for light backgrounds, so the heading
               is rendered as a child instead. */}
           <Card className="border-white/10 bg-gray-900/95">
-            <h3 className="mb-4 text-lg font-semibold text-white">Inventory</h3>
+            <h3 className="mb-4 text-lg font-semibold text-white">
+              {t("inventory.title")}
+            </h3>
             <div
               className="grid gap-1"
               style={{ gridTemplateColumns: `repeat(${COLUMNS}, minmax(0, 1fr))` }}
@@ -43,7 +47,7 @@ export function InventoryPanel() {
               onClick={() => setInventoryOpen(false)}
               className="mt-4 w-full rounded bg-white/10 py-1 text-xs text-white hover:bg-white/20"
             >
-              Close (I)
+              {t("inventory.close")}
             </button>
           </Card>
         </motion.div>

@@ -2,11 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Card } from "@worldnest/ui";
-import {
-  HOTBAR_SLOTS,
-  ITEM_DEFINITIONS,
-  isPlaceableStructure,
-} from "@worldnest/shared";
+import { HOTBAR_SLOTS, isPlaceableStructure } from "@worldnest/shared";
+import { ITEM_NAME_KEYS } from "../i18n";
+import { useTranslation } from "../i18n/useTranslation";
 import { useGameStore } from "../stores/gameStore";
 import { useUIStore } from "../stores/uiStore";
 
@@ -21,6 +19,7 @@ export function BuildMenu() {
   const buildMode = useUIStore((s) => s.buildMode);
   const inventorySlots = useGameStore((s) => s.inventorySlots);
   const selectedSlot = useGameStore((s) => s.selectedSlot);
+  const { t } = useTranslation();
 
   const placeable = inventorySlots
     .slice(0, HOTBAR_SLOTS)
@@ -37,10 +36,12 @@ export function BuildMenu() {
           transition={{ duration: 0.15 }}
         >
           <Card className="w-52 border-white/10 bg-gray-900/95">
-            <h3 className="mb-2 text-sm font-semibold text-white">Build mode</h3>
+            <h3 className="mb-2 text-sm font-semibold text-white">
+              {t("build.title")}
+            </h3>
 
             {placeable.length === 0 ? (
-              <p className="text-xs text-gray-400">No placeable items in the hotbar.</p>
+              <p className="text-xs text-gray-400">{t("build.empty")}</p>
             ) : (
               <ul className="flex flex-col gap-1">
                 {placeable.map(({ slot, index }) => (
@@ -53,7 +54,7 @@ export function BuildMenu() {
                     }`}
                   >
                     <span>
-                      {index + 1}. {ITEM_DEFINITIONS[slot!.itemId].displayName}
+                      {index + 1}. {t(ITEM_NAME_KEYS[slot!.itemId])}
                     </span>
                     <span className="font-bold">{slot!.quantity}</span>
                   </li>
@@ -62,7 +63,7 @@ export function BuildMenu() {
             )}
 
             <p className="mt-2 text-[10px] leading-tight text-gray-400">
-              Q or click places on the faced tile · B exits
+              {t("build.hint")}
             </p>
           </Card>
         </motion.div>

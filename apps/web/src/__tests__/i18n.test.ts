@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ITEM_IDS } from "@worldnest/shared";
 import {
+  ITEM_NAME_KEYS,
   DEFAULT_LOCALE,
   LOCALES,
   LOCALE_LABELS,
@@ -57,9 +58,14 @@ describe("message catalogue", () => {
     expect(en["landing.play"]).toBe("Play Now");
   });
 
-  it("should name every catalogue item", () => {
+  it("should name every catalogue item in every locale", () => {
     for (const itemId of ITEM_IDS) {
-      expect(EN_KEYS).toContain(`item.${itemId}`);
+      const key = ITEM_NAME_KEYS[itemId];
+      expect(EN_KEYS, itemId).toContain(key);
+
+      for (const locale of LOCALES) {
+        expect(translate(locale, key), `${locale} ${itemId}`).not.toBe(key);
+      }
     }
   });
 
