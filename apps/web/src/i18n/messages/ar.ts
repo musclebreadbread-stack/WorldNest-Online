@@ -40,6 +40,7 @@ export const ar: LocaleMessages = {
   "hud.energy": "الطاقة",
   "hud.signOut": "تسجيل الخروج",
   "hud.signingOut": "جارٍ تسجيل الخروج...",
+  "hud.coins": "{count} عملة",
 
   "clock.format": "اليوم {day} · {time} · {phase}",
   "clock.phase.dawn": "الفجر",
@@ -102,6 +103,18 @@ export const ar: LocaleMessages = {
   "touch.interact": "استخدام",
   "touch.place": "وضع",
   "touch.map": "الخريطة",
+
+  "shop.title": "المتجر",
+  "shop.close": "إغلاق (Esc)",
+  "shop.hint": "الأسعار ثابتة. المتجر يشتري بأقل قليلاً مما يبيع به.",
+  "shop.item": "العنصر",
+  "shop.held": "لديك {count}",
+  "shop.buy": "شراء",
+  "shop.sell": "بيع",
+  "shop.buyQuantity": "شراء {quantity}",
+  "shop.sellQuantity": "بيع {quantity}",
+  "shop.buyPrice": "يكلف {coins} عملة",
+  "shop.sellPrice": "يمنحك {coins} عملة",
 
   "item.wood": "خشب",
   "item.stone": "حجر",

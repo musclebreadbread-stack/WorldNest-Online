@@ -5,6 +5,7 @@ import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
 import { useUIStore } from "../stores/uiStore";
 import { useDialogueStore } from "../stores/dialogueStore";
+import { useShopStore } from "../stores/shopStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
 import { wireChat } from "../game/ChatBridge";
@@ -14,13 +15,17 @@ import {
   INVENTORY_CHANGED_EVENT,
   PLAYERS_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  SHOP_CHANGED_EVENT,
   STATS_CHANGED_EVENT,
+  WALLET_CHANGED_EVENT,
   type ClockChangedEvent,
   type DialogueChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type PlayersChangedEvent,
+  type ShopChangedEvent,
   type StatsChangedEvent,
+  type WalletChangedEvent,
 } from "../game/events";
 
 /**
@@ -42,8 +47,10 @@ export function GameCanvas() {
   const updateOnlinePlayer = useGameStore((s) => s.updateOnlinePlayer);
   const setInventory = useGameStore((s) => s.setInventory);
   const setStats = useGameStore((s) => s.setStats);
+  const setCoins = useGameStore((s) => s.setCoins);
   const setClock = useUIStore((s) => s.setClock);
   const setDialogue = useDialogueStore((s) => s.setSnapshot);
+  const setShop = useShopStore((s) => s.setSnapshot);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
 
@@ -97,6 +104,15 @@ export function GameCanvas() {
       setDialogue(event);
     });
 
+    // Mirror the coin purse and the open shop into their stores
+    game.events.on(WALLET_CHANGED_EVENT, (event: WalletChangedEvent) => {
+      setCoins(event.coins);
+    });
+
+    game.events.on(SHOP_CHANGED_EVENT, (event: ShopChangedEvent) => {
+      setShop(event);
+    });
+
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
       switch (event.type) {
@@ -128,8 +144,10 @@ export function GameCanvas() {
     updateOnlinePlayer,
     setInventory,
     setStats,
+    setCoins,
     setClock,
     setDialogue,
+    setShop,
     user,
   ]);
 

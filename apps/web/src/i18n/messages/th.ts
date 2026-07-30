@@ -37,6 +37,7 @@ export const th: LocaleMessages = {
   "hud.energy": "พลังงาน",
   "hud.signOut": "ออกจากระบบ",
   "hud.signingOut": "กำลังออกจากระบบ...",
+  "hud.coins": "{count} เหรียญ",
 
   "clock.format": "วันที่ {day} · {time} · {phase}",
   "clock.phase.dawn": "รุ่งอรุณ",
@@ -99,6 +100,18 @@ export const th: LocaleMessages = {
   "touch.interact": "ใช้",
   "touch.place": "วาง",
   "touch.map": "แผนที่",
+
+  "shop.title": "ร้านค้า",
+  "shop.close": "ปิด (Esc)",
+  "shop.hint": "ราคาคงที่เสมอ ร้านรับซื้อถูกกว่าราคาขายเล็กน้อย",
+  "shop.item": "ของ",
+  "shop.held": "มี {count}",
+  "shop.buy": "ซื้อ",
+  "shop.sell": "ขาย",
+  "shop.buyQuantity": "ซื้อ {quantity}",
+  "shop.sellQuantity": "ขาย {quantity}",
+  "shop.buyPrice": "ใช้ {coins} เหรียญ",
+  "shop.sellPrice": "ได้ {coins} เหรียญ",
 
   "item.wood": "ไม้",
   "item.stone": "หิน",

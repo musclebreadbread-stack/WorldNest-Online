@@ -1,5 +1,6 @@
-import type { DialogueComponent, Entity } from "@worldnest/game-engine";
+import type { DialogueAction, DialogueComponent, Entity } from "@worldnest/game-engine";
 import { useDialogueStore } from "../stores/dialogueStore";
+import { useShopStore } from "../stores/shopStore";
 
 /**
  * Give `dialogueStore` the two callbacks that reach the engine.
@@ -10,8 +11,10 @@ import { useDialogueStore } from "../stores/dialogueStore";
  * the next frame, so the engine stays the single writer of dialogue state and a
  * stale click cannot move the graph behind its back.
  *
- * Items 21 and 23 hook the `openShop` and quest actions in here: the option's
- * action is already in the store snapshot, so they need no new event.
+ * It is also where an option's **action** is routed. `advanceDialogue` returns
+ * the action but the engine deliberately acts on `close` only, and the option the
+ * player picked is already in the store snapshot — so opening a shop or taking on
+ * a quest is decided here, on the one callback seam, and needs no new event.
  *
  * Returns a teardown function for whoever wired it.
  */
@@ -21,6 +24,15 @@ export function wireDialogue(playerEntity: Entity): () => void {
 
   useDialogueStore.getState().setCallbacks(
     (optionIndex) => {
+      const state = useDialogueStore.getState();
+      const action = state.options[optionIndex]?.action;
+
+      if (routeAction(action, state.npcId)) {
+        // The action replaces the conversation rather than continuing it
+        dialogue.closeRequested = true;
+        return;
+      }
+
       dialogue.requestedOption = optionIndex;
     },
     () => {
@@ -29,4 +41,22 @@ export function wireDialogue(playerEntity: Entity): () => void {
   );
 
   return () => useDialogueStore.getState().setCallbacks(null, null);
+}
+
+/**
+ * Act on a dialogue action outside the graph, and report whether the
+ * conversation should end because of it.
+ *
+ * `close` is handled by the engine itself and `undefined` just means "walk to the
+ * next node", so both fall through to the normal path.
+ */
+function routeAction(action: DialogueAction | undefined, npcId: string | null): boolean {
+  if (!action || npcId === null) return false;
+
+  if (action.kind === "openShop") {
+    useShopStore.getState().open(npcId);
+    return true;
+  }
+
+  return false;
 }

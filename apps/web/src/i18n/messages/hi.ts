@@ -37,6 +37,7 @@ export const hi: LocaleMessages = {
   "hud.energy": "ऊर्जा",
   "hud.signOut": "साइन आउट",
   "hud.signingOut": "साइन आउट हो रहा है...",
+  "hud.coins": "{count} सिक्के",
 
   "clock.format": "दिन {day} · {time} · {phase}",
   "clock.phase.dawn": "भोर",
@@ -99,6 +100,18 @@ export const hi: LocaleMessages = {
   "touch.interact": "उपयोग करें",
   "touch.place": "रखें",
   "touch.map": "नक्शा",
+
+  "shop.title": "दुकान",
+  "shop.close": "बंद करें (Esc)",
+  "shop.hint": "दाम हमेशा एक जैसे रहते हैं। दुकान बेचने से थोड़ा कम देकर खरीदती है।",
+  "shop.item": "वस्तु",
+  "shop.held": "आपके पास {count}",
+  "shop.buy": "खरीदें",
+  "shop.sell": "बेचें",
+  "shop.buyQuantity": "{quantity} खरीदें",
+  "shop.sellQuantity": "{quantity} बेचें",
+  "shop.buyPrice": "{coins} सिक्के लगेंगे",
+  "shop.sellPrice": "{coins} सिक्के मिलेंगे",
 
   "item.wood": "लकड़ी",
   "item.stone": "पत्थर",

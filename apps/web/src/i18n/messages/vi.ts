@@ -37,6 +37,7 @@ export const vi: LocaleMessages = {
   "hud.energy": "Năng lượng",
   "hud.signOut": "Đăng xuất",
   "hud.signingOut": "Đang đăng xuất...",
+  "hud.coins": "{count} xu",
 
   "clock.format": "Ngày {day} · {time} · {phase}",
   "clock.phase.dawn": "bình minh",
@@ -99,6 +100,18 @@ export const vi: LocaleMessages = {
   "touch.interact": "Dùng",
   "touch.place": "Đặt",
   "touch.map": "Bản đồ",
+
+  "shop.title": "Cửa hàng",
+  "shop.close": "Đóng (Esc)",
+  "shop.hint": "Giá luôn cố định. Cửa hàng mua lại thấp hơn giá bán một chút.",
+  "shop.item": "Vật phẩm",
+  "shop.held": "đang có {count}",
+  "shop.buy": "Mua",
+  "shop.sell": "Bán",
+  "shop.buyQuantity": "Mua {quantity}",
+  "shop.sellQuantity": "Bán {quantity}",
+  "shop.buyPrice": "Cần {coins} xu",
+  "shop.sellPrice": "Được {coins} xu",
 
   "item.wood": "Gỗ",
   "item.stone": "Đá",

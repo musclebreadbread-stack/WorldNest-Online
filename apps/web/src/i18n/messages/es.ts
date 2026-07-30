@@ -37,6 +37,7 @@ export const es: LocaleMessages = {
   "hud.energy": "Energía",
   "hud.signOut": "Cerrar sesión",
   "hud.signingOut": "Cerrando sesión...",
+  "hud.coins": "{count} monedas",
 
   "clock.format": "Día {day} · {time} · {phase}",
   "clock.phase.dawn": "amanecer",
@@ -99,6 +100,18 @@ export const es: LocaleMessages = {
   "touch.interact": "Usar",
   "touch.place": "Colocar",
   "touch.map": "Mapa",
+
+  "shop.title": "Tienda",
+  "shop.close": "Cerrar (Esc)",
+  "shop.hint": "Precios fijos. La tienda siempre paga un poco menos de lo que cobra.",
+  "shop.item": "Artículo",
+  "shop.held": "tienes {count}",
+  "shop.buy": "Comprar",
+  "shop.sell": "Vender",
+  "shop.buyQuantity": "Comprar {quantity}",
+  "shop.sellQuantity": "Vender {quantity}",
+  "shop.buyPrice": "Cuesta {coins} monedas",
+  "shop.sellPrice": "Paga {coins} monedas",
 
   "item.wood": "Madera",
   "item.stone": "Piedra",

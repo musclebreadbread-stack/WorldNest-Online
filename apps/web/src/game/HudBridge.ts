@@ -4,19 +4,25 @@ import type {
   Entity,
   InventoryComponent,
   PositionComponent,
+  ShopComponent,
   StatsComponent,
   TimeComponent,
+  WalletComponent,
 } from "@worldnest/game-engine";
 import {
   CLOCK_CHANGED_EVENT,
   DIALOGUE_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  SHOP_CHANGED_EVENT,
   STATS_CHANGED_EVENT,
+  WALLET_CHANGED_EVENT,
   type DialogueChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
+  type ShopChangedEvent,
   type StatsChangedEvent,
+  type WalletChangedEvent,
 } from "./events";
 
 /** The slice of Phaser's event emitter the bridge needs, so it stays Phaser-free. */
@@ -40,6 +46,9 @@ export class HudBridge {
   /** Starts at the component's own initial version, so a closed conversation
    * publishes nothing on the first frame. */
   private lastDialogueVersion = 0;
+  private lastCoins = -1;
+  /** Same rule as the dialogue version: an untouched shop publishes nothing. */
+  private lastShopVersion = 0;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -54,6 +63,8 @@ export class HudBridge {
     this.emitInventory();
     this.emitStats();
     this.emitDialogue();
+    this.emitWallet();
+    this.emitShop();
   }
 
   private emitPosition(): void {
@@ -106,6 +117,35 @@ export class HudBridge {
       maxEnergy: stats.maxEnergy,
     };
     this.emitter.emit(STATS_CHANGED_EVENT, payload);
+  }
+
+  /** Coins are a single integer, so the balance itself is the change detector. */
+  private emitWallet(): void {
+    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet");
+    if (!wallet || wallet.coins === this.lastCoins) return;
+
+    this.lastCoins = wallet.coins;
+    const payload: WalletChangedEvent = { coins: wallet.coins };
+    this.emitter.emit(WALLET_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Publish the open shop whenever `ShopSystem` accepted a change.
+   *
+   * A completed trade bumps the same version, which is what lets the panel
+   * re-render its "held" column off one event instead of polling the inventory.
+   */
+  private emitShop(): void {
+    const shop = this.playerEntity.getComponent<ShopComponent>("shop");
+    if (!shop || shop.version === this.lastShopVersion) return;
+
+    this.lastShopVersion = shop.version;
+    const definition = shop.openNpcId ? getNpcDefinition(shop.openNpcId) : undefined;
+    const payload: ShopChangedEvent = {
+      openNpcId: shop.openNpcId,
+      nameKey: definition?.nameKey ?? null,
+    };
+    this.emitter.emit(SHOP_CHANGED_EVENT, payload);
   }
 
   /**

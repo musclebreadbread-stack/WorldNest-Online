@@ -37,6 +37,7 @@ export const zh: LocaleMessages = {
   "hud.energy": "体力",
   "hud.signOut": "退出登录",
   "hud.signingOut": "正在退出...",
+  "hud.coins": "{count} 金币",
 
   "clock.format": "第{day}天 · {time} · {phase}",
   "clock.phase.dawn": "黎明",
@@ -99,6 +100,18 @@ export const zh: LocaleMessages = {
   "touch.interact": "使用",
   "touch.place": "放置",
   "touch.map": "地图",
+
+  "shop.title": "商店",
+  "shop.close": "关闭 (Esc)",
+  "shop.hint": "价格固定不变。商店回收的价钱总比出售价低一些。",
+  "shop.item": "物品",
+  "shop.held": "持有 {count}",
+  "shop.buy": "购买",
+  "shop.sell": "出售",
+  "shop.buyQuantity": "购买 {quantity}",
+  "shop.sellQuantity": "出售 {quantity}",
+  "shop.buyPrice": "需要 {coins} 金币",
+  "shop.sellPrice": "可得 {coins} 金币",
 
   "item.wood": "木材",
   "item.stone": "石头",

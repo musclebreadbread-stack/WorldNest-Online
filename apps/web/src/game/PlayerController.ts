@@ -8,8 +8,8 @@ import type {
   InventoryComponent,
 } from "@worldnest/game-engine";
 import { mergeInput, TOUCH_DEADZONE } from "./inputMerge";
-import { addUncapturedKey, bindOneShotKeys, isTyping, whenPlaying } from "./keyBindings";
-import { isDialogueOpen } from "../stores/dialogueStore";
+import { addUncapturedKey, bindOneShotKeys, whenPlaying } from "./keyBindings";
+import { isHudModal } from "./panelStack";
 import { useTouchStore } from "../stores/touchStore";
 import { useUIStore } from "../stores/uiStore";
 
@@ -72,8 +72,8 @@ export class PlayerController {
     const requests = touch.consumeRequests();
 
     // While the chat input has focus the movement keys are typing, not walking,
-    // and while a conversation is open the player is standing still by definition
-    if (isTyping() || isDialogueOpen()) {
+    // and while a conversation or a shop is open the player is standing still
+    if (isHudModal()) {
       input.keys.up = false;
       input.keys.down = false;
       input.keys.left = false;

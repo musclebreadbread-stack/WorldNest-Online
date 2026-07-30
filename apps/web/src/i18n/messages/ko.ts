@@ -37,6 +37,7 @@ export const ko: LocaleMessages = {
   "hud.energy": "기력",
   "hud.signOut": "로그아웃",
   "hud.signingOut": "로그아웃 중...",
+  "hud.coins": "{count} 코인",
 
   "clock.format": "{day}일차 · {time} · {phase}",
   "clock.phase.dawn": "새벽",
@@ -99,6 +100,18 @@ export const ko: LocaleMessages = {
   "touch.interact": "사용",
   "touch.place": "설치",
   "touch.map": "지도",
+
+  "shop.title": "상점",
+  "shop.close": "닫기 (Esc)",
+  "shop.hint": "가격은 항상 같아요. 상점은 파는 값보다 조금 싸게 사들여요.",
+  "shop.item": "물건",
+  "shop.held": "보유 {count}",
+  "shop.buy": "구매",
+  "shop.sell": "판매",
+  "shop.buyQuantity": "{quantity}개 구매",
+  "shop.sellQuantity": "{quantity}개 판매",
+  "shop.buyPrice": "{coins} 코인 필요",
+  "shop.sellPrice": "{coins} 코인 받음",
 
   "item.wood": "나무",
   "item.stone": "돌",

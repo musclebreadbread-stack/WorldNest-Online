@@ -8,10 +8,12 @@ import { useUIStore } from "../stores/uiStore";
 import { BuildMenu } from "./BuildMenu";
 import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
+import { CoinCounter } from "./CoinCounter";
 import { DialoguePanel } from "./DialoguePanel";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
 import { SettingsPanel } from "./SettingsPanel";
+import { ShopPanel } from "./ShopPanel";
 import { SignOutButton } from "./SignOutButton";
 import { StatusBars } from "./StatusBars";
 import { TouchControls } from "./TouchControls";
@@ -63,6 +65,7 @@ export function GameUI() {
             {t("hud.playersOnline", { count: onlinePlayers.size })}
           </div>
         </div>
+        <CoinCounter />
         <button
           type="button"
           onClick={toggleSettings}
@@ -120,9 +123,10 @@ export function GameUI() {
         <BuildMenu />
       </div>
 
-      {/* Centre: inventory and settings panels */}
+      {/* Centre: inventory, shop and settings panels, side by side */}
       <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-start gap-4 pointer-events-auto">
         <InventoryPanel />
+        <ShopPanel />
         <SettingsPanel />
       </div>
 

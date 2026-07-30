@@ -1,18 +1,18 @@
 import Phaser from "phaser";
 import { MAX_DIALOGUE_OPTIONS } from "@worldnest/game-engine";
 import { HOTBAR_SLOTS } from "@worldnest/shared";
-import { useChatStore } from "../stores/chatStore";
+import { closeTopmostPanel, isHudModal, isTyping } from "./panelStack";
 import { isDialogueOpen, useDialogueStore } from "../stores/dialogueStore";
 import { useUIStore } from "../stores/uiStore";
 
 /**
- * Every keyboard binding that fires once per press, and the gates that decide
- * whether a press belongs to the game at all.
+ * Every keyboard binding that fires once per press.
  *
  * Split out of `PlayerController` because that file had grown to the ~300-line
  * cap `CONTRIBUTING.md` sets: the controller now owns movement, facing and the
- * request helpers, and a new key is one row in the table below. The gates live
- * here too, since they are what every row shares.
+ * request helpers, and a new key is one row in the table below. The gates the
+ * rows share live in `panelStack.ts`, which imports no Phaser and is therefore
+ * testable on its own.
  */
 
 /** What a one-shot key is allowed to ask the player entity to do. */
@@ -90,23 +90,23 @@ export function bindOneShotKeys(
       whenPlaying(() => binding.handler(actions)),
     );
   }
+
+  // Escape is bound outside the gate as well: closing whatever is on top is the
+  // one thing it has to be able to do while the HUD holds the keyboard.
+  addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.ESC).on("down", () => {
+    if (isTyping()) return;
+
+    closeTopmostPanel();
+  });
 }
 
-/**
- * Wrap a key handler so it is ignored while the player is typing in chat or
- * talking to an NPC. Both are states where the keyboard belongs to the HUD.
- */
+/** Wrap a key handler so it is ignored while the HUD owns the keyboard. */
 export function whenPlaying(handler: () => void): () => void {
   return () => {
-    if (isTyping() || isDialogueOpen()) return;
+    if (isHudModal()) return;
 
     handler();
   };
-}
-
-/** Whether the chat composer currently holds keyboard focus. */
-export function isTyping(): boolean {
-  return useChatStore.getState().inputFocused;
 }
 
 /**

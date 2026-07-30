@@ -37,6 +37,7 @@ export const ja: LocaleMessages = {
   "hud.energy": "気力",
   "hud.signOut": "ログアウト",
   "hud.signingOut": "ログアウト中...",
+  "hud.coins": "{count} コイン",
 
   "clock.format": "{day}日目 · {time} · {phase}",
   "clock.phase.dawn": "夜明け",
@@ -99,6 +100,18 @@ export const ja: LocaleMessages = {
   "touch.interact": "つかう",
   "touch.place": "設置",
   "touch.map": "マップ",
+
+  "shop.title": "お店",
+  "shop.close": "閉じる (Esc)",
+  "shop.hint": "値段はいつも同じです。お店は売る値段より少し安く買い取ります。",
+  "shop.item": "アイテム",
+  "shop.held": "所持 {count}",
+  "shop.buy": "購入",
+  "shop.sell": "売却",
+  "shop.buyQuantity": "{quantity} 個購入",
+  "shop.sellQuantity": "{quantity} 個売却",
+  "shop.buyPrice": "{coins} コイン必要",
+  "shop.sellPrice": "{coins} コイン受け取り",
 
   "item.wood": "木材",
   "item.stone": "石",

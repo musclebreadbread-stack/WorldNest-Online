@@ -364,6 +364,7 @@ const QUIET: SoundState = {
   buildMode: false,
   chatCount: 2,
   dialogueVersion: 6,
+  shopVersion: 3,
   phase: "day",
 };
 
@@ -426,6 +427,11 @@ describe("diffCues", () => {
     expect(diffCues(QUIET, { ...QUIET, dialogueVersion: 7 })).toEqual(["dialogue"]);
     // A version can only go up; nothing to say if it did not
     expect(diffCues(QUIET, { ...QUIET, dialogueVersion: 6 })).toEqual([]);
+  });
+
+  it("should emit shop for a trade or for the shop panel opening", () => {
+    expect(diffCues(QUIET, { ...QUIET, shopVersion: 4 })).toEqual(["shop"]);
+    expect(diffCues(QUIET, { ...QUIET, shopVersion: 3 })).toEqual([]);
   });
 
   it("should not emit anything for a phase change on its own", () => {

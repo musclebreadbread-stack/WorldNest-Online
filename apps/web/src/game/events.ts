@@ -45,6 +45,26 @@ export interface StatsChangedEvent {
   maxEnergy: number;
 }
 
+export const WALLET_CHANGED_EVENT = "wallet-changed";
+
+/** The local player's coin balance, published whenever the integer changes. */
+export interface WalletChangedEvent {
+  coins: number;
+}
+
+export const SHOP_CHANGED_EVENT = "shop-changed";
+
+/**
+ * The shop the player has open, or both fields `null` when none is.
+ *
+ * Like the dialogue event this carries the shopkeeper's i18n **key** rather than
+ * their name (decision D8); the panel resolves it.
+ */
+export interface ShopChangedEvent {
+  openNpcId: string | null;
+  nameKey: string | null;
+}
+
 export const DIALOGUE_CHANGED_EVENT = "dialogue-changed";
 
 /**

@@ -44,6 +44,7 @@ export const en = {
   "hud.energy": "Energy",
   "hud.signOut": "Sign out",
   "hud.signingOut": "Signing out...",
+  "hud.coins": "{count} coins",
 
   "clock.format": "Day {day} · {time} · {phase}",
   "clock.phase.dawn": "dawn",
@@ -106,6 +107,18 @@ export const en = {
   "touch.interact": "Use",
   "touch.place": "Place",
   "touch.map": "Map",
+
+  "shop.title": "Shop",
+  "shop.close": "Close (Esc)",
+  "shop.hint": "Fixed prices. The shop always pays a little less than it charges.",
+  "shop.item": "Item",
+  "shop.held": "held {count}",
+  "shop.buy": "Buy",
+  "shop.sell": "Sell",
+  "shop.buyQuantity": "Buy {quantity}",
+  "shop.sellQuantity": "Sell {quantity}",
+  "shop.buyPrice": "Costs {coins} coins",
+  "shop.sellPrice": "Pays {coins} coins",
 
   "item.wood": "Wood",
   "item.stone": "Stone",

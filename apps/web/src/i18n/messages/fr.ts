@@ -37,6 +37,7 @@ export const fr: LocaleMessages = {
   "hud.energy": "Énergie",
   "hud.signOut": "Se déconnecter",
   "hud.signingOut": "Déconnexion...",
+  "hud.coins": "{count} pièces",
 
   "clock.format": "Jour {day} · {time} · {phase}",
   "clock.phase.dawn": "aube",
@@ -99,6 +100,18 @@ export const fr: LocaleMessages = {
   "touch.interact": "Utiliser",
   "touch.place": "Placer",
   "touch.map": "Carte",
+
+  "shop.title": "Boutique",
+  "shop.close": "Fermer (Esc)",
+  "shop.hint": "Prix fixes. La boutique paie toujours un peu moins qu'elle ne demande.",
+  "shop.item": "Objet",
+  "shop.held": "tu en as {count}",
+  "shop.buy": "Acheter",
+  "shop.sell": "Vendre",
+  "shop.buyQuantity": "Acheter {quantity}",
+  "shop.sellQuantity": "Vendre {quantity}",
+  "shop.buyPrice": "Coûte {coins} pièces",
+  "shop.sellPrice": "Rapporte {coins} pièces",
 
   "item.wood": "Bois",
   "item.stone": "Pierre",

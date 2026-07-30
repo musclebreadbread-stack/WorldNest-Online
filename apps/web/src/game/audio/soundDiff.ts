@@ -3,6 +3,7 @@ import type {
   DialogueComponent,
   Entity,
   InventoryComponent,
+  ShopComponent,
   StatsComponent,
 } from "@worldnest/game-engine";
 import type { SoundCue } from "./soundSpecs";
@@ -23,6 +24,8 @@ export interface SoundState {
   chatCount: number;
   /** `DialogueComponent.version`; bumped by every accepted conversation change. */
   dialogueVersion: number;
+  /** `ShopComponent.version`; bumped by an accepted trade and by open/close. */
+  shopVersion: number;
   phase: DayPhase;
 }
 
@@ -54,6 +57,9 @@ export function diffCues(prev: SoundState | null, next: SoundState): SoundCue[] 
   }
   // A conversation opening, moving on or ending is one line of dialogue
   if (next.dialogueVersion > prev.dialogueVersion) cues.push("dialogue");
+  // A till chime for a trade — and for the panel opening, which is the same
+  // "coins are involved now" moment to a player
+  if (next.shopVersion > prev.shopVersion) cues.push("shop");
 
   return cues;
 }
@@ -71,6 +77,7 @@ export function readSoundState(
   const inventory = playerEntity.getComponent<InventoryComponent>("inventory");
   const stats = playerEntity.getComponent<StatsComponent>("stats");
   const dialogue = playerEntity.getComponent<DialogueComponent>("dialogue");
+  const shop = playerEntity.getComponent<ShopComponent>("shop");
 
   return {
     inventoryVersion: inventory?.version ?? 0,
@@ -78,6 +85,7 @@ export function readSoundState(
     buildMode,
     chatCount,
     dialogueVersion: dialogue?.version ?? 0,
+    shopVersion: shop?.version ?? 0,
     phase,
   };
 }

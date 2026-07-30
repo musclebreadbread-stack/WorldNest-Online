@@ -25,6 +25,8 @@ interface GameState {
   /** Mirror of the local player's InventoryComponent slots. */
   inventorySlots: Array<InventorySlot | null>;
   selectedSlot: number;
+  /** Mirror of the local player's WalletComponent. */
+  coins: number;
   /** Mirror of the local player's StatsComponent, rounded for display. */
   health: number;
   maxHealth: number;
@@ -38,6 +40,7 @@ interface GameState {
     selectedSlot: number,
   ) => void;
   setSelectedSlot: (selectedSlot: number) => void;
+  setCoins: (coins: number) => void;
   setStats: (stats: {
     health: number;
     maxHealth: number;
@@ -58,6 +61,7 @@ export const useGameStore = create<GameState>((set) => ({
   connectionStatus: "disconnected",
   inventorySlots: new Array<InventorySlot | null>(INVENTORY_SLOTS).fill(null),
   selectedSlot: 0,
+  coins: 0,
   health: DEFAULT_MAX_HEALTH,
   maxHealth: DEFAULT_MAX_HEALTH,
   energy: MAX_ENERGY,
@@ -77,6 +81,8 @@ export const useGameStore = create<GameState>((set) => ({
     }),
 
   setSelectedSlot: (selectedSlot) => set({ selectedSlot }),
+
+  setCoins: (coins) => set({ coins }),
 
   setStats: ({ health, maxHealth, energy, maxEnergy }) =>
     set({ health, maxHealth, energy, maxEnergy }),
