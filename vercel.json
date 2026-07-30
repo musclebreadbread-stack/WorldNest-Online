@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm exec turbo run build --filter=@worldnest/web...",
+  "outputDirectory": "apps/web/.next"
+}

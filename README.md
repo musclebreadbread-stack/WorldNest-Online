@@ -134,6 +134,8 @@ WorldNest Online uses a **client-authoritative** architecture with server valida
 
 - [Architecture Guide](docs/ARCHITECTURE.md) - System design and technical decisions
 - [Development Guide](docs/DEVELOPMENT.md) - Detailed setup and extension guide
+- [Deployment Guide](docs/DEPLOYMENT.md) - Fresh clone to a live public URL on Vercel + Supabase
+- [설정 가이드 (한국어)](docs/SETUP_GUIDE_KR.md) - 직접 해야 하는 모든 작업을 정리한 한국어 안내서
 - [Contributing](CONTRIBUTING.md) - How to contribute to the project
 
 ## License
