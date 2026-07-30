@@ -77,7 +77,8 @@ export class BuildSystem extends System implements StructureQuery {
     const selected = getSelectedItem(inventory);
     if (!selected) return false;
     if (ITEM_DEFINITIONS[selected.itemId].placeableStructure !== true) return false;
-    if (!TILE_PROPERTIES[this.tileQuery.getTileAt(tileX, tileY)].buildable) return false;
+    const tileType = this.tileQuery.getTileAt(tileX, tileY);
+    if (!TILE_PROPERTIES[tileType].buildable) return false;
 
     return !this.hasStructureAt(tileX, tileY);
   }

@@ -11,13 +11,14 @@ import {
   RenderSystem,
   WorldManager,
 } from "@worldnest/game-engine";
-import type { ChunkData } from "@worldnest/game-engine";
+import type { BuildSystem, ChunkData } from "@worldnest/game-engine";
 import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
 import { HudBridge } from "../HudBridge";
 import { PlayerController } from "../PlayerController";
 import { SpriteSync } from "../SpriteSync";
+import { BuildGhost } from "../BuildGhost";
 import {
   createGameWorld,
   createRemotePlayerEntity,
@@ -28,6 +29,7 @@ import {
   type GameBootstrap,
 } from "../createGameWorld";
 import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../events";
+import { useUIStore } from "../../stores/uiStore";
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
   playerId: "local",
@@ -47,12 +49,14 @@ export class GameScene extends Phaser.Scene {
   private worldManager!: WorldManager;
   private networkSync!: NetworkSyncSystem;
   private renderSystem!: RenderSystem;
+  private buildSystem!: BuildSystem;
   private playerEntity!: Entity;
   private clockEntity!: Entity;
   private chunkRenderer!: ChunkRenderer;
   private dayNight!: DayNightOverlay;
   private hudBridge!: HudBridge;
   private playerController!: PlayerController;
+  private buildGhost!: BuildGhost;
   /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
   private spriteSync!: SpriteSync;
   private realtimeManager: RealtimeManager | null = null;
@@ -94,6 +98,7 @@ export class GameScene extends Phaser.Scene {
     this.worldManager = context.worldManager;
     this.networkSync = context.systems.networkSync;
     this.renderSystem = context.systems.render;
+    this.buildSystem = context.systems.build;
     this.playerEntity = context.playerEntity;
     this.clockEntity = context.clockEntity;
 
@@ -120,6 +125,7 @@ export class GameScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.dayNight.destroy();
       this.spriteSync.destroy();
+      this.buildGhost.destroy();
     });
 
     // Setup camera on the local player sprite created by the render pass
@@ -127,8 +133,11 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(localSprite, true, 0.1, 0.1);
     this.cameras.main.setZoom(2);
 
-    // Keyboard bindings (movement, hotbar, panels)
+    // Keyboard bindings (movement, hotbar, panels, build mode)
     this.playerController = new PlayerController(this, this.playerEntity);
+
+    // Placement preview for build mode
+    this.buildGhost = new BuildGhost(this, this.playerEntity, this.buildSystem);
 
     // Emit ready event for React integration
     this.game.events.emit("game-ready");
@@ -158,6 +167,9 @@ export class GameScene extends Phaser.Scene {
 
     // Day/night tint follows the world clock phase
     this.dayNight.setPhase(this.getClockSnapshot().phase);
+
+    // Build preview follows the faced tile while build mode is on
+    this.buildGhost.update(useUIStore.getState().buildMode);
 
     // Publish the state the React HUD consumes
     this.hudBridge.flush();

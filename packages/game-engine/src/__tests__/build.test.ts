@@ -159,17 +159,17 @@ describe("BuildSystem", () => {
   it("should report placement possibility for the build preview", () => {
     const harness = createHarness();
 
-    expect(harness.system.canPlaceAt(harness.inventory, TARGET_TILE_X, PLAYER_TILE)).toBe(
-      true,
-    );
+    expect(
+      harness.system.canPlaceAt(harness.inventory, TARGET_TILE_X, PLAYER_TILE),
+    ).toBe(true);
 
     harness.tileQuery.tiles.set(getTileKey(9, 9), TileType.WATER);
     expect(harness.system.canPlaceAt(harness.inventory, 9, 9)).toBe(false);
 
     selectSlot(harness.inventory, 1); // empty slot
-    expect(harness.system.canPlaceAt(harness.inventory, TARGET_TILE_X, PLAYER_TILE)).toBe(
-      false,
-    );
+    expect(
+      harness.system.canPlaceAt(harness.inventory, TARGET_TILE_X, PLAYER_TILE),
+    ).toBe(false);
   });
 });
 

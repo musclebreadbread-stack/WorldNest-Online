@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "../stores/gameStore";
+import { BuildMenu } from "./BuildMenu";
 import { ClockHud } from "./ClockHud";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
@@ -53,7 +54,7 @@ export function GameUI() {
       {/* Bottom-right: controls hint */}
       <div className="absolute bottom-4 right-4 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
-          WASD / Arrows to move · 1-8 hotbar · I inventory · E harvest
+          WASD / Arrows · 1-8 hotbar · I inventory · E harvest / plant · B build
         </div>
       </div>
 
@@ -65,6 +66,11 @@ export function GameUI() {
       {/* Bottom-centre: hotbar */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto">
         <HotBar />
+      </div>
+
+      {/* Right-centre: build mode helper */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-auto">
+        <BuildMenu />
       </div>
 
       {/* Centre: inventory panel */}

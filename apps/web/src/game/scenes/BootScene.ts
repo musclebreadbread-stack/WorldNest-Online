@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { CROP_DEFINITIONS, TileType, TILE_PROPERTIES } from "@worldnest/game-engine";
+import { ITEM_DEFINITIONS, PLACEABLE_ITEM_IDS } from "@worldnest/shared";
 
 /**
  * BootScene handles asset loading and generation of placeholder graphics.
@@ -30,6 +31,9 @@ export class BootScene extends Phaser.Scene {
 
     // Generate one placeholder per crop growth stage
     this.generateCropSprites();
+
+    // Generate one placeholder per placeable structure
+    this.generateStructureSprites();
 
     // Transition to game scene
     this.scene.start("GameScene");
@@ -133,6 +137,41 @@ export class BootScene extends Phaser.Scene {
         graphics.generateTexture(`${definition.textureKey}_${stage}`, size, size);
         graphics.destroy();
       }
+    }
+  }
+
+  /**
+   * One texture per placeable item, keyed by its `structureTextureKey`, which is
+   * what `BuildSystem` writes onto the placed entity's sprite.
+   */
+  private generateStructureSprites(): void {
+    const size = 16;
+
+    for (const itemId of PLACEABLE_ITEM_IDS) {
+      const textureKey = ITEM_DEFINITIONS[itemId].structureTextureKey;
+      if (!textureKey) continue;
+
+      const graphics = this.add.graphics();
+
+      if (itemId === "chest") {
+        graphics.fillStyle(0x8d6e63, 1);
+        graphics.fillRect(2, 5, 12, 9);
+        graphics.fillStyle(0x5d4037, 1);
+        graphics.fillRect(2, 8, 12, 2);
+        graphics.fillStyle(0xffd54f, 1);
+        graphics.fillRect(7, 9, 2, 3);
+      } else {
+        // Fence: two posts joined by rails
+        graphics.fillStyle(0xa1887f, 1);
+        graphics.fillRect(2, 4, 3, 11);
+        graphics.fillRect(11, 4, 3, 11);
+        graphics.fillStyle(0x8d6e63, 1);
+        graphics.fillRect(0, 6, 16, 2);
+        graphics.fillRect(0, 11, 16, 2);
+      }
+
+      graphics.generateTexture(textureKey, size, size);
+      graphics.destroy();
     }
   }
 }

@@ -5,10 +5,14 @@ interface UIState {
   /** Latest world clock snapshot, or `null` before the game has booted. */
   clock: ClockSnapshot | null;
   inventoryOpen: boolean;
+  /** Build mode shows the placement ghost and enables `Q` / left-click placing. */
+  buildMode: boolean;
 
   setClock: (clock: ClockSnapshot) => void;
   setInventoryOpen: (inventoryOpen: boolean) => void;
   toggleInventory: () => void;
+  setBuildMode: (buildMode: boolean) => void;
+  toggleBuildMode: () => void;
 }
 
 /**
@@ -18,10 +22,15 @@ interface UIState {
 export const useUIStore = create<UIState>((set) => ({
   clock: null,
   inventoryOpen: false,
+  buildMode: false,
 
   setClock: (clock) => set({ clock }),
 
   setInventoryOpen: (inventoryOpen) => set({ inventoryOpen }),
 
   toggleInventory: () => set((state) => ({ inventoryOpen: !state.inventoryOpen })),
+
+  setBuildMode: (buildMode) => set({ buildMode }),
+
+  toggleBuildMode: () => set((state) => ({ buildMode: !state.buildMode })),
 }));

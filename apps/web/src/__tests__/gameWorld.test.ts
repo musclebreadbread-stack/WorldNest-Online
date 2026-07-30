@@ -7,8 +7,11 @@ import {
   TILE_PROPERTIES,
   TileType,
   WorldManager,
+  addItem,
   countItem,
   cropEntityId,
+  selectSlot,
+  structureEntityId,
 } from "@worldnest/game-engine";
 import type {
   CropComponent,
@@ -232,6 +235,63 @@ describe("farming wiring", () => {
     ).toBeUndefined();
     expect(countItem(inventory, "wheat")).toBe(
       CROP_DEFINITIONS.wheat_seed!.produceQuantity,
+    );
+  });
+});
+
+describe("building wiring", () => {
+  // Tile (20, 14) is grass with grass to its west for WORLD_SEED
+  const STAND_TILE_X = 20;
+  const STAND_TILE_Y = 14;
+  const TARGET_TILE_X = STAND_TILE_X - 1;
+
+  function createWorldWithFences() {
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: STAND_TILE_X * TILE_SIZE + TILE_SIZE / 2,
+      spawnY: STAND_TILE_Y * TILE_SIZE + TILE_SIZE / 2,
+    });
+    const inventory =
+      context.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+
+    addItem(inventory, "fence", 2);
+    selectSlot(inventory, 1);
+    interaction.facing = "left";
+
+    return { context, inventory, interaction };
+  }
+
+  it("should place a fence on the faced tile and consume one item", () => {
+    const { context, inventory, interaction } = createWorldWithFences();
+
+    interaction.buildRequested = true;
+    context.world.update(1 / 60);
+
+    expect(
+      context.world.getEntity(structureEntityId(TARGET_TILE_X, STAND_TILE_Y)),
+    ).toBeDefined();
+    expect(countItem(inventory, "fence")).toBe(1);
+    expect(interaction.buildRequested).toBe(false);
+  });
+
+  it("should stop the player from walking through a placed fence", () => {
+    const { context, interaction } = createWorldWithFences();
+    const position = context.playerEntity.getComponent<PositionComponent>("position")!;
+    const input = context.playerEntity.getComponent<InputComponent>("input")!;
+    const collider = context.playerEntity.getComponent<ColliderComponent>("collider")!;
+
+    interaction.buildRequested = true;
+    context.world.update(1 / 60);
+
+    input.keys.left = true;
+    for (let frame = 0; frame < 120; frame++) {
+      context.world.update(1 / 60);
+    }
+
+    expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(
+      STAND_TILE_X * TILE_SIZE,
     );
   });
 });

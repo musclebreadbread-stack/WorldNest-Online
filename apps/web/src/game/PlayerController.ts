@@ -50,6 +50,10 @@ export class PlayerController {
       .addKey(Phaser.Input.Keyboard.KeyCodes.I)
       .on("down", () => useUIStore.getState().toggleInventory());
 
+    keyboard
+      .addKey(Phaser.Input.Keyboard.KeyCodes.B)
+      .on("down", () => useUIStore.getState().toggleBuildMode());
+
     // E and Space both act on the faced tile
     for (const keyCode of [
       Phaser.Input.Keyboard.KeyCodes.E,
@@ -57,6 +61,12 @@ export class PlayerController {
     ]) {
       keyboard.addKey(keyCode).on("down", () => this.requestInteract());
     }
+
+    // Q and left-click place the selected item, but only in build mode
+    keyboard
+      .addKey(Phaser.Input.Keyboard.KeyCodes.Q)
+      .on("down", () => this.requestBuild());
+    scene.input.on(Phaser.Input.Events.POINTER_DOWN, () => this.requestBuild());
   }
 
   /** Poll held keys into the input component. Call once per frame. */
@@ -98,6 +108,24 @@ export class PlayerController {
 
     interaction.lastInteractAt = now;
     interaction.interactRequested = true;
+  }
+
+  /**
+   * Ask BuildSystem to place the selected item. Gated on build mode so a stray
+   * click never spends an item, and on the same cooldown as interacting.
+   */
+  private requestBuild(): void {
+    if (!useUIStore.getState().buildMode) return;
+
+    const interaction =
+      this.playerEntity.getComponent<InteractionComponent>("interaction");
+    if (!interaction) return;
+
+    const now = Date.now();
+    if (now - interaction.lastBuildAt < INTERACT_COOLDOWN_MS) return;
+
+    interaction.lastBuildAt = now;
+    interaction.buildRequested = true;
   }
 
   private selectHotbarSlot(index: number): void {

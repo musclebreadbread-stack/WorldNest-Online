@@ -22,6 +22,7 @@ import {
   StatsSystem,
   PlantSystem,
   CropGrowthSystem,
+  BuildSystem,
   HarvestSystem,
   NetworkSyncSystem,
   RenderSystem,
@@ -51,6 +52,7 @@ export interface GameWorldSystems {
   stats: StatsSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
+  build: BuildSystem;
   harvest: HarvestSystem;
   networkSync: NetworkSyncSystem;
   render: RenderSystem;
@@ -116,19 +118,23 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     () => timeComponent.snapshot.totalMinutes,
   );
 
+  // Building owns the structure occupancy index, which collision reads as walls
+  const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity));
+
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
-    collision: new CollisionSystem(worldManager),
+    collision: new CollisionSystem(worldManager, build),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
     stats: new StatsSystem(() => timeComponent.snapshot.phase),
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
+    build,
     // Planting runs first and only consumes the request when it acted, so an
     // interact it ignores still reaches harvesting this same frame.
     harvest: new HarvestSystem(worldManager, setTileOverride, plant),
@@ -145,6 +151,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.stats);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
+  world.addSystem(systems.build);
   world.addSystem(systems.harvest);
   world.addSystem(systems.networkSync);
   world.addSystem(systems.render);

@@ -154,7 +154,7 @@ describe("gameStore", () => {
 
 describe("uiStore", () => {
   beforeEach(() => {
-    useUIStore.setState({ clock: null, inventoryOpen: false });
+    useUIStore.setState({ clock: null, inventoryOpen: false, buildMode: false });
   });
 
   it("should store the latest clock snapshot", () => {
@@ -178,5 +178,18 @@ describe("uiStore", () => {
 
     useUIStore.getState().setInventoryOpen(true);
     expect(useUIStore.getState().inventoryOpen).toBe(true);
+  });
+
+  it("should toggle and explicitly set build mode", () => {
+    useUIStore.getState().toggleBuildMode();
+    expect(useUIStore.getState().buildMode).toBe(true);
+
+    useUIStore.getState().toggleBuildMode();
+    expect(useUIStore.getState().buildMode).toBe(false);
+
+    useUIStore.getState().setBuildMode(true);
+    expect(useUIStore.getState().buildMode).toBe(true);
+    // Build mode is independent of the inventory panel
+    expect(useUIStore.getState().inventoryOpen).toBe(false);
   });
 });
