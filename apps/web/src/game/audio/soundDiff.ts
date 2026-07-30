@@ -20,6 +20,10 @@ import type { SoundCue } from "./soundSpecs";
 export interface SoundState {
   inventoryVersion: number;
   energy: number;
+  /** Crops growing in the world; a rise is a seed going into the ground. */
+  cropCount: number;
+  /** Structures standing in the world; a rise is something being placed. */
+  structureCount: number;
   buildMode: boolean;
   /** Live chat arrivals since the session started, not the log length. */
   chatCount: number;
@@ -45,6 +49,22 @@ export interface SoundState {
 export const ENERGY_DROP_EPSILON = 0.5;
 
 /**
+ * How much of the world exists right now.
+ *
+ * Sowing and building are the two actions no component on the player can show:
+ * both spend an item and then the *world* changes. The systems that own those
+ * indexes are handed in as getters (`PlantSystem`, `BuildSystem`), which keeps
+ * `OverlayContext` from having to widen for the audio layer.
+ */
+export interface WorldCounts {
+  crops(): number;
+  structures(): number;
+}
+
+/** Stand-in counts for a caller that has no world, used by the tests. */
+export const NO_WORLD_COUNTS: WorldCounts = { crops: () => 0, structures: () => 0 };
+
+/**
  * Which cues to play for the change between two snapshots.
  *
  * The first snapshot of a session produces nothing: at boot the restored
@@ -56,10 +76,19 @@ export function diffCues(prev: SoundState | null, next: SoundState): SoundCue[] 
 
   const cues: SoundCue[] = [];
 
+  // Sowing and placing both spend an item, so they speak for the inventory
+  // change instead of letting it chirp as if something had been picked up.
+  const planted = next.cropCount > prev.cropCount;
+  const built = next.structureCount > prev.structureCount;
+
   // Spending energy is the audible part of harvesting, and it happens in the
   // same frame as the inventory gain, so both cues fire and layer.
   if (next.energy < prev.energy - ENERGY_DROP_EPSILON) cues.push("harvest");
-  if (next.inventoryVersion > prev.inventoryVersion) cues.push("pickup");
+  if (next.inventoryVersion > prev.inventoryVersion && !planted && !built) {
+    cues.push("pickup");
+  }
+  if (planted) cues.push("plant");
+  if (built) cues.push("build");
   if (next.buildMode !== prev.buildMode || next.chatCount > prev.chatCount) {
     cues.push("ui");
   }
@@ -85,6 +114,7 @@ export function readSoundState(
   buildMode: boolean,
   chatCount: number,
   phase: DayPhase,
+  counts: WorldCounts = NO_WORLD_COUNTS,
 ): SoundState {
   const inventory = playerEntity.getComponent<InventoryComponent>("inventory");
   const stats = playerEntity.getComponent<StatsComponent>("stats");
@@ -95,6 +125,8 @@ export function readSoundState(
   return {
     inventoryVersion: inventory?.version ?? 0,
     energy: stats?.energy ?? 0,
+    cropCount: counts.crops(),
+    structureCount: counts.structures(),
     buildMode,
     chatCount,
     dialogueVersion: dialogue?.version ?? 0,

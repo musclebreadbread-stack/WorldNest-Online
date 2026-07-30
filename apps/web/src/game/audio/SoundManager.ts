@@ -2,7 +2,13 @@ import Phaser from "phaser";
 import type { OverlayContext, SceneOverlay } from "../SceneOverlay";
 import { MusicLoop } from "./MusicLoop";
 import { SoundSynth } from "./SoundSynth";
-import { diffCues, readSoundState, type SoundState } from "./soundDiff";
+import {
+  diffCues,
+  readSoundState,
+  NO_WORLD_COUNTS,
+  type SoundState,
+  type WorldCounts,
+} from "./soundDiff";
 import { useAudioStore } from "../../stores/audioStore";
 import { useChatStore } from "../../stores/chatStore";
 
@@ -19,11 +25,17 @@ export class SoundManager implements SceneOverlay {
   private scene: Phaser.Scene;
   private synth: SoundSynth;
   private music: MusicLoop;
+  private counts: WorldCounts;
   private previous: SoundState | null = null;
   private unlocked = false;
 
-  constructor(scene: Phaser.Scene, synth: SoundSynth = new SoundSynth()) {
+  constructor(
+    scene: Phaser.Scene,
+    counts: WorldCounts = NO_WORLD_COUNTS,
+    synth: SoundSynth = new SoundSynth(),
+  ) {
     this.scene = scene;
+    this.counts = counts;
     this.synth = synth;
     this.music = new MusicLoop(synth);
 
@@ -49,6 +61,7 @@ export class SoundManager implements SceneOverlay {
       ctx.buildMode,
       useChatStore.getState().received,
       ctx.phase,
+      this.counts,
     );
     for (const cue of diffCues(this.previous, next)) {
       this.synth.play(cue);

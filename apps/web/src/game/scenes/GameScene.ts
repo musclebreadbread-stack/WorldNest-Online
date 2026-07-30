@@ -129,8 +129,14 @@ export class GameScene extends Phaser.Scene {
     this.dayNight.setPhase(this.getClockSnapshot().phase);
     this.overlays.add(new BuildGhost(this, this.playerEntity, context.systems.build));
     this.overlays.add(new Minimap(this, this.ecsWorld));
-    // Not a visual layer, but it wants exactly the same per-frame context
-    this.overlays.add(new SoundManager(this));
+    // Not a visual layer, but it wants exactly the same per-frame context. The
+    // two counts are the sowing and building cues, which no component can show.
+    this.overlays.add(
+      new SoundManager(this, {
+        crops: () => context.systems.plant.getCrops().size,
+        structures: () => context.systems.build.getStructures().size,
+      }),
+    );
 
     // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);

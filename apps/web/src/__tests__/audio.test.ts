@@ -361,6 +361,8 @@ describe("audioStore", () => {
 const QUIET: SoundState = {
   inventoryVersion: 4,
   energy: 80,
+  cropCount: 2,
+  structureCount: 1,
   buildMode: false,
   chatCount: 2,
   dialogueVersion: 6,
@@ -431,6 +433,31 @@ describe("diffCues", () => {
     expect(diffCues(QUIET, { ...QUIET, dialogueVersion: 6 })).toEqual([]);
   });
 
+  it("should emit plant instead of pickup when a seed goes into the ground", () => {
+    // Sowing spends the seed, so the inventory bumps in the same frame
+    expect(
+      diffCues(QUIET, { ...QUIET, cropCount: 3, inventoryVersion: 5 }),
+    ).toEqual(["plant"]);
+  });
+
+  it("should emit build instead of pickup when a structure is placed", () => {
+    expect(
+      diffCues(QUIET, { ...QUIET, structureCount: 2, inventoryVersion: 5 }),
+    ).toEqual(["build"]);
+  });
+
+  it("should still emit harvest and pickup when a crop is picked", () => {
+    // Harvesting a mature crop removes it from the world and pays out
+    expect(
+      diffCues(QUIET, {
+        ...QUIET,
+        cropCount: 1,
+        inventoryVersion: 5,
+        energy: 70,
+      }),
+    ).toEqual(["harvest", "pickup"]);
+  });
+
   it("should emit shop for a trade or for the shop panel opening", () => {
     expect(diffCues(QUIET, { ...QUIET, shopVersion: 4 })).toEqual(["shop"]);
     expect(diffCues(QUIET, { ...QUIET, shopVersion: 3 })).toEqual([]);
@@ -479,6 +506,24 @@ describe("readSoundState", () => {
     expect(after.buildMode).toBe(true);
     expect(after.chatCount).toBe(3);
     expect(after.phase).toBe("dusk");
+  });
+
+  it("should hear sowing and building through the injected world counts", () => {
+    const { playerEntity } = createGameWorld(BOOTSTRAP);
+    let crops = 0;
+    let structures = 0;
+    const counts = { crops: () => crops, structures: () => structures };
+
+    const before = readSoundState(playerEntity, false, 0, "day", counts);
+    expect(before.cropCount).toBe(0);
+
+    crops = 1;
+    const sown = readSoundState(playerEntity, false, 0, "day", counts);
+    expect(diffCues(before, sown)).toEqual(["plant"]);
+
+    structures = 1;
+    const built = readSoundState(playerEntity, false, 0, "day", counts);
+    expect(diffCues(sown, built)).toEqual(["build"]);
   });
 
   it("should hear a conversation through the dialogue component's version", () => {
