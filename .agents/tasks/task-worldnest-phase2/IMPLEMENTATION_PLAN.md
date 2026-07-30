@@ -56,7 +56,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase A — Test & lint infrastructure (do first; later items verify with it)
 
-- [ ] 1. Extend lint coverage from one package to all five. Add `parserOptions.ecmaFeatures.jsx: true` and
+- [x] 1. Extend lint coverage from one package to all five. Add `parserOptions.ecmaFeatures.jsx: true` and
       `env.browser: true` to the root ESLint config, then add a `lint` script
       (`eslint \"src/**/*.{ts,tsx}\" --max-warnings=0`) to the four packages that lack one. Fix whatever it
       reports (prefix intentionally unused args with `_`, per the existing rule config).
@@ -64,7 +64,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/database/package.json`, `packages/ui/package.json`
       Verify: `pnpm lint` — turbo now runs 5 lint tasks (was 1: only `@worldnest/web`), all reporting no errors/warnings.
 
-- [ ] 2. Grow `@worldnest/shared` into the single source of tunables and add its first test suite. Add
+- [x] 2. Grow `@worldnest/shared` into the single source of tunables and add its first test suite. Add
       `src/items.ts` (`ItemId` union, `ItemDefinition`, `ITEM_DEFINITIONS` covering `wood`, `stone`, `fiber`,
       `flower`, `wheat_seed`, `wheat`, `fence`, `chest`, with `stackSize`, `displayName`, `placeableTile?`),
       re-export it from `src/index.ts`, and add to `src/constants.ts`: `PLAYER_SPEED = 200`,
@@ -83,7 +83,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm test` — a new `@worldnest/shared:test` task appears and passes; the 29 existing
       game-engine tests still pass (movement tests depend on the speed constant).
 
-- [ ] 3. Give `apps/web` a unit-test setup and cover the untested client logic. Add devDeps `vitest`,
+- [x] 3. Give `apps/web` a unit-test setup and cover the untested client logic. Add devDeps `vitest`,
       `jsdom`, `@vitejs/plugin-react`, `@testing-library/react`, `@testing-library/jest-dom`; add
       `vitest.config.ts` (environment `jsdom`, include `src/__tests__/**/*.test.ts?(x)`) and a
       `test: "vitest run"` script. Extract the cookie predicate from `middleware.ts` into
@@ -97,7 +97,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase B — Fix the ECS ↔ Phaser ↔ store integration
 
-- [ ] 4. Pure refactor: split `GameScene` before growing it. `CONTRIBUTING.md` caps files at ~300 lines and
+- [x] 4. Pure refactor: split `GameScene` before growing it. `CONTRIBUTING.md` caps files at ~300 lines and
       this file is about to double. Extract chunk drawing into `apps/web/src/game/ChunkRenderer.ts` (class
       owning the `RenderTexture`-per-chunk map, `drawChunk(chunk)`, `removeChunk(x, y)`, `redrawTile(...)`
       stub) and world/system/entity construction into `apps/web/src/game/createGameWorld.ts`
@@ -113,7 +113,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm --filter @worldnest/web build` succeeds and `pnpm lint` reports no errors; `GameScene.ts`
       is under 300 lines.
 
-- [ ] 5. Add remote-player smoothing to the engine: `RemoteInterpolationComponent` (type `"remoteInterpolation"`;
+- [x] 5. Add remote-player smoothing to the engine: `RemoteInterpolationComponent` (type `"remoteInterpolation"`;
       `targetX`, `targetY`, `lerpFactor` default 0.2) and `InterpolationSystem`
       (`["position", "remoteInterpolation"]`) that eases `position` toward the target with
       `1 - (1 - lerpFactor) ** (deltaTime * 60)` so smoothing is frame-rate independent, snapping when within
@@ -125,7 +125,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/game-engine/src/index.ts`, `packages/game-engine/src/__tests__/interpolation.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes, previous 29 still pass.
 
-- [ ] 6. Route all rendering through `RenderSystem` and fix the dead player counter. Register `RenderSystem`
+- [x] 6. Route all rendering through `RenderSystem` and fix the dead player counter. Register `RenderSystem`
       and `InterpolationSystem` in `createGameWorld` (order: Input → Movement → Chunk → Interpolation →
       NetworkSync → Render). In `GameScene`, replace the `otherPlayers` sprite map and manual
       `playerSprite.setPosition` with a single `syncSprites()` pass driven by `renderSystem.renderData`
@@ -140,7 +140,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm --filter @worldnest/web build` and `pnpm --filter @worldnest/web test` pass;
       `pnpm lint` clean.
 
-- [ ] 7. Make Supabase Presence reflect live positions. `RealtimeManager.joinRoom` currently `track()`s
+- [x] 7. Make Supabase Presence reflect live positions. `RealtimeManager.joinRoom` currently `track()`s
       `{x:0,y:0}` once and never updates, so a late joiner sees everyone at the origin. Add
       `updatePresence(position: PlayerPosition): Promise<void>` that re-`track()`s at most every
       `PRESENCE_INTERVAL_MS` (timestamp guard inside the manager), store the last known position so
@@ -152,7 +152,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase C — Collision and the terrain-modification overlay
 
-- [ ] 8. Give `WorldManager` a tile query plus the modification overlay (foundation for collision, harvesting,
+- [x] 8. Give `WorldManager` a tile query plus the modification overlay (foundation for collision, harvesting,
       farming, building and persistence). Add `packages/game-engine/src/world/TileQuery.ts` with
       `interface TileQuery { getTileAt(tileX, tileY): TileType; isWalkableAt(pixelX, pixelY): boolean }`.
       Implement it on `WorldManager`: resolve the owning chunk from `loadedChunks`, and for out-of-range
@@ -169,7 +169,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes and
       `chunk-generator.test.ts` determinism tests still pass unchanged.
 
-- [ ] 9. Add collision to the engine per decision D1: `ColliderComponent` (type `"collider"`; `width`,
+- [x] 9. Add collision to the engine per decision D1: `ColliderComponent` (type `"collider"`; `width`,
       `height`, `enabled`) and `CollisionSystem` (`["position", "velocity", "collider"]`) constructed with a
       `TileQuery`. For each axis independently, probe the four corners of the collider box at the projected
       position and set that axis' velocity to 0 if any probe hits a non-walkable tile, which yields wall
@@ -182,7 +182,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/game-engine/src/index.ts`, `packages/game-engine/src/__tests__/collision.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes.
 
-- [ ] 10. Wire collision into the game: add `new ColliderComponent(24, 24)` to the player entity and register
+- [x] 10. Wire collision into the game: add `new ColliderComponent(24, 24)` to the player entity and register
       `new CollisionSystem(worldManager)` **between** `InputSystem` and `MovementSystem` in `createGameWorld`
       (order matters — see D1). Depends on items 8 and 9.
       Files: `apps/web/src/game/createGameWorld.ts`
@@ -473,3 +473,24 @@ Goal: develop every remaining developable area of the project, in dependency ord
   Component + System + tests pattern.
 - If any item's manual browser check cannot be performed, complete the automated verification, commit,
   and record the gap rather than blocking the remaining phases.
+
+---
+
+## Implementation notes for items 1-10 (deviations worth knowing for items 11-28)
+
+- `@worldnest/database` now depends on `@worldnest/shared` (item 7 needs `PRESENCE_INTERVAL_MS`);
+  item 22 can rely on that dependency being in place.
+- `ChunkRenderer.redrawTile` is implemented, not stubbed, and `WorldManager.setTileChangeCallback`
+  is the hook item 16 should wire it to.
+- `WorldManager.applyTileOverrides` takes `Iterable<[tileKey, TileType]>`; `getTileKey`/`parseTileKey`
+  are exported from the package barrel for persistence.
+- The default spawn moved from `(256, 256)` to `(496, 336)` — tile `(15, 10)` — because tile `(8, 8)`
+  is water for `WORLD_SEED` and collision would have trapped the player there.
+- `GameScene` reads its identity/spawn from `registry.get("bootstrap")`; `GameCanvas` waits for
+  `authStore.loading === false` before creating the game so the real user id is used.
+- Remote players are entities with id `remote-<playerId>` (`remotePlayerEntityId`), created by
+  `createRemotePlayerEntity` in `createGameWorld.ts`. `syncSprites()` in `GameScene` is the single
+  sprite path; new renderable entity kinds only need depth/tint rules there.
+- React consumes `players-changed` (payload type in `apps/web/src/game/events.ts`); later HUD events
+  should follow the same pattern.
+- Generated `*.tsbuildinfo` files are now gitignored and untracked.
