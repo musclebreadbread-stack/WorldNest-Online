@@ -73,6 +73,11 @@ export const en = {
   "settings.mute": "Mute all sound",
   "settings.soundHint": "Sound starts after your first click.",
 
+  "touch.stick": "Movement stick",
+  "touch.interact": "Use",
+  "touch.place": "Place",
+  "touch.map": "Map",
+
   "item.wood": "Wood",
   "item.stone": "Stone",
   "item.ore": "Ore",

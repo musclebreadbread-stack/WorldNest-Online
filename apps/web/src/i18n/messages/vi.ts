@@ -66,6 +66,11 @@ export const vi: LocaleMessages = {
   "settings.mute": "Tắt toàn bộ âm thanh",
   "settings.soundHint": "Âm thanh bắt đầu sau lần nhấp đầu tiên của bạn.",
 
+  "touch.stick": "Cần điều khiển di chuyển",
+  "touch.interact": "Dùng",
+  "touch.place": "Đặt",
+  "touch.map": "Bản đồ",
+
   "item.wood": "Gỗ",
   "item.stone": "Đá",
   "item.ore": "Quặng",

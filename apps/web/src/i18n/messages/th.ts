@@ -66,6 +66,11 @@ export const th: LocaleMessages = {
   "settings.mute": "ปิดเสียงทั้งหมด",
   "settings.soundHint": "เสียงจะเริ่มหลังการคลิกครั้งแรก",
 
+  "touch.stick": "จอยควบคุมการเดิน",
+  "touch.interact": "ใช้",
+  "touch.place": "วาง",
+  "touch.map": "แผนที่",
+
   "item.wood": "ไม้",
   "item.stone": "หิน",
   "item.ore": "แร่",

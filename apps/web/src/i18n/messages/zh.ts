@@ -66,6 +66,11 @@ export const zh: LocaleMessages = {
   "settings.mute": "静音全部声音",
   "settings.soundHint": "首次点击后才会开始播放声音。",
 
+  "touch.stick": "移动摇杆",
+  "touch.interact": "使用",
+  "touch.place": "放置",
+  "touch.map": "地图",
+
   "item.wood": "木材",
   "item.stone": "石头",
   "item.ore": "矿石",

@@ -69,6 +69,11 @@ export const ar: LocaleMessages = {
   "settings.mute": "كتم جميع الأصوات",
   "settings.soundHint": "يبدأ الصوت بعد أول نقرة لك.",
 
+  "touch.stick": "عصا الحركة",
+  "touch.interact": "استخدام",
+  "touch.place": "وضع",
+  "touch.map": "الخريطة",
+
   "item.wood": "خشب",
   "item.stone": "حجر",
   "item.ore": "خام",

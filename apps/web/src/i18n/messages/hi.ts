@@ -66,6 +66,11 @@ export const hi: LocaleMessages = {
   "settings.mute": "सारी ध्वनि बंद करें",
   "settings.soundHint": "पहली क्लिक के बाद ध्वनि शुरू होती है।",
 
+  "touch.stick": "चलने की स्टिक",
+  "touch.interact": "उपयोग करें",
+  "touch.place": "रखें",
+  "touch.map": "नक्शा",
+
   "item.wood": "लकड़ी",
   "item.stone": "पत्थर",
   "item.ore": "अयस्क",

@@ -13,6 +13,7 @@ import { InventoryPanel } from "./InventoryPanel";
 import { SettingsPanel } from "./SettingsPanel";
 import { SignOutButton } from "./SignOutButton";
 import { StatusBars } from "./StatusBars";
+import { TouchControls } from "./TouchControls";
 
 const CONNECTION_KEYS: Record<ConnectionStatus, MessageKey> = {
   connected: "hud.connected",
@@ -118,6 +119,9 @@ export function GameUI() {
         <InventoryPanel />
         <SettingsPanel />
       </div>
+
+      {/* Thumb-stick and action buttons, on touch devices only */}
+      <TouchControls />
     </div>
   );
 }

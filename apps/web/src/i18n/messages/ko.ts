@@ -66,6 +66,11 @@ export const ko: LocaleMessages = {
   "settings.mute": "모든 소리 끄기",
   "settings.soundHint": "첫 클릭 후에 소리가 시작됩니다.",
 
+  "touch.stick": "이동 스틱",
+  "touch.interact": "사용",
+  "touch.place": "설치",
+  "touch.map": "지도",
+
   "item.wood": "나무",
   "item.stone": "돌",
   "item.ore": "광석",

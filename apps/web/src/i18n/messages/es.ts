@@ -66,6 +66,11 @@ export const es: LocaleMessages = {
   "settings.mute": "Silenciar todo el sonido",
   "settings.soundHint": "El sonido empieza tras tu primer clic.",
 
+  "touch.stick": "Palanca de movimiento",
+  "touch.interact": "Usar",
+  "touch.place": "Colocar",
+  "touch.map": "Mapa",
+
   "item.wood": "Madera",
   "item.stone": "Piedra",
   "item.ore": "Mineral",

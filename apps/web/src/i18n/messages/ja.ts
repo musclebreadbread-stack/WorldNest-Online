@@ -66,6 +66,11 @@ export const ja: LocaleMessages = {
   "settings.mute": "すべての音を消す",
   "settings.soundHint": "最初のクリックの後に音が鳴り始めます。",
 
+  "touch.stick": "移動スティック",
+  "touch.interact": "つかう",
+  "touch.place": "設置",
+  "touch.map": "マップ",
+
   "item.wood": "木材",
   "item.stone": "石",
   "item.ore": "鉱石",

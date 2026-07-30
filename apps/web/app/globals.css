@@ -13,6 +13,23 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  /*
+   * Touch and mobile.
+   *
+   * Without this, dragging the on-screen thumb-stick past the edge of its pad
+   * rubber-bands the whole page on iOS and pulls to refresh on Android, so the
+   * player's walk turns into a browser gesture.
+   */
+  overscroll-behavior: none;
+}
+
+/*
+ * The Phaser canvas owns every gesture that lands on it: no scrolling, no
+ * pinch-zoom, no double-tap-to-zoom. `TouchControls` sets the same thing on its
+ * own pad and buttons with Tailwind's `touch-none`.
+ */
+canvas {
+  touch-action: none;
 }
 
 /*
@@ -42,5 +59,16 @@ body {
   /* Chat bubbles hug the reading edge instead of always hugging the left. */
   .hud-bubble {
     margin-inline-end: auto;
+  }
+
+  /*
+   * Keep the touch controls clear of a notch, a home indicator and a rounded
+   * corner. The insets resolve to 0 on every device without them, so this costs
+   * desktop nothing.
+   */
+  .touch-safe-area {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-inline-start: env(safe-area-inset-left, 0px);
+    padding-inline-end: env(safe-area-inset-right, 0px);
   }
 }
