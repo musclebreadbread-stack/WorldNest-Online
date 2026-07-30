@@ -429,6 +429,24 @@ describe("NPC wiring", () => {
     expect(dialogue.version).toBe(2);
   });
 
+  it("should refuse to place a structure on an NPC's tile", () => {
+    const { context, interaction } = createWorldFacingNpc();
+    const inventory =
+      context.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    addItem(inventory, "fence", 1);
+    selectSlot(inventory, 1);
+
+    interaction.buildRequested = true;
+    context.world.update(1 / 60);
+
+    // BuildSystem takes the NPC index as a second occupancy source, so the
+    // fence is refused and the item is not spent
+    expect(
+      context.world.getEntity(structureEntityId(NPC.npcTileX, NPC.npcTileY)),
+    ).toBeUndefined();
+    expect(countItem(inventory, "fence")).toBe(1);
+  });
+
   it("should stop the player from walking onto an NPC's tile", () => {
     const { context } = createWorldFacingNpc();
     const position = context.playerEntity.getComponent<PositionComponent>("position")!;

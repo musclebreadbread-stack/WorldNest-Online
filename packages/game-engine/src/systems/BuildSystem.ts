@@ -30,12 +30,20 @@ export function structureEntityId(tileX: number, tileY: number): string {
 export class BuildSystem extends System implements StructureQuery {
   private tileQuery: TileQuery;
   private addEntity: AddEntity;
+  private occupancy?: StructureQuery;
   private structures: Map<string, Entity> = new Map();
 
-  constructor(tileQuery: TileQuery, addEntity: AddEntity) {
+  /**
+   * `occupancy` is anything else that already stands on a tile — the NPC index in
+   * practice. Without it a player can drop a fence on the tile a villager is
+   * standing on: harmless, because the villager keeps blocking, but it looks like
+   * a bug and the build ghost happily shows it as legal.
+   */
+  constructor(tileQuery: TileQuery, addEntity: AddEntity, occupancy?: StructureQuery) {
     super(["position", "interaction", "inventory"]);
     this.tileQuery = tileQuery;
     this.addEntity = addEntity;
+    this.occupancy = occupancy;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -94,6 +102,7 @@ export class BuildSystem extends System implements StructureQuery {
     if (ITEM_DEFINITIONS[selected.itemId].placeableStructure !== true) return false;
     const tileType = this.tileQuery.getTileAt(tileX, tileY);
     if (!TILE_PROPERTIES[tileType].buildable) return false;
+    if (this.occupancy?.hasStructureAt(tileX, tileY)) return false;
 
     return !this.hasStructureAt(tileX, tileY);
   }

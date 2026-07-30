@@ -172,6 +172,39 @@ describe("BuildSystem", () => {
     ).toBe(false);
   });
 
+  // A villager standing on the tile is as good a reason not to build as a wall
+  it("should refuse a tile another occupancy source has claimed", () => {
+    const taken = getTileKey(TARGET_TILE_X, PLAYER_TILE);
+    const occupancy = {
+      hasStructureAt: (tileX: number, tileY: number) =>
+        getTileKey(tileX, tileY) === taken,
+      isBlockedByStructure: (tileX: number, tileY: number) =>
+        getTileKey(tileX, tileY) === taken,
+    };
+    const tileQuery = new FakeTileQuery([[TARGET_TILE_X, PLAYER_TILE, TileType.GRASS]]);
+    const spawned: Entity[] = [];
+    const inventory = new InventoryComponent();
+    addItem(inventory, "fence", 1);
+    const interaction = new InteractionComponent("right");
+    const entity = new Entity("player")
+      .addComponent(new PositionComponent(PLAYER_PIXEL, PLAYER_PIXEL))
+      .addComponent(interaction)
+      .addComponent(inventory);
+    const system = new BuildSystem(
+      tileQuery,
+      (spawnedEntity) => spawned.push(spawnedEntity),
+      occupancy,
+    );
+
+    expect(system.canPlaceAt(inventory, TARGET_TILE_X, PLAYER_TILE)).toBe(false);
+
+    interaction.buildRequested = true;
+    system.update([entity], 1 / 60);
+
+    expect(spawned).toHaveLength(0);
+    expect(countItem(inventory, "fence")).toBe(1);
+  });
+
   // What a `build` quest objective is judged by, polled rather than evented
   it("should count the placed structures of one kind", () => {
     const harness = createHarness();

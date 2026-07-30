@@ -170,9 +170,6 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     () => timeComponent.snapshot.totalMinutes,
   );
 
-  // Building owns the structure occupancy index, which collision reads as walls
-  const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity));
-
   // NPCs own their own occupancy index; composed with the structures below so a
   // villager is as solid as a fence without collision knowing either exists.
   // Starting a conversation is also reported to the quest layer, which is how a
@@ -183,6 +180,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     undefined,
     (npcId) => quest.recordTalk(npcId),
   );
+
+  // Building owns the structure occupancy index, which collision reads as walls.
+  // It takes the NPC index as well, so a fence cannot be dropped on a villager.
+  const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity), npc);
 
   // Quests poll the inventory themselves and the structure index through this
   // getter, so no system has to announce anything.
