@@ -18,6 +18,8 @@ export {
   ColliderComponent,
   TimeComponent,
   InventoryComponent,
+  StatsComponent,
+  InteractionComponent,
 } from "./components";
 export type { KeyState, InventorySlot } from "./components";
 
@@ -32,6 +34,10 @@ export {
   moveSlot,
 } from "./inventory";
 
+// Interaction helpers
+export { FACING_OFFSETS, getFacedTile } from "./interaction";
+export type { Facing } from "./interaction";
+
 // Systems
 export {
   MovementSystem,
@@ -42,8 +48,16 @@ export {
   InterpolationSystem,
   CollisionSystem,
   TimeSystem,
+  StatsSystem,
+  HarvestSystem,
 } from "./systems";
-export type { RenderData, SyncPayload, NowFn } from "./systems";
+export type {
+  RenderData,
+  SyncPayload,
+  NowFn,
+  PhaseGetter,
+  SetTileOverride,
+} from "./systems";
 
 // World Generation
 export {
@@ -51,6 +65,7 @@ export {
   WorldManager,
   TileType,
   TILE_PROPERTIES,
+  TILE_HARVEST_YIELD,
   getTileKey,
   parseTileKey,
   WorldClock,
@@ -62,6 +77,7 @@ export type {
   ChunkUnloadCallback,
   TileChangeCallback,
   TileProperties,
+  TileHarvestYield,
   TileQuery,
   ClockSnapshot,
   DayPhase,

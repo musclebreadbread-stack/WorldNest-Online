@@ -6,8 +6,8 @@ export type {
   ChunkUnloadCallback,
   TileChangeCallback,
 } from "./WorldManager";
-export { TileType, TILE_PROPERTIES } from "./Tilemap";
-export type { TileProperties } from "./Tilemap";
+export { TileType, TILE_PROPERTIES, TILE_HARVEST_YIELD } from "./Tilemap";
+export type { TileProperties, TileHarvestYield } from "./Tilemap";
 export { getTileKey, parseTileKey } from "./TileQuery";
 export type { TileQuery } from "./TileQuery";
 export { WorldClock, PHASE_START_HOURS } from "./WorldClock";

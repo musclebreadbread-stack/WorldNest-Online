@@ -9,3 +9,7 @@ export { InterpolationSystem } from "./InterpolationSystem";
 export { CollisionSystem } from "./CollisionSystem";
 export { TimeSystem } from "./TimeSystem";
 export type { NowFn } from "./TimeSystem";
+export { StatsSystem } from "./StatsSystem";
+export type { PhaseGetter } from "./StatsSystem";
+export { HarvestSystem } from "./HarvestSystem";
+export type { SetTileOverride } from "./HarvestSystem";

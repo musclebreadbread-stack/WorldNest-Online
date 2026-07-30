@@ -1,3 +1,5 @@
+import type { ItemId } from "@worldnest/shared";
+
 /**
  * Tile type enum representing all terrain types in the game world.
  */
@@ -73,4 +75,21 @@ export const TILE_PROPERTIES: Record<TileType, TileProperties> = {
     name: "flowers",
     color: 0xe91e63,
   },
+};
+
+export interface TileHarvestYield {
+  itemId: ItemId;
+  quantity: number;
+  /** Energy spent on a successful harvest. */
+  energyCost: number;
+}
+
+/**
+ * What harvesting a tile yields. Only tiles marked `harvestable` appear here;
+ * a harvested tile is replaced by grass through the modification overlay.
+ */
+export const TILE_HARVEST_YIELD: Partial<Record<TileType, TileHarvestYield>> = {
+  [TileType.FOREST]: { itemId: "wood", quantity: 1, energyCost: 5 },
+  [TileType.STONE]: { itemId: "stone", quantity: 1, energyCost: 8 },
+  [TileType.FLOWERS]: { itemId: "flower", quantity: 1, energyCost: 2 },
 };
