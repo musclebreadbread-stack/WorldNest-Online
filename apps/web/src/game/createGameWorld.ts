@@ -7,10 +7,13 @@ import {
   PlayerComponent,
   InputComponent,
   NetworkComponent,
+  RemoteInterpolationComponent,
   InputSystem,
   MovementSystem,
   ChunkSystem,
+  InterpolationSystem,
   NetworkSyncSystem,
+  RenderSystem,
   WorldManager,
 } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
@@ -29,7 +32,9 @@ export interface GameWorldSystems {
   input: InputSystem;
   movement: MovementSystem;
   chunk: ChunkSystem;
+  interpolation: InterpolationSystem;
   networkSync: NetworkSyncSystem;
+  render: RenderSystem;
 }
 
 export interface GameWorldContext {
@@ -63,13 +68,17 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     input: new InputSystem(),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
+    interpolation: new InterpolationSystem(),
     networkSync: new NetworkSyncSystem(SYNC_INTERVAL_MS),
+    render: new RenderSystem(),
   };
 
   world.addSystem(systems.input);
   world.addSystem(systems.movement);
   world.addSystem(systems.chunk);
+  world.addSystem(systems.interpolation);
   world.addSystem(systems.networkSync);
+  world.addSystem(systems.render);
 
   const playerEntity = new Entity(LOCAL_PLAYER_ENTITY_ID);
   playerEntity
@@ -83,4 +92,28 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addEntity(playerEntity);
 
   return { world, worldManager, systems, playerEntity };
+}
+
+/** Entity id used for the remote player owned by `playerId`. */
+export function remotePlayerEntityId(playerId: string): string {
+  return `remote-${playerId}`;
+}
+
+/**
+ * Build a remote player entity. Remote players are real ECS entities so they
+ * share the single render path and get network smoothing for free.
+ */
+export function createRemotePlayerEntity(
+  playerId: string,
+  username: string,
+  x: number,
+  y: number,
+): Entity {
+  const entity = new Entity(remotePlayerEntityId(playerId));
+  entity
+    .addComponent(new PositionComponent(x, y))
+    .addComponent(new SpriteComponent("player", 0, true))
+    .addComponent(new PlayerComponent(playerId, username, false))
+    .addComponent(new RemoteInterpolationComponent(x, y));
+  return entity;
 }

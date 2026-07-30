@@ -6,19 +6,30 @@ import {
   VelocityComponent,
   InputComponent,
   NetworkComponent,
+  PlayerComponent,
+  RemoteInterpolationComponent,
   NetworkSyncSystem,
+  RenderSystem,
   WorldManager,
 } from "@worldnest/game-engine";
-import type { ChunkData } from "@worldnest/game-engine";
+import type { ChunkData, RenderData } from "@worldnest/game-engine";
 import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import {
   createGameWorld,
+  createRemotePlayerEntity,
+  remotePlayerEntityId,
   BOOTSTRAP_REGISTRY_KEY,
   DEFAULT_SPAWN_X,
   DEFAULT_SPAWN_Y,
   type GameBootstrap,
 } from "../createGameWorld";
+import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../events";
+
+const LOCAL_PLAYER_DEPTH = 100;
+const REMOTE_PLAYER_DEPTH = 99;
+const REMOTE_PLAYER_TINT = 0xff8a80;
+const SPRITE_SCALE = 2;
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
   playerId: "local",
@@ -37,8 +48,8 @@ export class GameScene extends Phaser.Scene {
   private ecsWorld!: World;
   private worldManager!: WorldManager;
   private networkSync!: NetworkSyncSystem;
+  private renderSystem!: RenderSystem;
   private playerEntity!: Entity;
-  private playerSprite!: Phaser.GameObjects.Sprite;
   private chunkRenderer!: ChunkRenderer;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdKeys!: {
@@ -47,7 +58,8 @@ export class GameScene extends Phaser.Scene {
     S: Phaser.Input.Keyboard.Key;
     D: Phaser.Input.Keyboard.Key;
   };
-  private otherPlayers: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  /** Phaser sprites keyed by ECS entity id, driven by RenderSystem.renderData. */
+  private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   private realtimeManager: RealtimeManager | null = null;
 
   constructor() {
@@ -64,7 +76,12 @@ export class GameScene extends Phaser.Scene {
     // Wire up callbacks for remote players
     manager.setCallbacks(
       (player) =>
-        this.addRemotePlayer(player.playerId, player.position.x, player.position.y),
+        this.addRemotePlayer(
+          player.playerId,
+          player.username,
+          player.position.x,
+          player.position.y,
+        ),
       (playerId) => this.removeRemotePlayer(playerId),
       (playerId, position) => this.updateRemotePlayer(playerId, position.x, position.y),
     );
@@ -78,6 +95,7 @@ export class GameScene extends Phaser.Scene {
     this.ecsWorld = context.world;
     this.worldManager = context.worldManager;
     this.networkSync = context.systems.networkSync;
+    this.renderSystem = context.systems.render;
     this.playerEntity = context.playerEntity;
 
     // Chunk rendering
@@ -87,13 +105,13 @@ export class GameScene extends Phaser.Scene {
       (chunkX, chunkY) => this.onChunkUnload(chunkX, chunkY),
     );
 
-    // Create player sprite
-    this.playerSprite = this.add.sprite(bootstrap.spawnX, bootstrap.spawnY, "player");
-    this.playerSprite.setScale(2);
-    this.playerSprite.setDepth(100);
+    // Prime the ECS once so chunks load and the render pass creates sprites
+    this.ecsWorld.update(0);
+    this.syncSprites();
 
-    // Setup camera
-    this.cameras.main.startFollow(this.playerSprite, true, 0.1, 0.1);
+    // Setup camera on the local player sprite created by the render pass
+    const localSprite = this.sprites.get(this.playerEntity.id)!;
+    this.cameras.main.startFollow(localSprite, true, 0.1, 0.1);
     this.cameras.main.setZoom(2);
 
     // Setup input
@@ -106,10 +124,6 @@ export class GameScene extends Phaser.Scene {
         D: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
       };
     }
-
-    // Initial chunk load
-    const pos = this.playerEntity.getComponent<PositionComponent>("position")!;
-    this.worldManager.updateLoadedChunks(pos.chunkX, pos.chunkY);
 
     // Emit ready event for React integration
     this.game.events.emit("game-ready");
@@ -140,11 +154,11 @@ export class GameScene extends Phaser.Scene {
     // Flush network sync payloads to realtime manager
     this.flushNetworkPayloads();
 
-    // Sync sprite position with ECS position
-    const position = this.playerEntity.getComponent<PositionComponent>("position")!;
-    this.playerSprite.setPosition(position.x, position.y);
+    // Mirror ECS render data onto Phaser sprites
+    this.syncSprites();
 
     // Emit position for React store
+    const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     this.game.events.emit("player-position", {
       x: position.x,
       y: position.y,
@@ -192,36 +206,94 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
-   * Add a remote player sprite to the scene.
+   * Create or update the Phaser sprite for every entity the RenderSystem reported,
+   * and destroy sprites whose entity is gone. This is the only place sprites are
+   * positioned, so ECS state is the single source of truth.
    */
-  addRemotePlayer(playerId: string, x: number, y: number): void {
-    if (this.otherPlayers.has(playerId)) return;
+  private syncSprites(): void {
+    const seen = new Set<string>();
 
-    const sprite = this.add.sprite(x, y, "player");
-    sprite.setScale(2);
-    sprite.setDepth(99);
-    sprite.setTint(0xff8a80); // Tint remote players
-    this.otherPlayers.set(playerId, sprite);
+    for (const data of this.renderSystem.renderData) {
+      seen.add(data.entityId);
+      const sprite = this.sprites.get(data.entityId) ?? this.createSprite(data);
+
+      if (sprite.texture.key !== data.textureKey) {
+        sprite.setTexture(data.textureKey);
+      }
+      sprite.setPosition(data.x, data.y);
+      sprite.setVisible(data.visible);
+    }
+
+    for (const [entityId, sprite] of this.sprites) {
+      if (!seen.has(entityId)) {
+        sprite.destroy();
+        this.sprites.delete(entityId);
+      }
+    }
+  }
+
+  private createSprite(data: RenderData): Phaser.GameObjects.Sprite {
+    const sprite = this.add.sprite(data.x, data.y, data.textureKey);
+    sprite.setScale(SPRITE_SCALE);
+
+    const player = this.ecsWorld
+      .getEntity(data.entityId)
+      ?.getComponent<PlayerComponent>("player");
+    const isLocal = player?.isLocal ?? false;
+
+    sprite.setDepth(isLocal ? LOCAL_PLAYER_DEPTH : REMOTE_PLAYER_DEPTH);
+    if (player && !isLocal) {
+      sprite.setTint(REMOTE_PLAYER_TINT);
+    }
+
+    this.sprites.set(data.entityId, sprite);
+    return sprite;
   }
 
   /**
-   * Update a remote player's position.
+   * Add a remote player as a real ECS entity so it shares the render path
+   * and gets network smoothing from the InterpolationSystem.
+   */
+  addRemotePlayer(playerId: string, username: string, x: number, y: number): void {
+    const entityId = remotePlayerEntityId(playerId);
+    if (this.ecsWorld.getEntity(entityId)) return;
+
+    this.ecsWorld.addEntity(createRemotePlayerEntity(playerId, username, x, y));
+    this.emitPlayersChanged({ type: "join", playerId, username, x, y });
+  }
+
+  /**
+   * Write a remote player's latest network position as the interpolation target.
    */
   updateRemotePlayer(playerId: string, x: number, y: number): void {
-    const sprite = this.otherPlayers.get(playerId);
-    if (sprite) {
-      sprite.setPosition(x, y);
+    const entity = this.ecsWorld.getEntity(remotePlayerEntityId(playerId));
+    if (!entity) {
+      // A position broadcast can arrive before the presence join event
+      this.addRemotePlayer(playerId, playerId, x, y);
+      return;
     }
+
+    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
+      "remoteInterpolation",
+    )!;
+    interpolation.targetX = x;
+    interpolation.targetY = y;
+
+    this.emitPlayersChanged({ type: "move", playerId, x, y });
   }
 
   /**
-   * Remove a remote player from the scene.
+   * Remove a remote player entity; its sprite is cleaned up by `syncSprites`.
    */
   removeRemotePlayer(playerId: string): void {
-    const sprite = this.otherPlayers.get(playerId);
-    if (sprite) {
-      sprite.destroy();
-      this.otherPlayers.delete(playerId);
-    }
+    const entityId = remotePlayerEntityId(playerId);
+    if (!this.ecsWorld.getEntity(entityId)) return;
+
+    this.ecsWorld.removeEntity(entityId);
+    this.emitPlayersChanged({ type: "leave", playerId });
+  }
+
+  private emitPlayersChanged(event: PlayersChangedEvent): void {
+    this.game.events.emit(PLAYERS_CHANGED_EVENT, event);
   }
 }

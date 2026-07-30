@@ -5,6 +5,7 @@ import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
+import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../game/events";
 
 /**
  * GameCanvas mounts/unmounts the Phaser game instance.
@@ -17,6 +18,9 @@ export function GameCanvas() {
   const realtimeRef = useRef<RealtimeManager | null>(null);
   const [gameReady, setGameReady] = useState(false);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
+  const addOnlinePlayer = useGameStore((s) => s.addOnlinePlayer);
+  const removeOnlinePlayer = useGameStore((s) => s.removeOnlinePlayer);
+  const updateOnlinePlayer = useGameStore((s) => s.updateOnlinePlayer);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
 
@@ -45,11 +49,37 @@ export function GameCanvas() {
       },
     );
 
+    // Mirror remote player joins/leaves/moves into the React store
+    game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
+      switch (event.type) {
+        case "join":
+          addOnlinePlayer({
+            playerId: event.playerId,
+            username: event.username,
+            x: event.x,
+            y: event.y,
+          });
+          break;
+        case "leave":
+          removeOnlinePlayer(event.playerId);
+          break;
+        case "move":
+          updateOnlinePlayer(event.playerId, event.x, event.y);
+          break;
+      }
+    });
+
     // Track when the game scene is ready so the realtime wiring effect can fire
     game.events.once("game-ready", () => {
       setGameReady(true);
     });
-  }, [setPlayerPosition, user]);
+  }, [
+    setPlayerPosition,
+    addOnlinePlayer,
+    removeOnlinePlayer,
+    updateOnlinePlayer,
+    user,
+  ]);
 
   useEffect(() => {
     // Wait until the session has resolved so the player entity gets the real
