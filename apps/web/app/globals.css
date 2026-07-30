@@ -14,3 +14,33 @@ body {
   padding: 0;
   min-height: 100vh;
 }
+
+/*
+ * Right-to-left support (Arabic).
+ *
+ * `DocumentLocale` sets `dir` on `<html>`, so text and flex order mirror on their
+ * own. The corner-anchored HUD panels use Tailwind's logical `start-*` / `end-*`
+ * utilities rather than `left-*` / `right-*`, otherwise two panels would end up
+ * stacked in the same corner. The centre-anchored ones (hotbar, status bars,
+ * clock) are positioned with `left-1/2` plus a translate and need nothing: their
+ * anchor is the midpoint, which does not mirror.
+ *
+ * These two rules cover what utilities cannot express.
+ */
+@layer utilities {
+  /*
+   * Coordinates, chunk indices and bar values are Latin digits in a fixed order.
+   * Inside an RTL paragraph the bidi algorithm would reorder "X: 15 Y: 10", so
+   * they are isolated back to LTR.
+   */
+  .hud-numeric {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: start;
+  }
+
+  /* Chat bubbles hug the reading edge instead of always hugging the left. */
+  .hud-bubble {
+    margin-inline-end: auto;
+  }
+}

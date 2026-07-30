@@ -19,6 +19,13 @@ import { LOCALE_STORAGE_KEY, detectLocale, useLocaleStore } from "../stores/loca
 
 const EN_KEYS = Object.keys(en) as MessageKey[];
 
+/**
+ * Keys whose value is legitimately the same in every language: an example email
+ * address and the Cartesian axis labels. Everything else must differ from
+ * English, which is what catches a copy-pasted catalogue.
+ */
+const LOCALE_AGNOSTIC_KEYS: MessageKey[] = ["auth.emailPlaceholder", "hud.coordinates"];
+
 describe("message catalogue", () => {
   it("should list twelve locales with English first", () => {
     expect(LOCALES).toHaveLength(12);
@@ -62,6 +69,38 @@ describe("message catalogue", () => {
       expect(ko[key].trim().length, key).toBeGreaterThan(0);
     }
   });
+
+  it("should give every locale exactly the English key set with no empty values", () => {
+    for (const locale of LOCALES) {
+      const messages = MESSAGES[locale];
+      expect(Object.keys(messages).sort(), locale).toEqual([...EN_KEYS].sort());
+
+      for (const key of EN_KEYS) {
+        expect(messages[key]?.trim().length, `${locale} ${key}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("should actually translate every key, not copy the English one", () => {
+    for (const locale of LOCALES.filter((l) => l !== "en")) {
+      for (const key of EN_KEYS) {
+        if (LOCALE_AGNOSTIC_KEYS.includes(key)) continue;
+
+        expect(MESSAGES[locale][key], `${locale} ${key}`).not.toBe(en[key]);
+      }
+    }
+  });
+
+  it("should keep every placeholder the English string uses", () => {
+    for (const locale of LOCALES) {
+      for (const key of EN_KEYS) {
+        const expected = (en[key].match(/\{\w+\}/g) ?? []).sort();
+        const actual = (MESSAGES[locale][key]?.match(/\{\w+\}/g) ?? []).sort();
+
+        expect(actual, `${locale} ${key}`).toEqual(expected);
+      }
+    }
+  });
 });
 
 describe("translate", () => {
@@ -70,8 +109,15 @@ describe("translate", () => {
   });
 
   it("should fall back to English for an untranslated key", () => {
-    // `ja` is registered but empty until item 10
-    expect(translate("ja", "inventory.title")).toBe(en["inventory.title"]);
+    const sparse: Partial<typeof en> = {};
+    const original = MESSAGES.vi;
+    MESSAGES.vi = sparse;
+
+    try {
+      expect(translate("vi", "inventory.title")).toBe(en["inventory.title"]);
+    } finally {
+      MESSAGES.vi = original;
+    }
   });
 
   it("should return the key itself when nothing knows it", () => {

@@ -1,5 +1,15 @@
+import { ar } from "./messages/ar";
+import { de } from "./messages/de";
 import { en } from "./messages/en";
+import { es } from "./messages/es";
+import { fr } from "./messages/fr";
+import { hi } from "./messages/hi";
+import { ja } from "./messages/ja";
 import { ko } from "./messages/ko";
+import { pt } from "./messages/pt";
+import { th } from "./messages/th";
+import { vi } from "./messages/vi";
+import { zh } from "./messages/zh";
 
 /**
  * Hand-rolled i18n instead of `next-intl`.
@@ -52,23 +62,24 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 };
 
 /**
- * Catalogues by locale. Values are partial so a locale can be added before it is
- * fully translated: any missing key falls back to English rather than rendering
- * blank. Item 10 fills the ten placeholders below.
+ * Catalogues by locale. The value type stays partial so a future locale can be
+ * registered before it is fully translated and fall back to English key by key
+ * rather than rendering blank; all twelve are complete today, which is what the
+ * parity test enforces.
  */
 export const MESSAGES: Record<Locale, Partial<LocaleMessages>> = {
   en,
   ko,
-  ja: {},
-  zh: {},
-  es: {},
-  fr: {},
-  de: {},
-  pt: {},
-  ar: {},
-  hi: {},
-  th: {},
-  vi: {},
+  ja,
+  zh,
+  es,
+  fr,
+  de,
+  pt,
+  ar,
+  hi,
+  th,
+  vi,
 };
 
 /** The default, and the fallback for every untranslated key. */
