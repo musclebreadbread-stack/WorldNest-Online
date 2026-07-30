@@ -6,3 +6,4 @@ export { ChunkComponent } from "./ChunkComponent";
 export { InputComponent } from "./InputComponent";
 export type { KeyState } from "./InputComponent";
 export { NetworkComponent } from "./NetworkComponent";
+export { RemoteInterpolationComponent } from "./RemoteInterpolationComponent";

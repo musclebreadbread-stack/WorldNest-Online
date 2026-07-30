@@ -14,6 +14,7 @@ export {
   ChunkComponent,
   InputComponent,
   NetworkComponent,
+  RemoteInterpolationComponent,
 } from "./components";
 export type { KeyState } from "./components";
 
@@ -24,6 +25,7 @@ export {
   ChunkSystem,
   RenderSystem,
   NetworkSyncSystem,
+  InterpolationSystem,
 } from "./systems";
 export type { RenderData, SyncPayload } from "./systems";
 
