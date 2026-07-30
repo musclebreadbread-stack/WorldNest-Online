@@ -3,6 +3,7 @@ import {
   ITEM_DEFINITIONS,
   ITEM_IDS,
   PLACEABLE_ITEM_IDS,
+  isItemId,
   isPlaceableStructure,
   type ItemId,
 } from "../items";
@@ -30,6 +31,15 @@ describe("ITEM_DEFINITIONS", () => {
       expect(definition.displayName.length).toBeGreaterThan(0);
       expect(definition.stackSize).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  it("should recognise catalogue ids and reject anything else", () => {
+    for (const id of ITEM_IDS) {
+      expect(isItemId(id)).toBe(true);
+    }
+    expect(isItemId("unobtainium")).toBe(false);
+    expect(isItemId(undefined)).toBe(false);
+    expect(isItemId(7)).toBe(false);
   });
 
   it("should mark fence and chest as placeable structures", () => {

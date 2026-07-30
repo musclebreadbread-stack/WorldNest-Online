@@ -58,6 +58,15 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
 
 export const ITEM_IDS = Object.keys(ITEM_DEFINITIONS) as ItemId[];
 
+/**
+ * Whether a value names a catalogue item. Persisted data (the `inventory` jsonb
+ * column, `structures.item_id`) is untyped, so it has to be validated on the
+ * way back in — an item removed from the catalogue must not crash a session.
+ */
+export function isItemId(value: unknown): value is ItemId {
+  return typeof value === "string" && value in ITEM_DEFINITIONS;
+}
+
 /** Items that can be placed in the world as a structure. */
 export function isPlaceableStructure(itemId: ItemId): boolean {
   return ITEM_DEFINITIONS[itemId].placeableStructure === true;

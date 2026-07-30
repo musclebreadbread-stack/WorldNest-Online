@@ -47,12 +47,19 @@ export function GameCanvas() {
     const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } = await import(
       "../game/createGameWorld"
     );
+    const { loadSession } = await import("../game/loadSession");
+
+    // Saved world and player state, or null when Supabase is unconfigured
+    const session = await loadSession(user?.id ?? null);
 
     const game = createPhaserGame(containerRef.current, {
       playerId: user?.id ?? "local",
       username: user?.username ?? "Player",
-      spawnX: DEFAULT_SPAWN_X,
-      spawnY: DEFAULT_SPAWN_Y,
+      spawnX: session?.spawnX ?? DEFAULT_SPAWN_X,
+      spawnY: session?.spawnY ?? DEFAULT_SPAWN_Y,
+      worldId: session?.worldId ?? null,
+      inventory: session?.inventory ?? null,
+      savedWorld: session?.savedWorld ?? null,
     });
     gameRef.current = game;
 

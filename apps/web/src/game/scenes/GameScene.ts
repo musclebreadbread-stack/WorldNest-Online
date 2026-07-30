@@ -20,6 +20,10 @@ import { PlayerController } from "../PlayerController";
 import { SpriteSync } from "../SpriteSync";
 import { BuildGhost } from "../BuildGhost";
 import {
+  createSessionPersistence,
+  type SessionPersistence,
+} from "../SessionPersistence";
+import {
   createGameWorld,
   createRemotePlayerEntity,
   remotePlayerEntityId,
@@ -57,6 +61,8 @@ export class GameScene extends Phaser.Scene {
   private hudBridge!: HudBridge;
   private playerController!: PlayerController;
   private buildGhost!: BuildGhost;
+  /** Writes position, inventory and world changes back to Supabase. */
+  private persistence: SessionPersistence | null = null;
   /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
   private spriteSync!: SpriteSync;
   private realtimeManager: RealtimeManager | null = null;
@@ -102,16 +108,22 @@ export class GameScene extends Phaser.Scene {
     this.playerEntity = context.playerEntity;
     this.clockEntity = context.clockEntity;
 
+    // Saved state was already restored by createGameWorld; from here on every
+    // change is written back through this layer.
+    this.persistence = createSessionPersistence(bootstrap, context);
+
     // Chunk rendering
     this.chunkRenderer = new ChunkRenderer(this);
     this.worldManager.setCallbacks(
       (chunk) => this.onChunkLoad(chunk),
       (chunkX, chunkY) => this.onChunkUnload(chunkX, chunkY),
     );
-    // Harvested/modified tiles repaint in place instead of rebuilding the chunk
-    this.worldManager.setTileChangeCallback((tileX, tileY, tileType) =>
-      this.chunkRenderer.redrawTile(tileX, tileY, tileType),
-    );
+    // Harvested/modified tiles repaint in place instead of rebuilding the chunk,
+    // and the same diff is what gets persisted
+    this.worldManager.setTileChangeCallback((tileX, tileY, tileType) => {
+      this.chunkRenderer.redrawTile(tileX, tileY, tileType);
+      this.persistence?.saveTile(tileX, tileY, tileType);
+    });
 
     // Prime the ECS once so chunks load and the render pass creates sprites
     this.spriteSync = new SpriteSync(this, this.ecsWorld);
@@ -126,6 +138,8 @@ export class GameScene extends Phaser.Scene {
       this.dayNight.destroy();
       this.spriteSync.destroy();
       this.buildGhost.destroy();
+      this.persistence?.flush();
+      this.persistence?.destroy();
     });
 
     // Setup camera on the local player sprite created by the render pass
@@ -170,6 +184,9 @@ export class GameScene extends Phaser.Scene {
 
     // Build preview follows the faced tile while build mode is on
     this.buildGhost.update(useUIStore.getState().buildMode);
+
+    // Autosave position/inventory and push new structures and crops
+    this.persistence?.update();
 
     // Publish the state the React HUD consumes
     this.hudBridge.flush();
