@@ -60,6 +60,11 @@ export const th: LocaleMessages = {
   "settings.close": "ปิด (P)",
   "settings.language": "ภาษา",
   "settings.languageHint": "บันทึกไว้ในอุปกรณ์นี้เท่านั้น",
+  "settings.sound": "เสียง",
+  "settings.masterVolume": "ระดับเสียงรวม",
+  "settings.musicVolume": "ระดับเสียงเพลง",
+  "settings.mute": "ปิดเสียงทั้งหมด",
+  "settings.soundHint": "เสียงจะเริ่มหลังการคลิกครั้งแรก",
 
   "item.wood": "ไม้",
   "item.stone": "หิน",

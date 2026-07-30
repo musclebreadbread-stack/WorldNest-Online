@@ -18,6 +18,7 @@ import { NetworkBridge } from "../NetworkBridge";
 import { PlayerController } from "../PlayerController";
 import { SpriteSync } from "../SpriteSync";
 import { BuildGhost } from "../BuildGhost";
+import { SoundManager } from "../audio/SoundManager";
 import { OverlayStack, type OverlayContext } from "../SceneOverlay";
 import {
   createSessionPersistence,
@@ -125,6 +126,8 @@ export class GameScene extends Phaser.Scene {
     this.dayNight.setPhase(this.getClockSnapshot().phase);
     this.overlays.add(new BuildGhost(this, this.playerEntity, context.systems.build));
     this.overlays.add(new Minimap(this, this.ecsWorld));
+    // Not a visual layer, but it wants exactly the same per-frame context
+    this.overlays.add(new SoundManager(this));
 
     // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);

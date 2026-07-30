@@ -18,6 +18,7 @@ describe("chatStore", () => {
     useChatStore.setState({
       messages: [],
       unread: 0,
+      received: 0,
       inputFocused: false,
       sender: null,
     });
@@ -69,6 +70,25 @@ describe("chatStore", () => {
     expect(state.messages.map((m) => m.id)).toEqual(["m1", "m2", "m3"]);
     // History is not new to the player, so it does not raise the badge
     expect(state.unread).toBe(1);
+  });
+
+  it("should keep counting live arrivals past the history cap", () => {
+    // `messages.length` stops growing at the cap, which is why the sound diff
+    // watches `received` instead.
+    for (let index = 0; index < CHAT_HISTORY_LIMIT + 5; index++) {
+      useChatStore.getState().addMessage(message(index));
+    }
+
+    const state = useChatStore.getState();
+    expect(state.messages).toHaveLength(CHAT_HISTORY_LIMIT);
+    expect(state.received).toBe(CHAT_HISTORY_LIMIT + 5);
+  });
+
+  it("should not count loaded history as an arrival", () => {
+    useChatStore.getState().prependHistory([message(1), message(2), message(3)]);
+
+    // Otherwise opening a busy room would fire a cue per backlogged message
+    expect(useChatStore.getState().received).toBe(0);
   });
 
   it("should hold the injected sender and release it on teardown", () => {

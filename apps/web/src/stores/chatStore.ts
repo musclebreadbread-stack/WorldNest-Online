@@ -12,6 +12,15 @@ interface ChatState {
   /** Messages received since the player last focused the chat input. */
   unread: number;
   /**
+   * Live arrivals since the session started, never reset and never capped.
+   *
+   * `messages.length` cannot serve this purpose: it stops growing once the log
+   * hits `CHAT_HISTORY_LIMIT`, at which point `SoundManager`'s diff would stop
+   * hearing new messages. Loaded history does not count, so opening a busy room
+   * does not fire fifty cues at once.
+   */
+  received: number;
+  /**
    * Whether the chat input has keyboard focus. The game's key handling is gated
    * on this so typing never moves the player.
    */
@@ -33,6 +42,7 @@ interface ChatState {
 export const useChatStore = create<ChatState>((set) => ({
   messages: [],
   unread: 0,
+  received: 0,
   inputFocused: false,
   sender: null,
 
@@ -40,6 +50,7 @@ export const useChatStore = create<ChatState>((set) => ({
     set((state) => ({
       messages: [...state.messages, message].slice(-CHAT_HISTORY_LIMIT),
       unread: state.inputFocused ? state.unread : state.unread + 1,
+      received: state.received + 1,
     })),
 
   // History arrives asynchronously, so it is merged in front of whatever has

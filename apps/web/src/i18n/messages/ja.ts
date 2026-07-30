@@ -60,6 +60,11 @@ export const ja: LocaleMessages = {
   "settings.close": "閉じる (P)",
   "settings.language": "言語",
   "settings.languageHint": "この端末にのみ保存されます。",
+  "settings.sound": "サウンド",
+  "settings.masterVolume": "全体の音量",
+  "settings.musicVolume": "音楽の音量",
+  "settings.mute": "すべての音を消す",
+  "settings.soundHint": "最初のクリックの後に音が鳴り始めます。",
 
   "item.wood": "木材",
   "item.stone": "石",

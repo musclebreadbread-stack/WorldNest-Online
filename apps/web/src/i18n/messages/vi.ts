@@ -60,6 +60,11 @@ export const vi: LocaleMessages = {
   "settings.close": "Đóng (P)",
   "settings.language": "Ngôn ngữ",
   "settings.languageHint": "Chỉ lưu trên thiết bị này.",
+  "settings.sound": "Âm thanh",
+  "settings.masterVolume": "Âm lượng tổng",
+  "settings.musicVolume": "Âm lượng nhạc",
+  "settings.mute": "Tắt toàn bộ âm thanh",
+  "settings.soundHint": "Âm thanh bắt đầu sau lần nhấp đầu tiên của bạn.",
 
   "item.wood": "Gỗ",
   "item.stone": "Đá",

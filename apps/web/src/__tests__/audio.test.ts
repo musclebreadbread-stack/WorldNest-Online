@@ -1,6 +1,25 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import type { InventoryComponent, StatsComponent } from "@worldnest/game-engine";
+import { addItem } from "@worldnest/game-engine";
 import { SOUND_CUES, SOUND_SPECS } from "../game/audio/soundSpecs";
 import { SoundSynth } from "../game/audio/SoundSynth";
+import {
+  CHORD_INTERVAL_MS,
+  MUSIC_PROGRESSIONS,
+  MusicLoop,
+  moodForPhase,
+} from "../game/audio/MusicLoop";
+import {
+  ENERGY_DROP_EPSILON,
+  diffCues,
+  readSoundState,
+  type SoundState,
+} from "../game/audio/soundDiff";
+import {
+  createGameWorld,
+  DEFAULT_SPAWN_X,
+  DEFAULT_SPAWN_Y,
+} from "../game/createGameWorld";
 import {
   AUDIO_STORAGE_KEY,
   DEFAULT_MASTER_VOLUME,
@@ -334,3 +353,244 @@ describe("audioStore", () => {
     expect(clampVolume(0.42)).toBe(0.42);
   });
 });
+
+const QUIET: SoundState = {
+  inventoryVersion: 4,
+  energy: 80,
+  buildMode: false,
+  chatCount: 2,
+  phase: "day",
+};
+
+describe("diffCues", () => {
+  it("should emit nothing for the first snapshot of a session", () => {
+    // At boot the restored inventory and energy differ from every default, so a
+    // naive diff would fire a burst of cues over the loading screen.
+    expect(diffCues(null, QUIET)).toEqual([]);
+  });
+
+  it("should emit nothing when nothing changed", () => {
+    expect(diffCues(QUIET, { ...QUIET })).toEqual([]);
+  });
+
+  it("should emit pickup for an inventory version bump", () => {
+    expect(diffCues(QUIET, { ...QUIET, inventoryVersion: 5 })).toEqual(["pickup"]);
+  });
+
+  it("should ignore an inventory version that went backwards", () => {
+    expect(diffCues(QUIET, { ...QUIET, inventoryVersion: 1 })).toEqual([]);
+  });
+
+  it("should emit harvest for an energy drop", () => {
+    expect(diffCues(QUIET, { ...QUIET, energy: 70 })).toEqual(["harvest"]);
+  });
+
+  it("should ignore energy regenerating and floating-point noise", () => {
+    expect(diffCues(QUIET, { ...QUIET, energy: 90 })).toEqual([]);
+    expect(
+      diffCues(QUIET, { ...QUIET, energy: QUIET.energy - ENERGY_DROP_EPSILON / 2 }),
+    ).toEqual([]);
+  });
+
+  it("should layer harvest and pickup when a tile pays out", () => {
+    // Harvesting spends energy and adds an item in the same frame
+    expect(
+      diffCues(QUIET, { ...QUIET, energy: 72, inventoryVersion: 5 }),
+    ).toEqual(["harvest", "pickup"]);
+  });
+
+  it("should emit ui for a build-mode toggle in either direction", () => {
+    expect(diffCues(QUIET, { ...QUIET, buildMode: true })).toEqual(["ui"]);
+    expect(
+      diffCues({ ...QUIET, buildMode: true }, { ...QUIET, buildMode: false }),
+    ).toEqual(["ui"]);
+  });
+
+  it("should emit ui for a chat arrival but not for the log shrinking", () => {
+    expect(diffCues(QUIET, { ...QUIET, chatCount: 3 })).toEqual(["ui"]);
+    expect(diffCues(QUIET, { ...QUIET, chatCount: 1 })).toEqual([]);
+  });
+
+  it("should emit ui only once when build mode and chat both change", () => {
+    expect(
+      diffCues(QUIET, { ...QUIET, buildMode: true, chatCount: 9 }),
+    ).toEqual(["ui"]);
+  });
+
+  it("should not emit anything for a phase change on its own", () => {
+    // The phase steers the music's key; it is not an event worth a chime
+    expect(diffCues(QUIET, { ...QUIET, phase: "night" })).toEqual([]);
+  });
+});
+
+describe("readSoundState", () => {
+  const BOOTSTRAP = {
+    playerId: "user-1",
+    username: "Tester",
+    spawnX: DEFAULT_SPAWN_X,
+    spawnY: DEFAULT_SPAWN_Y,
+  };
+
+  it("should read the live inventory version and energy off the player", () => {
+    const { playerEntity } = createGameWorld(BOOTSTRAP);
+    const inventory = playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const stats = playerEntity.getComponent<StatsComponent>("stats")!;
+
+    const before = readSoundState(playerEntity, false, 0, "day");
+    expect(before.inventoryVersion).toBe(inventory.version);
+    expect(before.energy).toBe(stats.energy);
+
+    addItem(inventory, "wood", 1);
+    stats.energy -= 10;
+
+    const after = readSoundState(playerEntity, true, 3, "dusk");
+    expect(after.inventoryVersion).toBeGreaterThan(before.inventoryVersion);
+    expect(diffCues(before, after)).toEqual(["harvest", "pickup", "ui"]);
+    expect(after.buildMode).toBe(true);
+    expect(after.chatCount).toBe(3);
+    expect(after.phase).toBe("dusk");
+  });
+});
+
+describe("MusicLoop", () => {
+  it("should pick a bright key for daylight and a low one for the evening", () => {
+    expect(moodForPhase("dawn")).toBe("bright");
+    expect(moodForPhase("day")).toBe("bright");
+    expect(moodForPhase("dusk")).toBe("low");
+    expect(moodForPhase("night")).toBe("low");
+  });
+
+  it("should hold four chords per key, each below the other", () => {
+    for (const mood of ["bright", "low"] as const) {
+      const progression = MUSIC_PROGRESSIONS[mood];
+      expect(progression, mood).toHaveLength(4);
+
+      for (const chord of progression) {
+        expect(chord.length, mood).toBeGreaterThanOrEqual(3);
+        for (const frequency of chord) {
+          expect(frequency, mood).toBeGreaterThan(0);
+        }
+      }
+    }
+
+    // The evening key really is lower, which is the whole point of two moods
+    expect(MUSIC_PROGRESSIONS.low[0][0]).toBeLessThan(MUSIC_PROGRESSIONS.bright[0][0]);
+  });
+
+  it("should stay silent until a gesture has unlocked the context", () => {
+    const factory = fakeContextFactory();
+    const synth = new SoundSynth(factory.create);
+    const music = new MusicLoop(synth);
+
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+
+    expect(factory.created).toBe(0);
+  });
+
+  it("should schedule one voice per note of a chord, once per bar", () => {
+    const factory = fakeContextFactory();
+    const synth = new SoundSynth(factory.create);
+    synth.resume();
+    const music = new MusicLoop(synth);
+
+    music.update(16, "day", 1);
+    const voices = MUSIC_PROGRESSIONS.bright[0].length;
+    expect(factory.context!.oscillators).toHaveLength(voices);
+
+    // Mid-bar frames add nothing
+    music.update(CHORD_INTERVAL_MS / 2, "day", 1);
+    expect(factory.context!.oscillators).toHaveLength(voices);
+
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+    expect(factory.context!.oscillators.length).toBeGreaterThan(voices);
+  });
+
+  it("should walk the progression and wrap back to the root", () => {
+    const factory = fakeContextFactory();
+    const synth = new SoundSynth(factory.create);
+    synth.resume();
+    const music = new MusicLoop(synth);
+    const progression = MUSIC_PROGRESSIONS.bright;
+
+    for (let bar = 0; bar < progression.length + 1; bar++) {
+      music.update(CHORD_INTERVAL_MS, "day", 1);
+    }
+
+    const root = progression[0][0];
+    const roots = factory.context!.oscillators.filter(
+      (o) => o.frequency.setValues[0].value === root,
+    );
+    // The root chord was played on the first bar and again after wrapping
+    expect(roots).toHaveLength(2);
+  });
+
+  it("should restart at the root when the day phase changes key", () => {
+    const factory = fakeContextFactory();
+    const synth = new SoundSynth(factory.create);
+    synth.resume();
+    const music = new MusicLoop(synth);
+
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+    const before = factory.context!.oscillators.length;
+
+    music.update(16, "night", 1);
+
+    const played = factory.context!.oscillators.slice(before);
+    expect(played.map((o) => o.frequency.setValues[0].value)).toEqual([
+      ...MUSIC_PROGRESSIONS.low[0],
+    ]);
+  });
+
+  it("should create no nodes at zero music volume but keep the beat", () => {
+    const factory = fakeContextFactory();
+    const synth = new SoundSynth(factory.create);
+    synth.resume();
+    const music = new MusicLoop(synth);
+
+    music.update(CHORD_INTERVAL_MS, "day", 0);
+    expect(factory.context!.oscillators).toHaveLength(0);
+
+    // The bar still advanced, so the music picks up mid-progression rather than
+    // restarting every time the player nudges the slider
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+    const played = factory.context!.oscillators.map(
+      (o) => o.frequency.setValues[0].value,
+    );
+    expect(played).toEqual([...MUSIC_PROGRESSIONS.bright[1]]);
+  });
+
+  it("should scale the chord gain by the music volume", () => {
+    const loud = fakeContextFactory();
+    const quiet = fakeContextFactory();
+    const loudMusic = new MusicLoop(unlocked(loud));
+    const quietMusic = new MusicLoop(unlocked(quiet));
+
+    loudMusic.update(CHORD_INTERVAL_MS, "day", 1);
+    quietMusic.update(CHORD_INTERVAL_MS, "day", 0.25);
+
+    const loudPeak = loud.context!.gains[0].gain.ramps[0].value;
+    const quietPeak = quiet.context!.gains[0].gain.ramps[0].value;
+    expect(quietPeak).toBeCloseTo(loudPeak * 0.25);
+  });
+
+  it("should hold each chord past the start of the next one", () => {
+    const factory = fakeContextFactory();
+    const music = new MusicLoop(unlocked(factory));
+
+    music.update(CHORD_INTERVAL_MS, "day", 1);
+
+    const [voice] = factory.context!.oscillators;
+    // A gap between bars would make the pad pulse instead of drone
+    expect(voice.stoppedAt! - voice.startedAt!).toBeGreaterThan(
+      CHORD_INTERVAL_MS / 1000,
+    );
+  });
+});
+
+/** A synth whose context has already been unlocked by a "gesture". */
+function unlocked(factory: ReturnType<typeof fakeContextFactory>): SoundSynth {
+  const synth = new SoundSynth(factory.create);
+  synth.resume();
+  return synth;
+}

@@ -63,6 +63,11 @@ export const ar: LocaleMessages = {
   "settings.close": "إغلاق (P)",
   "settings.language": "اللغة",
   "settings.languageHint": "يُحفظ على هذا الجهاز فقط.",
+  "settings.sound": "الصوت",
+  "settings.masterVolume": "مستوى الصوت العام",
+  "settings.musicVolume": "مستوى صوت الموسيقى",
+  "settings.mute": "كتم جميع الأصوات",
+  "settings.soundHint": "يبدأ الصوت بعد أول نقرة لك.",
 
   "item.wood": "خشب",
   "item.stone": "حجر",

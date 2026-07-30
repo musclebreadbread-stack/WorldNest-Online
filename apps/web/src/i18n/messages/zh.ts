@@ -60,6 +60,11 @@ export const zh: LocaleMessages = {
   "settings.close": "关闭 (P)",
   "settings.language": "语言",
   "settings.languageHint": "仅保存在此设备上。",
+  "settings.sound": "声音",
+  "settings.masterVolume": "总音量",
+  "settings.musicVolume": "音乐音量",
+  "settings.mute": "静音全部声音",
+  "settings.soundHint": "首次点击后才会开始播放声音。",
 
   "item.wood": "木材",
   "item.stone": "石头",

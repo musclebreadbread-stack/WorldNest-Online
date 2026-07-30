@@ -60,6 +60,11 @@ export const fr: LocaleMessages = {
   "settings.close": "Fermer (P)",
   "settings.language": "Langue",
   "settings.languageHint": "Enregistré sur cet appareil uniquement.",
+  "settings.sound": "Son",
+  "settings.masterVolume": "Volume général",
+  "settings.musicVolume": "Volume de la musique",
+  "settings.mute": "Couper tous les sons",
+  "settings.soundHint": "Le son démarre après votre premier clic.",
 
   "item.wood": "Bois",
   "item.stone": "Pierre",

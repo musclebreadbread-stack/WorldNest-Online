@@ -60,6 +60,11 @@ export const hi: LocaleMessages = {
   "settings.close": "बंद करें (P)",
   "settings.language": "भाषा",
   "settings.languageHint": "केवल इस डिवाइस पर सहेजा जाता है।",
+  "settings.sound": "ध्वनि",
+  "settings.masterVolume": "मुख्य आवाज़",
+  "settings.musicVolume": "संगीत की आवाज़",
+  "settings.mute": "सारी ध्वनि बंद करें",
+  "settings.soundHint": "पहली क्लिक के बाद ध्वनि शुरू होती है।",
 
   "item.wood": "लकड़ी",
   "item.stone": "पत्थर",

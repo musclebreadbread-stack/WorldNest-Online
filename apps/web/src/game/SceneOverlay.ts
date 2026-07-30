@@ -16,8 +16,9 @@ export interface OverlayContext {
 }
 
 /**
- * A visual layer owned by the scene: the day/night tint, the build preview, the
- * minimap. Overlays read the context and draw; they never mutate ECS state.
+ * A per-frame layer owned by the scene: the day/night tint, the build preview,
+ * the minimap, the sound manager. Overlays read the context and present it; they
+ * never mutate ECS state.
  */
 export interface SceneOverlay {
   update(ctx: OverlayContext): void;

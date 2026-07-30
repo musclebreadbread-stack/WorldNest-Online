@@ -60,6 +60,11 @@ export const ko: LocaleMessages = {
   "settings.close": "닫기 (P)",
   "settings.language": "언어",
   "settings.languageHint": "이 기기에만 저장됩니다.",
+  "settings.sound": "소리",
+  "settings.masterVolume": "전체 음량",
+  "settings.musicVolume": "음악 음량",
+  "settings.mute": "모든 소리 끄기",
+  "settings.soundHint": "첫 클릭 후에 소리가 시작됩니다.",
 
   "item.wood": "나무",
   "item.stone": "돌",

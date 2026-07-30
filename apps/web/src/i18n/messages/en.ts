@@ -67,6 +67,11 @@ export const en = {
   "settings.close": "Close (P)",
   "settings.language": "Language",
   "settings.languageHint": "Saved on this device only.",
+  "settings.sound": "Sound",
+  "settings.masterVolume": "Master volume",
+  "settings.musicVolume": "Music volume",
+  "settings.mute": "Mute all sound",
+  "settings.soundHint": "Sound starts after your first click.",
 
   "item.wood": "Wood",
   "item.stone": "Stone",
