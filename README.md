@@ -91,8 +91,15 @@ The game will be available at `http://localhost:3000`. Without Supabase credenti
 | `B` | Toggle build mode |
 | `Q` / left click | Place the selected item (build mode only) |
 | `M` | Toggle the corner minimap |
-| `P` | Toggle the settings panel (language) |
+| `J` | Toggle the quest log |
+| `P` | Toggle the settings panel (language, sound) |
+| `1`-`4` | Answer the open conversation |
+| `Esc` | Close the topmost panel: conversation, shop, quest log, inventory, settings, build mode |
 | `Enter` / `Esc` | Focus / blur the chat composer |
+
+Talk to a villager with `E`. Juno the shopkeeper opens the shop from her first answer — prices are
+fixed, selling always pays a little less than buying, and there is no trading between players.
+Ada the explorer hands out the three starter quests and takes them back in.
 
 The UI ships in 12 languages (en, ko, ja, zh, es, fr, de, pt, ar, hi, th, vi). The browser's
 language is detected on first load and the choice is remembered per device; Arabic renders
