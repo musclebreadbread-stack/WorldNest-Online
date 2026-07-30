@@ -24,6 +24,8 @@ SQL_SRC="$REPO_ROOT/packages/database/supabase"
 # Policy counts are asserted, not just printed: a dropped policy is a silent
 # security regression otherwise.
 EXPECTED_POLICIES_AFTER_002=23
+EXPECTED_POLICIES_AFTER_003=27
+POLICY_COUNT="select count(*) from pg_policies where schemaname = 'public'"
 
 # The seeded test accounts, and the predicate that finds exactly them - the
 # trigger probe above is also a `@worldnest.test` address.
@@ -98,11 +100,25 @@ apply "001" /sql/migrations/001_initial_schema.sql
 apply "002" /sql/migrations/002_gameplay_schema.sql
 
 echo "== asserting 002 =="
-expect "policies" "$(query "select count(*) from pg_policies where schemaname = 'public';")" \
-  "$EXPECTED_POLICIES_AFTER_002"
+expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_002"
 expect "default_world" \
   "$(query "select name from public.worlds where name = 'Default World';")" \
   "Default World"
+
+# 003 is applied on its own so the policy count either side of it is asserted,
+# and so a migration that only works on an empty database would be caught.
+echo "== applying 003 =="
+apply "003" /sql/migrations/003_progression_schema.sql
+
+echo "== asserting 003 =="
+expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_003"
+expect "player_state.coins" \
+  "$(query "select count(*) from information_schema.columns
+     where table_schema = 'public' and table_name = 'player_state'
+       and column_name = 'coins';")" "1"
+expect "player_quests rls" \
+  "$(query "select relrowsecurity from pg_class
+     where oid = 'public.player_quests'::regclass;")" "t"
 
 # The whole point of 002: inserting into auth.users must provision the two
 # public rows a session needs, taking the username from the GoTrue metadata.
@@ -150,6 +166,42 @@ expect "seed confirmed" \
 expect "seed password verifies" \
   "$(query "$TESTER_COUNT and encrypted_password = crypt('worldnest123', encrypted_password);")" \
   "$EXPECTED_TESTERS"
+
+# What item 27 writes on every autosave, exercised against a real row: coins on
+# player_state, and a quest upserted twice on the composite key.
+echo "== asserting progression persistence =="
+psql_run -c "update public.player_state set coins = 137
+  where player_id = (select id from auth.users where email = 'tester1@worldnest.test');" >/dev/null
+expect "coins persist" \
+  "$(query "select coins from public.player_state
+     where player_id = (select id from auth.users
+       where email = 'tester1@worldnest.test');")" "137"
+
+psql_run -c "insert into public.player_quests (player_id, quest_id, state, progress)
+  select id, 'collect_wood', 'active', 3 from auth.users
+  where email = 'tester1@worldnest.test'
+  on conflict (player_id, quest_id) do update
+    set state = excluded.state, progress = excluded.progress;" >/dev/null
+psql_run -c "insert into public.player_quests (player_id, quest_id, state, progress)
+  select id, 'collect_wood', 'completed', 5 from auth.users
+  where email = 'tester1@worldnest.test'
+  on conflict (player_id, quest_id) do update
+    set state = excluded.state, progress = excluded.progress;" >/dev/null
+expect "quest upsert is one row" \
+  "$(query "select count(*) from public.player_quests where quest_id = 'collect_wood';")" "1"
+expect "quest upsert overwrote" \
+  "$(query "select state || ':' || progress from public.player_quests
+     where quest_id = 'collect_wood';")" "completed:5"
+
+# The check constraint is the only thing stopping a typo'd state reaching the
+# client, so prove it actually rejects one.
+if psql_run -c "insert into public.player_quests (player_id, quest_id, state)
+  select id, 'bad_state_probe', 'nonsense' from auth.users
+  where email = 'tester1@worldnest.test';" >/dev/null 2>&1; then
+  expect "quest state constraint rejects nonsense" "accepted" "rejected"
+else
+  expect "quest state constraint rejects nonsense" "rejected" "rejected"
+fi
 
 echo
 if [ "$failures" -ne 0 ]; then

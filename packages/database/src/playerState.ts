@@ -28,6 +28,8 @@ export interface PlayerStateSave {
   y: number;
   chunk: string;
   inventory: PersistedInventory;
+  /** Coin balance. A column on this row rather than a table of its own (D15). */
+  coins: number;
 }
 
 /**
@@ -63,6 +65,7 @@ export async function savePlayerState(
     y: state.y,
     chunk: state.chunk,
     inventory: state.inventory,
+    coins: state.coins,
     last_online: new Date().toISOString(),
   });
 

@@ -16,6 +16,7 @@ import type {
   PositionComponent,
   StructureComponent,
   TileType,
+  WalletComponent,
 } from "@worldnest/game-engine";
 import { getChunkKey } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
@@ -127,6 +128,7 @@ export class SessionPersistence {
   private writePlayerState(): void {
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet")!;
 
     this.write(() =>
       savePlayerState(this.playerId, {
@@ -134,6 +136,7 @@ export class SessionPersistence {
         y: position.y,
         chunk: getChunkKey(position.chunkX, position.chunkY),
         inventory: toPersistedInventory(inventory),
+        coins: wallet.coins,
       }),
     );
   }

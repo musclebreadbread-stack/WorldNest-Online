@@ -1,7 +1,7 @@
 /**
  * Database type definitions for Supabase.
- * Aligned with the actual SQL migrations (001_initial_schema.sql and
- * 002_gameplay_schema.sql).
+ * Aligned with the actual SQL migrations (001_initial_schema.sql,
+ * 002_gameplay_schema.sql and 003_progression_schema.sql).
  * These will be auto-generated from the Supabase schema in production.
  *
  * `Relationships` is required by postgrest-js for a table to be recognised as
@@ -40,6 +40,7 @@ export interface Database {
           chunk: string;
           last_online: string;
           inventory: Record<string, unknown>;
+          coins: number;
         };
         Insert: {
           player_id: string;
@@ -48,6 +49,7 @@ export interface Database {
           chunk?: string;
           last_online?: string;
           inventory?: Record<string, unknown>;
+          coins?: number;
         };
         Update: {
           player_id?: string;
@@ -56,6 +58,31 @@ export interface Database {
           chunk?: string;
           last_online?: string;
           inventory?: Record<string, unknown>;
+          coins?: number;
+        };
+        Relationships: [];
+      };
+      player_quests: {
+        Row: {
+          player_id: string;
+          quest_id: string;
+          state: string;
+          progress: number;
+          updated_at: string;
+        };
+        Insert: {
+          player_id: string;
+          quest_id: string;
+          state: string;
+          progress?: number;
+          updated_at?: string;
+        };
+        Update: {
+          player_id?: string;
+          quest_id?: string;
+          state?: string;
+          progress?: number;
+          updated_at?: string;
         };
         Relationships: [];
       };

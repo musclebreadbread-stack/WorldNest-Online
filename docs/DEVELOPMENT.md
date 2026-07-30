@@ -32,9 +32,11 @@ cp .env.example .env.local
 1. Create a new project at [supabase.com](https://supabase.com/dashboard)
 2. Navigate to Settings > API to find your credentials
 3. Update `.env.local` with your project URL and anon key
-4. Run **both** migrations in the Supabase SQL Editor, in order:
+4. Run **all three** migrations in the Supabase SQL Editor, in order:
    - `packages/database/supabase/migrations/001_initial_schema.sql` — `profiles`, `player_state`, `worlds`, RLS policies and the seeded `Default World` row
    - `packages/database/supabase/migrations/002_gameplay_schema.sql` — the `handle_new_user` trigger plus `world_modifications`, `structures`, `crops` and `chat_messages`
+   - `packages/database/supabase/migrations/003_progression_schema.sql` — `player_state.coins` and the `player_quests` table, so coins and quests survive a reload
+5. Optionally run `packages/database/supabase/seed/test_accounts.sql` for three ready-to-use logins (`tester1@worldnest.test` / `worldnest123`). Development only — see [`seed/README.md`](../packages/database/supabase/seed/README.md)
 
 Without `002` a signed-up player has no `profiles` row, so nothing can be saved. The Korean walkthrough in [`SETUP_GUIDE_KR.md`](SETUP_GUIDE_KR.md) covers the same steps click by click.
 

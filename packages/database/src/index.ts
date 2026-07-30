@@ -25,6 +25,8 @@ export type {
   PersistedInventory,
   PersistedInventorySlot,
 } from "./playerState";
+export { loadQuests, saveQuest, saveQuests } from "./progression";
+export type { PlayerQuest, PersistedQuest } from "./progression";
 export { getDefaultWorld, DEFAULT_WORLD_NAME } from "./worlds";
 export type { World } from "./worlds";
 export {
