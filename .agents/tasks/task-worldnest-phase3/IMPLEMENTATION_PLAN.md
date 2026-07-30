@@ -414,7 +414,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase F — NPCs and dialogue (items 16-18)
 
-- [ ] 16. Add the dialogue module to the engine (decisions D8, D13).
+- [x] 16. Add the dialogue module to the engine (decisions D8, D13).
       `packages/game-engine/src/dialogue/dialogueDefinitions.ts`:
       `interface DialogueOption { labelKey: string; next?: string; action?: DialogueAction }`,
       `type DialogueAction = { kind: "close" } | { kind: "openShop" } | { kind: "offerQuest";
@@ -436,7 +436,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       `rootNodeId` exists, that advancing follows `next` and bumps `version`, that an out-of-range
       option index is ignored, and that a `close` action clears `activeNpcId`/`nodeId`.
 
-- [ ] 17. Add NPCs to the engine (decision D12). `packages/game-engine/src/world/NpcCatalogue.ts`:
+- [x] 17. Add NPCs to the engine (decision D12). `packages/game-engine/src/world/NpcCatalogue.ts`:
       `interface NpcDefinition { id: string; nameKey: string; dialogueId: string; anchorTileX: number;
       anchorTileY: number; textureKey: string; role: "villager" | "shopkeeper" | "questgiver" }` and
       `NPC_DEFINITIONS` with three NPCs anchored near the default spawn.
@@ -465,7 +465,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       and interacting opens dialogue **and leaves the tile untilled**, and that the player cannot walk
       onto an NPC's tile.
 
-- [ ] 18. Add the dialogue UI (decisions D8, D13). Add `DIALOGUE_CHANGED_EVENT` to
+- [x] 18. Add the dialogue UI (decisions D8, D13). Add `DIALOGUE_CHANGED_EVENT` to
       `apps/web/src/game/events.ts` and emit it from `HudBridge` on a `DialogueComponent.version`
       change. `apps/web/src/stores/dialogueStore.ts` holds the active node plus an injected
       `respond(optionIndex)` / `close()` pair — the `chatStore.sender` pattern — and
@@ -1125,3 +1125,169 @@ No engine package was touched by either phase: items 12-15 are entirely `apps/we
   21 and 23 each add a row to `ONE_SHOT_BINDINGS` plus possibly a field on
   `OneShotActions`; that is about 5 lines each, which fits, but a fourth key-heavy item
   would be the point to split the bindings table into its own module.
+
+---
+
+## Implementation notes for items 16-18 (deviations worth knowing for items 19-31)
+
+Phase F is complete. Commits, one per item, on `feat/mvp-foundation`:
+`b982fae` (16), `b74f238` (17), `7fb2441` (18).
+
+### Gate results after item 18
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 13, game-engine 213, web 216 = **442** (371 after item 15) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed |
+| `docker build -t worldnest:phase3f .` | image builds |
+| `GameScene.ts` | **223** lines (item 18 cost four lines) |
+| `PlayerController.ts` | **282** lines — see the warning below |
+| `BootScene.ts` | **270** lines (the NPC textures went to their own module) |
+
+### The three NPCs, and where they actually stand
+
+`NPC_DEFINITIONS` holds `villager_pip` (anchor `13,11`), `shopkeeper_juno` (`18,10`) and
+`questgiver_ada` (`15,13`), all within a few tiles of the default spawn `(15, 10)`. For
+`WORLD_SEED = 42` all three anchors are already open grass, so `resolveNpcTile` returns the anchor
+unchanged and the placed tiles are exactly `13,11`, `18,10` and `15,13`. **Do not hard-code those in
+a test** — `gameWorld.test.ts` and `dialogue.test.tsx` both search `NpcSystem.getNpcs()` for an NPC
+with a walkable tile to its west instead, so a later generator change moves the village rather than
+breaking the suite.
+
+### Deviations from the plan text
+
+- **`dialogueOps` exports six functions, not three.** Alongside `getNode`, `resolveOption` and
+  `advanceDialogue` it has `getDialogue`, `activeNode`, `openDialogue`, `closeDialogue` and
+  `dialogueQuestIds`. Opening and closing are state transitions with the same "pure function over a
+  `DialogueState`" shape as advancing, and `NpcSystem` would otherwise have had to write the fields
+  by hand — which is exactly the kind of duplicated rule the ops modules exist to prevent.
+- **`advanceDialogue` returns `DialogueAction | null`, and only `close` is acted on inside it.**
+  `next` moves the node, `close` ends the conversation, and `openShop` / `offerQuest` /
+  `turnInQuest` are returned untouched with the node left where it was. **Items 21 and 23 should not
+  read that return value from the engine**: the client already has the option's action in
+  `dialogueStore.options`, so `DialogueBridge.respond` is the place to route it — open the shop
+  panel, write `ShopComponent.openNpcId`, raise a quest request — and then call `close()` if the
+  interaction should end the chat. That keeps every React→ECS write on the one injected-callback
+  seam (D13) and needs no new event.
+- **An out-of-range or non-integer option index is ignored and does *not* bump `version`.** A stale
+  click from a panel that has already moved on therefore publishes nothing, instead of re-emitting a
+  node React is already showing.
+- **`MAX_DIALOGUE_OPTIONS = 4` is exported from the engine and asserted by `dialogue.test.ts`.** The
+  UI binds number keys `1`-`4`, so a fifth option would be keyboard-unreachable; the test fails if a
+  future tree grows one. Every node also has to be leaveable (a `next` or a `close`), which is what
+  guarantees no conversation can trap a player.
+- **`dialogueQuestIds()` exists for item 22.** Ada's tree already offers *and* takes in three quests
+  by id: **`collect_wood`, `build_fence`, `greet_pip`**. Item 22 must use exactly those ids, with
+  `giverNpcId: "questgiver_ada"` for all three, and should assert
+  `dialogueQuestIds().sort()` equals `Object.keys(QUEST_DEFINITIONS).sort()`. `greet_pip` is the
+  `talk` objective and its target is `villager_pip`.
+- **`resolveNpcTile` takes a fifth optional argument, `isTaken`.** Two nearby anchors could otherwise
+  spiral onto the same tile; `NpcSystem` passes its own index, so placement is both deterministic and
+  collision-free. Suitability is `walkable && buildable && not a cave tile` — `buildable` is what
+  keeps NPCs off forest and stone without a second list to maintain, and the cave exclusion is
+  explicit because `CAVE_FLOOR` is both walkable and buildable.
+- **An NPC with nowhere to stand is skipped, not relocated.** `resolveNpcTile` gives up past
+  `NPC_PLACEMENT_MAX_RADIUS = 12` and `spawnAll` simply does not spawn that NPC, which is better than
+  a shopkeeper twenty tiles out to sea.
+- **Facing an NPC always consumes the interact request**, even in the (impossible today) case of a
+  missing dialogue tree. The alternative is letting the request fall through to `PlantSystem` and
+  ploughing the tile the NPC is standing on, which is the exact failure the registration order was
+  chosen to prevent.
+- **A second interact on an already-open conversation advances option 0**, so `E` alone can carry a
+  chat forwards. From the keyboard this is unreachable while the panel is up (the input gate
+  suppresses `E`), but it is the behaviour a touch device or a future "continue" button gets for free.
+- **`NpcSystem` does not record `talk` progress yet.** Item 22's plan text says it should; the hook
+  is one optional constructor callback (`onTalk?: (npcId: string) => void`) called from `tryTalk`,
+  and it was left out rather than invented before `QuestComponent` exists.
+- **`composeBlockers` lives in `world/StructureQuery.ts` as planned and is variadic**, so item 20 or
+  any later blocker joins with `composeBlockers(build, npc, …)` and `CollisionSystem` never changes.
+  Note that `BuildSystem.canPlaceAt` still only consults its *own* index, so a player can place a
+  fence on the tile an NPC occupies. It looks odd but breaks nothing (the NPC keeps blocking); the
+  fix, if item 21 or 23 wants it, is to pass the composed query into `BuildSystem` too.
+- **`createGameWorld`'s system order is now** Time → Input → Collision → Movement → Chunk →
+  Interpolation → Stats → **Npc** → Plant → CropGrowth → Build → Harvest → NetworkSync → Animation →
+  Render, and `GameWorldSystems` lists `npc` in that same position. **Item 29's "documented order"
+  test must use this list**, and item 20 inserts `shop` immediately after `npc`.
+- **`isMessageKey(value): value is MessageKey` is the D8 guard, not a `Record`.** Items 9-11
+  established `ITEM_NAME_KEYS`-style records, but a dialogue tree has dozens of keys and a record of
+  them would be a second copy of the graph. Instead the engine keeps bare strings, `i18n/index.ts`
+  narrows them, and `i18n.test.ts` asserts **every** `textKey`, `labelKey` and `nameKey` in
+  `DIALOGUE_DEFINITIONS` and `NPC_DEFINITIONS` resolves in `en` *and* is translated in all twelve
+  locales. Items 21-23 should extend those two loops rather than invent a third pattern; quest
+  `titleKey`s and shop labels are covered by the same test the moment the catalogues exist.
+- **NPC names carry their role** ("Pip the Gardener", "정원사 핍", "Pip le jardinier"). A bare given
+  name would be byte-identical in several Latin-script locales and the item-10 parity test forbids
+  that — correctly, since it is how a copy-pasted catalogue is caught. Adding a role word made all
+  three names genuinely translatable and no key had to join `LOCALE_AGNOSTIC_KEYS`.
+- **`en` is now at 88 keys** (66 + 22: three NPC names, `dialogue.close`, `dialogue.hint`, two shared
+  option labels and fifteen tree strings), complete in all twelve catalogues, with all five i18n
+  tests green.
+- **`DialoguePanel` is bottom-centre at `bottom-40`**, clear of the status bars (`bottom-24`), the
+  hotbar (`bottom-4`) and the chat log (`bottom-20 start-4`). It uses `Card` + `framer-motion` like
+  the other panels and `me-2` / `text-start` for the option numbers so Arabic mirrors.
+- **The number keys moved out of `whenPlaying`.** The gate now suppresses *everything* while a
+  conversation is open (movement, interaction, and the `I`/`B`/`M`/`P` toggles), so answering had to
+  be bound outside it: `pressNumber(index)` checks typing, then routes `1`-`4` to
+  `dialogueStore.respond` when a dialogue is open and to the hotbar otherwise. Keys `5`-`8` do
+  nothing while talking rather than silently changing the selection behind the panel. **`Esc` does
+  not close the dialogue yet — that is item 21's "Esc closes the topmost panel" row.** The panel's
+  own *Leave* button and every tree's goodbye option are the ways out today.
+- **`HudBridge.lastDialogueVersion` starts at 0, not -1**, matching `DialogueComponent`'s initial
+  version, so a session with no conversation publishes nothing at all. When the conversation ends the
+  bridge publishes an all-`null` payload, which is what clears the store and hides the panel.
+- **`NameTags` now labels NPCs as well as remote players** and compares `label.text` every pass, so a
+  language change relabels the village without a reload. It reads `localeStore` and `translate()`
+  directly — the same "Phaser code may read a store" precedent `PlayerController` and `SoundManager`
+  set. The Phaser canvas still does not mirror in Arabic; unchanged and still accepted.
+- **`BootScene` shed the NPC drawing into `apps/web/src/game/scenes/npcTextures.ts`.** Inline it
+  pushed the scene to 314 lines, over the ~300 cap. `generateNpcTextures(scene)` derives one texture
+  per catalogue entry, so a new NPC cannot ship faceless, and `NPC_COLORS` is keyed by `NpcRole` so
+  adding a role fails to compile until it has a colour.
+- **The `dialogue` cue is now wired**, which cost exactly the two edits the item-13 notes predicted
+  plus one field: `SoundState.dialogueVersion`, one line in `readSoundState` and one comparison in
+  `diffCues`. Cue order is `harvest`, `pickup`, `ui`, `dialogue`. Anything constructing a `SoundState`
+  literal in a test now needs `dialogueVersion`.
+- **Prettier**: `pnpm format` was not run. Every touched file was checked with `npx prettier --check`;
+  the only differences are the known `printWidth: 100` vs hand-wrapped-at-88 stale gate.
+
+### What is verified and what still needs a human
+
+- **Verified by test**: the whole dialogue graph's shape (roots, reachable nodes, ≤ 4 options, every
+  node leaveable, keys not sentences), every `dialogueOps` transition including the ignored bad index,
+  deterministic NPC placement on real seeded terrain, no duplicate tiles, no double spawn, an NPC
+  blocking movement through `composeBlockers`, an interact opening dialogue **while leaving the tile
+  untilled**, the HUD event firing once per version change and publishing an empty payload on close,
+  the injected `respond`/`close` writing the request flags and nothing else, a full round trip
+  (interact → panel → answer → engine advances → leave), the panel rendering and translating a whole
+  conversation in Korean, an unknown key showing verbatim rather than blank, and every engine key
+  resolving in all twelve locales.
+- **Not verified, and cannot be here**: that the NPC placeholders and the conversation box actually
+  look right (no display), and that the number keys feel right on a real keyboard. Playwright still
+  cannot reach `/game` because `middleware.ts` redirects an unauthenticated visitor to `/auth`.
+
+### Notes for the next delegations
+
+- **Item 19-21 (shop)**: the `openShop` action is already reachable from Juno's root node and her
+  prices node. Wire it in `DialogueBridge.respond` — read `useDialogueStore.getState().options[index]
+  .action`, open the shop panel and set the request on `ShopComponent`, then `close()`. Register
+  `ShopSystem` immediately after `npc` in `createGameWorld`.
+- **Item 22-23 (quests)**: quest ids are fixed by Ada's tree (`collect_wood`, `build_fence`,
+  `greet_pip`), all given by `questgiver_ada`; `greet_pip` is the `talk` objective targeting
+  `villager_pip`, and `NpcSystem.tryTalk` is where that progress hook goes.
+- **`PlayerController.ts` is at 282 of the ~300 cap.** Item 18 used the number-key path rather than a
+  new `ONE_SHOT_BINDINGS` row, but items 21 (`Esc`) and 23 (`J`) both need rows plus, for `Esc`,
+  panel-precedence logic. **Do the extraction the item-15 notes predicted before adding them**: move
+  `ONE_SHOT_BINDINGS`, `OneShotActions` and the `whenPlaying`/`isTyping`/`isDialogueOpen` gates into
+  `apps/web/src/game/keyBindings.ts`, leaving the controller with movement, facing and the request
+  helpers. That is ~70 lines out and it is the last comfortable moment to do it.
+- **Both new stores are event-fed mirrors with injected writers.** `dialogueStore` is the template
+  for `shopStore` and `questStore`: nullable `responder`/`closer` fields, public wrappers that no-op
+  before injection, a `setSnapshot` fed by one `HudBridge` event, and a module-level
+  `isDialogueOpen()`-style predicate for the input gate. Anything resetting it with
+  `useDialogueStore.setState({...})` in a test must clear `responder` and `closer` too.
+- **Documentation owed by items 29 and 30 from this phase**: NPCs, dialogue and the injected-callback
+  seam in `ARCHITECTURE.md`; "how to add a dialogue tree" and the new system order in
+  `DEVELOPMENT.md`; and for the keybinding tables, `1`-`4` now double as dialogue answers and `E`
+  starts a conversation. No new *single-purpose* key was added, so the tables only need that note.
