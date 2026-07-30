@@ -166,7 +166,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
 
 ## Phase A — Terrain foundations and scene headroom (items 1-6)
 
-- [ ] 1. Make the web tests find their terrain instead of hard-coding it (decision D3; do this before
+- [x] 1. Make the web tests find their terrain instead of hard-coding it (decision D3; do this before
       any generator change). Add `apps/web/src/__tests__/helpers/terrain.ts` — not collected by
       Vitest, whose `include` is `src/__tests__/**/*.test.ts?(x)` — exporting
       `findFacingPair(worldManager, standType, targetType, facing)` which scans tiles `0..63` on both
@@ -179,7 +179,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       Verify: `pnpm --filter @worldnest/web test` — still 62 tests, all passing, with no literal tile
       coordinates left in `gameWorld.test.ts`.
 
-- [ ] 2. Extend the tile and item catalogues for biomes and caves (decision D4). In
+- [x] 2. Extend the tile and item catalogues for biomes and caves (decision D4). In
       `packages/game-engine/src/world/Tilemap.ts` add `SNOW = 7` (walkable, buildable, not
       harvestable), `CAVE_FLOOR = 8` (walkable, buildable, not harvestable), `CAVE_WALL = 9` (not
       walkable, not buildable, not harvestable) and `ORE = 10` (walkable, not buildable, harvestable)
@@ -194,7 +194,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       Verify: `pnpm --filter @worldnest/shared test && pnpm --filter @worldnest/game-engine test` —
       shared 12→13+, engine 139 still green.
 
-- [ ] 3. Add the biome layer to the generator (decision D1). New
+- [x] 3. Add the biome layer to the generator (decision D1). New
       `packages/game-engine/src/world/Biomes.ts`: `enum Biome { TUNDRA, TAIGA, GRASSLAND, FOREST,
       SAVANNA, DESERT }`, `BIOME_DEFINITIONS: Record<Biome, { name: string; surfaceTile: TileType;
       accentTile: TileType; minimapColor: number }>`, and a pure
@@ -214,7 +214,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       four distinct biomes, and that water and sand still occur; `chunk-generator.test.ts` determinism
       tests pass unchanged.
 
-- [ ] 4. Carve caves into the mountains (decision D2). Add a cave channel to `ChunkGenerator` from
+- [x] 4. Carve caves into the mountains (decision D2). Add a cave channel to `ChunkGenerator` from
       `mulberry32(seed + 4000)`: where elevation exceeds the stone threshold and the cave channel is
       above its own threshold, emit `CAVE_FLOOR`; on the boundary of that region emit `CAVE_WALL`; and
       where the detail channel is high inside a cave region emit `ORE`. Caves must never be produced
@@ -226,7 +226,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       that no cave tile sits where the generator would otherwise place water, that every `ORE` tile
       is adjacent to a cave tile, and that the survey is byte-identical across two generators.
 
-- [ ] 5. Surface biomes and the new tiles in the client, and re-confirm the spawn. Add
+- [x] 5. Surface biomes and the new tiles in the client, and re-confirm the spawn. Add
       `getBiomeAt(tileX, tileY): Biome` to `WorldManager` (delegating to the generator, no override
       layer involvement — biomes are generated, not edited). In `BootScene.generateTileset()` derive
       the tile list from `Object.values(TileType).filter((v) => typeof v === "number")` instead of the
@@ -242,7 +242,7 @@ F, G and H, because dialogue, quest and shop text are i18n keys (decision D8).
       "should spawn the player on a walkable tile" test is what proves the spawn constant survived,
       and a new `world-query` case asserts `getBiomeAt` agrees with `ChunkGenerator.getBiomeAt`.
 
-- [ ] 6. Create headroom in `GameScene` before Phase 3 adds anything to it (decision D5). Extract all
+- [x] 6. Create headroom in `GameScene` before Phase 3 adds anything to it (decision D5). Extract all
       realtime plumbing into `apps/web/src/game/NetworkBridge.ts` — `setRealtimeManager`'s callback
       wiring, `flushNetworkPayloads`, `getLocalPlayerPosition`, `addRemotePlayer`,
       `updateRemotePlayer`, `removeRemotePlayer` and `emitPlayersChanged` — constructed with the
@@ -771,3 +771,87 @@ table have to exist first.
   Nothing in this plan runs `pnpm format`.
 - If any item's verification cannot be performed, complete what can be, commit, and record the gap
   rather than blocking the remaining phases.
+
+---
+
+## Implementation notes for items 1-6 (deviations worth knowing for items 7-31)
+
+Phase A is complete. Commits, one per item, on `feat/mvp-foundation`:
+`322c420` (plan tracked), `0e8a2b8` (1), `80e92c5` (2), `bed3d15` (3), `72f190f` (4), `03569eb` (5),
+`957256a` (6).
+
+### Gate results after item 6
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 13, game-engine 159, web 72 = **244** (baseline 213) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed |
+| `docker build -t worldnest:phase3a .` | image builds |
+| `GameScene.ts` | **214** lines (was 297; item 6 required < 230) |
+
+### Terrain facts as of `957256a` — the numbers items 7-31 should use
+
+Surveyed over tiles `(0, 0)`-`(95, 95)` with `WORLD_SEED = 42`: water 3423, grass 1715, sand 1533,
+forest 969, snow 508, stone 486, flowers 257, cave floor 232, cave wall 68, ore 25. All six biomes
+occur in that window (tundra, taiga, grassland, forest, savanna, desert). The default spawn
+`(496, 336)` = tile `(15, 10)` is **still grass, in the grassland biome**, so `DEFAULT_SPAWN_X/Y`
+were not changed. Do not hard-code any of these in a test — use
+`apps/web/src/__tests__/helpers/terrain.ts` (item 1), which is not collected as a suite.
+
+### Deviations from the plan text
+
+- **Item 2 also added `TileHarvestYield.replacementTile`** (optional, defaults to `GRASS`) and one
+  line in `HarvestSystem`. Without it, mining `ORE` underground left a patch of grassland inside a
+  dark cave. `ORE` sets it to `CAVE_FLOOR`; every other yield is unchanged, so the existing
+  "grass-ify a forest tile" assertions still hold. Covered by a new `harvest.test.ts` case.
+- **Item 3's `classifyBiome` uses elevation as a lapse rate**, not just as a passed-through argument:
+  `effective = temperature - max(0, elevation) * 0.25`, so highlands are colder than lowlands at the
+  same latitude. `ELEVATION_CHILL` is deliberately small — a larger value turned every mountain
+  fringe into tundra and removed the grass-beside-stone tiles the web harvest test searches for.
+- **Biome accent tiles are not only flowers and forest.** `BIOME_DEFINITIONS` uses stone for
+  tundra/desert and snow for taiga, so each biome is visually distinct: TUNDRA snow/stone, TAIGA
+  forest/snow, GRASSLAND grass/flowers, FOREST forest/flowers, SAVANNA grass/forest, DESERT
+  sand/stone. Water and sand still come from the elevation thresholds before any biome rule, so the
+  coastline is unchanged in shape.
+- **Item 4's `CAVE_WALL` is the boundary against *solid rock*, not against everything.** A cave tile
+  becomes a wall when an orthogonal neighbour is above `STONE_ELEVATION` but was not hollowed out.
+  Where the mountain slopes below the rock line the cave simply opens onto the surface, which is how
+  the player gets in — walling the whole perimeter would have sealed every cave and made `ore`
+  unobtainable. `caves.test.ts` asserts at least one cave floor borders a walkable non-cave tile.
+- **`ORE` additionally requires an adjacent cave-region tile**, so a lone speck of high detail on an
+  isolated rock cannot become a floating vein. This is what makes the "every ore tile is adjacent to
+  a cave tile" assertion true by construction.
+- **Item 5 changed no spawn constant** (the spawn survived biomes and caves). `BootScene` now derives
+  its tile list from `Object.values(TileType)` and its per-tile detail moved into
+  `drawTileDetail(graphics, tileType)`; adding a tile type to the engine now only needs a branch
+  there, and even without one the tile still gets a flat `TILE_PROPERTIES.color` texture.
+- **Item 6 named the transport setter `NetworkBridge.setTransport`**, taking a narrow
+  `NetworkTransport` interface (`setCallbacks`/`broadcastPosition`/`updatePresence`) rather than the
+  concrete `RealtimeManager`, which is what lets `networkBridge.test.ts` run with no Supabase client.
+  `GameScene.setRealtimeManager` survives as the one-line delegate `GameCanvas` calls.
+- **`OverlayStack.add<T>(overlay): T` returns its argument**, so the scene can keep a typed handle
+  (`this.dayNight`) and still register in one line. `GameScene.update` now calls
+  `this.overlays.update(this.getOverlayContext(delta))`, and `SHUTDOWN` calls
+  `this.overlays.destroy()` once instead of destroying each layer by name.
+- `OverlayContext.playerEntity`, `worldManager` and `deltaMs` are populated but unused by the two
+  migrated overlays. They exist for items 8 and 13 (the minimap needs `worldManager` plus the player
+  tile; the sound manager needs `deltaMs`), so those items should not need to widen the contract.
+- **Prettier**: `pnpm format` was not run, as the plan requires. Every touched file was checked with
+  `npx prettier --check`; the only remaining differences are the known `printWidth: 100` vs
+  hand-wrapped-at-88 stale gate, and they are all pre-existing in kind. New files were written so
+  that nothing but that wrapping difference remains.
+
+### Notes for the next delegations
+
+- The `ore` item exists in `ITEM_DEFINITIONS` but nothing consumes it yet. It is the obvious shop and
+  quest material for items 19-22, and it needs no new catalogue work.
+- `WorldManager.getBiomeAt(tileX, tileY)` is on the class (not on `TileQuery`), deliberately: it
+  ignores the override layer. A biome-aware overlay should take the `WorldManager` from
+  `OverlayContext`, not widen `TileQuery`.
+- `Biome`, `BIOME_DEFINITIONS`, `classifyBiome` and `BiomeDefinition` are exported from
+  `world/index.ts` and `src/index.ts`. `BIOME_DEFINITIONS[b].minimapColor` is unused so far and is
+  there for item 8 if it ever wants to paint biomes rather than tiles.
+- Adding a locale, sound cue or overlay does not touch `GameScene` beyond one line, which is the
+  whole point of item 6: it now sits at 214 lines with ~85 lines of headroom.
