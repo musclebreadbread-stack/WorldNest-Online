@@ -593,7 +593,7 @@ table have to exist first.
 
 ## Phase I — Database: SQL harness, seed accounts, migration 003, persistence (items 24-27)
 
-- [ ] 24. Build the SQL verification harness (decision D16) — this also closes the Phase 2 gap where
+- [x] 24. Build the SQL verification harness (decision D16) — this also closes the Phase 2 gap where
       migration `002` had never been executed. `packages/database/supabase/test/auth_stub.sql` creates
       the `anon`, `authenticated` and `service_role` roles if absent (**required**: `002` fails with
       `role "authenticated" does not exist` without them), the `auth` schema, `uuid-ossp` and
@@ -611,7 +611,7 @@ table have to exist first.
       Verify: `pnpm db:verify` — exits 0, printing `001 OK`, `002 OK`, `policies=23` and
       `trigger provisioned profiles=1 player_state=1`.
 
-- [ ] 25. Add the ready-to-use test accounts seed (decision D17).
+- [x] 25. Add the ready-to-use test accounts seed (decision D17).
       `packages/database/supabase/seed/test_accounts.sql` provisions three confirmed accounts a
       maintainer can paste into the Supabase SQL Editor and immediately sign in with —
       `tester1@worldnest.test` / `tester2@…` / `tester3@…`, all with password `worldnest123`. Each
@@ -632,7 +632,7 @@ table have to exist first.
       confirms `encrypted_password = crypt('worldnest123', encrypted_password)` for each account, so
       the password really would authenticate.
 
-- [ ] 26. Add migration `003_progression_schema.sql` and its data access (decision D15). New table
+- [x] 26. Add migration `003_progression_schema.sql` and its data access (decision D15). New table
       `player_quests` (`player_id` → `profiles(id)` on delete cascade, `quest_id text`, `state text`
       with a check constraint over `available|active|completed`, `progress integer default 0`,
       `updated_at timestamptz default now()`, primary key `(player_id, quest_id)`), plus
@@ -650,7 +650,7 @@ table have to exist first.
       cleanly after `002`, the harness asserts `player_state.coins` exists and that an insert into
       `player_quests` for a seeded account succeeds.
 
-- [ ] 27. Persist and restore progression in the client. Extend `GameBootstrap` with optional
+- [x] 27. Persist and restore progression in the client. Extend `GameBootstrap` with optional
       `quests` and `coins`, load them in `loadSession.ts`, apply them in `createGameWorld` (seeding
       `STARTING_COINS` and no quests only when nothing was saved — the same "treat the column default
       as never saved" rule that `(0, 0)` and `'{}'` already follow), and write them back from
@@ -1518,3 +1518,164 @@ The item 16-18 notes were right that `PlayerController.ts` (282 lines) had no ro
   `lastX` fields are the pattern to keep following rather than a generic diff map.
 - `apps/web/src/game/panelStack.ts` is where any new panel joins the `Esc` order and the input gate.
   Adding one is two lines there plus a row in `ONE_SHOT_BINDINGS`.
+
+---
+
+## Implementation notes for items 24-27 (deviations worth knowing for items 28-31)
+
+Phase I is complete. Commits on `feat/mvp-foundation`, in order:
+`4aa43a7` (24), `73308c5` (25), `0b83fb3` (26), `193db72` (27).
+
+**Migration `002` has now actually been executed**, along with `001`, the new `003` and the seed,
+against a real Postgres. That was the outstanding Phase 2 gap, and it is closed.
+
+### Gate results after item 27
+
+| Command | Result |
+|---------|--------|
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 24, game-engine 263, web **289** = **576** (558 after item 23) |
+| `pnpm test:e2e` | 3/3 chromium specs, executed |
+| `pnpm db:verify` | 6 SQL files applied, **18 assertions**, exit 0 |
+| `createGameWorld.ts` | **296** lines (282 before; item 27 cost 14) |
+| `SessionPersistence.ts` | **281** lines (236 before) |
+| `loadSession.ts` | 110 lines · `questSnapshot.ts` 67 lines |
+
+`pnpm db:verify` output, in order: `auth stub OK`, `001 OK`, `002 OK`, `policies=23`,
+`default_world=Default World`, `003 OK`, `policies=27`, `player_state.coins=1`,
+`player_quests rls=t`, `trigger provisioned profiles=1`, `trigger provisioned player_state=1`,
+`trigger used the metadata username=TriggerProbe`, `seed OK`, `seed (re-run) OK`, `seed accounts=3`,
+`seed profiles=3`, `seed player_state=3`, `seed identities=3`, `seed confirmed=3`,
+`seed password verifies=3`, `coins persist=137`, `quest upsert is one row=1`,
+`quest upsert overwrote=completed:5`, `quest state constraint rejects nonsense=rejected`.
+
+### The credentials the seed creates
+
+| Email | Password | Username |
+|-------|----------|----------|
+| `tester1@worldnest.test` | `worldnest123` | `Tester1` |
+| `tester2@worldnest.test` | `worldnest123` | `Tester2` |
+| `tester3@worldnest.test` | `worldnest123` | `Tester3` |
+
+Fixed uuids `11111111-2222-4333-8444-55555555000{1,2,3}`, `email_confirmed_at` set, so no mail step.
+**Item 30 must quote these exactly**, and must say plainly that the file is development-only.
+
+### Deviations from the plan text
+
+- **The harness uses `docker cp`, not a bind mount, and never needs a local `psql`.** Every statement
+  runs through `docker exec … psql` inside the container. There is no psql client in the sandbox and
+  Docker here is podman-backed, where a bind mount would need an SELinux relabel; copying the
+  `packages/database/supabase` directory to `/sql` sidesteps both. A maintainer with only Docker
+  installed can run `pnpm db:verify`.
+- **`auth_stub.sql` also creates an `extensions` schema and puts it on the `postgres` role's search
+  path**, which the plan did not mention. That is how Supabase is actually laid out, and it is what
+  lets the seed call `crypt()` and `gen_salt()` unqualified exactly as a maintainer will in the SQL
+  Editor. Without it the stub would have verified a seed that the real editor might not run.
+- **`auth.identities` in the stub carries a `unique (provider, provider_id)` constraint**, which is
+  what makes the seed's `on conflict do nothing` idempotent. The harness applies the seed **twice**
+  and asserts the counts are still 3, so idempotency is proved rather than claimed.
+- **Policy counts are asserted, not just printed** (`EXPECTED_POLICIES_AFTER_002=23`,
+  `…_003=27`), and `003` is applied in its own step so the count either side of it is checked. A
+  dropped policy is a silent security regression otherwise. **Item 29/30 should not restate these
+  numbers anywhere they can drift; point at `pnpm db:verify` instead.**
+- **The harness asserts more than the plan asked for**: that the trigger used the metadata username
+  (not the email local-part fallback), that `player_quests` really has RLS enabled, that the seeded
+  password verifies with `crypt('worldnest123', encrypted_password)`, that a quest upsert on the
+  composite key overwrites rather than duplicates, and that the `state` check constraint rejects a
+  value outside `available|active|completed`. The last one is the only thing stopping a typo'd state
+  reaching the client.
+- **`002` and the seed emit `NOTICE`s** (`extension "uuid-ossp" already exists`, `trigger … does not
+  exist, skipping`, `extension "pgcrypto" already exists`). They are harmless and deliberately not
+  suppressed — they are evidence a real Postgres parsed the file.
+- **`progression.ts` also exports `saveQuests(playerId, rows)`** beyond the plan's two functions.
+  Rows are independent, so the writes go out together through `Promise.all` and the first error is
+  reported; a partially written log is better than none and the next autosave retries. It is what
+  `SessionPersistence` calls.
+- **`PersistedQuest` uses `state: string`, not the engine's `QuestState` union.** `@worldnest/database`
+  does not depend on `@worldnest/game-engine` (and must not — the dependency runs the other way), so
+  the row shape is deliberately as loose as the column, and `questSnapshot.ts` on the web side is
+  where a state is narrowed. Same contract `PersistedInventorySlot.itemId` already has.
+- **`packages/database` has no Vitest harness** and item 26 did not add one: every module there needs
+  a live Supabase client, which is why the whole package has always been verified through the SQL
+  layer instead. `progression.ts`'s upsert semantics are covered by `pnpm db:verify`, and the
+  client-side shaping is covered by `questSnapshot`'s unit tests.
+- **`coins` on `PlayerStateSave` is required, not optional**, so a caller cannot forget it and
+  silently persist nothing. That made `SessionPersistence.writePlayerState` a compile error inside
+  item 26, so the one-line `coins: wallet.coins` write landed in **item 26's** commit rather than
+  item 27's; item 27 added the diffing, loading and restoring around it.
+- **"Never saved" for coins is judged from the row, not from the column** — the one real deviation
+  worth arguing about. The plan said to treat the `0` default the way `(0, 0)` and `'{}'` are
+  treated, but `0` is a balance a player genuinely reaches by spending, and per-column logic would
+  hand them another 50 coins on every reload — a free-money loop in a game whose economy is
+  otherwise carefully bounded. `loadSession` therefore computes
+  `hasSaved = hasSpawn || inventory !== null` (the whole row is written by one upsert, so one signal
+  answers for all of it) and passes `coins: hasSaved ? saved.coins : null`. `createGameWorld` then
+  does `bootstrap.coins ?? STARTING_COINS`, so `null` grants the purse and `0` keeps an empty one.
+  A test pins each of the three cases.
+- **An empty `player_quests` result parses to `null`, not `{}`.** `parsePersistedQuests` returns
+  `null` when there is nothing usable — no rows, or only rows whose ids the catalogue no longer knows
+  — which is the same "nothing was saved" signal `parsePersistedInventory` gives, and it keeps
+  `createGameWorld`'s `if (bootstrap.quests)` honest.
+- **`restoreQuests` bumps `version`**, exactly as `restoreInventory` does, because the HUD publishes
+  on the version. `SessionPersistence` therefore records the restored version in its constructor
+  (`writtenQuestVersion`) so a restored log is not immediately re-upserted — the same
+  "already persisted, only new ones count" move the structure and crop indexes make.
+- **Quests are written on the existing autosave tick but only when their version moved.** The
+  scheduler callback became `writeSession()` = `writePlayerState()` + `writeQuests()`; coins ride
+  along in the `player_state` upsert, and quest rows are skipped when the save was triggered by
+  walking. `trackPlayerState` now diffs five things: x, y, inventory version, coins and quest version.
+- **`sessionPersistence.test.ts` is the first and only `vi.mock` in the tree.** `SessionPersistence`
+  exists to make database calls, so the calls are what has to be asserted; it is its own file so the
+  module mock stays scoped and `persistence.test.ts` remains mock-free. Two traps: the factory is
+  hoisted above every top-level binding (a shared `const ok = …` fails with
+  `Cannot access 'ok' before initialization`), and the factory must export **every** value
+  `SessionPersistence` imports, not just the ones under test.
+
+### What is verified and what still needs a human
+
+- **Verified by `pnpm db:verify`, against a real Postgres**: all three migrations apply in order with
+  `ON_ERROR_STOP=1`; the policy count is 23 after `002` and 27 after `003`; `Default World` is
+  seeded; the `handle_new_user` trigger provisions both rows from the GoTrue metadata username;
+  the seed creates three confirmed accounts with identities, is idempotent across two runs, and its
+  password hash verifies; `player_state.coins` exists; `player_quests` has RLS on, upserts on its
+  composite key and rejects an invalid state.
+- **Verified by Vitest**: the quest snapshot round trip; an empty table, an unknown quest id, a bad
+  state, a non-finite and a negative progress all handled; restore replacing rather than merging and
+  bumping the version; the starting purse granted only when nothing was saved, a saved balance
+  restored, and a saved `0` staying `0`; coins written with the player row; the quest log written to
+  its own table; a burst of coin changes collapsing to one write; quests not rewritten when only the
+  position moved; a restored log not rewritten at all; and nothing written while the session is
+  unchanged.
+- **Still needs a maintainer with real credentials**: that the seeded accounts sign in through
+  **GoTrue** (the stub is a test double of its schema — the harness proves the rows and the hash are
+  right, not that GoTrue accepts them), and that a real browser reload really does bring back coins
+  and quests. Both are post-deploy smoke steps and belong in items 28 and 30.
+- The stub omits every GoTrue column the migrations and the seed do not touch. If a future Supabase
+  release adds a `not null` column with no default, the seed would fail there and pass here.
+
+### Notes for the next delegation (items 28-31)
+
+- **Item 28 (deployment)**: the migration step is now **three** files plus an optional seed, in the
+  order `001` → `002` → `003` → `seed/test_accounts.sql`. Say plainly that the seed is
+  development-only. `pnpm db:verify` is the local dry run for the whole SQL step and needs only
+  Docker; it is worth a line in the guide because it is how a maintainer checks the SQL *before*
+  pasting it into a project that matters.
+- **Item 29 (docs)**: `docs/DEVELOPMENT.md` already gained a **"Verifying SQL locally"** section and
+  a `pnpm db:verify` row in the scripts table, and its Supabase-setup step now lists `003` and the
+  seed — do not duplicate them, extend them. `ARCHITECTURE.md` still needs `003`'s shape:
+  `player_state.coins` (D15, one column rather than a `player_wallet` table) and `player_quests`
+  (composite key, four owner-only policies, `quest_id` deliberately not a foreign key because the
+  catalogue lives in the client).
+- **Item 30 (Korean guide)**: the exact credentials table is above. Also worth a Korean sentence:
+  coins and quests now survive a reload, which is one of the two things the user asked for by name.
+  **No new heading was added to `README.md` or `docs/SETUP_GUIDE_KR.md` by items 24-27**, so
+  `check-kr-doc-sync.mjs` still inherits only the `### 언어 설정` debt from `272e15b`.
+  `docs/DEVELOPMENT.md` has no `.doc` mirror, so its new heading is not a sync problem.
+- **`pnpm db:verify` is not wired into `.github/workflows/ci.yml`.** It was left out deliberately —
+  it needs a Docker daemon in the runner and it is the slowest gate by far (~15 s of container
+  startup). If item 30 is touching the workflow to add `docs:check`, a separate
+  `services: postgres` job is the cleaner way to add it, and it is recorded here as an option
+  rather than a gap.
+- Nothing in items 24-27 changed a component, a system or the registration order, so item 29's
+  documented-order test still uses the 17-system list from the items 19-23 notes unchanged.
