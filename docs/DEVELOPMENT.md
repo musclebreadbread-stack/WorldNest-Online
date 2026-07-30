@@ -40,6 +40,18 @@ Without `002` a signed-up player has no `profiles` row, so nothing can be saved.
 
 The game still boots without Supabase credentials: authentication, chat and persistence quietly turn themselves off and the world runs as a single-player sandbox from the shared seed.
 
+### Verifying SQL locally
+
+You do not need a Supabase project to know the migrations apply. `pnpm db:verify` starts a throwaway `postgres:16-alpine` container, applies every numbered migration with `ON_ERROR_STOP=1`, and asserts what the schema promises — the policy count, the seeded `Default World` row, and that inserting an `auth.users` row really provisions a `profiles` and a `player_state` row from the GoTrue metadata username.
+
+```bash
+pnpm db:verify   # needs Docker; psql runs inside the container, none needed locally
+```
+
+A bare Postgres has none of the things Supabase provides, so `packages/database/supabase/test/auth_stub.sql` creates them first: the `anon`, `authenticated` and `service_role` roles (without them `002` fails with `role "authenticated" does not exist`), the `auth` schema with stub `auth.users` and `auth.identities` tables, `uuid-ossp` and `pgcrypto` in an `extensions` schema on the search path, and stub `auth.uid()` / `auth.role()` functions.
+
+> The stub is a **test double of GoTrue's schema**, not a copy. It carries only the columns the migrations and the seed touch, so column defaults and password hashing are approximations — a column GoTrue requires that the stub omits would not be caught here. It is committed precisely so that gap is inspectable.
+
 ### Running Development Servers
 
 ```bash
@@ -348,6 +360,7 @@ The web tests never import Phaser. `createGameWorld` is Phaser-free on purpose, 
 | `pnpm test` | Run the Vitest suites across the monorepo |
 | `pnpm test:e2e` | Run the Playwright smoke specs (needs `pnpm build` first) |
 | `pnpm lint` | Run ESLint across all packages |
+| `pnpm db:verify` | Apply the migrations to a throwaway dockerised Postgres and assert the schema |
 | `pnpm format` | Format all files with Prettier |
 
 > `pnpm format` currently rewrites files it did not need to: `.prettierrc` sets `printWidth: 100` while the tree is hand-wrapped at ~88 columns. Until that is reconciled in a dedicated formatting commit, check only what you touched: `npx prettier --check <your files>`.
