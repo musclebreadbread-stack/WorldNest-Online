@@ -1,12 +1,15 @@
 import { Entity } from "./Entity";
 import { System } from "./System";
+import type { EntityChangeListener } from "./Entity";
 
 /**
  * World class for the ECS framework.
  * The world manages all entities and systems.
  * Uses query caching to avoid O(N*S) filtering every frame.
+ * Implements EntityChangeListener so entities can notify the World
+ * when their component set changes, automatically invalidating the cache.
  */
-export class World {
+export class World implements EntityChangeListener {
   private entities: Map<string, Entity> = new Map();
   private systems: System[] = [];
   private queryCache: Map<System, Entity[]> = new Map();
@@ -14,11 +17,16 @@ export class World {
 
   addEntity(entity: Entity): this {
     this.entities.set(entity.id, entity);
+    entity.setChangeListener(this);
     this.invalidateQueryCache();
     return this;
   }
 
   removeEntity(id: string): this {
+    const entity = this.entities.get(id);
+    if (entity) {
+      entity.setChangeListener(null);
+    }
     this.entities.delete(id);
     this.invalidateQueryCache();
     return this;

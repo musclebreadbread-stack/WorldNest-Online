@@ -204,12 +204,54 @@ describe("World", () => {
     world.update(0.016);
     expect(system.lastEntities).toHaveLength(0);
 
-    // Add component after entity is in world (requires manual invalidation)
+    // Add component after entity is in world - auto-invalidation via change listener
     entity.addComponent(new TestComponent(0));
-    world.invalidateQueryCache();
 
     world.update(0.016);
     expect(system.lastEntities).toHaveLength(1);
+  });
+
+  it("should auto-invalidate cache when component is removed from live entity", () => {
+    const world = new World();
+    const system = new TestSystem();
+    world.addSystem(system);
+
+    const entity = new Entity("e1");
+    entity.addComponent(new TestComponent(0));
+    world.addEntity(entity);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(1);
+
+    // Remove component from a live entity - should auto-invalidate
+    entity.removeComponent("test");
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(0);
+  });
+
+  it("should not notify after entity is removed from world", () => {
+    const world = new World();
+    const system = new TestSystem();
+    world.addSystem(system);
+
+    const entity = new Entity("e1");
+    entity.addComponent(new TestComponent(0));
+    world.addEntity(entity);
+
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(1);
+
+    // Remove entity from world, then add a component - should NOT invalidate
+    world.removeEntity("e1");
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(0);
+
+    // Adding component to removed entity should not trigger invalidation
+    entity.addComponent(new AnotherComponent("orphan"));
+    // Cache should still be valid (not dirty) - next update should still show 0 entities
+    world.update(0.016);
+    expect(system.lastEntities).toHaveLength(0);
   });
 });
 
