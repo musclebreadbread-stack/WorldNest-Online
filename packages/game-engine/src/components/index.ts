@@ -16,6 +16,9 @@ export { InteractionComponent } from "./InteractionComponent";
 export { CropComponent } from "./CropComponent";
 export { DialogueComponent } from "./DialogueComponent";
 export { NpcComponent } from "./NpcComponent";
+export { ShopComponent } from "./ShopComponent";
+export type { ShopTrade, ShopTradeKind } from "./ShopComponent";
+export { WalletComponent } from "./WalletComponent";
 export { StructureComponent } from "./StructureComponent";
 export {
   AnimationComponent,

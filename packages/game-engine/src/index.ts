@@ -24,12 +24,20 @@ export {
   CropComponent,
   DialogueComponent,
   NpcComponent,
+  ShopComponent,
+  WalletComponent,
   StructureComponent,
   AnimationComponent,
   DEFAULT_FRAME_DURATION_MS,
   DEFAULT_FRAME_COUNT,
 } from "./components";
-export type { KeyState, InventorySlot, AnimationState } from "./components";
+export type {
+  KeyState,
+  InventorySlot,
+  AnimationState,
+  ShopTrade,
+  ShopTradeKind,
+} from "./components";
 
 // Inventory operations (pure functions; components stay pure data)
 export {
@@ -41,6 +49,10 @@ export {
   selectSlot,
   moveSlot,
 } from "./inventory";
+
+// Shop maths (pure; the price table itself lives in `@worldnest/shared`)
+export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
+export type { Wallet } from "./shop";
 
 // Interaction helpers
 export { FACING_OFFSETS, getFacedTile } from "./interaction";
@@ -95,6 +107,7 @@ export {
   structureEntityId,
   NpcSystem,
   npcEntityId,
+  ShopSystem,
   AnimationSystem,
 } from "./systems";
 export type {

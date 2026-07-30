@@ -14,6 +14,8 @@ import {
   StatsComponent,
   InteractionComponent,
   DialogueComponent,
+  ShopComponent,
+  WalletComponent,
   AnimationComponent,
   TimeSystem,
   InputSystem,
@@ -23,6 +25,7 @@ import {
   InterpolationSystem,
   StatsSystem,
   NpcSystem,
+  ShopSystem,
   PlantSystem,
   CropGrowthSystem,
   BuildSystem,
@@ -35,7 +38,12 @@ import {
   composeBlockers,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
-import { SYNC_INTERVAL_MS, WORLD_SEED, type ItemId } from "@worldnest/shared";
+import {
+  STARTING_COINS,
+  SYNC_INTERVAL_MS,
+  WORLD_SEED,
+  type ItemId,
+} from "@worldnest/shared";
 import type { PersistedInventory } from "@worldnest/database";
 import { restoreInventory } from "../lib/inventorySnapshot";
 
@@ -89,6 +97,7 @@ export interface GameWorldSystems {
   interpolation: InterpolationSystem;
   stats: StatsSystem;
   npc: NpcSystem;
+  shop: ShopSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
   build: BuildSystem;
@@ -179,6 +188,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // NPCs run before planting so talking to one can never till the ground they
     // are standing on: they consume the interact request first.
     npc,
+    // Opening a shop is something a conversation asks for, so it is resolved one
+    // system after the conversation itself
+    shop: new ShopSystem(),
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
     build,
@@ -200,6 +212,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.interpolation);
   world.addSystem(systems.stats);
   world.addSystem(systems.npc);
+  world.addSystem(systems.shop);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
   world.addSystem(systems.build);
@@ -234,6 +247,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new StatsComponent())
     .addComponent(new InteractionComponent())
     .addComponent(new DialogueComponent())
+    .addComponent(new WalletComponent(STARTING_COINS))
+    .addComponent(new ShopComponent())
     .addComponent(new AnimationComponent());
 
   world.addEntity(playerEntity);
