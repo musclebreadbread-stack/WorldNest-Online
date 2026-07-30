@@ -13,6 +13,7 @@ import type { RealtimeManager } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
 import { HudBridge } from "../HudBridge";
+import { Minimap } from "../Minimap";
 import { NetworkBridge } from "../NetworkBridge";
 import { PlayerController } from "../PlayerController";
 import { SpriteSync } from "../SpriteSync";
@@ -123,6 +124,7 @@ export class GameScene extends Phaser.Scene {
     this.dayNight = this.overlays.add(new DayNightOverlay(this));
     this.dayNight.setPhase(this.getClockSnapshot().phase);
     this.overlays.add(new BuildGhost(this, this.playerEntity, context.systems.build));
+    this.overlays.add(new Minimap(this, this.ecsWorld));
 
     // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);

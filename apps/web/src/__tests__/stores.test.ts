@@ -154,7 +154,12 @@ describe("gameStore", () => {
 
 describe("uiStore", () => {
   beforeEach(() => {
-    useUIStore.setState({ clock: null, inventoryOpen: false, buildMode: false });
+    useUIStore.setState({
+      clock: null,
+      inventoryOpen: false,
+      buildMode: false,
+      minimapOpen: true,
+    });
   });
 
   it("should store the latest clock snapshot", () => {
@@ -191,5 +196,24 @@ describe("uiStore", () => {
     expect(useUIStore.getState().buildMode).toBe(true);
     // Build mode is independent of the inventory panel
     expect(useUIStore.getState().inventoryOpen).toBe(false);
+  });
+
+  it("should start with the minimap open and toggle it", () => {
+    expect(useUIStore.getState().minimapOpen).toBe(true);
+
+    useUIStore.getState().toggleMinimap();
+    expect(useUIStore.getState().minimapOpen).toBe(false);
+
+    useUIStore.getState().toggleMinimap();
+    expect(useUIStore.getState().minimapOpen).toBe(true);
+  });
+
+  it("should set the minimap explicitly without touching other panels", () => {
+    useUIStore.getState().setMinimapOpen(false);
+
+    const state = useUIStore.getState();
+    expect(state.minimapOpen).toBe(false);
+    expect(state.inventoryOpen).toBe(false);
+    expect(state.buildMode).toBe(false);
   });
 });

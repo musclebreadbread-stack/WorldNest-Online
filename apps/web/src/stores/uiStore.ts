@@ -7,12 +7,16 @@ interface UIState {
   inventoryOpen: boolean;
   /** Build mode shows the placement ghost and enables `Q` / left-click placing. */
   buildMode: boolean;
+  /** The corner minimap, toggled with `M`. Read by the Phaser overlay. */
+  minimapOpen: boolean;
 
   setClock: (clock: ClockSnapshot) => void;
   setInventoryOpen: (inventoryOpen: boolean) => void;
   toggleInventory: () => void;
   setBuildMode: (buildMode: boolean) => void;
   toggleBuildMode: () => void;
+  setMinimapOpen: (minimapOpen: boolean) => void;
+  toggleMinimap: () => void;
 }
 
 /**
@@ -23,6 +27,7 @@ export const useUIStore = create<UIState>((set) => ({
   clock: null,
   inventoryOpen: false,
   buildMode: false,
+  minimapOpen: true,
 
   setClock: (clock) => set({ clock }),
 
@@ -33,4 +38,8 @@ export const useUIStore = create<UIState>((set) => ({
   setBuildMode: (buildMode) => set({ buildMode }),
 
   toggleBuildMode: () => set((state) => ({ buildMode: !state.buildMode })),
+
+  setMinimapOpen: (minimapOpen) => set({ minimapOpen }),
+
+  toggleMinimap: () => set((state) => ({ minimapOpen: !state.minimapOpen })),
 }));

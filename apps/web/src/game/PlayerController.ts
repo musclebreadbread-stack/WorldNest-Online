@@ -15,6 +15,53 @@ import { useUIStore } from "../stores/uiStore";
 const INTERACT_COOLDOWN_MS = 250;
 
 /**
+ * A key that fires once per press, and what it does.
+ *
+ * Declarative on purpose: every later feature (the minimap, settings, dialogue,
+ * the shop, the quest log) adds one row here instead of another `addKey(...).on(...)`
+ * block, which is what keeps this file well under the ~300-line cap while staying
+ * the single place keyboard input is defined.
+ */
+interface OneShotActions {
+  interact(): void;
+  build(): void;
+}
+
+interface OneShotBinding {
+  keyCode: number;
+  handler: (actions: OneShotActions) => void;
+}
+
+const ONE_SHOT_BINDINGS: OneShotBinding[] = [
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.I,
+    handler: () => useUIStore.getState().toggleInventory(),
+  },
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.B,
+    handler: () => useUIStore.getState().toggleBuildMode(),
+  },
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.M,
+    handler: () => useUIStore.getState().toggleMinimap(),
+  },
+  // E and Space both act on the faced tile
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.E,
+    handler: (actions) => actions.interact(),
+  },
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.SPACE,
+    handler: (actions) => actions.interact(),
+  },
+  // Q places the selected item, but only in build mode
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.Q,
+    handler: (actions) => actions.build(),
+  },
+];
+
+/**
  * PlayerController translates Phaser keyboard state into ECS components.
  *
  * Movement keys are polled every frame into the InputComponent, while one-shot
@@ -47,32 +94,19 @@ export class PlayerController {
       key.on("down", this.whenPlaying(() => this.selectHotbarSlot(index)));
     }
 
-    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.I).on(
-      "down",
-      this.whenPlaying(() => useUIStore.getState().toggleInventory()),
-    );
-
-    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.B).on(
-      "down",
-      this.whenPlaying(() => useUIStore.getState().toggleBuildMode()),
-    );
-
-    // E and Space both act on the faced tile
-    for (const keyCode of [
-      Phaser.Input.Keyboard.KeyCodes.E,
-      Phaser.Input.Keyboard.KeyCodes.SPACE,
-    ]) {
-      addUncapturedKey(keyboard, keyCode).on(
+    // Panel toggles and world actions, one row per key
+    const actions: OneShotActions = {
+      interact: () => this.requestInteract(),
+      build: () => this.requestBuild(),
+    };
+    for (const binding of ONE_SHOT_BINDINGS) {
+      addUncapturedKey(keyboard, binding.keyCode).on(
         "down",
-        this.whenPlaying(() => this.requestInteract()),
+        this.whenPlaying(() => binding.handler(actions)),
       );
     }
 
-    // Q and left-click place the selected item, but only in build mode
-    addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.Q).on(
-      "down",
-      this.whenPlaying(() => this.requestBuild()),
-    );
+    // Left-click places the selected item too, on the same build-mode gate
     scene.input.on(
       Phaser.Input.Events.POINTER_DOWN,
       this.whenPlaying(() => this.requestBuild()),
