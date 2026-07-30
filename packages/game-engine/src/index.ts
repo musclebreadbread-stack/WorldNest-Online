@@ -22,6 +22,7 @@ export {
   StatsComponent,
   InteractionComponent,
   CropComponent,
+  DialogueComponent,
   StructureComponent,
   AnimationComponent,
   DEFAULT_FRAME_DURATION_MS,
@@ -43,6 +44,27 @@ export {
 // Interaction helpers
 export { FACING_OFFSETS, getFacedTile } from "./interaction";
 export type { Facing } from "./interaction";
+
+// Dialogue (pure; trees hold i18n keys, never sentences — decision D8)
+export {
+  DIALOGUE_DEFINITIONS,
+  MAX_DIALOGUE_OPTIONS,
+  activeNode,
+  advanceDialogue,
+  closeDialogue,
+  dialogueQuestIds,
+  getDialogue,
+  getNode,
+  openDialogue,
+  resolveOption,
+} from "./dialogue";
+export type {
+  DialogueAction,
+  DialogueDefinition,
+  DialogueNode,
+  DialogueOption,
+  DialogueState,
+} from "./dialogue";
 
 // Animation helpers (pure; the system only applies them)
 export {
