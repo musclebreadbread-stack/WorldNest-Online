@@ -1,7 +1,14 @@
-import type { Entity, PositionComponent, TimeComponent } from "@worldnest/game-engine";
+import type {
+  Entity,
+  InventoryComponent,
+  PositionComponent,
+  TimeComponent,
+} from "@worldnest/game-engine";
 import {
   CLOCK_CHANGED_EVENT,
+  INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  type InventoryChangedEvent,
   type PlayerPositionEvent,
 } from "./events";
 
@@ -20,6 +27,7 @@ export class HudBridge {
   private playerEntity: Entity;
   private clockEntity: Entity;
   private lastClockMinutes = -1;
+  private lastInventoryVersion = -1;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -31,6 +39,7 @@ export class HudBridge {
   flush(): void {
     this.emitPosition();
     this.emitClock();
+    this.emitInventory();
   }
 
   private emitPosition(): void {
@@ -50,5 +59,17 @@ export class HudBridge {
 
     this.lastClockMinutes = snapshot.totalMinutes;
     this.emitter.emit(CLOCK_CHANGED_EVENT, snapshot);
+  }
+
+  private emitInventory(): void {
+    const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    if (inventory.version === this.lastInventoryVersion) return;
+
+    this.lastInventoryVersion = inventory.version;
+    const payload: InventoryChangedEvent = {
+      slots: inventory.slots,
+      selectedSlot: inventory.selectedSlot,
+    };
+    this.emitter.emit(INVENTORY_CHANGED_EVENT, payload);
   }
 }

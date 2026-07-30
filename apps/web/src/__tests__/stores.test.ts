@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
+import { INVENTORY_SLOTS } from "@worldnest/shared";
+import type { InventorySlot } from "@worldnest/game-engine";
 import { useAuthStore } from "../stores/authStore";
 import { useGameStore } from "../stores/gameStore";
+import { useUIStore } from "../stores/uiStore";
 
 describe("authStore", () => {
   beforeEach(() => {
@@ -40,6 +43,8 @@ describe("gameStore", () => {
       chunkY: 0,
       onlinePlayers: new Map(),
       connectionStatus: "disconnected",
+      inventorySlots: new Array<InventorySlot | null>(INVENTORY_SLOTS).fill(null),
+      selectedSlot: 0,
     });
   });
 
@@ -107,5 +112,60 @@ describe("gameStore", () => {
     useGameStore.getState().setConnectionStatus("connected");
 
     expect(useGameStore.getState().connectionStatus).toBe("connected");
+  });
+
+  it("should copy inventory slots instead of holding the engine's array", () => {
+    const slots: Array<InventorySlot | null> = new Array(INVENTORY_SLOTS).fill(null);
+    slots[0] = { itemId: "wood", quantity: 3 };
+
+    useGameStore.getState().setInventory(slots, 2);
+
+    const state = useGameStore.getState();
+    expect(state.selectedSlot).toBe(2);
+    expect(state.inventorySlots).not.toBe(slots);
+    expect(state.inventorySlots[0]).not.toBe(slots[0]);
+    expect(state.inventorySlots[0]).toEqual({ itemId: "wood", quantity: 3 });
+
+    // Later engine-side mutation must not leak into the store snapshot
+    slots[0]!.quantity = 99;
+    expect(useGameStore.getState().inventorySlots[0]).toEqual({
+      itemId: "wood",
+      quantity: 3,
+    });
+  });
+
+  it("should set the selected slot on its own", () => {
+    useGameStore.getState().setSelectedSlot(5);
+
+    expect(useGameStore.getState().selectedSlot).toBe(5);
+  });
+});
+
+describe("uiStore", () => {
+  beforeEach(() => {
+    useUIStore.setState({ clock: null, inventoryOpen: false });
+  });
+
+  it("should store the latest clock snapshot", () => {
+    useUIStore.getState().setClock({
+      totalMinutes: 90,
+      day: 1,
+      hour: 1,
+      minute: 30,
+      phase: "night",
+    });
+
+    expect(useUIStore.getState().clock?.hour).toBe(1);
+  });
+
+  it("should toggle and explicitly set the inventory panel", () => {
+    useUIStore.getState().toggleInventory();
+    expect(useUIStore.getState().inventoryOpen).toBe(true);
+
+    useUIStore.getState().toggleInventory();
+    expect(useUIStore.getState().inventoryOpen).toBe(false);
+
+    useUIStore.getState().setInventoryOpen(true);
+    expect(useUIStore.getState().inventoryOpen).toBe(true);
   });
 });

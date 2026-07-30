@@ -2,6 +2,8 @@
 
 import { useGameStore } from "../stores/gameStore";
 import { ClockHud } from "./ClockHud";
+import { HotBar } from "./HotBar";
+import { InventoryPanel } from "./InventoryPanel";
 
 /**
  * GameUI provides a React overlay UI for chat, inventory button, and player info.
@@ -50,8 +52,18 @@ export function GameUI() {
       {/* Bottom-right: controls hint */}
       <div className="absolute bottom-4 right-4 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
-          WASD / Arrow Keys to move
+          WASD / Arrows to move · 1-8 hotbar · I inventory
         </div>
+      </div>
+
+      {/* Bottom-centre: hotbar */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto">
+        <HotBar />
+      </div>
+
+      {/* Centre: inventory panel */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+        <InventoryPanel />
       </div>
     </div>
   );

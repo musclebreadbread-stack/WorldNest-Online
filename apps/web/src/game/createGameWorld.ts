@@ -10,6 +10,7 @@ import {
   RemoteInterpolationComponent,
   ColliderComponent,
   TimeComponent,
+  InventoryComponent,
   TimeSystem,
   InputSystem,
   CollisionSystem,
@@ -113,7 +114,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new PlayerComponent(bootstrap.playerId, bootstrap.username, true))
     .addComponent(new InputComponent())
     .addComponent(new NetworkComponent())
-    .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE));
+    .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
+    .addComponent(new InventoryComponent());
 
   world.addEntity(playerEntity);
 

@@ -1,9 +1,15 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { TimeComponent, WorldClock } from "@worldnest/game-engine";
+import { addItem, TimeComponent, WorldClock } from "@worldnest/game-engine";
+import type { InventoryComponent } from "@worldnest/game-engine";
 import { DAY_LENGTH_MINUTES, WORLD_EPOCH_MS } from "@worldnest/shared";
 import { HudBridge, type HudEventEmitter } from "../game/HudBridge";
 import { createGameWorld, DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } from "../game/createGameWorld";
-import { CLOCK_CHANGED_EVENT, PLAYER_POSITION_EVENT } from "../game/events";
+import {
+  CLOCK_CHANGED_EVENT,
+  INVENTORY_CHANGED_EVENT,
+  PLAYER_POSITION_EVENT,
+  type InventoryChangedEvent,
+} from "../game/events";
 
 class RecordingEmitter implements HudEventEmitter {
   public events: Array<{ event: string; payload: unknown }> = [];
@@ -46,6 +52,24 @@ describe("HudBridge", () => {
       chunkX: 0,
       chunkY: 0,
     });
+  });
+
+  it("should emit the inventory only when its version changes", () => {
+    const { playerEntity, clockEntity } = createGameWorld(BOOTSTRAP);
+    const inventory = playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const bridge = new HudBridge(emitter, playerEntity, clockEntity);
+
+    bridge.flush();
+    bridge.flush();
+    expect(emitter.countOf(INVENTORY_CHANGED_EVENT)).toBe(1);
+
+    addItem(inventory, "wood", 2);
+    bridge.flush();
+
+    expect(emitter.countOf(INVENTORY_CHANGED_EVENT)).toBe(2);
+    const last = emitter.events.at(-1)!.payload as InventoryChangedEvent;
+    expect(last.slots[0]).toEqual({ itemId: "wood", quantity: 2 });
+    expect(last.selectedSlot).toBe(0);
   });
 
   it("should emit the clock only when it changes", () => {

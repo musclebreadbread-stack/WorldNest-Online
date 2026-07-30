@@ -3,7 +3,7 @@
  * Emitted on `game.events` by scenes, consumed by components.
  */
 
-import type { ClockSnapshot } from "@worldnest/game-engine";
+import type { ClockSnapshot, InventorySlot } from "@worldnest/game-engine";
 
 export const PLAYERS_CHANGED_EVENT = "players-changed";
 
@@ -24,3 +24,10 @@ export interface PlayerPositionEvent {
 export const CLOCK_CHANGED_EVENT = "clock-changed";
 
 export type ClockChangedEvent = ClockSnapshot;
+
+export const INVENTORY_CHANGED_EVENT = "inventory-changed";
+
+export interface InventoryChangedEvent {
+  slots: Array<InventorySlot | null>;
+  selectedSlot: number;
+}

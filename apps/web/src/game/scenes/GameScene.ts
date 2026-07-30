@@ -4,7 +4,6 @@ import {
   Entity,
   PositionComponent,
   VelocityComponent,
-  InputComponent,
   NetworkComponent,
   PlayerComponent,
   RemoteInterpolationComponent,
@@ -18,6 +17,7 @@ import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
 import { HudBridge } from "../HudBridge";
+import { PlayerController } from "../PlayerController";
 import {
   createGameWorld,
   createRemotePlayerEntity,
@@ -57,13 +57,7 @@ export class GameScene extends Phaser.Scene {
   private chunkRenderer!: ChunkRenderer;
   private dayNight!: DayNightOverlay;
   private hudBridge!: HudBridge;
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private wasdKeys!: {
-    W: Phaser.Input.Keyboard.Key;
-    A: Phaser.Input.Keyboard.Key;
-    S: Phaser.Input.Keyboard.Key;
-    D: Phaser.Input.Keyboard.Key;
-  };
+  private playerController!: PlayerController;
   /** Phaser sprites keyed by ECS entity id, driven by RenderSystem.renderData. */
   private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   private realtimeManager: RealtimeManager | null = null;
@@ -130,16 +124,8 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(localSprite, true, 0.1, 0.1);
     this.cameras.main.setZoom(2);
 
-    // Setup input
-    if (this.input.keyboard) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-      this.wasdKeys = {
-        W: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-        A: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-        S: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-        D: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-      };
-    }
+    // Keyboard bindings (movement, hotbar, panels)
+    this.playerController = new PlayerController(this, this.playerEntity);
 
     // Emit ready event for React integration
     this.game.events.emit("game-ready");
@@ -148,14 +134,8 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     const deltaSeconds = delta / 1000;
 
-    // Update input component from keyboard state
-    const input = this.playerEntity.getComponent<InputComponent>("input")!;
-    if (this.cursors && this.wasdKeys) {
-      input.keys.up = this.cursors.up.isDown || this.wasdKeys.W.isDown;
-      input.keys.down = this.cursors.down.isDown || this.wasdKeys.S.isDown;
-      input.keys.left = this.cursors.left.isDown || this.wasdKeys.A.isDown;
-      input.keys.right = this.cursors.right.isDown || this.wasdKeys.D.isDown;
-    }
+    // Update input components from keyboard state
+    this.playerController.update();
 
     // Mark network dirty if moving
     const velocity = this.playerEntity.getComponent<VelocityComponent>("velocity")!;

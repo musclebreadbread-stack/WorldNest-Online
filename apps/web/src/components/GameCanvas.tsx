@@ -8,9 +8,11 @@ import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
 import {
   CLOCK_CHANGED_EVENT,
+  INVENTORY_CHANGED_EVENT,
   PLAYERS_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
   type ClockChangedEvent,
+  type InventoryChangedEvent,
   type PlayerPositionEvent,
   type PlayersChangedEvent,
 } from "../game/events";
@@ -29,6 +31,7 @@ export function GameCanvas() {
   const addOnlinePlayer = useGameStore((s) => s.addOnlinePlayer);
   const removeOnlinePlayer = useGameStore((s) => s.removeOnlinePlayer);
   const updateOnlinePlayer = useGameStore((s) => s.updateOnlinePlayer);
+  const setInventory = useGameStore((s) => s.setInventory);
   const setClock = useUIStore((s) => s.setClock);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
@@ -60,6 +63,11 @@ export function GameCanvas() {
       setClock(snapshot);
     });
 
+    // Mirror the local player's inventory into the HUD store
+    game.events.on(INVENTORY_CHANGED_EVENT, (event: InventoryChangedEvent) => {
+      setInventory(event.slots, event.selectedSlot);
+    });
+
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
       switch (event.type) {
@@ -89,6 +97,7 @@ export function GameCanvas() {
     addOnlinePlayer,
     removeOnlinePlayer,
     updateOnlinePlayer,
+    setInventory,
     setClock,
     user,
   ]);
