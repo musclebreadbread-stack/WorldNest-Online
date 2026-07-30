@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "docs",
   "description": "Add comprehensive project documentation: README with setup instructions, architecture overview, development guide, contributing guidelines, and deployment guide. Also add CI configuration with GitHub Actions for build/test/lint.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create README.md at root with: project description (WorldNest Online - cozy pixel-art MMO life simulation), tech stack overview, monorepo structure diagram, quick start instructions (prerequisites: Node.js 22+, pnpm 10+; setup: clone, pnpm install, copy .env.example, pnpm dev), available scripts, architecture overview (ECS game engine, chunk streaming, Supabase realtime), and links to other docs.",
     "Create CONTRIBUTING.md with: development workflow, branch naming conventions (feat/, fix/, chore/), commit message format (conventional commits), PR process, code style (TypeScript strict, ESLint/Prettier), testing requirements.",
@@ -28,5 +28,5 @@
     "Verify CI workflow YAML is valid by checking its structure"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All acceptance criteria met. Docker build required creating apps/web/public directory (was missing). pnpm-lock.yaml needed regeneration to be in sync with workspace package.json files that now include exports field. Added output: standalone to next.config.js for Docker support. The .dockerignore excludes node_modules, .next, dist, .git, .github, .agents, and .env files to keep Docker context small."
 }
