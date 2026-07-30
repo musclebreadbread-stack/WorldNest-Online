@@ -85,6 +85,9 @@ export class GameScene extends Phaser.Scene {
       (playerId) => this.removeRemotePlayer(playerId),
       (playerId, position) => this.updateRemotePlayer(playerId, position.x, position.y),
     );
+
+    // Seed the manager with the real spawn point so joinRoom does not track (0, 0)
+    void manager.updatePresence(this.getLocalPlayerPosition());
   }
 
   create(): void {
@@ -194,7 +197,20 @@ export class GameScene extends Phaser.Scene {
         chunkY: position.chunkY,
       };
       this.realtimeManager.broadcastPosition(broadcastPosition);
+      // Presence is throttled inside the manager; late joiners need it to be current
+      void this.realtimeManager.updatePresence(broadcastPosition);
     }
+  }
+
+  /** Current local player position in the shape the realtime layer expects. */
+  private getLocalPlayerPosition(): PlayerPosition {
+    const position = this.playerEntity.getComponent<PositionComponent>("position")!;
+    return {
+      x: position.x,
+      y: position.y,
+      chunkX: position.chunkX,
+      chunkY: position.chunkY,
+    };
   }
 
   private onChunkLoad(chunk: ChunkData): void {

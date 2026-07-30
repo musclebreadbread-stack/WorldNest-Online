@@ -1,4 +1,5 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { PRESENCE_INTERVAL_MS } from "@worldnest/shared";
 import { createSupabaseClient } from "./client";
 
 export interface PlayerPosition {
@@ -26,6 +27,8 @@ export class RealtimeManager {
   private channel: RealtimeChannel | null = null;
   private playerId: string;
   private username: string;
+  private lastPosition: PlayerPosition = { x: 0, y: 0, chunkX: 0, chunkY: 0 };
+  private lastPresenceAt = 0;
 
   private onPlayerJoined?: PlayerJoinedCallback;
   private onPlayerLeft?: PlayerLeftCallback;
@@ -34,6 +37,10 @@ export class RealtimeManager {
   constructor(playerId: string, username: string) {
     this.playerId = playerId;
     this.username = username;
+  }
+
+  getPlayerId(): string {
+    return this.playerId;
   }
 
   setCallbacks(
@@ -89,13 +96,35 @@ export class RealtimeManager {
 
     await this.channel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
-        await this.channel!.track({
-          playerId: this.playerId,
-          username: this.username,
-          position: { x: 0, y: 0, chunkX: 0, chunkY: 0 },
-          online_at: new Date().toISOString(),
-        });
+        await this.trackPresence();
       }
+    });
+  }
+
+  /**
+   * Re-publish this player's presence with its current position.
+   * Presence is the only thing late joiners see, so it has to keep up with
+   * movement — but it is throttled to one update per PRESENCE_INTERVAL_MS
+   * because broadcast already carries high-frequency movement.
+   */
+  async updatePresence(position: PlayerPosition): Promise<void> {
+    this.lastPosition = { ...position };
+
+    if (!this.channel) return;
+    if (Date.now() - this.lastPresenceAt < PRESENCE_INTERVAL_MS) return;
+
+    await this.trackPresence();
+  }
+
+  private async trackPresence(): Promise<void> {
+    if (!this.channel) return;
+
+    this.lastPresenceAt = Date.now();
+    await this.channel.track({
+      playerId: this.playerId,
+      username: this.username,
+      position: this.lastPosition,
+      online_at: new Date().toISOString(),
     });
   }
 

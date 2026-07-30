@@ -108,6 +108,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.45.4
         version: 2.111.0
+      '@worldnest/shared':
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       '@types/node':
         specifier: ^22.5.4
