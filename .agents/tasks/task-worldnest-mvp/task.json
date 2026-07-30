@@ -1,0 +1,7 @@
+{
+  "task_id": "task-worldnest-mvp",
+  "task_description": "Create the WorldNest Online MVP - a cozy pixel-art MMO life simulation with pnpm monorepo architecture, ECS game engine, Phaser 3 rendering, procedural world generation with chunk streaming, player movement, Supabase auth and realtime multiplayer sync, and comprehensive documentation.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

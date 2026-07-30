@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "docs",
+  "description": "Add comprehensive project documentation: README with setup instructions, architecture overview, development guide, contributing guidelines, and deployment guide. Also add CI configuration with GitHub Actions for build/test/lint.",
+  "status": "pending",
+  "steps": [
+    "Create README.md at root with: project description (WorldNest Online - cozy pixel-art MMO life simulation), tech stack overview, monorepo structure diagram, quick start instructions (prerequisites: Node.js 22+, pnpm 10+; setup: clone, pnpm install, copy .env.example, pnpm dev), available scripts, architecture overview (ECS game engine, chunk streaming, Supabase realtime), and links to other docs.",
+    "Create CONTRIBUTING.md with: development workflow, branch naming conventions (feat/, fix/, chore/), commit message format (conventional commits), PR process, code style (TypeScript strict, ESLint/Prettier), testing requirements.",
+    "Create docs/ARCHITECTURE.md with: high-level system diagram (client/server split), ECS engine design, chunk streaming algorithm, multiplayer sync approach (client prediction + server authority via Supabase), state management (Zustand stores), rendering pipeline (Phaser scenes), database schema overview.",
+    "Create docs/DEVELOPMENT.md with: detailed development setup, environment variables explanation, how to add new game systems (components + systems in ECS), how to add new tile types, how to extend the world generator, how to add new UI features.",
+    "Create .github/workflows/ci.yml: GitHub Actions workflow that runs on push/PR to main - steps: checkout, setup pnpm, install deps, run lint, run build, run tests. Use Node.js 22 and pnpm 10.",
+    "Create a Dockerfile at root for containerized builds: multi-stage build that installs deps, builds all packages, and produces the Next.js standalone output. This validates the full build pipeline.",
+    "Ensure all packages have proper exports in their package.json files and that cross-package imports work correctly."
+  ],
+  "acceptance_criteria": [
+    "README.md exists with clear setup instructions that a developer can follow",
+    "CONTRIBUTING.md exists with development workflow guidelines",
+    "docs/ARCHITECTURE.md exists with system design documentation",
+    "docs/DEVELOPMENT.md exists with detailed development guide",
+    ".github/workflows/ci.yml exists with a valid GitHub Actions workflow",
+    "Dockerfile exists and docker build succeeds (validates full build pipeline)",
+    "All documentation references correct file paths and commands that actually work"
+  ],
+  "verification": [
+    "Run 'pnpm build' to confirm build still works after any package.json export changes",
+    "Run 'pnpm test' to confirm tests still pass",
+    "Run 'docker build -t worldnest-online:test .' to verify Dockerfile builds successfully",
+    "Verify CI workflow YAML is valid by checking its structure"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

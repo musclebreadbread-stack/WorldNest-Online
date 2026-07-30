@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement the ECS game engine core, Phaser 3 integration with the Next.js app, procedural world generation with chunk streaming, player entity with movement controls, and Supabase auth + realtime multiplayer sync. This is the core gameplay MVP.",
+  "status": "pending",
+  "steps": [
+    "Implement the ECS framework in packages/game-engine/src/ecs/: World.ts (entity registry, system loop, component storage), Entity.ts (unique ID, component map), Component.ts (base component interface), System.ts (base system with update method and entity queries). Use a simple bitmasked archetype approach for efficient queries.",
+    "Create core components in packages/game-engine/src/components/: PositionComponent.ts (x, y, chunk), VelocityComponent.ts (vx, vy), SpriteComponent.ts (textureKey, frame, visible), PlayerComponent.ts (playerId, username, isLocal), ChunkComponent.ts (chunkX, chunkY, tiles[][]), InputComponent.ts (keys pressed state), NetworkComponent.ts (lastSync, dirty flag).",
+    "Create core systems in packages/game-engine/src/systems/: MovementSystem.ts (apply velocity to position, handle collision with tile data), InputSystem.ts (capture keyboard/touch input, translate to velocity for local player), ChunkSystem.ts (load/unload chunks based on player position, generate chunks procedurally), RenderSystem.ts (interface for renderer to consume entity state), NetworkSyncSystem.ts (mark dirty entities, prepare sync payloads).",
+    "Implement procedural world generation in packages/game-engine/src/world/: ChunkGenerator.ts (deterministic chunk generation using seed + simplex noise - generate terrain tiles: grass, water, sand, forest, stone, flowers), WorldManager.ts (manages loaded chunks, handles chunk streaming based on player viewport, loads 3x3 grid around player), Tilemap.ts (tile type definitions, tile properties like walkable/collidable).",
+    "Install Phaser 3 in apps/web (phaser package). Create apps/web/src/game/PhaserGame.ts - the Phaser game configuration and initialization. Create apps/web/src/game/scenes/BootScene.ts (load assets), GameScene.ts (main game scene that creates tilemap from chunk data, renders player sprites, handles camera follow). Create apps/web/src/game/scenes/UIScene.ts (HUD overlay scene for player info).",
+    "Create apps/web/src/components/GameCanvas.tsx - a React component that mounts/unmounts the Phaser game instance, handles resize, communicates with React state via events. Create apps/web/src/components/GameUI.tsx - React overlay UI for chat, inventory button, player info using Zustand store.",
+    "Create apps/web/src/stores/gameStore.ts (Zustand store for game state: player position, loaded chunks, online players, connection status). Create apps/web/src/stores/authStore.ts (Zustand store for auth state: user, session, loading).",
+    "Implement Supabase auth in packages/database/src/auth.ts: signUp, signIn, signOut, onAuthStateChange functions. Create apps/web/src/components/AuthProvider.tsx that wraps the app and manages auth state. Create apps/web/app/auth/page.tsx with login/signup forms using the UI package components.",
+    "Implement Supabase realtime multiplayer in packages/database/src/realtime.ts: joinRoom(roomId), broadcastPosition(position), onPlayerJoined/Left/Moved callbacks, leaveRoom(). Use Supabase Realtime Presence for tracking online players and Broadcast for position updates.",
+    "Create the database schema in packages/database/supabase/migrations/001_initial_schema.sql: tables for profiles (id, username, avatar, created_at), player_state (player_id, x, y, chunk, last_online, inventory jsonb), worlds (id, name, seed, created_at). Include RLS policies that restrict players to their own data.",
+    "Wire everything together in apps/web/app/game/page.tsx: check auth (redirect to /auth if not logged in), initialize game engine, start Phaser, connect to realtime channel, render GameCanvas + GameUI. Ensure the player can move around the procedurally generated world, see chunks load/unload, and other connected players appear in real-time.",
+    "Add basic placeholder pixel art assets: create a simple tileset (16x16 tiles for grass, water, sand, tree, stone, flower) and a player sprite sheet (4-direction walking animation) as embedded base64 data or simple colored rectangles generated programmatically in the BootScene.",
+    "Add unit tests: packages/game-engine/src/__tests__/ecs.test.ts (test World, Entity, Component CRUD, System queries), packages/game-engine/src/__tests__/chunk-generator.test.ts (test deterministic generation - same seed produces same chunks), packages/game-engine/src/__tests__/movement.test.ts (test MovementSystem applies velocity correctly).",
+    "Update apps/web/app/page.tsx landing page to have a proper hero section with game title 'WorldNest Online', tagline, and 'Play Now' button that routes to /auth or /game depending on auth state."
+  ],
+  "acceptance_criteria": [
+    "pnpm build succeeds with all new game engine code compiling",
+    "pnpm test runs ECS, chunk generation, and movement unit tests and they all pass",
+    "The game page renders a Phaser canvas showing procedurally generated terrain tiles",
+    "Arrow keys or WASD move the player character around the world",
+    "Chunks load and unload as the player moves (visible in console or by terrain appearing)",
+    "Auth pages exist at /auth with login/signup forms connected to Supabase client",
+    "Realtime module exports joinRoom/broadcastPosition functions that use Supabase Realtime",
+    "Database migration SQL file exists with profiles, player_state, and worlds tables plus RLS policies",
+    "The landing page shows the game title and a Play Now button"
+  ],
+  "verification": [
+    "Run 'pnpm build' and confirm all packages compile without errors",
+    "Run 'pnpm test' and confirm all unit tests pass",
+    "Run 'pnpm --filter @worldnest/web dev' and verify the app starts and game page loads without console errors"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
