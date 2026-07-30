@@ -40,37 +40,14 @@ import {
   composeBlockers,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
-import {
-  STARTING_COINS,
-  SYNC_INTERVAL_MS,
-  WORLD_SEED,
-  type ItemId,
-} from "@worldnest/shared";
+import { STARTING_COINS, SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
 import type { PersistedInventory } from "@worldnest/database";
 import { restoreInventory } from "../lib/inventorySnapshot";
+import { restoreSavedWorld, type SavedWorldState } from "./savedWorld";
 
-/** A structure loaded from the database, ready to be respawned. */
-export interface SavedStructure {
-  itemId: ItemId;
-  tileX: number;
-  tileY: number;
-}
-
-/** A crop loaded from the database; `itemId` is the seed it was sown from. */
-export interface SavedCrop extends SavedStructure {
-  plantedAtMinute: number;
-}
-
-/**
- * Shared-world state restored on session start: the terrain diff plus every
- * structure and crop other sessions left behind.
- */
-export interface SavedWorldState {
-  /** `[tileKey, tileType]` pairs for `WorldManager.applyTileOverrides`. */
-  tileOverrides: Array<[string, TileType]>;
-  structures: SavedStructure[];
-  crops: SavedCrop[];
-}
+// Restoring the shared world lives in `savedWorld.ts`; re-exported here because
+// this module is what `loadSession` and the persistence layer import from.
+export type { SavedCrop, SavedStructure, SavedWorldState } from "./savedWorld";
 
 /**
  * Identity, spawn and saved state handed to the game by React through the
@@ -275,28 +252,6 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addEntity(clockEntity);
 
   return { world, worldManager, systems, playerEntity, clockEntity };
-}
-
-/**
- * Rehydrate saved world state. Structures and crops are respawned through the
- * owning systems' public spawn methods, which skip the inventory cost — a
- * restore must not charge the player for what they already built.
- */
-function restoreSavedWorld(
-  worldManager: WorldManager,
-  plant: PlantSystem,
-  build: BuildSystem,
-  saved: SavedWorldState,
-): void {
-  worldManager.applyTileOverrides(saved.tileOverrides);
-
-  for (const structure of saved.structures) {
-    build.spawnStructure(structure.itemId, structure.tileX, structure.tileY);
-  }
-
-  for (const crop of saved.crops) {
-    plant.spawnCrop(crop.itemId, crop.tileX, crop.tileY, crop.plantedAtMinute);
-  }
 }
 
 /** Entity id used for the remote player owned by `playerId`. */
