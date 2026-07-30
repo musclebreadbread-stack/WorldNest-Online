@@ -1,5 +1,13 @@
 import Phaser from "phaser";
-import type { Entity, PlayerComponent, RenderData, World } from "@worldnest/game-engine";
+import type {
+  Entity,
+  NpcComponent,
+  PlayerComponent,
+  RenderData,
+  World,
+} from "@worldnest/game-engine";
+import { isMessageKey, translate } from "../i18n";
+import { useLocaleStore } from "../stores/localeStore";
 
 /** Labels sit above every sprite, including the local player. */
 const NAME_TAG_DEPTH = 110;
@@ -15,11 +23,15 @@ const NAME_TAG_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
 };
 
 /**
- * NameTags floats a username label above each remote player.
+ * NameTags floats a label above each remote player and each NPC.
  *
  * It mirrors the same `RenderData` the sprites do, so labels appear, follow and
  * disappear with their entity without any extra bookkeeping. The local player is
  * skipped — the camera already follows them and they know who they are.
+ *
+ * NPC names are i18n keys (decision D8), resolved here against `localeStore`; the
+ * text is compared every pass, so switching language relabels the village without
+ * a reload. A canvas has no `dir`, so the label itself does not mirror in Arabic.
  */
 export class NameTags {
   private scene: Phaser.Scene;
@@ -38,11 +50,12 @@ export class NameTags {
 
     for (const data of renderData) {
       const entity = this.world.getEntity(data.entityId);
-      const username = remoteUsername(entity);
-      if (!username) continue;
+      const name = labelFor(entity);
+      if (!name) continue;
 
       seen.add(data.entityId);
-      const label = this.labels.get(data.entityId) ?? this.createLabel(data, username);
+      const label = this.labels.get(data.entityId) ?? this.createLabel(data, name);
+      if (label.text !== name) label.setText(name);
       label.setPosition(data.x, data.y - NAME_TAG_OFFSET_Y);
       label.setVisible(data.visible);
     }
@@ -67,8 +80,8 @@ export class NameTags {
     this.labels.clear();
   }
 
-  private createLabel(data: RenderData, username: string): Phaser.GameObjects.Text {
-    const label = this.scene.add.text(data.x, data.y - NAME_TAG_OFFSET_Y, username, NAME_TAG_STYLE);
+  private createLabel(data: RenderData, name: string): Phaser.GameObjects.Text {
+    const label = this.scene.add.text(data.x, data.y - NAME_TAG_OFFSET_Y, name, NAME_TAG_STYLE);
     label.setOrigin(0.5, 1);
     label.setDepth(NAME_TAG_DEPTH);
 
@@ -77,10 +90,14 @@ export class NameTags {
   }
 }
 
-/** Username to label an entity with, or `null` when it needs no label. */
-function remoteUsername(entity: Entity | undefined): string | null {
+/** Text to label an entity with, or `null` when it needs no label. */
+function labelFor(entity: Entity | undefined): string | null {
   const player = entity?.getComponent<PlayerComponent>("player");
-  if (!player || player.isLocal) return null;
+  if (player) return player.isLocal ? null : player.username;
 
-  return player.username;
+  const npc = entity?.getComponent<NpcComponent>("npc");
+  if (!npc) return null;
+
+  const locale = useLocaleStore.getState().locale;
+  return isMessageKey(npc.nameKey) ? translate(locale, npc.nameKey) : npc.nameKey;
 }

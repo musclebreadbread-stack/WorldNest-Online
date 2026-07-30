@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { selectSlot } from "@worldnest/game-engine";
+import { MAX_DIALOGUE_OPTIONS, selectSlot } from "@worldnest/game-engine";
 import type {
   Entity,
   Facing,
@@ -10,6 +10,7 @@ import type {
 import { HOTBAR_SLOTS } from "@worldnest/shared";
 import { mergeInput, TOUCH_DEADZONE } from "./inputMerge";
 import { useChatStore } from "../stores/chatStore";
+import { isDialogueOpen, useDialogueStore } from "../stores/dialogueStore";
 import { useTouchStore } from "../stores/touchStore";
 import { useUIStore } from "../stores/uiStore";
 
@@ -94,10 +95,13 @@ export class PlayerController {
       D: addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.D),
     };
 
-    // Number keys 1..8 select the matching hotbar slot
+    // Number keys 1..8 select the matching hotbar slot, or answer an open
+    // conversation. They are bound outside `whenPlaying` because that gate now
+    // suppresses everything while a dialogue is up, and answering it is the one
+    // thing that must still work.
     for (let index = 0; index < HOTBAR_SLOTS; index++) {
       const key = addUncapturedKey(keyboard, Phaser.Input.Keyboard.KeyCodes.ONE + index);
-      key.on("down", this.whenPlaying(() => this.selectHotbarSlot(index)));
+      key.on("down", () => this.pressNumber(index));
     }
 
     // Panel toggles and world actions, one row per key
@@ -132,8 +136,9 @@ export class PlayerController {
     // has focus is dropped, exactly as `whenPlaying` drops a keypress.
     const requests = touch.consumeRequests();
 
-    // While the chat input has focus the movement keys are typing, not walking
-    if (isTyping()) {
+    // While the chat input has focus the movement keys are typing, not walking,
+    // and while a conversation is open the player is standing still by definition
+    if (isTyping() || isDialogueOpen()) {
       input.keys.up = false;
       input.keys.down = false;
       input.keys.left = false;
@@ -211,6 +216,22 @@ export class PlayerController {
     interaction.buildRequested = true;
   }
 
+  /**
+   * A number key: an answer while a conversation is open, a hotbar slot otherwise.
+   * Only the first `MAX_DIALOGUE_OPTIONS` have an option to pick, and the rest do
+   * nothing rather than silently changing the selection behind the panel.
+   */
+  private pressNumber(index: number): void {
+    if (isTyping()) return;
+
+    if (isDialogueOpen()) {
+      if (index < MAX_DIALOGUE_OPTIONS) useDialogueStore.getState().respond(index);
+      return;
+    }
+
+    this.selectHotbarSlot(index);
+  }
+
   private selectHotbarSlot(index: number): void {
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory");
     if (!inventory) return;
@@ -218,10 +239,13 @@ export class PlayerController {
     selectSlot(inventory, index);
   }
 
-  /** Wrap a key handler so it is ignored while the player is typing in chat. */
+  /**
+   * Wrap a key handler so it is ignored while the player is typing in chat or
+   * talking to an NPC. Both are states where the keyboard belongs to the HUD.
+   */
   private whenPlaying(handler: () => void): () => void {
     return () => {
-      if (isTyping()) return;
+      if (isTyping() || isDialogueOpen()) return;
 
       handler();
     };

@@ -66,6 +66,35 @@ export const th: LocaleMessages = {
   "settings.mute": "ปิดเสียงทั้งหมด",
   "settings.soundHint": "เสียงจะเริ่มหลังการคลิกครั้งแรก",
 
+  "npc.pip.name": "พิพ คนสวน",
+  "npc.juno.name": "จูโน เจ้าของร้าน",
+  "npc.ada.name": "เอดา นักสำรวจ",
+
+  "dialogue.close": "จบการสนทนา",
+  "dialogue.hint": "กด 1-4 หรือแตะคำตอบ",
+  "dialogue.option.bye": "ไว้เจอกันนะ!",
+  "dialogue.option.back": "อยากถามเรื่องอื่น",
+  "dialogue.pip.greeting":
+    "ยินดีต้อนรับสู่ WorldNest! ฉันดูแลแปลงดอกไม้แถวนี้อยู่ มีอะไรให้ช่วยไหม",
+  "dialogue.pip.tips":
+    "ยืนหน้าผืนหญ้าแล้วกด E จะกลายเป็นแปลงเพาะปลูก กด E อีกครั้งเพื่อหยอดเมล็ด กลับมาอีกไม่กี่ชั่วโมงข้าวสาลีก็พร้อมเก็บแล้ว",
+  "dialogue.pip.option.tips": "เริ่มทำไร่อย่างไรดี",
+  "dialogue.juno.greeting":
+    "ยินดีต้อนรับสู่ร้านเล็ก ๆ ของฉัน! ของที่เก็บมาฉันรับซื้อ ของที่ยังขาดฉันก็มีขาย",
+  "dialogue.juno.prices":
+    "ฉันรับซื้อถูกกว่าราคาขายอยู่หน่อย ร้านจึงอยู่ได้ แต่ถ้าเก็บมามาก ๆ ก็ยังคุ้มสำหรับเธออยู่ดี",
+  "dialogue.juno.option.shop": "ขอดูของหน่อย",
+  "dialogue.juno.option.prices": "ราคาคิดกันอย่างไร",
+  "dialogue.ada.greeting":
+    "สวัสดีนักสำรวจ! ฉันจดงานที่หมู่บ้านต้องทำไว้เป็นรายการ",
+  "dialogue.ada.quests": "เลือกงานมาหนึ่งอย่าง แล้วฉันจะจดชื่อเธอไว้ข้าง ๆ",
+  "dialogue.ada.report": "เสร็จแล้วหรือ บอกหน่อยว่าทำงานไหนสำเร็จ",
+  "dialogue.ada.option.quests": "มีงานอะไรบ้าง",
+  "dialogue.ada.option.report": "ฉันทำงานเสร็จแล้ว",
+  "dialogue.ada.option.wood": "เก็บฟืน",
+  "dialogue.ada.option.fence": "ล้อมรั้วให้สวน",
+  "dialogue.ada.option.greet": "ไปทักทายพิพ",
+
   "touch.stick": "จอยควบคุมการเดิน",
   "touch.interact": "ใช้",
   "touch.place": "วาง",

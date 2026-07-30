@@ -4,16 +4,19 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
 import { useUIStore } from "../stores/uiStore";
+import { useDialogueStore } from "../stores/dialogueStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
 import { wireChat } from "../game/ChatBridge";
 import {
   CLOCK_CHANGED_EVENT,
+  DIALOGUE_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYERS_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
   STATS_CHANGED_EVENT,
   type ClockChangedEvent,
+  type DialogueChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type PlayersChangedEvent,
@@ -40,6 +43,7 @@ export function GameCanvas() {
   const setInventory = useGameStore((s) => s.setInventory);
   const setStats = useGameStore((s) => s.setStats);
   const setClock = useUIStore((s) => s.setClock);
+  const setDialogue = useDialogueStore((s) => s.setSnapshot);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
 
@@ -88,6 +92,11 @@ export function GameCanvas() {
       setStats(event);
     });
 
+    // Mirror the active NPC conversation into the dialogue store
+    game.events.on(DIALOGUE_CHANGED_EVENT, (event: DialogueChangedEvent) => {
+      setDialogue(event);
+    });
+
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
       switch (event.type) {
@@ -120,6 +129,7 @@ export function GameCanvas() {
     setInventory,
     setStats,
     setClock,
+    setDialogue,
     user,
   ]);
 

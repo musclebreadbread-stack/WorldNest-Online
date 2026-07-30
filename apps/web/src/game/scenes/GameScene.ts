@@ -12,6 +12,7 @@ import type { ChunkData } from "@worldnest/game-engine";
 import type { RealtimeManager } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
 import { DayNightOverlay } from "../DayNightOverlay";
+import { wireDialogue } from "../DialogueBridge";
 import { HudBridge } from "../HudBridge";
 import { Minimap } from "../Minimap";
 import { NetworkBridge } from "../NetworkBridge";
@@ -131,7 +132,10 @@ export class GameScene extends Phaser.Scene {
 
     // React HUD bridge
     this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
+    // Dialogue answers travel back the other way, through injected callbacks
+    const unwireDialogue = wireDialogue(this.playerEntity);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      unwireDialogue();
       this.overlays.destroy();
       this.spriteSync.destroy();
       this.persistence?.flush();

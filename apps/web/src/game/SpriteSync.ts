@@ -12,6 +12,8 @@ import { NameTags } from "./NameTags";
 
 const LOCAL_PLAYER_DEPTH = 100;
 const REMOTE_PLAYER_DEPTH = 99;
+/** Just under the players: an NPC never hides the person talking to it. */
+const NPC_DEPTH = 98;
 const STRUCTURE_DEPTH = 60;
 const CROP_DEPTH = 50;
 const REMOTE_PLAYER_TINT = 0xff8a80;
@@ -131,6 +133,7 @@ function resolveTextureKey(data: RenderData, entity: Entity | undefined): string
 function resolveDepth(entity: Entity | undefined): number {
   const player = entity?.getComponent<PlayerComponent>("player");
   if (player) return player.isLocal ? LOCAL_PLAYER_DEPTH : REMOTE_PLAYER_DEPTH;
+  if (entity?.hasComponent("npc")) return NPC_DEPTH;
   if (entity?.hasComponent("structure")) return STRUCTURE_DEPTH;
   // Crops, and anything else world-bound, sit just above the ground textures
   return CROP_DEPTH;

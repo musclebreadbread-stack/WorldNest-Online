@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import type { InventoryComponent, StatsComponent } from "@worldnest/game-engine";
-import { addItem } from "@worldnest/game-engine";
+import type {
+  DialogueComponent,
+  InventoryComponent,
+  StatsComponent,
+} from "@worldnest/game-engine";
+import { addItem, openDialogue } from "@worldnest/game-engine";
 import { SOUND_CUES, SOUND_SPECS } from "../game/audio/soundSpecs";
 import { SoundSynth } from "../game/audio/SoundSynth";
 import {
@@ -359,6 +363,7 @@ const QUIET: SoundState = {
   energy: 80,
   buildMode: false,
   chatCount: 2,
+  dialogueVersion: 6,
   phase: "day",
 };
 
@@ -417,6 +422,12 @@ describe("diffCues", () => {
     ).toEqual(["ui"]);
   });
 
+  it("should emit dialogue for a conversation opening, moving on or ending", () => {
+    expect(diffCues(QUIET, { ...QUIET, dialogueVersion: 7 })).toEqual(["dialogue"]);
+    // A version can only go up; nothing to say if it did not
+    expect(diffCues(QUIET, { ...QUIET, dialogueVersion: 6 })).toEqual([]);
+  });
+
   it("should not emit anything for a phase change on its own", () => {
     // The phase steers the music's key; it is not an event worth a chime
     expect(diffCues(QUIET, { ...QUIET, phase: "night" })).toEqual([]);
@@ -439,6 +450,7 @@ describe("readSoundState", () => {
     const before = readSoundState(playerEntity, false, 0, "day");
     expect(before.inventoryVersion).toBe(inventory.version);
     expect(before.energy).toBe(stats.energy);
+    expect(before.dialogueVersion).toBe(0);
 
     addItem(inventory, "wood", 1);
     stats.energy -= 10;
@@ -449,6 +461,18 @@ describe("readSoundState", () => {
     expect(after.buildMode).toBe(true);
     expect(after.chatCount).toBe(3);
     expect(after.phase).toBe("dusk");
+  });
+
+  it("should hear a conversation through the dialogue component's version", () => {
+    const { playerEntity } = createGameWorld(BOOTSTRAP);
+    const dialogue = playerEntity.getComponent<DialogueComponent>("dialogue")!;
+
+    const before = readSoundState(playerEntity, false, 0, "day");
+    openDialogue(dialogue, "villager_pip", "pip_welcome");
+    const after = readSoundState(playerEntity, false, 0, "day");
+
+    expect(after.dialogueVersion).toBe(dialogue.version);
+    expect(diffCues(before, after)).toEqual(["dialogue"]);
   });
 });
 

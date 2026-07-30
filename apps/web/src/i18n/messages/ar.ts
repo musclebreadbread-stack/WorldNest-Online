@@ -69,6 +69,35 @@ export const ar: LocaleMessages = {
   "settings.mute": "كتم جميع الأصوات",
   "settings.soundHint": "يبدأ الصوت بعد أول نقرة لك.",
 
+  "npc.pip.name": "بيب البستاني",
+  "npc.juno.name": "جونو صاحبة الدكان",
+  "npc.ada.name": "آدا المستكشفة",
+
+  "dialogue.close": "إنهاء الحديث",
+  "dialogue.hint": "اضغط 1-4 أو المس أحد الردود",
+  "dialogue.option.bye": "إلى اللقاء!",
+  "dialogue.option.back": "أريد أن أسأل عن شيء آخر",
+  "dialogue.pip.greeting":
+    "مرحبًا بك في ورلد نست! أنا أعتني بأحواض الزهور هنا. هل أساعدك في شيء؟",
+  "dialogue.pip.tips":
+    "قف أمام قطعة عشب واضغط E لتحويلها إلى حقل، ثم اضغط E مرة أخرى لزرع البذور. عد بعد ساعات قليلة وسيكون القمح جاهزًا.",
+  "dialogue.pip.option.tips": "كيف أبدأ حقلًا؟",
+  "dialogue.juno.greeting":
+    "أهلًا بك في دكاني الصغير! أشتري كل ما تجمعه وأبيع ما تحتاج إليه.",
+  "dialogue.juno.prices":
+    "أدفع أقل قليلًا من سعر البيع، وهكذا يستمر الدكان. ومع ذلك، إن جمعت الكثير فسيبقى لك ربح.",
+  "dialogue.juno.option.shop": "أرني ما لديك",
+  "dialogue.juno.option.prices": "كيف تحددين أسعارك؟",
+  "dialogue.ada.greeting":
+    "مرحبًا يا مستكشف! أحتفظ بقائمة من الأعمال التي تحتاجها القرية.",
+  "dialogue.ada.quests": "اختر عملًا وسأكتب اسمك بجانبه.",
+  "dialogue.ada.report": "هل انتهيت؟ أخبرني أي عمل أتممت.",
+  "dialogue.ada.option.quests": "ما الذي يحتاج إلى عمل؟",
+  "dialogue.ada.option.report": "لقد أتممت عملًا",
+  "dialogue.ada.option.wood": "جمع حطب التدفئة",
+  "dialogue.ada.option.fence": "إحاطة الحديقة بسياج",
+  "dialogue.ada.option.greet": "إلقاء التحية على بيب",
+
   "touch.stick": "عصا الحركة",
   "touch.interact": "استخدام",
   "touch.place": "وضع",

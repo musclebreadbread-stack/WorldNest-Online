@@ -66,6 +66,35 @@ export const hi: LocaleMessages = {
   "settings.mute": "सारी ध्वनि बंद करें",
   "settings.soundHint": "पहली क्लिक के बाद ध्वनि शुरू होती है।",
 
+  "npc.pip.name": "माली पिप",
+  "npc.juno.name": "दुकानदार जूनो",
+  "npc.ada.name": "खोजी एडा",
+
+  "dialogue.close": "बातचीत खत्म करें",
+  "dialogue.hint": "1-4 दबाएँ या कोई जवाब चुनें",
+  "dialogue.option.bye": "फिर मिलेंगे!",
+  "dialogue.option.back": "कुछ और पूछना है",
+  "dialogue.pip.greeting":
+    "वर्ल्डनेस्ट में स्वागत है! मैं यहाँ के फूलों की क्यारियों की देखभाल करता हूँ। कुछ मदद चाहिए?",
+  "dialogue.pip.tips":
+    "घास के टुकड़े के सामने खड़े होकर E दबाइए, वह खेत बन जाएगा; दोबारा E दबाने पर बीज बो दिए जाएँगे। कुछ घंटों बाद आइए, गेहूँ तैयार मिलेगा।",
+  "dialogue.pip.option.tips": "खेती कैसे शुरू करूँ?",
+  "dialogue.juno.greeting":
+    "मेरी छोटी दुकान पर स्वागत है! आप जो जुटाते हैं मैं खरीदती हूँ, और जो चाहिए वह बेचती हूँ।",
+  "dialogue.juno.prices":
+    "मैं बेचने के दाम से थोड़ा कम देती हूँ, इसी से दुकान चलती है। फिर भी ज्यादा जुटाइए तो फायदा आपका ही रहेगा।",
+  "dialogue.juno.option.shop": "अपना सामान दिखाइए",
+  "dialogue.juno.option.prices": "आपके दाम कैसे तय होते हैं?",
+  "dialogue.ada.greeting":
+    "नमस्ते, खोजी! गाँव में जो काम बाकी हैं, उनकी सूची मेरे पास है।",
+  "dialogue.ada.quests": "एक काम चुन लीजिए, मैं उसके आगे आपका नाम लिख दूँगी।",
+  "dialogue.ada.report": "काम पूरा हो गया? बताइए कौन सा किया।",
+  "dialogue.ada.option.quests": "क्या करना बाकी है?",
+  "dialogue.ada.option.report": "मैंने एक काम पूरा किया",
+  "dialogue.ada.option.wood": "जलाने की लकड़ी जुटाना",
+  "dialogue.ada.option.fence": "बगीचे में बाड़ लगाना",
+  "dialogue.ada.option.greet": "पिप से मिलकर आना",
+
   "touch.stick": "चलने की स्टिक",
   "touch.interact": "उपयोग करें",
   "touch.place": "रखें",

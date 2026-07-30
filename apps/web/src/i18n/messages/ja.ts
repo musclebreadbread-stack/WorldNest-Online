@@ -66,6 +66,35 @@ export const ja: LocaleMessages = {
   "settings.mute": "すべての音を消す",
   "settings.soundHint": "最初のクリックの後に音が鳴り始めます。",
 
+  "npc.pip.name": "庭師のピップ",
+  "npc.juno.name": "店主のジュノ",
+  "npc.ada.name": "探検家のエイダ",
+
+  "dialogue.close": "会話を終える",
+  "dialogue.hint": "1-4 キーを押すか、答えをタップしてください",
+  "dialogue.option.bye": "またね！",
+  "dialogue.option.back": "別のことを聞きたいな",
+  "dialogue.pip.greeting":
+    "ワールドネストへようこそ！このあたりの花壇の世話をしています。何か手伝えることはありますか？",
+  "dialogue.pip.tips":
+    "草地の前に立って E を押すと畑になり、もう一度押すと種をまけます。数時間ほどしたら小麦が実っていますよ。",
+  "dialogue.pip.option.tips": "畑はどう始めるの？",
+  "dialogue.juno.greeting":
+    "小さなお店にようこそ！集めてきたものを買い取り、必要なものを売っています。",
+  "dialogue.juno.prices":
+    "売る値段より少し安く買い取ります。そうしないとお店が続かないので。それでもたくさん集めればちゃんと儲かりますよ。",
+  "dialogue.juno.option.shop": "品物を見せて",
+  "dialogue.juno.option.prices": "値段はどう決まるの？",
+  "dialogue.ada.greeting":
+    "やあ、探検家さん！村でやるべき仕事を一覧にしてあります。",
+  "dialogue.ada.quests": "ひとつ選んでくれたら、名前を書いておきますね。",
+  "dialogue.ada.report": "終わりましたか？どの仕事をしたか教えてください。",
+  "dialogue.ada.option.quests": "どんな仕事があるの？",
+  "dialogue.ada.option.report": "仕事を終えたよ",
+  "dialogue.ada.option.wood": "たきぎを集める",
+  "dialogue.ada.option.fence": "庭に柵を立てる",
+  "dialogue.ada.option.greet": "ピップに挨拶する",
+
   "touch.stick": "移動スティック",
   "touch.interact": "つかう",
   "touch.place": "設置",

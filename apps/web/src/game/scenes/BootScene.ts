@@ -8,6 +8,7 @@ import {
 } from "@worldnest/game-engine";
 import type { Facing } from "@worldnest/game-engine";
 import { ITEM_DEFINITIONS, PLACEABLE_ITEM_IDS } from "@worldnest/shared";
+import { generateNpcTextures } from "./npcTextures";
 
 /** Directions the placeholder player spritesheet covers. */
 const PLAYER_DIRECTIONS: Facing[] = ["down", "up", "left", "right"];
@@ -47,6 +48,9 @@ export class BootScene extends Phaser.Scene {
 
     // Generate one placeholder per placeable structure
     this.generateStructureSprites();
+
+    // Generate one placeholder per NPC in the catalogue
+    generateNpcTextures(this);
 
     // Transition to game scene
     this.scene.start("GameScene");
@@ -262,4 +266,5 @@ export class BootScene extends Phaser.Scene {
       graphics.destroy();
     }
   }
+
 }

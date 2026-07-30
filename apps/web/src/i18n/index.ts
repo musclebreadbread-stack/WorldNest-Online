@@ -125,6 +125,19 @@ export function isLocale(value: string): value is Locale {
 }
 
 /**
+ * Whether a string is a key the catalogue knows.
+ *
+ * The engine stores translatable content as bare strings — dialogue `textKey`s,
+ * option `labelKey`s and NPC `nameKey`s (decision D8) — because it must not
+ * depend on the web app's `MessageKey` type. This is the narrowing that lets a
+ * component translate one, and `i18n.test.ts` uses it to assert that *every* key
+ * in the engine catalogues resolves here, which is the automated guard for D8.
+ */
+export function isMessageKey(value: string): value is MessageKey {
+  return value in en;
+}
+
+/**
  * Best supported locale for a browser language tag.
  * Matches the full tag first, then the primary subtag, so `ko-KR` → `ko` and
  * `pt-BR` → `pt`; anything unknown falls back to English.

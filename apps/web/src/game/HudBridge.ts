@@ -1,4 +1,6 @@
+import { activeNode, getNpcDefinition } from "@worldnest/game-engine";
 import type {
+  DialogueComponent,
   Entity,
   InventoryComponent,
   PositionComponent,
@@ -7,9 +9,11 @@ import type {
 } from "@worldnest/game-engine";
 import {
   CLOCK_CHANGED_EVENT,
+  DIALOGUE_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
   STATS_CHANGED_EVENT,
+  type DialogueChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type StatsChangedEvent,
@@ -33,6 +37,9 @@ export class HudBridge {
   private lastInventoryVersion = -1;
   private lastHealth = -1;
   private lastEnergy = -1;
+  /** Starts at the component's own initial version, so a closed conversation
+   * publishes nothing on the first frame. */
+  private lastDialogueVersion = 0;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -46,6 +53,7 @@ export class HudBridge {
     this.emitClock();
     this.emitInventory();
     this.emitStats();
+    this.emitDialogue();
   }
 
   private emitPosition(): void {
@@ -98,5 +106,29 @@ export class HudBridge {
       maxEnergy: stats.maxEnergy,
     };
     this.emitter.emit(STATS_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Publish the active conversation whenever `NpcSystem` accepted a change.
+   *
+   * The node is resolved here rather than in React so the panel never needs the
+   * dialogue graph, and what crosses is keys only — the panel translates them.
+   */
+  private emitDialogue(): void {
+    const dialogue = this.playerEntity.getComponent<DialogueComponent>("dialogue");
+    if (!dialogue || dialogue.version === this.lastDialogueVersion) return;
+
+    this.lastDialogueVersion = dialogue.version;
+    const node = activeNode(dialogue);
+    const definition = dialogue.activeNpcId
+      ? getNpcDefinition(dialogue.activeNpcId)
+      : undefined;
+    const payload: DialogueChangedEvent = {
+      npcId: dialogue.activeNpcId,
+      nameKey: definition?.nameKey ?? null,
+      textKey: node?.textKey ?? null,
+      options: node?.options ?? [],
+    };
+    this.emitter.emit(DIALOGUE_CHANGED_EVENT, payload);
   }
 }

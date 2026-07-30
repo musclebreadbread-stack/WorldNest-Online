@@ -66,6 +66,35 @@ export const vi: LocaleMessages = {
   "settings.mute": "Tắt toàn bộ âm thanh",
   "settings.soundHint": "Âm thanh bắt đầu sau lần nhấp đầu tiên của bạn.",
 
+  "npc.pip.name": "Pip người làm vườn",
+  "npc.juno.name": "Juno chủ tiệm",
+  "npc.ada.name": "Ada nhà thám hiểm",
+
+  "dialogue.close": "Kết thúc trò chuyện",
+  "dialogue.hint": "Nhấn 1-4 hoặc chạm vào một câu trả lời",
+  "dialogue.option.bye": "Hẹn gặp lại nhé!",
+  "dialogue.option.back": "Tôi muốn hỏi chuyện khác",
+  "dialogue.pip.greeting":
+    "Chào mừng đến WorldNest! Tôi chăm mấy luống hoa quanh đây. Cần tôi giúp gì không?",
+  "dialogue.pip.tips":
+    "Đứng cạnh một khoảnh cỏ rồi nhấn E để biến nó thành ruộng, nhấn E lần nữa để gieo hạt. Vài giờ sau quay lại là lúa mì đã chín.",
+  "dialogue.pip.option.tips": "Bắt đầu trồng trọt thế nào?",
+  "dialogue.juno.greeting":
+    "Chào mừng đến tiệm nhỏ của tôi! Bạn thu được gì tôi mua, bạn còn thiếu gì tôi bán.",
+  "dialogue.juno.prices":
+    "Tôi mua thấp hơn giá bán một chút, nhờ vậy tiệm mới trụ được. Nhưng thu thập nhiều thì bạn vẫn có lời.",
+  "dialogue.juno.option.shop": "Cho tôi xem hàng",
+  "dialogue.juno.option.prices": "Giá cả tính ra sao?",
+  "dialogue.ada.greeting":
+    "Chào nhà thám hiểm! Tôi giữ một danh sách những việc làng đang cần.",
+  "dialogue.ada.quests": "Chọn một việc đi, tôi ghi tên bạn vào bên cạnh.",
+  "dialogue.ada.report": "Xong rồi à? Cho tôi biết bạn đã làm việc nào.",
+  "dialogue.ada.option.quests": "Có việc gì cần làm?",
+  "dialogue.ada.option.report": "Tôi đã xong một việc",
+  "dialogue.ada.option.wood": "Thu gom củi",
+  "dialogue.ada.option.fence": "Rào lại khu vườn",
+  "dialogue.ada.option.greet": "Đi chào Pip",
+
   "touch.stick": "Cần điều khiển di chuyển",
   "touch.interact": "Dùng",
   "touch.place": "Đặt",

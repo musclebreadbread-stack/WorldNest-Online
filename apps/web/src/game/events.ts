@@ -3,7 +3,11 @@
  * Emitted on `game.events` by scenes, consumed by components.
  */
 
-import type { ClockSnapshot, InventorySlot } from "@worldnest/game-engine";
+import type {
+  ClockSnapshot,
+  DialogueOption,
+  InventorySlot,
+} from "@worldnest/game-engine";
 
 export const PLAYERS_CHANGED_EVENT = "players-changed";
 
@@ -39,4 +43,19 @@ export interface StatsChangedEvent {
   maxHealth: number;
   energy: number;
   maxEnergy: number;
+}
+
+export const DIALOGUE_CHANGED_EVENT = "dialogue-changed";
+
+/**
+ * The conversation the player is currently in, or every field empty when none is.
+ *
+ * Only i18n **keys** cross the bridge (decision D8): the engine owns the dialogue
+ * graph, `DialoguePanel` owns the language.
+ */
+export interface DialogueChangedEvent {
+  npcId: string | null;
+  nameKey: string | null;
+  textKey: string | null;
+  options: DialogueOption[];
 }

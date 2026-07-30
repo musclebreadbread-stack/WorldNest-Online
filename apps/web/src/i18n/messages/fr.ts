@@ -66,6 +66,35 @@ export const fr: LocaleMessages = {
   "settings.mute": "Couper tous les sons",
   "settings.soundHint": "Le son démarre après votre premier clic.",
 
+  "npc.pip.name": "Pip le jardinier",
+  "npc.juno.name": "Juno la commerçante",
+  "npc.ada.name": "Ada l'exploratrice",
+
+  "dialogue.close": "Prendre congé",
+  "dialogue.hint": "Appuie sur 1-4 ou touche une réponse",
+  "dialogue.option.bye": "À bientôt !",
+  "dialogue.option.back": "J'ai une autre question",
+  "dialogue.pip.greeting":
+    "Bienvenue dans WorldNest ! Je m'occupe des massifs de fleurs du coin. Je peux t'aider ?",
+  "dialogue.pip.tips":
+    "Place-toi devant un carré d'herbe et appuie sur E pour en faire un champ, puis encore une fois pour semer. Reviens dans quelques heures et le blé sera mûr.",
+  "dialogue.pip.option.tips": "Comment démarrer un potager ?",
+  "dialogue.juno.greeting":
+    "Bienvenue dans ma petite boutique ! J'achète ce que tu récoltes et je vends ce qui te manque.",
+  "dialogue.juno.prices":
+    "Je paie un peu moins que je ne vends, c'est ce qui fait vivre la boutique. Récolte beaucoup et tu resteras gagnant.",
+  "dialogue.juno.option.shop": "Montre-moi ta marchandise",
+  "dialogue.juno.option.prices": "Comment fixes-tu tes prix ?",
+  "dialogue.ada.greeting":
+    "Salut, exploratrice ! Je tiens la liste des travaux à faire au village.",
+  "dialogue.ada.quests": "Choisis un travail et j'inscris ton nom à côté.",
+  "dialogue.ada.report": "C'est terminé ? Dis-moi lequel tu as fait.",
+  "dialogue.ada.option.quests": "Qu'y a-t-il à faire ?",
+  "dialogue.ada.option.report": "J'ai terminé un travail",
+  "dialogue.ada.option.wood": "Ramasser du bois de chauffage",
+  "dialogue.ada.option.fence": "Clôturer le jardin",
+  "dialogue.ada.option.greet": "Aller saluer Pip",
+
   "touch.stick": "Manette de déplacement",
   "touch.interact": "Utiliser",
   "touch.place": "Placer",

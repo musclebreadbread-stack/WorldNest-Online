@@ -66,6 +66,35 @@ export const pt: LocaleMessages = {
   "settings.mute": "Silenciar todos os sons",
   "settings.soundHint": "O som começa após o seu primeiro clique.",
 
+  "npc.pip.name": "Pip o jardineiro",
+  "npc.juno.name": "Juno a lojista",
+  "npc.ada.name": "Ada a exploradora",
+
+  "dialogue.close": "Despedir-se",
+  "dialogue.hint": "Pressione 1-4 ou toque numa resposta",
+  "dialogue.option.bye": "Até logo!",
+  "dialogue.option.back": "Quero perguntar outra coisa",
+  "dialogue.pip.greeting":
+    "Bem-vindo ao WorldNest! Eu cuido dos canteiros de flores por aqui. Precisa de ajuda com algo?",
+  "dialogue.pip.tips":
+    "Fique ao lado de um pedaço de grama e pressione E para virar uma horta; pressione E de novo para semear. Volte algumas horas depois e o trigo estará pronto.",
+  "dialogue.pip.option.tips": "Como começo uma horta?",
+  "dialogue.juno.greeting":
+    "Bem-vindo à minha lojinha! Compro tudo o que você coleta e vendo o que ainda falta.",
+  "dialogue.juno.prices":
+    "Pago um pouco menos do que cobro, é assim que a loja se mantém. Mesmo assim, colete bastante e você sai ganhando.",
+  "dialogue.juno.option.shop": "Mostre o que você tem",
+  "dialogue.juno.option.prices": "Como são os seus preços?",
+  "dialogue.ada.greeting":
+    "Olá, exploradora! Eu mantenho uma lista de tarefas que a vila precisa.",
+  "dialogue.ada.quests": "Escolha uma tarefa e eu anoto o seu nome ao lado.",
+  "dialogue.ada.report": "Já terminou? Diga qual tarefa você fez.",
+  "dialogue.ada.option.quests": "O que precisa ser feito?",
+  "dialogue.ada.option.report": "Terminei uma tarefa",
+  "dialogue.ada.option.wood": "Juntar lenha",
+  "dialogue.ada.option.fence": "Cercar o jardim",
+  "dialogue.ada.option.greet": "Cumprimentar o Pip",
+
   "touch.stick": "Alavanca de movimento",
   "touch.interact": "Usar",
   "touch.place": "Colocar",

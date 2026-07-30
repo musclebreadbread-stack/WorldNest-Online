@@ -66,6 +66,35 @@ export const zh: LocaleMessages = {
   "settings.mute": "静音全部声音",
   "settings.soundHint": "首次点击后才会开始播放声音。",
 
+  "npc.pip.name": "园丁皮普",
+  "npc.juno.name": "店主朱诺",
+  "npc.ada.name": "探险家艾达",
+
+  "dialogue.close": "结束对话",
+  "dialogue.hint": "按 1-4 或点选一个回答",
+  "dialogue.option.bye": "下次再聊！",
+  "dialogue.option.back": "我想问点别的",
+  "dialogue.pip.greeting":
+    "欢迎来到 WorldNest！这一带的花圃都由我照料。有什么需要帮忙的吗？",
+  "dialogue.pip.tips":
+    "站在草地旁按 E 就能翻成田地，再按一次就能播下种子。过几个小时回来，小麦就熟了。",
+  "dialogue.pip.option.tips": "怎么开始种田？",
+  "dialogue.juno.greeting":
+    "欢迎光临我的小店！你采集来的东西我都收，你需要的东西这里都卖。",
+  "dialogue.juno.prices":
+    "我收货的价钱会比卖价低一点，这样小店才开得下去。不过只要多采集，你还是划得来的。",
+  "dialogue.juno.option.shop": "让我看看你的货",
+  "dialogue.juno.option.prices": "价钱是怎么定的？",
+  "dialogue.ada.greeting":
+    "你好，探险家！村里要做的事我都记在一张单子上。",
+  "dialogue.ada.quests": "挑一件吧，我把你的名字记在旁边。",
+  "dialogue.ada.report": "都做完了吗？告诉我你完成了哪一件。",
+  "dialogue.ada.option.quests": "有什么要做的？",
+  "dialogue.ada.option.report": "我完成了一件事",
+  "dialogue.ada.option.wood": "收集柴火",
+  "dialogue.ada.option.fence": "给花园围上栅栏",
+  "dialogue.ada.option.greet": "去跟皮普打招呼",
+
   "touch.stick": "移动摇杆",
   "touch.interact": "使用",
   "touch.place": "放置",

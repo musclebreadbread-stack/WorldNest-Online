@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { ITEM_IDS } from "@worldnest/shared";
+import { DIALOGUE_DEFINITIONS, NPC_DEFINITIONS } from "@worldnest/game-engine";
 import {
   ITEM_NAME_KEYS,
   DEFAULT_LOCALE,
@@ -8,6 +9,7 @@ import {
   MESSAGES,
   RTL_LOCALES,
   isLocale,
+  isMessageKey,
   localeDirection,
   resolveLocale,
   translate,
@@ -67,6 +69,44 @@ describe("message catalogue", () => {
         expect(translate(locale, key), `${locale} ${itemId}`).not.toBe(key);
       }
     }
+  });
+
+  // The automated guard for decision D8: translatable content in the engine is
+  // stored as keys, so every one of those keys has to exist here.
+  it("should resolve every engine dialogue key in every locale", () => {
+    for (const [dialogueId, definition] of Object.entries(DIALOGUE_DEFINITIONS)) {
+      for (const [nodeId, node] of Object.entries(definition.nodes)) {
+        const keys = [node.textKey, ...node.options.map((o) => o.labelKey)];
+
+        for (const key of keys) {
+          expect(isMessageKey(key), `${dialogueId}.${nodeId} ${key}`).toBe(true);
+          if (!isMessageKey(key)) continue;
+
+          for (const locale of LOCALES) {
+            expect(translate(locale, key), `${locale} ${key}`).not.toBe(key);
+          }
+        }
+      }
+    }
+  });
+
+  it("should resolve every engine NPC name key in every locale", () => {
+    for (const definition of NPC_DEFINITIONS) {
+      expect(isMessageKey(definition.nameKey), definition.id).toBe(true);
+      if (!isMessageKey(definition.nameKey)) continue;
+
+      for (const locale of LOCALES) {
+        expect(
+          translate(locale, definition.nameKey),
+          `${locale} ${definition.id}`,
+        ).not.toBe(definition.nameKey);
+      }
+    }
+  });
+
+  it("should reject a key the catalogue has never heard of", () => {
+    expect(isMessageKey("dialogue.nobody.line")).toBe(false);
+    expect(isMessageKey("inventory.title")).toBe(true);
   });
 
   it("should give Korean exactly the English key set with no empty values", () => {

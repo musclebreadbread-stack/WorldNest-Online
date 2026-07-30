@@ -66,6 +66,35 @@ export const ko: LocaleMessages = {
   "settings.mute": "모든 소리 끄기",
   "settings.soundHint": "첫 클릭 후에 소리가 시작됩니다.",
 
+  "npc.pip.name": "정원사 핍",
+  "npc.juno.name": "상점 주인 주노",
+  "npc.ada.name": "탐험가 에이다",
+
+  "dialogue.close": "대화 끝내기",
+  "dialogue.hint": "1-4 키를 누르거나 답을 눌러 주세요",
+  "dialogue.option.bye": "다음에 또 봐요!",
+  "dialogue.option.back": "다른 걸 물어볼게요",
+  "dialogue.pip.greeting":
+    "월드네스트에 온 걸 환영해요! 저는 이 근처 화단을 돌보고 있어요. 도와줄 일이 있을까요?",
+  "dialogue.pip.tips":
+    "풀밭 앞에 서서 E 를 누르면 밭이 되고, 한 번 더 누르면 씨앗을 심을 수 있어요. 몇 시간 뒤에 오면 밀이 다 자라 있을 거예요.",
+  "dialogue.pip.option.tips": "농사는 어떻게 시작해요?",
+  "dialogue.juno.greeting":
+    "제 작은 상점에 잘 오셨어요! 모아 온 물건은 사들이고, 필요한 물건은 팔고 있어요.",
+  "dialogue.juno.prices":
+    "파는 값보다 사는 값을 조금 낮게 드려요. 그래야 상점이 유지되니까요. 그래도 많이 모아 오면 충분히 이득이에요.",
+  "dialogue.juno.option.shop": "물건을 보여 주세요",
+  "dialogue.juno.option.prices": "가격은 어떻게 정해져요?",
+  "dialogue.ada.greeting":
+    "안녕, 탐험가! 마을에서 해야 할 일들을 목록으로 적어 두고 있어요.",
+  "dialogue.ada.quests": "하나 골라 주면 이름을 적어 둘게요.",
+  "dialogue.ada.report": "다 끝냈나요? 어떤 일을 했는지 알려 주세요.",
+  "dialogue.ada.option.quests": "무슨 일이 있어요?",
+  "dialogue.ada.option.report": "일을 끝냈어요",
+  "dialogue.ada.option.wood": "땔감 모으기",
+  "dialogue.ada.option.fence": "정원에 울타리 세우기",
+  "dialogue.ada.option.greet": "핍에게 인사하기",
+
   "touch.stick": "이동 스틱",
   "touch.interact": "사용",
   "touch.place": "설치",

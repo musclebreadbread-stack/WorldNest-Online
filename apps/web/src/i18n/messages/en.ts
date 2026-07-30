@@ -73,6 +73,35 @@ export const en = {
   "settings.mute": "Mute all sound",
   "settings.soundHint": "Sound starts after your first click.",
 
+  "npc.pip.name": "Pip the Gardener",
+  "npc.juno.name": "Juno the Shopkeeper",
+  "npc.ada.name": "Ada the Explorer",
+
+  "dialogue.close": "Leave",
+  "dialogue.hint": "Press 1-4 or tap an answer",
+  "dialogue.option.bye": "Goodbye for now!",
+  "dialogue.option.back": "Ask something else",
+  "dialogue.pip.greeting":
+    "Welcome to WorldNest! I look after the flower beds around here. Can I help with anything?",
+  "dialogue.pip.tips":
+    "Stand next to a patch of grass and press E to turn it into a field, then press E again to sow your seeds. Come back in a few hours and the wheat will be ready.",
+  "dialogue.pip.option.tips": "How do I start a farm?",
+  "dialogue.juno.greeting":
+    "Welcome to my little shop! I buy whatever you gather and sell whatever you still need.",
+  "dialogue.juno.prices":
+    "I pay a bit less than I charge, which is how the shop keeps going. Gather plenty and you will still come out ahead.",
+  "dialogue.juno.option.shop": "Show me what you have",
+  "dialogue.juno.option.prices": "How do your prices work?",
+  "dialogue.ada.greeting":
+    "Hello there, explorer! I keep a list of jobs that need doing around the village.",
+  "dialogue.ada.quests": "Pick a job and I will write your name next to it.",
+  "dialogue.ada.report": "All finished? Tell me which job you did.",
+  "dialogue.ada.option.quests": "What needs doing?",
+  "dialogue.ada.option.report": "I finished a job",
+  "dialogue.ada.option.wood": "Gather firewood",
+  "dialogue.ada.option.fence": "Fence the garden",
+  "dialogue.ada.option.greet": "Say hello to Pip",
+
   "touch.stick": "Movement stick",
   "touch.interact": "Use",
   "touch.place": "Place",

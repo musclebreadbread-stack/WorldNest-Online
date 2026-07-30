@@ -8,6 +8,7 @@ import { useUIStore } from "../stores/uiStore";
 import { BuildMenu } from "./BuildMenu";
 import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
+import { DialoguePanel } from "./DialoguePanel";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
 import { SettingsPanel } from "./SettingsPanel";
@@ -97,6 +98,11 @@ export function GameUI() {
         <div className="max-w-xs rounded bg-black/70 px-3 py-2 text-xs text-gray-300">
           {t("hud.controls")}
         </div>
+      </div>
+
+      {/* Bottom-centre: the conversation box, clear of the bars and hotbar */}
+      <div className="absolute bottom-40 left-1/2 -translate-x-1/2 pointer-events-auto">
+        <DialoguePanel />
       </div>
 
       {/* Bottom-centre: health/energy bars above the hotbar */}

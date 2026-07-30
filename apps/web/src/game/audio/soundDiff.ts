@@ -1,5 +1,6 @@
 import type {
   DayPhase,
+  DialogueComponent,
   Entity,
   InventoryComponent,
   StatsComponent,
@@ -20,6 +21,8 @@ export interface SoundState {
   buildMode: boolean;
   /** Live chat arrivals since the session started, not the log length. */
   chatCount: number;
+  /** `DialogueComponent.version`; bumped by every accepted conversation change. */
+  dialogueVersion: number;
   phase: DayPhase;
 }
 
@@ -49,6 +52,8 @@ export function diffCues(prev: SoundState | null, next: SoundState): SoundCue[] 
   if (next.buildMode !== prev.buildMode || next.chatCount > prev.chatCount) {
     cues.push("ui");
   }
+  // A conversation opening, moving on or ending is one line of dialogue
+  if (next.dialogueVersion > prev.dialogueVersion) cues.push("dialogue");
 
   return cues;
 }
@@ -65,12 +70,14 @@ export function readSoundState(
 ): SoundState {
   const inventory = playerEntity.getComponent<InventoryComponent>("inventory");
   const stats = playerEntity.getComponent<StatsComponent>("stats");
+  const dialogue = playerEntity.getComponent<DialogueComponent>("dialogue");
 
   return {
     inventoryVersion: inventory?.version ?? 0,
     energy: stats?.energy ?? 0,
     buildMode,
     chatCount,
+    dialogueVersion: dialogue?.version ?? 0,
     phase,
   };
 }
