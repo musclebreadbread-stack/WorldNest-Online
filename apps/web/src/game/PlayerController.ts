@@ -8,7 +8,9 @@ import type {
   InventoryComponent,
 } from "@worldnest/game-engine";
 import { HOTBAR_SLOTS } from "@worldnest/shared";
+import { mergeInput, TOUCH_DEADZONE } from "./inputMerge";
 import { useChatStore } from "../stores/chatStore";
+import { useTouchStore } from "../stores/touchStore";
 import { useUIStore } from "../stores/uiStore";
 
 /** Minimum gap between interaction requests, so a held key does not spam. */
@@ -117,11 +119,18 @@ export class PlayerController {
     );
   }
 
-  /** Poll held keys into the input component. Call once per frame. */
+  /**
+   * Poll held keys and the virtual stick into the input component, and act on any
+   * touch button tapped since the last frame. Call once per frame.
+   */
   update(): void {
     if (!this.cursors || !this.moveKeys) return;
 
     const input = this.playerEntity.getComponent<InputComponent>("input")!;
+    const touch = useTouchStore.getState();
+    // Consumed before the typing gate so a tap that arrives while the composer
+    // has focus is dropped, exactly as `whenPlaying` drops a keypress.
+    const requests = touch.consumeRequests();
 
     // While the chat input has focus the movement keys are typing, not walking
     if (isTyping()) {
@@ -132,12 +141,28 @@ export class PlayerController {
       return;
     }
 
-    input.keys.up = this.cursors.up.isDown || this.moveKeys.W.isDown;
-    input.keys.down = this.cursors.down.isDown || this.moveKeys.S.isDown;
-    input.keys.left = this.cursors.left.isDown || this.moveKeys.A.isDown;
-    input.keys.right = this.cursors.right.isDown || this.moveKeys.D.isDown;
+    const merged = mergeInput(
+      {
+        up: this.cursors.up.isDown || this.moveKeys.W.isDown,
+        down: this.cursors.down.isDown || this.moveKeys.S.isDown,
+        left: this.cursors.left.isDown || this.moveKeys.A.isDown,
+        right: this.cursors.right.isDown || this.moveKeys.D.isDown,
+      },
+      touch.axisX,
+      touch.axisY,
+      TOUCH_DEADZONE,
+    );
+    input.keys.up = merged.up;
+    input.keys.down = merged.down;
+    input.keys.left = merged.left;
+    input.keys.right = merged.right;
 
     this.updateFacing(input);
+
+    // Touch goes through the same cooldown-gated helpers as `E` and `Q`, so a
+    // tapping thumb cannot act faster than a held key.
+    if (requests.interact) this.requestInteract();
+    if (requests.build) this.requestBuild();
   }
 
   /**
