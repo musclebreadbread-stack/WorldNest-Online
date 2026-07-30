@@ -10,3 +10,20 @@ export interface StructureQuery {
   /** Whether a structure on the tile blocks movement. */
   isBlockedByStructure(tileX: number, tileY: number): boolean;
 }
+
+/**
+ * Treat several occupancy sources as one.
+ *
+ * `CollisionSystem` takes a single `StructureQuery`, and by design it does not
+ * know what is filling it: `composeBlockers(build, npc)` is what makes a
+ * villager as solid as a fence without either system learning about the other.
+ * A tile is blocked when any source says so.
+ */
+export function composeBlockers(...queries: StructureQuery[]): StructureQuery {
+  return {
+    hasStructureAt: (tileX, tileY) =>
+      queries.some((query) => query.hasStructureAt(tileX, tileY)),
+    isBlockedByStructure: (tileX, tileY) =>
+      queries.some((query) => query.isBlockedByStructure(tileX, tileY)),
+  };
+}

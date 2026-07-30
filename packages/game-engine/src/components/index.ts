@@ -15,6 +15,7 @@ export { StatsComponent } from "./StatsComponent";
 export { InteractionComponent } from "./InteractionComponent";
 export { CropComponent } from "./CropComponent";
 export { DialogueComponent } from "./DialogueComponent";
+export { NpcComponent } from "./NpcComponent";
 export { StructureComponent } from "./StructureComponent";
 export {
   AnimationComponent,

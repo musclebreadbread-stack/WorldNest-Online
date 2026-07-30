@@ -13,6 +13,7 @@ import {
   InventoryComponent,
   StatsComponent,
   InteractionComponent,
+  DialogueComponent,
   AnimationComponent,
   TimeSystem,
   InputSystem,
@@ -21,6 +22,7 @@ import {
   ChunkSystem,
   InterpolationSystem,
   StatsSystem,
+  NpcSystem,
   PlantSystem,
   CropGrowthSystem,
   BuildSystem,
@@ -30,6 +32,7 @@ import {
   RenderSystem,
   WorldManager,
   addItem,
+  composeBlockers,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED, type ItemId } from "@worldnest/shared";
@@ -85,6 +88,7 @@ export interface GameWorldSystems {
   chunk: ChunkSystem;
   interpolation: InterpolationSystem;
   stats: StatsSystem;
+  npc: NpcSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
   build: BuildSystem;
@@ -157,17 +161,24 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   // Building owns the structure occupancy index, which collision reads as walls
   const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity));
 
+  // NPCs own their own occupancy index; composed with the structures below so a
+  // villager is as solid as a fence without collision knowing either exists.
+  const npc = new NpcSystem(worldManager, (entity) => world.addEntity(entity));
+
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
-    collision: new CollisionSystem(worldManager, build),
+    collision: new CollisionSystem(worldManager, composeBlockers(build, npc)),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
     stats: new StatsSystem(() => timeComponent.snapshot.phase),
+    // NPCs run before planting so talking to one can never till the ground they
+    // are standing on: they consume the interact request first.
+    npc,
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
     build,
@@ -188,6 +199,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.chunk);
   world.addSystem(systems.interpolation);
   world.addSystem(systems.stats);
+  world.addSystem(systems.npc);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
   world.addSystem(systems.build);
@@ -221,6 +233,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(inventory)
     .addComponent(new StatsComponent())
     .addComponent(new InteractionComponent())
+    .addComponent(new DialogueComponent())
     .addComponent(new AnimationComponent());
 
   world.addEntity(playerEntity);

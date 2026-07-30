@@ -18,4 +18,5 @@ export type { CropSource } from "./PlantSystem";
 export { CropGrowthSystem, cropStageAt, isCropMature } from "./CropGrowthSystem";
 export type { MinuteGetter } from "./CropGrowthSystem";
 export { BuildSystem, structureEntityId } from "./BuildSystem";
+export { NpcSystem, npcEntityId } from "./NpcSystem";
 export { AnimationSystem } from "./AnimationSystem";

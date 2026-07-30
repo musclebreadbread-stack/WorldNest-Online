@@ -10,14 +10,18 @@ import {
   addItem,
   countItem,
   cropEntityId,
+  npcEntityId,
   selectSlot,
   structureEntityId,
 } from "@worldnest/game-engine";
 import type {
   AnimationComponent,
   CropComponent,
+  DialogueComponent,
+  Entity,
   InteractionComponent,
   InventoryComponent,
+  NpcComponent,
   RemoteInterpolationComponent,
   StatsComponent,
 } from "@worldnest/game-engine";
@@ -325,6 +329,115 @@ describe("building wiring", () => {
 
     expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(
       STAND_TILE_X * TILE_SIZE,
+    );
+  });
+});
+
+describe("NPC wiring", () => {
+  /**
+   * An NPC with open ground immediately to its west, so a player standing there
+   * faces it by looking right. Searched rather than hard-coded: NPC tiles come
+   * from a spiral search over generated terrain, so they move when it does.
+   */
+  function findApproachableNpc() {
+    const probe = createGameWorld(BOOTSTRAP);
+    probe.world.update(1 / 60);
+
+    for (const npcEntity of probe.systems.npc.getNpcs().values()) {
+      const npc = (npcEntity as Entity).getComponent<NpcComponent>("npc")!;
+      const standTileX = npc.tileX - 1;
+      if (probe.systems.npc.getNpcAt(standTileX, npc.tileY)) continue;
+      const standTile = probe.worldManager.getTileAt(standTileX, npc.tileY);
+      if (!TILE_PROPERTIES[standTile].walkable) continue;
+
+      return {
+        npcId: npc.npcId,
+        dialogueId: npc.dialogueId,
+        npcTileX: npc.tileX,
+        npcTileY: npc.tileY,
+        standTileX,
+        spawnX: standTileX * TILE_SIZE + TILE_SIZE / 2,
+        spawnY: npc.tileY * TILE_SIZE + TILE_SIZE / 2,
+      };
+    }
+
+    throw new Error("no NPC with a walkable tile to its west");
+  }
+
+  const NPC = findApproachableNpc();
+
+  function createWorldFacingNpc() {
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: NPC.spawnX,
+      spawnY: NPC.spawnY,
+    });
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    interaction.facing = "right";
+
+    return { context, interaction };
+  }
+
+  it("should place every NPC on the tile the engine resolved for it", () => {
+    const context = createGameWorld(BOOTSTRAP);
+
+    context.world.update(1 / 60);
+
+    expect(context.systems.npc.getNpcs().size).toBeGreaterThan(0);
+    expect(context.world.getEntity(npcEntityId(NPC.npcId))).toBeDefined();
+  });
+
+  it("should open dialogue on an interact aimed at an NPC, and till nothing", () => {
+    const { context, interaction } = createWorldFacingNpc();
+    const dialogue =
+      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+
+    interaction.interactRequested = true;
+    context.world.update(1 / 60);
+
+    expect(dialogue.activeNpcId).toBe(NPC.npcId);
+    expect(dialogue.dialogueId).toBe(NPC.dialogueId);
+    expect(dialogue.nodeId).not.toBeNull();
+    // NpcSystem runs before PlantSystem and consumed the request, so the tile
+    // the NPC is standing on was never ploughed
+    expect(context.worldManager.getTileOverrides().size).toBe(0);
+    expect(context.worldManager.getTileAt(NPC.npcTileX, NPC.npcTileY)).not.toBe(
+      TileType.FARMLAND,
+    );
+    expect(interaction.interactRequested).toBe(false);
+  });
+
+  it("should advance the conversation from the option the HUD requests", () => {
+    const { context, interaction } = createWorldFacingNpc();
+    const dialogue =
+      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+
+    interaction.interactRequested = true;
+    context.world.update(1 / 60);
+    const rootNodeId = dialogue.nodeId;
+
+    dialogue.requestedOption = 0;
+    context.world.update(1 / 60);
+
+    expect(dialogue.nodeId).not.toBe(rootNodeId);
+    expect(dialogue.requestedOption).toBeNull();
+    expect(dialogue.version).toBe(2);
+  });
+
+  it("should stop the player from walking onto an NPC's tile", () => {
+    const { context } = createWorldFacingNpc();
+    const position = context.playerEntity.getComponent<PositionComponent>("position")!;
+    const input = context.playerEntity.getComponent<InputComponent>("input")!;
+    const collider = context.playerEntity.getComponent<ColliderComponent>("collider")!;
+
+    input.keys.right = true;
+    for (let frame = 0; frame < 120; frame++) {
+      context.world.update(1 / 60);
+    }
+
+    expect(position.x + collider.width / 2).toBeLessThanOrEqual(
+      NPC.npcTileX * TILE_SIZE,
     );
   });
 });
