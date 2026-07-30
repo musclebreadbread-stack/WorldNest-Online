@@ -14,6 +14,8 @@ export { CROP_DEFINITIONS, isSeed } from "./Crops";
 export type { CropDefinition } from "./Crops";
 export { getTileKey, parseTileKey } from "./TileQuery";
 export type { TileQuery } from "./TileQuery";
+export { sampleMinimap, minimapTileAt } from "./minimap";
+export type { MinimapSample } from "./minimap";
 export type { StructureQuery } from "./StructureQuery";
 export { WorldClock, PHASE_START_HOURS } from "./WorldClock";
 export type { ClockSnapshot, DayPhase } from "./WorldClock";

@@ -96,6 +96,8 @@ export {
   isSeed,
   getTileKey,
   parseTileKey,
+  sampleMinimap,
+  minimapTileAt,
   WorldClock,
   PHASE_START_HOURS,
 } from "./world";
@@ -106,6 +108,7 @@ export type {
   TileChangeCallback,
   TileProperties,
   TileHarvestYield,
+  MinimapSample,
   BiomeDefinition,
   CropDefinition,
   TileQuery,
