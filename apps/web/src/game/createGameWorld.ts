@@ -52,9 +52,14 @@ export const BOOTSTRAP_REGISTRY_KEY = "bootstrap";
 
 export const LOCAL_PLAYER_ENTITY_ID = "local-player";
 
-/** Fallback spawn point used when no saved player state exists. */
-export const DEFAULT_SPAWN_X = 256;
-export const DEFAULT_SPAWN_Y = 256;
+/**
+ * Fallback spawn point used when no saved player state exists.
+ * Centre of tile (15, 10), which is open grassland for `WORLD_SEED` — terrain is
+ * deterministic, and now that collision is enabled a spawn inside water would
+ * trap the player.
+ */
+export const DEFAULT_SPAWN_X = 496;
+export const DEFAULT_SPAWN_Y = 336;
 
 /** Player collision box, slightly smaller than a tile so doorways feel forgiving. */
 export const PLAYER_COLLIDER_SIZE = 24;
