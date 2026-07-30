@@ -3,6 +3,7 @@ import {
   deleteStructure,
   savePlayerState,
   saveCrop,
+  saveQuests,
   saveStructure,
   saveWorldModification,
 } from "@worldnest/database";
@@ -14,6 +15,7 @@ import type {
   InventoryComponent,
   PlantSystem,
   PositionComponent,
+  QuestComponent,
   StructureComponent,
   TileType,
   WalletComponent,
@@ -21,6 +23,7 @@ import type {
 import { getChunkKey } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
 import { toPersistedInventory } from "../lib/inventorySnapshot";
+import { toPersistedQuests } from "../lib/questSnapshot";
 import type { GameBootstrap, GameWorldContext } from "./createGameWorld";
 
 /** Any database write; the result is inspected only to swallow failures. */
@@ -46,6 +49,9 @@ export class SessionPersistence {
   private lastX = Number.NaN;
   private lastY = Number.NaN;
   private lastInventoryVersion = -1;
+  private lastCoins = Number.NaN;
+  private lastQuestVersion = -1;
+  private writtenQuestVersion = -1;
   private knownStructures = new Set<string>();
   private knownCrops = new Set<string>();
   private onUnload = () => this.flush();
@@ -62,11 +68,14 @@ export class SessionPersistence {
     this.playerEntity = playerEntity;
     this.build = build;
     this.plant = plant;
-    this.scheduler = new SaveScheduler(() => this.writePlayerState());
+    this.scheduler = new SaveScheduler(() => this.writeSession());
 
-    // Restored structures and crops are already persisted; only new ones count
+    // Restored structures, crops and quests are already persisted; only changes
+    // made during this session are worth writing back.
     this.knownStructures = new Set(build.getStructures().keys());
     this.knownCrops = new Set(plant.getCrops().keys());
+    this.writtenQuestVersion =
+      playerEntity.getComponent<QuestComponent>("quest")?.version ?? -1;
 
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", this.onUnload);
@@ -106,15 +115,23 @@ export class SessionPersistence {
     }
   }
 
-  /** Mark the session dirty when the player moved or their inventory changed. */
+  /**
+   * Mark the session dirty when the player moved, or their inventory, coins or
+   * quest log changed. Coins and quests are diffed here rather than written
+   * eagerly so a shopping spree still costs one save per interval.
+   */
   private trackPlayerState(): void {
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet")!;
+    const quests = this.playerEntity.getComponent<QuestComponent>("quest")!;
 
     if (
       position.x === this.lastX &&
       position.y === this.lastY &&
-      inventory.version === this.lastInventoryVersion
+      inventory.version === this.lastInventoryVersion &&
+      wallet.coins === this.lastCoins &&
+      quests.version === this.lastQuestVersion
     ) {
       return;
     }
@@ -122,7 +139,14 @@ export class SessionPersistence {
     this.lastX = position.x;
     this.lastY = position.y;
     this.lastInventoryVersion = inventory.version;
+    this.lastCoins = wallet.coins;
+    this.lastQuestVersion = quests.version;
     this.scheduler.markDirty();
+  }
+
+  private writeSession(): void {
+    this.writePlayerState();
+    this.writeQuests();
   }
 
   private writePlayerState(): void {
@@ -139,6 +163,24 @@ export class SessionPersistence {
         coins: wallet.coins,
       }),
     );
+  }
+
+  /**
+   * Write the quest log, which lives in its own table.
+   *
+   * Skipped unless the version moved since the last write: a save triggered by
+   * walking around must not re-upsert every quest row, and an empty log has
+   * nothing to say.
+   */
+  private writeQuests(): void {
+    const quests = this.playerEntity.getComponent<QuestComponent>("quest")!;
+    if (quests.version === this.writtenQuestVersion) return;
+
+    this.writtenQuestVersion = quests.version;
+    const rows = toPersistedQuests(quests);
+    if (rows.length === 0) return;
+
+    this.write(() => saveQuests(this.playerId, rows));
   }
 
   /**

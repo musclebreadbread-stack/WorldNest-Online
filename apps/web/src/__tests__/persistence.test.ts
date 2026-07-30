@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   InventoryComponent,
+  QuestComponent,
   TileType,
   addItem,
   countItem,
@@ -8,14 +9,19 @@ import {
   getTileKey,
   structureEntityId,
 } from "@worldnest/game-engine";
-import type { CropComponent } from "@worldnest/game-engine";
-import { INVENTORY_SLOTS, TILE_SIZE } from "@worldnest/shared";
+import type { CropComponent, QuestEntry, WalletComponent } from "@worldnest/game-engine";
+import { INVENTORY_SLOTS, STARTING_COINS, TILE_SIZE } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
 import {
   parsePersistedInventory,
   restoreInventory,
   toPersistedInventory,
 } from "../lib/inventorySnapshot";
+import {
+  parsePersistedQuests,
+  restoreQuests,
+  toPersistedQuests,
+} from "../lib/questSnapshot";
 import {
   createGameWorld,
   DEFAULT_SPAWN_X,
@@ -158,6 +164,105 @@ describe("inventory snapshots", () => {
     // selectedSlot is clamped, and the HUD needs the version bump to notice
     expect(inventory.selectedSlot).toBe(INVENTORY_SLOTS - 1);
     expect(inventory.version).toBeGreaterThan(versionBefore);
+  });
+});
+
+describe("quest snapshots", () => {
+  it("should round-trip a quest log through save and restore", () => {
+    const source = new QuestComponent();
+    source.entries = {
+      collect_wood: { state: "active", progress: 3 },
+      greet_pip: { state: "completed", progress: 1 },
+    };
+
+    const restored = new QuestComponent();
+    restoreQuests(restored, parsePersistedQuests(toPersistedQuests(source))!);
+
+    expect(restored.entries).toEqual(source.entries);
+    // The HUD publishes on the version, so a restore has to move it
+    expect(restored.version).toBeGreaterThan(0);
+  });
+
+  it("should treat an empty quest table as nothing saved", () => {
+    expect(parsePersistedQuests([])).toBeNull();
+    expect(parsePersistedQuests(null)).toBeNull();
+    expect(parsePersistedQuests(undefined)).toBeNull();
+  });
+
+  it("should drop a quest id the catalogue no longer knows", () => {
+    const parsed = parsePersistedQuests([
+      { questId: "collect_wood", state: "active", progress: 2 },
+      { questId: "slay_the_dragon", state: "active", progress: 99 },
+    ]);
+
+    expect(parsed).toEqual({ collect_wood: { state: "active", progress: 2 } });
+  });
+
+  it("should drop a row whose state or progress is not usable", () => {
+    expect(
+      parsePersistedQuests([
+        { questId: "collect_wood", state: "abandoned", progress: 1 },
+      ]),
+    ).toBeNull();
+    expect(
+      parsePersistedQuests([
+        { questId: "collect_wood", state: "active", progress: Number.NaN },
+      ]),
+    ).toBeNull();
+  });
+
+  it("should clamp a negative progress rather than restore it", () => {
+    const parsed = parsePersistedQuests([
+      { questId: "collect_wood", state: "active", progress: -4.7 },
+    ]);
+
+    expect(parsed).toEqual({ collect_wood: { state: "active", progress: 0 } });
+  });
+
+  it("should replace the existing entries rather than merge into them", () => {
+    const quests = new QuestComponent();
+    quests.entries = { greet_pip: { state: "active", progress: 0 } };
+
+    restoreQuests(quests, { collect_wood: { state: "completed", progress: 5 } });
+
+    expect(Object.keys(quests.entries)).toEqual(["collect_wood"]);
+  });
+});
+
+describe("progression restore in createGameWorld", () => {
+  function bootWith(quests?: Record<string, QuestEntry> | null, coins?: number | null) {
+    const { playerEntity } = createGameWorld({ ...BOOTSTRAP, coins, quests });
+    return {
+      coins: playerEntity.getComponent<WalletComponent>("wallet")!.coins,
+      quests: playerEntity.getComponent<QuestComponent>("quest")!,
+    };
+  }
+
+  it("should grant the starting coins when nothing was saved", () => {
+    expect(bootWith(null, null).coins).toBe(STARTING_COINS);
+  });
+
+  it("should restore a saved balance instead of granting the starting coins", () => {
+    expect(bootWith(null, 137).coins).toBe(137);
+  });
+
+  it("should not re-grant the starting coins to a player who spent them all", () => {
+    // 0 is a balance a player can genuinely reach; `loadSession` is what decides
+    // whether the column default means "never saved".
+    expect(bootWith(null, 0).coins).toBe(0);
+  });
+
+  it("should start with an empty quest log when nothing was saved", () => {
+    const { quests } = bootWith(null, null);
+
+    expect(quests.entries).toEqual({});
+    expect(quests.version).toBe(0);
+  });
+
+  it("should restore a saved quest log", () => {
+    const { quests } = bootWith({ collect_wood: { state: "active", progress: 4 } }, 10);
+
+    expect(quests.entries).toEqual({ collect_wood: { state: "active", progress: 4 } });
   });
 });
 

@@ -39,10 +39,11 @@ import {
   addItem,
   composeBlockers,
 } from "@worldnest/game-engine";
-import type { TileType } from "@worldnest/game-engine";
+import type { QuestEntry, TileType } from "@worldnest/game-engine";
 import { STARTING_COINS, SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
 import type { PersistedInventory } from "@worldnest/database";
 import { restoreInventory } from "../lib/inventorySnapshot";
+import { restoreQuests } from "../lib/questSnapshot";
 import { restoreSavedWorld, type SavedWorldState } from "./savedWorld";
 
 // Restoring the shared world lives in `savedWorld.ts`; re-exported here because
@@ -63,6 +64,10 @@ export interface GameBootstrap {
   worldId?: string | null;
   /** Saved inventory; when absent the starting kit is granted instead. */
   inventory?: PersistedInventory | null;
+  /** Saved coin balance; when absent the starting purse is granted instead. */
+  coins?: number | null;
+  /** Saved quest log; when absent the player starts with no quests taken. */
+  quests?: Record<string, QuestEntry> | null;
   /** Saved shared-world state, applied before the first chunk load. */
   savedWorld?: SavedWorldState | null;
 }
@@ -230,6 +235,15 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     addItem(inventory, "wheat_seed", STARTING_WHEAT_SEEDS);
   }
 
+  // Coins and quests are granted only when nothing was saved, the same rule the
+  // starting seeds follow: a returning player who spent down to zero keeps their
+  // empty purse instead of being handed another fifty on every reload.
+  const wallet = new WalletComponent(bootstrap.coins ?? STARTING_COINS);
+  const questLog = new QuestComponent();
+  if (bootstrap.quests) {
+    restoreQuests(questLog, bootstrap.quests);
+  }
+
   const playerEntity = new Entity(LOCAL_PLAYER_ENTITY_ID);
   playerEntity
     .addComponent(new PositionComponent(bootstrap.spawnX, bootstrap.spawnY))
@@ -243,9 +257,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new StatsComponent())
     .addComponent(new InteractionComponent())
     .addComponent(new DialogueComponent())
-    .addComponent(new WalletComponent(STARTING_COINS))
+    .addComponent(wallet)
     .addComponent(new ShopComponent())
-    .addComponent(new QuestComponent())
+    .addComponent(questLog)
     .addComponent(new AnimationComponent());
 
   world.addEntity(playerEntity);

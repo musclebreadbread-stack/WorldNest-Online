@@ -2,14 +2,16 @@ import {
   getDefaultWorld,
   loadCrops,
   loadPlayerState,
+  loadQuests,
   loadStructures,
   loadWorldModifications,
 } from "@worldnest/database";
 import type { PersistedInventory } from "@worldnest/database";
 import { getTileKey } from "@worldnest/game-engine";
-import type { TileType } from "@worldnest/game-engine";
+import type { QuestEntry, TileType } from "@worldnest/game-engine";
 import { isItemId } from "@worldnest/shared";
 import { parsePersistedInventory } from "../lib/inventorySnapshot";
+import { parsePersistedQuests } from "../lib/questSnapshot";
 import type { SavedCrop, SavedStructure, SavedWorldState } from "./createGameWorld";
 
 /** Everything a session needs from the database before the game boots. */
@@ -18,6 +20,9 @@ export interface SessionSnapshot {
   spawnX: number | null;
   spawnY: number | null;
   inventory: PersistedInventory | null;
+  /** `null` for a player who has never saved, so the starting purse is granted. */
+  coins: number | null;
+  quests: Record<string, QuestEntry> | null;
   savedWorld: SavedWorldState;
 }
 
@@ -38,8 +43,9 @@ export async function loadSession(
     const { data: world } = await getDefaultWorld();
     if (!world) return null;
 
-    const [playerState, modifications, structures, crops] = await Promise.all([
+    const [playerState, quests, modifications, structures, crops] = await Promise.all([
       loadPlayerState(playerId),
+      loadQuests(playerId),
       loadWorldModifications(world.id),
       loadStructures(world.id),
       loadCrops(world.id),
@@ -49,12 +55,19 @@ export async function loadSession(
     // the column default is treated the same as a missing row.
     const saved = playerState.data;
     const hasSpawn = saved !== null && (saved.x !== 0 || saved.y !== 0);
+    const inventory = parsePersistedInventory(saved?.inventory);
+    // Coins are judged from the row as a whole, not from the column: 0 is a
+    // balance a player can genuinely reach, so it only means "never saved" when
+    // the rest of the row is untouched too.
+    const hasSaved = hasSpawn || inventory !== null;
 
     return {
       worldId: world.id,
       spawnX: hasSpawn ? saved.x : null,
       spawnY: hasSpawn ? saved.y : null,
-      inventory: parsePersistedInventory(saved?.inventory),
+      inventory,
+      coins: hasSaved ? saved!.coins : null,
+      quests: parsePersistedQuests(quests.data),
       savedWorld: {
         tileOverrides: modifications.data.map<[string, TileType]>((row) => [
           getTileKey(row.tile_x, row.tile_y),

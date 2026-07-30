@@ -79,6 +79,8 @@ export function GameCanvas() {
       spawnY: session?.spawnY ?? DEFAULT_SPAWN_Y,
       worldId: session?.worldId ?? null,
       inventory: session?.inventory ?? null,
+      coins: session?.coins ?? null,
+      quests: session?.quests ?? null,
       savedWorld: session?.savedWorld ?? null,
     });
     gameRef.current = game;
