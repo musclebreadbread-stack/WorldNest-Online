@@ -95,6 +95,26 @@ describe("WorldManager tile query", () => {
     expect(notified).toBe(0);
   });
 
+  it("should report the generator's biome, ignoring overrides", () => {
+    const manager = new WorldManager(WORLD_SEED, 1);
+    const generator = new ChunkGenerator(WORLD_SEED);
+
+    for (const [tileX, tileY] of [
+      [0, 0],
+      [7, 21],
+      [-13, 4],
+    ]) {
+      expect(manager.getBiomeAt(tileX, tileY)).toBe(
+        generator.getBiomeAt(tileX, tileY),
+      );
+    }
+
+    // Editing the tile does not move the climate the tile sits in
+    const before = manager.getBiomeAt(3, 9);
+    manager.setTileOverride(3, 9, TileType.FARMLAND);
+    expect(manager.getBiomeAt(3, 9)).toBe(before);
+  });
+
   it("should report water as not walkable and grass as walkable", () => {
     const manager = new WorldManager(WORLD_SEED, 1);
 

@@ -1,4 +1,5 @@
 import { CHUNK_SIZE, TILE_SIZE, getChunkKey } from "@worldnest/shared";
+import type { Biome } from "./Biomes";
 import { ChunkGenerator } from "./ChunkGenerator";
 import { TILE_PROPERTIES, TileType } from "./Tilemap";
 import { getTileKey, type TileQuery } from "./TileQuery";
@@ -130,6 +131,16 @@ export class WorldManager implements TileQuery {
     const tiles = chunk ? chunk.tiles : this.generator.generateChunk(chunkX, chunkY);
 
     return tiles[localY][localX] as TileType;
+  }
+
+  /**
+   * Biome of the land at the given tile coordinates.
+   *
+   * Deliberately ignores the override layer: biomes are generated, not edited,
+   * so tilling a field or mining a wall does not move the climate it sits in.
+   */
+  getBiomeAt(tileX: number, tileY: number): Biome {
+    return this.generator.getBiomeAt(tileX, tileY);
   }
 
   /**

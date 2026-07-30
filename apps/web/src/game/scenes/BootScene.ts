@@ -12,6 +12,9 @@ import { ITEM_DEFINITIONS, PLACEABLE_ITEM_IDS } from "@worldnest/shared";
 /** Directions the placeholder player spritesheet covers. */
 const PLAYER_DIRECTIONS: Facing[] = ["down", "up", "left", "right"];
 
+/** Placeholder tiles are drawn at 16x16 and scaled up to `TILE_SIZE`. */
+const TILE_TEXTURE_SIZE = 16;
+
 /**
  * BootScene handles asset loading and generation of placeholder graphics.
  * Generates colored rectangle textures for tiles and player sprite.
@@ -33,7 +36,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Generate tileset texture programmatically (16x16 per tile, 7 tiles)
+    // Generate one tile texture per TileType, programmatically
     this.generateTileset();
 
     // Generate the directional player spritesheet (4 directions x 2 walk frames)
@@ -50,49 +53,85 @@ export class BootScene extends Phaser.Scene {
     this.scene.start("UIScene");
   }
 
+  /**
+   * One `tile_<id>` texture per member of the `TileType` enum, derived from the
+   * enum rather than a hand-written list so a tile type added to the engine can
+   * never ship without a texture.
+   */
   private generateTileset(): void {
-    const tileSize = 16;
-    const tileTypes = [
-      TileType.GRASS,
-      TileType.WATER,
-      TileType.SAND,
-      TileType.FOREST,
-      TileType.STONE,
-      TileType.FLOWERS,
-      TileType.FARMLAND,
-    ];
+    const tileTypes = Object.values(TileType).filter(
+      (value) => typeof value === "number",
+    ) as TileType[];
 
     for (const tileType of tileTypes) {
-      const props = TILE_PROPERTIES[tileType];
       const graphics = this.add.graphics();
-      graphics.fillStyle(props.color, 1);
-      graphics.fillRect(0, 0, tileSize, tileSize);
+      graphics.fillStyle(TILE_PROPERTIES[tileType].color, 1);
+      graphics.fillRect(0, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
+      this.drawTileDetail(graphics, tileType);
 
-      // Add some visual detail
-      if (tileType === TileType.WATER) {
-        graphics.fillStyle(0x1976d2, 0.5);
-        graphics.fillRect(2, 6, 12, 2);
-        graphics.fillRect(4, 10, 8, 2);
-      } else if (tileType === TileType.FOREST) {
-        graphics.fillStyle(0x1b5e20, 1);
-        graphics.fillTriangle(8, 2, 3, 12, 13, 12);
-      } else if (tileType === TileType.FLOWERS) {
-        graphics.fillStyle(0xf8bbd0, 1);
-        graphics.fillCircle(5, 5, 2);
-        graphics.fillCircle(11, 8, 2);
-        graphics.fillCircle(7, 12, 2);
-      } else if (tileType === TileType.STONE) {
-        graphics.fillStyle(0x9e9e9e, 1);
-        graphics.fillRect(3, 3, 10, 10);
-      } else if (tileType === TileType.FARMLAND) {
-        // Ploughed furrows
-        graphics.fillStyle(0x6d4c41, 1);
-        graphics.fillRect(1, 4, 14, 2);
-        graphics.fillRect(1, 10, 14, 2);
-      }
-
-      graphics.generateTexture(`tile_${tileType}`, tileSize, tileSize);
+      graphics.generateTexture(
+        `tile_${tileType}`,
+        TILE_TEXTURE_SIZE,
+        TILE_TEXTURE_SIZE,
+      );
       graphics.destroy();
+    }
+  }
+
+  /** The marks that tell one tile of the same family from another. */
+  private drawTileDetail(
+    graphics: Phaser.GameObjects.Graphics,
+    tileType: TileType,
+  ): void {
+    if (tileType === TileType.WATER) {
+      graphics.fillStyle(0x1976d2, 0.5);
+      graphics.fillRect(2, 6, 12, 2);
+      graphics.fillRect(4, 10, 8, 2);
+    } else if (tileType === TileType.FOREST) {
+      graphics.fillStyle(0x1b5e20, 1);
+      graphics.fillTriangle(8, 2, 3, 12, 13, 12);
+    } else if (tileType === TileType.FLOWERS) {
+      graphics.fillStyle(0xf8bbd0, 1);
+      graphics.fillCircle(5, 5, 2);
+      graphics.fillCircle(11, 8, 2);
+      graphics.fillCircle(7, 12, 2);
+    } else if (tileType === TileType.STONE) {
+      graphics.fillStyle(0x9e9e9e, 1);
+      graphics.fillRect(3, 3, 10, 10);
+    } else if (tileType === TileType.FARMLAND) {
+      // Ploughed furrows
+      graphics.fillStyle(0x6d4c41, 1);
+      graphics.fillRect(1, 4, 14, 2);
+      graphics.fillRect(1, 10, 14, 2);
+    } else if (tileType === TileType.SNOW) {
+      // Drifts: a few paler patches on the white
+      graphics.fillStyle(0xffffff, 1);
+      graphics.fillCircle(5, 6, 3);
+      graphics.fillCircle(11, 11, 2);
+      graphics.fillStyle(0xb0bec5, 1);
+      graphics.fillRect(1, 14, 14, 1);
+    } else if (tileType === TileType.CAVE_FLOOR) {
+      // Pebbles on a dark floor
+      graphics.fillStyle(0x3e2723, 1);
+      graphics.fillRect(3, 4, 4, 3);
+      graphics.fillRect(9, 9, 4, 3);
+    } else if (tileType === TileType.CAVE_WALL) {
+      // Blocky rock face with a highlight so walls read as solid
+      graphics.fillStyle(0x424242, 1);
+      graphics.fillRect(1, 1, 6, 6);
+      graphics.fillRect(9, 9, 6, 6);
+      graphics.fillStyle(0x616161, 1);
+      graphics.fillRect(9, 2, 4, 4);
+    } else if (tileType === TileType.ORE) {
+      // Crystals embedded in cave rock
+      graphics.fillStyle(0x4e342e, 1);
+      graphics.fillRect(0, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
+      graphics.fillStyle(TILE_PROPERTIES[TileType.ORE].color, 1);
+      graphics.fillTriangle(5, 3, 2, 9, 8, 9);
+      graphics.fillTriangle(11, 6, 8, 13, 14, 13);
+      graphics.fillStyle(0xd1c4e9, 1);
+      graphics.fillRect(4, 5, 1, 2);
+      graphics.fillRect(10, 8, 1, 2);
     }
   }
 

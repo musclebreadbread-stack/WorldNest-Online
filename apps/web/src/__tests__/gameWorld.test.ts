@@ -51,7 +51,7 @@ describe("createGameWorld", () => {
     expect(playerEntity.hasComponent("collider")).toBe(true);
   });
 
-  it("should spawn the player on a walkable tile", () => {
+  it("should spawn the player on a walkable surface tile, never in a cave", () => {
     const worldManager = new WorldManager(WORLD_SEED, 1);
     const tileType = worldManager.getTileAt(
       Math.floor(DEFAULT_SPAWN_X / TILE_SIZE),
@@ -59,6 +59,10 @@ describe("createGameWorld", () => {
     );
 
     expect(TILE_PROPERTIES[tileType].walkable).toBe(true);
+    // Biomes and caves moved the terrain; the spawn constant has to survive it
+    expect([TileType.CAVE_FLOOR, TileType.CAVE_WALL, TileType.ORE]).not.toContain(
+      tileType,
+    );
   });
 
   it("should stop the player at the water's edge instead of walking through", () => {
