@@ -13,6 +13,7 @@ import {
   InventoryComponent,
   StatsComponent,
   InteractionComponent,
+  AnimationComponent,
   TimeSystem,
   InputSystem,
   CollisionSystem,
@@ -25,6 +26,7 @@ import {
   BuildSystem,
   HarvestSystem,
   NetworkSyncSystem,
+  AnimationSystem,
   RenderSystem,
   WorldManager,
   addItem,
@@ -88,6 +90,7 @@ export interface GameWorldSystems {
   build: BuildSystem;
   harvest: HarvestSystem;
   networkSync: NetworkSyncSystem;
+  animation: AnimationSystem;
   render: RenderSystem;
 }
 
@@ -172,6 +175,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // interact it ignores still reaches harvesting this same frame.
     harvest: new HarvestSystem(worldManager, setTileOverride, plant),
     networkSync: new NetworkSyncSystem(SYNC_INTERVAL_MS),
+    // Animation runs last before rendering: velocity has settled by then, so a
+    // player held against a wall reads as idle rather than walking on the spot.
+    animation: new AnimationSystem(),
     render: new RenderSystem(),
   };
 
@@ -187,6 +193,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.build);
   world.addSystem(systems.harvest);
   world.addSystem(systems.networkSync);
+  world.addSystem(systems.animation);
   world.addSystem(systems.render);
 
   // Saved terrain, structures and crops go in before the first chunk load so
@@ -213,7 +220,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
     .addComponent(inventory)
     .addComponent(new StatsComponent())
-    .addComponent(new InteractionComponent());
+    .addComponent(new InteractionComponent())
+    .addComponent(new AnimationComponent());
 
   world.addEntity(playerEntity);
   world.addEntity(clockEntity);
@@ -263,6 +271,9 @@ export function createRemotePlayerEntity(
     .addComponent(new PositionComponent(x, y))
     .addComponent(new SpriteComponent("player", 0, true))
     .addComponent(new PlayerComponent(playerId, username, false))
-    .addComponent(new RemoteInterpolationComponent(x, y));
+    .addComponent(new RemoteInterpolationComponent(x, y))
+    // No velocity component: MovementSystem would integrate it and fight the
+    // smoothing, so InterpolationSystem drives this animation instead.
+    .addComponent(new AnimationComponent());
   return entity;
 }

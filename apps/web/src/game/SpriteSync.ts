@@ -1,11 +1,14 @@
 import Phaser from "phaser";
+import { directionalTextureKey } from "@worldnest/game-engine";
 import type {
+  AnimationComponent,
   CropComponent,
   Entity,
   PlayerComponent,
   RenderData,
   World,
 } from "@worldnest/game-engine";
+import { NameTags } from "./NameTags";
 
 const LOCAL_PLAYER_DEPTH = 100;
 const REMOTE_PLAYER_DEPTH = 99;
@@ -19,18 +22,23 @@ const SPRITE_SCALE = 2;
  * SpriteSync mirrors `RenderSystem.renderData` onto Phaser sprites.
  *
  * It is the only place sprites are created, positioned or destroyed, so the ECS
- * stays the single source of truth. Per-kind presentation (depth, tint, and the
- * per-stage crop texture) is decided here from the entity's components.
+ * stays the single source of truth. Per-kind presentation (depth, tint, the
+ * per-stage crop texture and the per-direction animation frame) is decided here
+ * from the entity's components, and remote username labels ride along on the same
+ * pass through `NameTags`.
  */
 export class SpriteSync {
   private scene: Phaser.Scene;
   private world: World;
   /** Phaser sprites keyed by ECS entity id. */
   private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  /** Floating username labels, driven by the same render data. */
+  private nameTags: NameTags;
 
   constructor(scene: Phaser.Scene, world: World) {
     this.scene = scene;
     this.world = world;
+    this.nameTags = new NameTags(scene, world);
   }
 
   /** Create, update and destroy sprites to match the latest render data. */
@@ -56,6 +64,8 @@ export class SpriteSync {
         this.sprites.delete(entityId);
       }
     }
+
+    this.nameTags.sync(renderData);
   }
 
   /** Sprite for an entity, once it has been through a `sync` pass. */
@@ -63,11 +73,17 @@ export class SpriteSync {
     return this.sprites.get(entityId);
   }
 
+  /** Username label for an entity, once it has been through a `sync` pass. */
+  getNameTag(entityId: string): Phaser.GameObjects.Text | undefined {
+    return this.nameTags.get(entityId);
+  }
+
   destroy(): void {
     for (const sprite of this.sprites.values()) {
       sprite.destroy();
     }
     this.sprites.clear();
+    this.nameTags.destroy();
   }
 
   private createSprite(
@@ -92,10 +108,24 @@ export class SpriteSync {
   }
 }
 
-/** Crops swap texture per growth stage; everything else uses its sprite key. */
+/**
+ * Texture for an entity this frame: crops swap per growth stage, animated
+ * entities per direction and walk frame, and everything else uses its sprite key.
+ */
 function resolveTextureKey(data: RenderData, entity: Entity | undefined): string {
   const crop = entity?.getComponent<CropComponent>("crop");
-  return crop ? `${data.textureKey}_${crop.stage}` : data.textureKey;
+  if (crop) return `${data.textureKey}_${crop.stage}`;
+
+  const animation = entity?.getComponent<AnimationComponent>("animation");
+  if (animation) {
+    return directionalTextureKey(
+      data.textureKey,
+      animation.direction,
+      animation.frameIndex,
+    );
+  }
+
+  return data.textureKey;
 }
 
 function resolveDepth(entity: Entity | undefined): number {

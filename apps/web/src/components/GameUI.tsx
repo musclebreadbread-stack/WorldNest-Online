@@ -6,6 +6,7 @@ import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
 import { HotBar } from "./HotBar";
 import { InventoryPanel } from "./InventoryPanel";
+import { SignOutButton } from "./SignOutButton";
 import { StatusBars } from "./StatusBars";
 
 /**
@@ -42,6 +43,7 @@ export function GameUI() {
             Players online: {onlinePlayers.size}
           </div>
         </div>
+        <SignOutButton />
       </div>
 
       {/* Bottom-left: chat log and composer, above the coordinates */}

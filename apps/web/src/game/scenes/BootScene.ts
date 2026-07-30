@@ -1,6 +1,16 @@
 import Phaser from "phaser";
-import { CROP_DEFINITIONS, TileType, TILE_PROPERTIES } from "@worldnest/game-engine";
+import {
+  CROP_DEFINITIONS,
+  DEFAULT_FRAME_COUNT,
+  TileType,
+  TILE_PROPERTIES,
+  directionalTextureKey,
+} from "@worldnest/game-engine";
+import type { Facing } from "@worldnest/game-engine";
 import { ITEM_DEFINITIONS, PLACEABLE_ITEM_IDS } from "@worldnest/shared";
+
+/** Directions the placeholder player spritesheet covers. */
+const PLAYER_DIRECTIONS: Facing[] = ["down", "up", "left", "right"];
 
 /**
  * BootScene handles asset loading and generation of placeholder graphics.
@@ -26,7 +36,7 @@ export class BootScene extends Phaser.Scene {
     // Generate tileset texture programmatically (16x16 per tile, 7 tiles)
     this.generateTileset();
 
-    // Generate player sprite (simple colored rectangles for 4 directions)
+    // Generate the directional player spritesheet (4 directions x 2 walk frames)
     this.generatePlayerSprite();
 
     // Generate one placeholder per crop growth stage
@@ -86,24 +96,63 @@ export class BootScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * A 4-direction x 2-frame placeholder spritesheet, one texture per frame keyed
+   * `player_<direction>_<frame>` by `directionalTextureKey` — the same helper
+   * `SpriteSync` resolves with, so the two cannot drift. The bare `player` key is
+   * kept as the idle-facing-down fallback for sprites created before the first
+   * animation update.
+   */
   private generatePlayerSprite(): void {
+    for (const direction of PLAYER_DIRECTIONS) {
+      for (let frame = 0; frame < DEFAULT_FRAME_COUNT; frame++) {
+        this.drawPlayerFrame(directionalTextureKey("player", direction, frame), {
+          direction,
+          frame,
+        });
+      }
+    }
+
+    this.drawPlayerFrame("player", { direction: "down", frame: 0 });
+  }
+
+  /**
+   * One player frame: a body, a head whose eyes show which way it faces, and legs
+   * that swap on the second frame so walking reads as a stride.
+   */
+  private drawPlayerFrame(
+    textureKey: string,
+    { direction, frame }: { direction: Facing; frame: number },
+  ): void {
     const size = 16;
     const graphics = this.add.graphics();
+    const stride = frame === 1;
 
-    // Body (blue square)
+    // Legs, offset per frame
+    graphics.fillStyle(0x1565c0, 1);
+    graphics.fillRect(stride ? 3 : 4, 13, 3, 3);
+    graphics.fillRect(stride ? 10 : 9, 13, 3, 3);
+
+    // Body (blue), leaning slightly into the walk on the second frame
     graphics.fillStyle(0x42a5f5, 1);
-    graphics.fillRect(3, 4, 10, 10);
+    graphics.fillRect(3, stride ? 5 : 4, 10, 9);
 
-    // Head (lighter)
+    // Head
     graphics.fillStyle(0xffcc80, 1);
     graphics.fillRect(5, 1, 6, 5);
 
-    // Eyes
+    // Eyes: two facing down, one facing sideways, none facing away
     graphics.fillStyle(0x000000, 1);
-    graphics.fillRect(6, 3, 2, 2);
-    graphics.fillRect(9, 3, 2, 2);
+    if (direction === "down") {
+      graphics.fillRect(6, 3, 2, 2);
+      graphics.fillRect(9, 3, 2, 2);
+    } else if (direction === "left") {
+      graphics.fillRect(5, 3, 2, 2);
+    } else if (direction === "right") {
+      graphics.fillRect(9, 3, 2, 2);
+    }
 
-    graphics.generateTexture("player", size, size);
+    graphics.generateTexture(textureKey, size, size);
     graphics.destroy();
   }
 

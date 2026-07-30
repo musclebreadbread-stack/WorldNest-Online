@@ -14,9 +14,11 @@ import {
   structureEntityId,
 } from "@worldnest/game-engine";
 import type {
+  AnimationComponent,
   CropComponent,
   InteractionComponent,
   InventoryComponent,
+  RemoteInterpolationComponent,
   StatsComponent,
 } from "@worldnest/game-engine";
 import { TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
@@ -296,12 +298,56 @@ describe("building wiring", () => {
   });
 });
 
+describe("animation wiring", () => {
+  it("should walk the player animation in the direction it is moving", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    const input = context.playerEntity.getComponent<InputComponent>("input")!;
+    const animation =
+      context.playerEntity.getComponent<AnimationComponent>("animation")!;
+
+    expect(animation.state).toBe("idle");
+
+    input.keys.left = true;
+    context.world.update(1 / 60);
+
+    expect(animation.state).toBe("walk");
+    expect(animation.direction).toBe("left");
+
+    input.keys.left = false;
+    context.world.update(1 / 60);
+
+    expect(animation.state).toBe("idle");
+    expect(animation.direction).toBe("left");
+  });
+
+  it("should animate remote players without a velocity component", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    const entity = createRemotePlayerEntity("remote-1", "Friend", 0, 0);
+    context.world.addEntity(entity);
+
+    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
+      "remoteInterpolation",
+    )!;
+    interpolation.targetX = 1000;
+
+    // A velocity component would let MovementSystem fight the interpolation
+    expect(entity.hasComponent("velocity")).toBe(false);
+
+    context.world.update(1 / 60);
+
+    const animation = entity.getComponent<AnimationComponent>("animation")!;
+    expect(animation.state).toBe("walk");
+    expect(animation.direction).toBe("right");
+  });
+});
+
 describe("createRemotePlayerEntity", () => {
   it("should create a smoothed, non-local player entity", () => {
     const entity = createRemotePlayerEntity("remote-1", "Friend", 10, 20);
 
     expect(entity.id).toBe(remotePlayerEntityId("remote-1"));
     expect(entity.hasComponent("remoteInterpolation")).toBe(true);
+    expect(entity.hasComponent("animation")).toBe(true);
     expect(entity.hasComponent("input")).toBe(false);
   });
 });

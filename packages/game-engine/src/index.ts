@@ -23,8 +23,11 @@ export {
   InteractionComponent,
   CropComponent,
   StructureComponent,
+  AnimationComponent,
+  DEFAULT_FRAME_DURATION_MS,
+  DEFAULT_FRAME_COUNT,
 } from "./components";
-export type { KeyState, InventorySlot } from "./components";
+export type { KeyState, InventorySlot, AnimationState } from "./components";
 
 // Inventory operations (pure functions; components stay pure data)
 export {
@@ -40,6 +43,13 @@ export {
 // Interaction helpers
 export { FACING_OFFSETS, getFacedTile } from "./interaction";
 export type { Facing } from "./interaction";
+
+// Animation helpers (pure; the system only applies them)
+export {
+  advanceAnimation,
+  directionFromDelta,
+  directionalTextureKey,
+} from "./animation";
 
 // Systems
 export {
@@ -60,6 +70,7 @@ export {
   isCropMature,
   BuildSystem,
   structureEntityId,
+  AnimationSystem,
 } from "./systems";
 export type {
   RenderData,

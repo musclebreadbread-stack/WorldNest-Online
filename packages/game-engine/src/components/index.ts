@@ -15,3 +15,9 @@ export { StatsComponent } from "./StatsComponent";
 export { InteractionComponent } from "./InteractionComponent";
 export { CropComponent } from "./CropComponent";
 export { StructureComponent } from "./StructureComponent";
+export {
+  AnimationComponent,
+  DEFAULT_FRAME_DURATION_MS,
+  DEFAULT_FRAME_COUNT,
+} from "./AnimationComponent";
+export type { AnimationState } from "./AnimationComponent";
