@@ -90,7 +90,13 @@ The game will be available at `http://localhost:3000`. Without Supabase credenti
 | `E` / `Space` | Interact with the faced tile: harvest, till, sow or reap |
 | `B` | Toggle build mode |
 | `Q` / left click | Place the selected item (build mode only) |
+| `M` | Toggle the corner minimap |
+| `P` | Toggle the settings panel (language) |
 | `Enter` / `Esc` | Focus / blur the chat composer |
+
+The UI ships in 12 languages (en, ko, ja, zh, es, fr, de, pt, ar, hi, th, vi). The browser's
+language is detected on first load and the choice is remembered per device; Arabic renders
+right to left.
 
 ## Available Scripts
 
