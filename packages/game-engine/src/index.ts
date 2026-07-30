@@ -17,8 +17,20 @@ export {
   RemoteInterpolationComponent,
   ColliderComponent,
   TimeComponent,
+  InventoryComponent,
 } from "./components";
-export type { KeyState } from "./components";
+export type { KeyState, InventorySlot } from "./components";
+
+// Inventory operations (pure functions; components stay pure data)
+export {
+  addItem,
+  removeItem,
+  countItem,
+  hasSpaceFor,
+  getSelectedItem,
+  selectSlot,
+  moveSlot,
+} from "./inventory";
 
 // Systems
 export {
