@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { hasSupabaseAuthCookie } from "./src/lib/authCookie";
 
 /**
  * Next.js middleware to protect the /game route at the server level.
@@ -7,9 +8,8 @@ import type { NextRequest } from "next/server";
  * If no valid session cookie is found, redirects to /auth.
  */
 export function middleware(request: NextRequest) {
-  // Supabase stores auth in cookies with the pattern `sb-<project-ref>-auth-token`
-  const hasAuthCookie = request.cookies.getAll().some(
-    (cookie) => /^sb-.*-auth-token/.test(cookie.name),
+  const hasAuthCookie = hasSupabaseAuthCookie(
+    request.cookies.getAll().map((cookie) => cookie.name),
   );
 
   if (!hasAuthCookie) {
