@@ -31,6 +31,7 @@ import {
   LOCAL_PLAYER_ENTITY_ID,
   STARTING_WHEAT_SEEDS,
 } from "../game/createGameWorld";
+import { findFacingPair, findWalkableNeighbourOf } from "./helpers/terrain";
 
 const BOOTSTRAP = {
   playerId: "user-1",
@@ -61,19 +62,27 @@ describe("createGameWorld", () => {
   });
 
   it("should stop the player at the water's edge instead of walking through", () => {
-    // Tile (6, 4) is grass with water immediately to its west for WORLD_SEED
+    // A walkable shore tile with water immediately to its west, found rather
+    // than hard-coded so generator changes cannot invalidate the test
+    const shore = findWalkableNeighbourOf(
+      new WorldManager(WORLD_SEED, 1),
+      TileType.WATER,
+    );
     const context = createGameWorld({
       ...BOOTSTRAP,
-      spawnX: 6 * TILE_SIZE + TILE_SIZE / 2,
-      spawnY: 4 * TILE_SIZE + TILE_SIZE / 2,
+      spawnX: shore.spawnX,
+      spawnY: shore.spawnY,
     });
     const position = context.playerEntity.getComponent<PositionComponent>("position")!;
     const input = context.playerEntity.getComponent<InputComponent>("input")!;
     const collider = context.playerEntity.getComponent<ColliderComponent>("collider")!;
 
-    expect(context.worldManager.isWalkableAt(5 * TILE_SIZE + 1, 4 * TILE_SIZE + 1)).toBe(
-      false,
-    );
+    expect(
+      context.worldManager.isWalkableAt(
+        shore.targetTileX * TILE_SIZE + 1,
+        shore.targetTileY * TILE_SIZE + 1,
+      ),
+    ).toBe(false);
 
     input.keys.left = true;
     for (let frame = 0; frame < 120; frame++) {
@@ -81,21 +90,28 @@ describe("createGameWorld", () => {
     }
 
     // The collider's left edge never crosses into the water tile
-    expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(6 * TILE_SIZE);
+    expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(
+      shore.standTileX * TILE_SIZE,
+    );
   });
 });
 
 describe("harvest wiring", () => {
-  // Tile (20, 14) is grass with stone immediately to its east for WORLD_SEED
-  const STAND_TILE_X = 20;
-  const STAND_TILE_Y = 14;
-  const TARGET_TILE_X = STAND_TILE_X + 1;
+  // A grass tile with stone immediately to its east, searched for by seed
+  const STONE_PAIR = findFacingPair(
+    new WorldManager(WORLD_SEED, 1),
+    TileType.GRASS,
+    TileType.STONE,
+    "right",
+  );
+  const STAND_TILE_Y = STONE_PAIR.standTileY;
+  const TARGET_TILE_X = STONE_PAIR.targetTileX;
 
   function createWorldFacingStone() {
     return createGameWorld({
       ...BOOTSTRAP,
-      spawnX: STAND_TILE_X * TILE_SIZE + TILE_SIZE / 2,
-      spawnY: STAND_TILE_Y * TILE_SIZE + TILE_SIZE / 2,
+      spawnX: STONE_PAIR.spawnX,
+      spawnY: STONE_PAIR.spawnY,
     });
   }
 
@@ -143,16 +159,21 @@ describe("harvest wiring", () => {
 });
 
 describe("farming wiring", () => {
-  // Tile (20, 14) is grass for WORLD_SEED, with the tile to its west grass too
-  const STAND_TILE_X = 20;
-  const STAND_TILE_Y = 14;
-  const TARGET_TILE_X = STAND_TILE_X - 1;
+  // A grass tile with grass to its west, searched for by seed
+  const GRASS_PAIR = findFacingPair(
+    new WorldManager(WORLD_SEED, 1),
+    TileType.GRASS,
+    TileType.GRASS,
+    "left",
+  );
+  const STAND_TILE_Y = GRASS_PAIR.standTileY;
+  const TARGET_TILE_X = GRASS_PAIR.targetTileX;
 
   function createWorldFacingGrass() {
     const context = createGameWorld({
       ...BOOTSTRAP,
-      spawnX: STAND_TILE_X * TILE_SIZE + TILE_SIZE / 2,
-      spawnY: STAND_TILE_Y * TILE_SIZE + TILE_SIZE / 2,
+      spawnX: GRASS_PAIR.spawnX,
+      spawnY: GRASS_PAIR.spawnY,
     });
     const interaction =
       context.playerEntity.getComponent<InteractionComponent>("interaction")!;
@@ -242,16 +263,22 @@ describe("farming wiring", () => {
 });
 
 describe("building wiring", () => {
-  // Tile (20, 14) is grass with grass to its west for WORLD_SEED
-  const STAND_TILE_X = 20;
-  const STAND_TILE_Y = 14;
-  const TARGET_TILE_X = STAND_TILE_X - 1;
+  // A grass tile with grass to its west, searched for by seed
+  const BUILD_PAIR = findFacingPair(
+    new WorldManager(WORLD_SEED, 1),
+    TileType.GRASS,
+    TileType.GRASS,
+    "left",
+  );
+  const STAND_TILE_X = BUILD_PAIR.standTileX;
+  const STAND_TILE_Y = BUILD_PAIR.standTileY;
+  const TARGET_TILE_X = BUILD_PAIR.targetTileX;
 
   function createWorldWithFences() {
     const context = createGameWorld({
       ...BOOTSTRAP,
-      spawnX: STAND_TILE_X * TILE_SIZE + TILE_SIZE / 2,
-      spawnY: STAND_TILE_Y * TILE_SIZE + TILE_SIZE / 2,
+      spawnX: BUILD_PAIR.spawnX,
+      spawnY: BUILD_PAIR.spawnY,
     });
     const inventory =
       context.playerEntity.getComponent<InventoryComponent>("inventory")!;
