@@ -44,5 +44,6 @@ export interface GameEvent {
 
 // Re-exports
 export * from "./constants";
+export * from "./economy";
 export * from "./items";
 export * from "./utils";
