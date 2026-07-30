@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "../stores/gameStore";
+import { ClockHud } from "./ClockHud";
 
 /**
  * GameUI provides a React overlay UI for chat, inventory button, and player info.
@@ -12,6 +13,11 @@ export function GameUI() {
 
   return (
     <div className="pointer-events-none absolute inset-0">
+      {/* Top-centre: world clock */}
+      <div className="absolute left-1/2 top-4 -translate-x-1/2 pointer-events-auto">
+        <ClockHud />
+      </div>
+
       {/* Top-right: connection status and player count */}
       <div className="absolute right-4 top-4 flex flex-col gap-2 pointer-events-auto">
         <div className="rounded bg-black/70 px-3 py-2 text-sm text-white">

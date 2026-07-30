@@ -3,9 +3,17 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useGameStore } from "../stores/gameStore";
 import { useAuthStore } from "../stores/authStore";
+import { useUIStore } from "../stores/uiStore";
 import { RealtimeManager } from "@worldnest/database";
 import type { GameScene } from "../game/scenes/GameScene";
-import { PLAYERS_CHANGED_EVENT, type PlayersChangedEvent } from "../game/events";
+import {
+  CLOCK_CHANGED_EVENT,
+  PLAYERS_CHANGED_EVENT,
+  PLAYER_POSITION_EVENT,
+  type ClockChangedEvent,
+  type PlayerPositionEvent,
+  type PlayersChangedEvent,
+} from "../game/events";
 
 /**
  * GameCanvas mounts/unmounts the Phaser game instance.
@@ -21,6 +29,7 @@ export function GameCanvas() {
   const addOnlinePlayer = useGameStore((s) => s.addOnlinePlayer);
   const removeOnlinePlayer = useGameStore((s) => s.removeOnlinePlayer);
   const updateOnlinePlayer = useGameStore((s) => s.updateOnlinePlayer);
+  const setClock = useUIStore((s) => s.setClock);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
 
@@ -42,12 +51,14 @@ export function GameCanvas() {
     gameRef.current = game;
 
     // Listen for player position updates
-    game.events.on(
-      "player-position",
-      (data: { x: number; y: number; chunkX: number; chunkY: number }) => {
-        setPlayerPosition(data.x, data.y, data.chunkX, data.chunkY);
-      },
-    );
+    game.events.on(PLAYER_POSITION_EVENT, (data: PlayerPositionEvent) => {
+      setPlayerPosition(data.x, data.y, data.chunkX, data.chunkY);
+    });
+
+    // Mirror the world clock into the HUD store
+    game.events.on(CLOCK_CHANGED_EVENT, (snapshot: ClockChangedEvent) => {
+      setClock(snapshot);
+    });
 
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
@@ -78,6 +89,7 @@ export function GameCanvas() {
     addOnlinePlayer,
     removeOnlinePlayer,
     updateOnlinePlayer,
+    setClock,
     user,
   ]);
 

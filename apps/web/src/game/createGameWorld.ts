@@ -9,6 +9,8 @@ import {
   NetworkComponent,
   RemoteInterpolationComponent,
   ColliderComponent,
+  TimeComponent,
+  TimeSystem,
   InputSystem,
   CollisionSystem,
   MovementSystem,
@@ -31,6 +33,7 @@ export interface GameBootstrap {
 }
 
 export interface GameWorldSystems {
+  time: TimeSystem;
   input: InputSystem;
   collision: CollisionSystem;
   movement: MovementSystem;
@@ -45,12 +48,16 @@ export interface GameWorldContext {
   worldManager: WorldManager;
   systems: GameWorldSystems;
   playerEntity: Entity;
+  clockEntity: Entity;
 }
 
 /** Registry key the bootstrap payload is published under. */
 export const BOOTSTRAP_REGISTRY_KEY = "bootstrap";
 
 export const LOCAL_PLAYER_ENTITY_ID = "local-player";
+
+/** Singleton entity carrying the shared world clock snapshot. */
+export const WORLD_CLOCK_ENTITY_ID = "world-clock";
 
 /**
  * Fallback spawn point used when no saved player state exists.
@@ -76,6 +83,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   const worldManager = new WorldManager(WORLD_SEED, 1);
 
   const systems: GameWorldSystems = {
+    // The clock runs first so every other system sees the same time this frame
+    time: new TimeSystem(),
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
@@ -87,6 +96,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     render: new RenderSystem(),
   };
 
+  world.addSystem(systems.time);
   world.addSystem(systems.input);
   world.addSystem(systems.collision);
   world.addSystem(systems.movement);
@@ -107,7 +117,11 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
 
   world.addEntity(playerEntity);
 
-  return { world, worldManager, systems, playerEntity };
+  const clockEntity = new Entity(WORLD_CLOCK_ENTITY_ID);
+  clockEntity.addComponent(new TimeComponent());
+  world.addEntity(clockEntity);
+
+  return { world, worldManager, systems, playerEntity, clockEntity };
 }
 
 /** Entity id used for the remote player owned by `playerId`. */

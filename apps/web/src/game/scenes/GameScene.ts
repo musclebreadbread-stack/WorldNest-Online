@@ -8,6 +8,7 @@ import {
   NetworkComponent,
   PlayerComponent,
   RemoteInterpolationComponent,
+  TimeComponent,
   NetworkSyncSystem,
   RenderSystem,
   WorldManager,
@@ -15,6 +16,8 @@ import {
 import type { ChunkData, RenderData } from "@worldnest/game-engine";
 import type { RealtimeManager, PlayerPosition } from "@worldnest/database";
 import { ChunkRenderer } from "../ChunkRenderer";
+import { DayNightOverlay } from "../DayNightOverlay";
+import { HudBridge } from "../HudBridge";
 import {
   createGameWorld,
   createRemotePlayerEntity,
@@ -50,7 +53,10 @@ export class GameScene extends Phaser.Scene {
   private networkSync!: NetworkSyncSystem;
   private renderSystem!: RenderSystem;
   private playerEntity!: Entity;
+  private clockEntity!: Entity;
   private chunkRenderer!: ChunkRenderer;
+  private dayNight!: DayNightOverlay;
+  private hudBridge!: HudBridge;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdKeys!: {
     W: Phaser.Input.Keyboard.Key;
@@ -100,6 +106,7 @@ export class GameScene extends Phaser.Scene {
     this.networkSync = context.systems.networkSync;
     this.renderSystem = context.systems.render;
     this.playerEntity = context.playerEntity;
+    this.clockEntity = context.clockEntity;
 
     // Chunk rendering
     this.chunkRenderer = new ChunkRenderer(this);
@@ -111,6 +118,12 @@ export class GameScene extends Phaser.Scene {
     // Prime the ECS once so chunks load and the render pass creates sprites
     this.ecsWorld.update(0);
     this.syncSprites();
+
+    // Day/night tint and the React HUD bridge
+    this.dayNight = new DayNightOverlay(this);
+    this.dayNight.setPhase(this.getClockSnapshot().phase);
+    this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.dayNight.destroy());
 
     // Setup camera on the local player sprite created by the render pass
     const localSprite = this.sprites.get(this.playerEntity.id)!;
@@ -160,14 +173,16 @@ export class GameScene extends Phaser.Scene {
     // Mirror ECS render data onto Phaser sprites
     this.syncSprites();
 
-    // Emit position for React store
-    const position = this.playerEntity.getComponent<PositionComponent>("position")!;
-    this.game.events.emit("player-position", {
-      x: position.x,
-      y: position.y,
-      chunkX: position.chunkX,
-      chunkY: position.chunkY,
-    });
+    // Day/night tint follows the world clock phase
+    this.dayNight.setPhase(this.getClockSnapshot().phase);
+
+    // Publish the state the React HUD consumes
+    this.hudBridge.flush();
+  }
+
+  /** Latest world clock snapshot, refreshed by TimeSystem each frame. */
+  private getClockSnapshot() {
+    return this.clockEntity.getComponent<TimeComponent>("time")!.snapshot;
   }
 
   /**
