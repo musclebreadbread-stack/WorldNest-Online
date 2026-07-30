@@ -19,6 +19,11 @@ dist/
 # Coverage
 coverage/
 
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+
 # IDE
 .vscode/
 .idea/
