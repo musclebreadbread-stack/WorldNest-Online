@@ -1,0 +1,462 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>WorldNest Online - 개발자 환경 설정 가이드</title>
+<style>
+body { font-family: '맑은 고딕', 'Malgun Gothic', sans-serif; font-size: 11pt; line-height: 1.6; margin: 40px; }
+h1 { font-size: 22pt; color: #1a1a2e; border-bottom: 3px solid #4a90d9; padding-bottom: 10px; }
+h2 { font-size: 16pt; color: #2d3748; margin-top: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
+h3 { font-size: 13pt; color: #4a5568; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+th, td { border: 1px solid #cbd5e0; padding: 8px 12px; text-align: left; }
+th { background-color: #edf2f7; font-weight: bold; }
+code { background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 2px 6px; font-family: 'Consolas', monospace; font-size: 10pt; }
+pre { background-color: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 5px; font-family: 'Consolas', monospace; font-size: 10pt; white-space: pre-wrap; }
+blockquote { border-left: 4px solid #4a90d9; margin: 15px 0; padding: 10px 20px; background-color: #ebf8ff; }
+.warning { border-left: 4px solid #ed8936; background-color: #fffaf0; padding: 10px 20px; margin: 15px 0; }
+.success { border-left: 4px solid #48bb78; background-color: #f0fff4; padding: 10px 20px; margin: 15px 0; }
+.checkbox { margin: 5px 0; }
+</style>
+</head>
+<body>
+
+<h1>WorldNest Online - 개발자 환경 설정 가이드</h1>
+
+<blockquote>
+이 문서는 WorldNest Online 프로젝트를 로컬에서 실행하기 위해 개발자가 직접 수행해야 하는 모든 설정 단계를 안내합니다.
+</blockquote>
+
+<hr>
+
+<h2>목차</h2>
+
+<ol>
+<li><a href="#1-사전-준비-사항">사전 준비 사항</a></li>
+<li><a href="#2-supabase-프로젝트-생성">Supabase 프로젝트 생성</a></li>
+<li><a href="#3-데이터베이스-테이블-생성">데이터베이스 테이블 생성</a></li>
+<li><a href="#4-환경-변수-설정">환경 변수 설정</a></li>
+<li><a href="#5-프로젝트-설치-및-실행">프로젝트 설치 및 실행</a></li>
+<li><a href="#6-동작-확인">동작 확인</a></li>
+<li><a href="#7-자주-발생하는-문제와-해결-방법">자주 발생하는 문제와 해결 방법</a></li>
+<li><a href="#8-vercel-배포-선택사항">Vercel 배포 (선택사항)</a></li>
+</ol>
+
+<hr>
+
+<h2>1. 사전 준비 사항</h2>
+
+<p>아래 소프트웨어를 먼저 설치하세요.</p>
+
+<table>
+<tr>
+<th>소프트웨어</th>
+<th>최소 버전</th>
+<th>설치 방법</th>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>22 이상</td>
+<td>https://nodejs.org 에서 LTS 다운로드</td>
+</tr>
+<tr>
+<td>pnpm</td>
+<td>10 이상</td>
+<td>터미널에서 <code>corepack enable</code> 실행</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>최신 버전</td>
+<td>https://git-scm.com</td>
+</tr>
+<tr>
+<td>브라우저</td>
+<td>Chrome/Edge/Firefox 최신</td>
+<td>-</td>
+</tr>
+</table>
+
+<h3>Node.js 설치 확인</h3>
+
+<pre>node --version
+# v22.x.x 이상이어야 합니다</pre>
+
+<h3>pnpm 활성화</h3>
+
+<pre>corepack enable
+pnpm --version
+# 10.x.x 이상이어야 합니다</pre>
+
+<hr>
+
+<h2>2. Supabase 프로젝트 생성</h2>
+
+<p>Supabase는 이 게임의 <strong>백엔드</strong> 역할을 합니다 (인증, 데이터베이스, 실시간 통신).</p>
+
+<h3>단계별 안내</h3>
+
+<ol>
+<li><strong>https://supabase.com</strong> 접속</li>
+<li><strong>Sign Up</strong> 클릭하여 계정 생성 (GitHub 계정으로 가능)</li>
+<li>로그인 후 <strong>New Project</strong> 클릭</li>
+<li>프로젝트 정보 입력:
+<ul>
+<li><strong>Name</strong>: <code>worldnest-online</code> (원하는 이름)</li>
+<li><strong>Database Password</strong>: 안전한 비밀번호 입력 (꼭 기억해두세요!)</li>
+<li><strong>Region</strong>: 가장 가까운 지역 선택 (예: <code>Northeast Asia (Tokyo)</code>)</li>
+</ul>
+</li>
+<li><strong>Create new project</strong> 클릭</li>
+<li>프로젝트 생성 완료까지 약 1~2분 대기</li>
+</ol>
+
+<h3>API 키 확인</h3>
+
+<p>프로젝트가 생성되면:</p>
+
+<ol>
+<li>왼쪽 메뉴에서 <strong>Settings</strong> (⚙️ 아이콘) 클릭</li>
+<li><strong>API</strong> 탭 클릭</li>
+<li>아래 두 값을 복사해두세요:</li>
+</ol>
+
+<table>
+<tr>
+<th>항목</th>
+<th>위치</th>
+<th>예시</th>
+</tr>
+<tr>
+<td><strong>Project URL</strong></td>
+<td><code>URL</code> 섹션</td>
+<td><code>https://abcdefgh.supabase.co</code></td>
+</tr>
+<tr>
+<td><strong>anon public</strong></td>
+<td><code>Project API keys</code> 섹션</td>
+<td><code>eyJhbGciOiJIUzI1NiIsInR5cCI6...</code></td>
+</tr>
+</table>
+
+<div class="warning">
+⚠️ <strong>주의</strong>: <code>service_role</code> 키는 절대 사용하지 마세요! <code>anon</code> 키만 사용합니다.
+</div>
+
+<hr>
+
+<h2>3. 데이터베이스 테이블 생성</h2>
+
+<p>게임에 필요한 테이블을 Supabase에 생성해야 합니다.</p>
+
+<h3>단계별 안내</h3>
+
+<ol>
+<li>Supabase 대시보드에서 왼쪽 메뉴의 <strong>SQL Editor</strong> 클릭</li>
+<li><strong>New query</strong> 클릭</li>
+<li>아래 SQL을 <strong>전체 복사</strong>하여 붙여넣기:</li>
+</ol>
+
+<pre>-- WorldNest Online - Initial Database Schema
+create extension if not exists "uuid-ossp";
+
+-- 프로필 테이블 (사용자 계정과 연결)
+create table public.profiles (
+  id uuid references auth.users(id) on delete cascade primary key,
+  username text unique not null,
+  avatar text default 'default',
+  created_at timestamptz default now() not null
+);
+
+-- 플레이어 상태 테이블 (마지막 위치, 인벤토리 저장)
+create table public.player_state (
+  player_id uuid references public.profiles(id) on delete cascade primary key,
+  x real default 0 not null,
+  y real default 0 not null,
+  chunk text default '0,0' not null,
+  last_online timestamptz default now() not null,
+  inventory jsonb default '{}' not null
+);
+
+-- 월드 테이블
+create table public.worlds (
+  id uuid default uuid_generate_v4() primary key,
+  name text not null,
+  seed integer not null,
+  created_at timestamptz default now() not null
+);
+
+-- RLS(행 수준 보안) 활성화
+alter table public.profiles enable row level security;
+alter table public.player_state enable row level security;
+alter table public.worlds enable row level security;
+
+-- 프로필 정책
+create policy "Users can view all profiles"
+  on public.profiles for select using (true);
+
+create policy "Users can update their own profile"
+  on public.profiles for update using (auth.uid() = id);
+
+create policy "Users can insert their own profile"
+  on public.profiles for insert with check (auth.uid() = id);
+
+-- 플레이어 상태 정책
+create policy "Users can view their own player state"
+  on public.player_state for select using (auth.uid() = player_id);
+
+create policy "Users can update their own player state"
+  on public.player_state for update using (auth.uid() = player_id);
+
+create policy "Users can insert their own player state"
+  on public.player_state for insert with check (auth.uid() = player_id);
+
+-- 월드 정책
+create policy "Anyone can view worlds"
+  on public.worlds for select using (true);
+
+create policy "Authenticated users can create worlds"
+  on public.worlds for insert with check (auth.role() = 'authenticated');
+
+-- 기본 월드 삽입
+insert into public.worlds (name, seed) values ('Default World', 42);</pre>
+
+<ol start="4">
+<li><strong>Run</strong> 버튼 클릭 (또는 Ctrl+Enter)</li>
+<li>"Success. No rows returned" 메시지가 나오면 성공!</li>
+</ol>
+
+<h3>확인 방법</h3>
+
+<p>왼쪽 메뉴에서 <strong>Table Editor</strong> 클릭 → <code>profiles</code>, <code>player_state</code>, <code>worlds</code> 3개 테이블이 보이면 정상입니다.</p>
+
+<hr>
+
+<h2>4. 환경 변수 설정</h2>
+
+<h3>단계별 안내</h3>
+
+<ol>
+<li>프로젝트 루트 폴더에서 <code>.env.example</code> 파일을 복사:</li>
+</ol>
+
+<pre>cp .env.example .env.local</pre>
+
+<ol start="2">
+<li><code>.env.local</code> 파일을 텍스트 에디터로 열기</li>
+<li>아래와 같이 수정:</li>
+</ol>
+
+<pre>NEXT_PUBLIC_SUPABASE_URL=https://여기에-본인-프로젝트-URL.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=여기에-본인-anon-key-붙여넣기</pre>
+
+<h3>예시 (실제 값으로 교체해야 함)</h3>
+
+<pre>NEXT_PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTk5OTk5OTksImV4cCI6MjAxNTU3NTk5OX0.xxxxx</pre>
+
+<div class="warning">
+⚠️ <code>.env.local</code> 파일은 <strong>절대 GitHub에 올리지 마세요!</strong> (이미 <code>.gitignore</code>에 등록되어 있습니다)
+</div>
+
+<hr>
+
+<h2>5. 프로젝트 설치 및 실행</h2>
+
+<pre># 1. 저장소 클론 (이미 했다면 건너뛰기)
+git clone https://github.com/musclebreadbread-stack/WorldNest-Online.git
+cd WorldNest-Online
+
+# 2. feat/mvp-foundation 브랜치로 전환
+git checkout feat/mvp-foundation
+
+# 3. 모든 패키지 의존성 설치
+pnpm install
+
+# 4. 환경 변수 설정 (위 4번 단계 완료 확인)
+
+# 5. 개발 서버 시작
+pnpm dev</pre>
+
+<h3>성공 시 표시되는 메시지</h3>
+
+<pre>@worldnest/web:dev: ready - started server on 0.0.0.0:3000, url: http://localhost:3000</pre>
+
+<h3>브라우저에서 확인</h3>
+
+<ul>
+<li><strong>http://localhost:3000</strong> 접속</li>
+<li>로그인 페이지(<code>/auth</code>)가 표시되면 성공!</li>
+<li>"Missing Supabase URL or anon key" 에러가 <strong>사라져야</strong> 합니다</li>
+</ul>
+
+<hr>
+
+<h2>6. 동작 확인</h2>
+
+<h3>회원가입 테스트</h3>
+
+<ol>
+<li>http://localhost:3000/auth 접속</li>
+<li>Username, Email, Password 입력</li>
+<li><strong>Sign Up</strong> 클릭</li>
+<li>회원가입 성공 시 자동으로 <code>/game</code> 페이지로 이동</li>
+</ol>
+
+<blockquote>
+💡 <strong>팁</strong>: Supabase 기본 설정에서는 이메일 인증이 필요할 수 있습니다.
+개발 중에는 Supabase 대시보드 → Authentication → Settings → <strong>Confirm email</strong> 을 OFF로 설정하면 편합니다.
+</blockquote>
+
+<h3>이메일 인증 끄기 (개발용)</h3>
+
+<ol>
+<li>Supabase 대시보드 접속</li>
+<li><strong>Authentication</strong> → <strong>Providers</strong> 클릭</li>
+<li><strong>Email</strong> 제공자 클릭</li>
+<li><strong>Confirm email</strong> 토글을 <strong>OFF</strong>로 변경</li>
+<li><strong>Save</strong> 클릭</li>
+</ol>
+
+<h3>게임 화면 확인</h3>
+
+<p>회원가입/로그인 성공 후 <code>/game</code> 페이지에서:</p>
+
+<ul>
+<li>초록색/갈색/파란색 타일로 구성된 월드가 표시됨</li>
+<li>WASD 또는 화살표 키로 캐릭터 이동 가능</li>
+<li>이동하면 주변 청크가 자동으로 로드됨</li>
+</ul>
+
+<hr>
+
+<h2>7. 자주 발생하는 문제와 해결 방법</h2>
+
+<h3>"Missing Supabase URL or anon key" 에러</h3>
+
+<p><strong>원인</strong>: <code>.env.local</code> 파일이 없거나 값이 비어 있음</p>
+
+<p><strong>해결</strong>:</p>
+<ol>
+<li>프로젝트 루트에 <code>.env.local</code> 파일이 있는지 확인</li>
+<li><code>NEXT_PUBLIC_SUPABASE_URL</code>과 <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> 값이 올바른지 확인</li>
+<li>개발 서버를 재시작 (<code>Ctrl+C</code> 후 <code>pnpm dev</code>)</li>
+</ol>
+
+<h3>"relation "public.profiles" does not exist" 에러</h3>
+
+<p><strong>원인</strong>: 데이터베이스 테이블이 생성되지 않음</p>
+
+<p><strong>해결</strong>: 3번 단계의 SQL을 Supabase SQL Editor에서 다시 실행</p>
+
+<h3>pnpm install 실패</h3>
+
+<p><strong>원인</strong>: Node.js 버전이 낮거나 pnpm이 설치되지 않음</p>
+
+<p><strong>해결</strong>:</p>
+
+<pre>node --version  # 22 이상 확인
+corepack enable
+pnpm install</pre>
+
+<h3>회원가입 후 로그인이 안 됨</h3>
+
+<p><strong>원인</strong>: 이메일 인증이 필요한 상태</p>
+
+<p><strong>해결</strong>: Supabase 대시보드 → Authentication → Settings → Confirm email → OFF</p>
+
+<h3>게임 화면이 검은색으로 나옴</h3>
+
+<p><strong>원인</strong>: Phaser 렌더링 오류 (보통 브라우저 확장 프로그램 충돌)</p>
+
+<p><strong>해결</strong>:</p>
+<ol>
+<li>브라우저 개발자 도구(F12) → Console 탭에서 에러 확인</li>
+<li>시크릿 모드(Ctrl+Shift+N)에서 재시도</li>
+<li>WebGL이 지원되는 브라우저인지 확인</li>
+</ol>
+
+<h3>포트 3000이 이미 사용 중</h3>
+
+<p><strong>해결</strong>:</p>
+
+<pre># 기존 프로세스 종료
+npx kill-port 3000
+
+# 또는 다른 포트로 실행
+PORT=3001 pnpm dev</pre>
+
+<hr>
+
+<h2>8. Vercel 배포 (선택사항)</h2>
+
+<p>게임을 인터넷에 공개하려면 Vercel에 배포할 수 있습니다.</p>
+
+<h3>단계별 안내</h3>
+
+<ol>
+<li>https://vercel.com 가입 (GitHub 계정으로)</li>
+<li><strong>New Project</strong> → GitHub 저장소 선택</li>
+<li><strong>Framework Preset</strong>: <code>Next.js</code> 선택</li>
+<li><strong>Root Directory</strong>: <code>apps/web</code> 입력</li>
+<li><strong>Environment Variables</strong> 설정:
+<ul>
+<li><code>NEXT_PUBLIC_SUPABASE_URL</code> = 본인 Supabase URL</li>
+<li><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> = 본인 anon key</li>
+</ul>
+</li>
+<li><strong>Deploy</strong> 클릭</li>
+</ol>
+
+<h3>Build 설정</h3>
+
+<table>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+<tr>
+<td>Build Command</td>
+<td><code>cd ../.. &amp;&amp; pnpm build --filter @worldnest/web</code></td>
+</tr>
+<tr>
+<td>Output Directory</td>
+<td><code>.next</code></td>
+</tr>
+<tr>
+<td>Install Command</td>
+<td><code>cd ../.. &amp;&amp; pnpm install</code></td>
+</tr>
+</table>
+
+<hr>
+
+<h2>체크리스트 요약</h2>
+
+<p>아래 항목을 모두 완료했는지 확인하세요:</p>
+
+<div class="checkbox">☐ Node.js 22+ 설치됨</div>
+<div class="checkbox">☐ pnpm 10+ 활성화됨 (<code>corepack enable</code>)</div>
+<div class="checkbox">☐ Supabase 프로젝트 생성됨</div>
+<div class="checkbox">☐ Supabase에서 SQL 마이그레이션 실행됨 (테이블 3개 생성)</div>
+<div class="checkbox">☐ <code>.env.local</code> 파일에 Supabase URL과 anon key 입력됨</div>
+<div class="checkbox">☐ <code>pnpm install</code> 성공</div>
+<div class="checkbox">☐ <code>pnpm dev</code> 실행 후 http://localhost:3000 접속 가능</div>
+<div class="checkbox">☐ 회원가입 및 로그인 정상 동작</div>
+<div class="checkbox">☐ <code>/game</code> 페이지에서 월드 표시됨</div>
+
+<hr>
+
+<h2>기술 지원</h2>
+
+<p>문제가 해결되지 않으면:</p>
+
+<ol>
+<li>GitHub Issues에 버그 리포트 작성</li>
+<li>브라우저 콘솔 에러 메시지 포함</li>
+<li><code>.env.local</code> 값은 <strong>절대 공유하지 마세요</strong></li>
+</ol>
+
+<hr>
+
+<p><em>이 문서는 WorldNest Online MVP (feat/mvp-foundation) 기준으로 작성되었습니다.</em></p>
+
+</body></html>
