@@ -108,6 +108,10 @@ export class GameScene extends Phaser.Scene {
       (chunk) => this.onChunkLoad(chunk),
       (chunkX, chunkY) => this.onChunkUnload(chunkX, chunkY),
     );
+    // Harvested/modified tiles repaint in place instead of rebuilding the chunk
+    this.worldManager.setTileChangeCallback((tileX, tileY, tileType) =>
+      this.chunkRenderer.redrawTile(tileX, tileY, tileType),
+    );
 
     // Prime the ECS once so chunks load and the render pass creates sprites
     this.ecsWorld.update(0);

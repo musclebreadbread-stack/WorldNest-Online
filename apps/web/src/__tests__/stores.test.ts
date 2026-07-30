@@ -139,6 +139,17 @@ describe("gameStore", () => {
 
     expect(useGameStore.getState().selectedSlot).toBe(5);
   });
+
+  it("should mirror the player's health and energy", () => {
+    useGameStore
+      .getState()
+      .setStats({ health: 80, maxHealth: 100, energy: 42, maxEnergy: 100 });
+
+    const state = useGameStore.getState();
+    expect(state.health).toBe(80);
+    expect(state.energy).toBe(42);
+    expect(state.maxEnergy).toBe(100);
+  });
 });
 
 describe("uiStore", () => {

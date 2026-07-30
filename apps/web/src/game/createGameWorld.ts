@@ -11,12 +11,16 @@ import {
   ColliderComponent,
   TimeComponent,
   InventoryComponent,
+  StatsComponent,
+  InteractionComponent,
   TimeSystem,
   InputSystem,
   CollisionSystem,
   MovementSystem,
   ChunkSystem,
   InterpolationSystem,
+  StatsSystem,
+  HarvestSystem,
   NetworkSyncSystem,
   RenderSystem,
   WorldManager,
@@ -40,6 +44,8 @@ export interface GameWorldSystems {
   movement: MovementSystem;
   chunk: ChunkSystem;
   interpolation: InterpolationSystem;
+  stats: StatsSystem;
+  harvest: HarvestSystem;
   networkSync: NetworkSyncSystem;
   render: RenderSystem;
 }
@@ -83,6 +89,11 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   const world = new World();
   const worldManager = new WorldManager(WORLD_SEED, 1);
 
+  // The clock entity exists up front so systems can read the phase through a getter
+  const clockEntity = new Entity(WORLD_CLOCK_ENTITY_ID);
+  const timeComponent = new TimeComponent();
+  clockEntity.addComponent(timeComponent);
+
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
@@ -93,6 +104,11 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
+    stats: new StatsSystem(() => timeComponent.snapshot.phase),
+    // Terrain edits go through the override layer, never into the generator
+    harvest: new HarvestSystem(worldManager, (tileX, tileY, tileType) =>
+      worldManager.setTileOverride(tileX, tileY, tileType),
+    ),
     networkSync: new NetworkSyncSystem(SYNC_INTERVAL_MS),
     render: new RenderSystem(),
   };
@@ -103,6 +119,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.movement);
   world.addSystem(systems.chunk);
   world.addSystem(systems.interpolation);
+  world.addSystem(systems.stats);
+  world.addSystem(systems.harvest);
   world.addSystem(systems.networkSync);
   world.addSystem(systems.render);
 
@@ -115,12 +133,11 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     .addComponent(new InputComponent())
     .addComponent(new NetworkComponent())
     .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
-    .addComponent(new InventoryComponent());
+    .addComponent(new InventoryComponent())
+    .addComponent(new StatsComponent())
+    .addComponent(new InteractionComponent());
 
   world.addEntity(playerEntity);
-
-  const clockEntity = new Entity(WORLD_CLOCK_ENTITY_ID);
-  clockEntity.addComponent(new TimeComponent());
   world.addEntity(clockEntity);
 
   return { world, worldManager, systems, playerEntity, clockEntity };

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { addItem, TimeComponent, WorldClock } from "@worldnest/game-engine";
-import type { InventoryComponent } from "@worldnest/game-engine";
+import type { InventoryComponent, StatsComponent } from "@worldnest/game-engine";
 import { DAY_LENGTH_MINUTES, WORLD_EPOCH_MS } from "@worldnest/shared";
 import { HudBridge, type HudEventEmitter } from "../game/HudBridge";
 import { createGameWorld, DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } from "../game/createGameWorld";
@@ -8,6 +8,7 @@ import {
   CLOCK_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  STATS_CHANGED_EVENT,
   type InventoryChangedEvent,
 } from "../game/events";
 
@@ -70,6 +71,29 @@ describe("HudBridge", () => {
     const last = emitter.events.at(-1)!.payload as InventoryChangedEvent;
     expect(last.slots[0]).toEqual({ itemId: "wood", quantity: 2 });
     expect(last.selectedSlot).toBe(0);
+  });
+
+  it("should emit stats only when a whole point changes", () => {
+    const { playerEntity, clockEntity } = createGameWorld(BOOTSTRAP);
+    const stats = playerEntity.getComponent<StatsComponent>("stats")!;
+    const bridge = new HudBridge(emitter, playerEntity, clockEntity);
+
+    bridge.flush();
+    // Sub-point regeneration must not spam React
+    stats.energy -= 0.2;
+    bridge.flush();
+    expect(emitter.countOf(STATS_CHANGED_EVENT)).toBe(1);
+
+    stats.energy -= 10;
+    bridge.flush();
+
+    expect(emitter.countOf(STATS_CHANGED_EVENT)).toBe(2);
+    expect(emitter.events.at(-1)!.payload).toEqual({
+      health: stats.maxHealth,
+      maxHealth: stats.maxHealth,
+      energy: Math.round(stats.energy),
+      maxEnergy: stats.maxEnergy,
+    });
   });
 
   it("should emit the clock only when it changes", () => {

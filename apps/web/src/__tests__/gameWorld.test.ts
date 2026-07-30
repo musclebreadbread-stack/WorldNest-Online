@@ -4,7 +4,13 @@ import {
   InputComponent,
   PositionComponent,
   TILE_PROPERTIES,
+  TileType,
   WorldManager,
+} from "@worldnest/game-engine";
+import type {
+  InteractionComponent,
+  InventoryComponent,
+  StatsComponent,
 } from "@worldnest/game-engine";
 import { TILE_SIZE, WORLD_SEED } from "@worldnest/shared";
 import {
@@ -66,6 +72,62 @@ describe("createGameWorld", () => {
 
     // The collider's left edge never crosses into the water tile
     expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(6 * TILE_SIZE);
+  });
+});
+
+describe("harvest wiring", () => {
+  // Tile (20, 14) is grass with stone immediately to its east for WORLD_SEED
+  const STAND_TILE_X = 20;
+  const STAND_TILE_Y = 14;
+  const TARGET_TILE_X = STAND_TILE_X + 1;
+
+  function createWorldFacingStone() {
+    return createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: STAND_TILE_X * TILE_SIZE + TILE_SIZE / 2,
+      spawnY: STAND_TILE_Y * TILE_SIZE + TILE_SIZE / 2,
+    });
+  }
+
+  it("should harvest the faced tile into the inventory and grass it over", () => {
+    const context = createWorldFacingStone();
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    const inventory =
+      context.playerEntity.getComponent<InventoryComponent>("inventory")!;
+    const stats = context.playerEntity.getComponent<StatsComponent>("stats")!;
+    const repainted: Array<[number, number, TileType]> = [];
+    context.worldManager.setTileChangeCallback((tileX, tileY, tileType) =>
+      repainted.push([tileX, tileY, tileType]),
+    );
+
+    expect(context.worldManager.getTileAt(TARGET_TILE_X, STAND_TILE_Y)).toBe(
+      TileType.STONE,
+    );
+
+    interaction.facing = "right";
+    interaction.interactRequested = true;
+    context.world.update(1 / 60);
+
+    expect(inventory.slots[0]).toEqual({ itemId: "stone", quantity: 1 });
+    expect(context.worldManager.getTileAt(TARGET_TILE_X, STAND_TILE_Y)).toBe(
+      TileType.GRASS,
+    );
+    expect(stats.energy).toBeLessThan(stats.maxEnergy);
+    // The change is announced so ChunkRenderer can repaint just that tile
+    expect(repainted).toEqual([[TARGET_TILE_X, STAND_TILE_Y, TileType.GRASS]]);
+    expect(interaction.interactRequested).toBe(false);
+  });
+
+  it("should leave the world untouched without an interaction request", () => {
+    const context = createWorldFacingStone();
+    const inventory =
+      context.playerEntity.getComponent<InventoryComponent>("inventory")!;
+
+    context.world.update(1 / 60);
+
+    expect(inventory.slots.every((slot) => slot === null)).toBe(true);
+    expect(context.worldManager.getTileOverrides().size).toBe(0);
   });
 });
 

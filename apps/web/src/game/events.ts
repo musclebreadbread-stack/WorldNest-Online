@@ -31,3 +31,12 @@ export interface InventoryChangedEvent {
   slots: Array<InventorySlot | null>;
   selectedSlot: number;
 }
+
+export const STATS_CHANGED_EVENT = "stats-changed";
+
+export interface StatsChangedEvent {
+  health: number;
+  maxHealth: number;
+  energy: number;
+  maxEnergy: number;
+}

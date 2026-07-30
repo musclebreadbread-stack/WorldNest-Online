@@ -2,14 +2,17 @@ import type {
   Entity,
   InventoryComponent,
   PositionComponent,
+  StatsComponent,
   TimeComponent,
 } from "@worldnest/game-engine";
 import {
   CLOCK_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  STATS_CHANGED_EVENT,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
+  type StatsChangedEvent,
 } from "./events";
 
 /** The slice of Phaser's event emitter the bridge needs, so it stays Phaser-free. */
@@ -28,6 +31,8 @@ export class HudBridge {
   private clockEntity: Entity;
   private lastClockMinutes = -1;
   private lastInventoryVersion = -1;
+  private lastHealth = -1;
+  private lastEnergy = -1;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -40,6 +45,7 @@ export class HudBridge {
     this.emitPosition();
     this.emitClock();
     this.emitInventory();
+    this.emitStats();
   }
 
   private emitPosition(): void {
@@ -71,5 +77,26 @@ export class HudBridge {
       selectedSlot: inventory.selectedSlot,
     };
     this.emitter.emit(INVENTORY_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Energy regenerates continuously, so the bars are published on whole-point
+   * changes only — that is all the HUD can display anyway.
+   */
+  private emitStats(): void {
+    const stats = this.playerEntity.getComponent<StatsComponent>("stats")!;
+    const health = Math.round(stats.health);
+    const energy = Math.round(stats.energy);
+    if (health === this.lastHealth && energy === this.lastEnergy) return;
+
+    this.lastHealth = health;
+    this.lastEnergy = energy;
+    const payload: StatsChangedEvent = {
+      health,
+      maxHealth: stats.maxHealth,
+      energy,
+      maxEnergy: stats.maxEnergy,
+    };
+    this.emitter.emit(STATS_CHANGED_EVENT, payload);
   }
 }

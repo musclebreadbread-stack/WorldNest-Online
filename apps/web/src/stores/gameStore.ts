@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import type { InventorySlot } from "@worldnest/game-engine";
-import { INVENTORY_SLOTS } from "@worldnest/shared";
+import { INVENTORY_SLOTS, MAX_ENERGY } from "@worldnest/shared";
+
+/** Matches StatsComponent's default, used until the game emits its first update. */
+const DEFAULT_MAX_HEALTH = 100;
 
 export interface OnlinePlayer {
   playerId: string;
@@ -19,6 +22,11 @@ interface GameState {
   /** Mirror of the local player's InventoryComponent slots. */
   inventorySlots: Array<InventorySlot | null>;
   selectedSlot: number;
+  /** Mirror of the local player's StatsComponent, rounded for display. */
+  health: number;
+  maxHealth: number;
+  energy: number;
+  maxEnergy: number;
 
   setPlayerPosition: (x: number, y: number, chunkX: number, chunkY: number) => void;
   setConnectionStatus: (status: "disconnected" | "connecting" | "connected") => void;
@@ -27,6 +35,12 @@ interface GameState {
     selectedSlot: number,
   ) => void;
   setSelectedSlot: (selectedSlot: number) => void;
+  setStats: (stats: {
+    health: number;
+    maxHealth: number;
+    energy: number;
+    maxEnergy: number;
+  }) => void;
   addOnlinePlayer: (player: OnlinePlayer) => void;
   removeOnlinePlayer: (playerId: string) => void;
   updateOnlinePlayer: (playerId: string, x: number, y: number) => void;
@@ -41,6 +55,10 @@ export const useGameStore = create<GameState>((set) => ({
   connectionStatus: "disconnected",
   inventorySlots: new Array<InventorySlot | null>(INVENTORY_SLOTS).fill(null),
   selectedSlot: 0,
+  health: DEFAULT_MAX_HEALTH,
+  maxHealth: DEFAULT_MAX_HEALTH,
+  energy: MAX_ENERGY,
+  maxEnergy: MAX_ENERGY,
 
   setPlayerPosition: (x, y, chunkX, chunkY) =>
     set({ playerX: x, playerY: y, chunkX, chunkY }),
@@ -56,6 +74,9 @@ export const useGameStore = create<GameState>((set) => ({
     }),
 
   setSelectedSlot: (selectedSlot) => set({ selectedSlot }),
+
+  setStats: ({ health, maxHealth, energy, maxEnergy }) =>
+    set({ health, maxHealth, energy, maxEnergy }),
 
   addOnlinePlayer: (player) =>
     set((state) => {

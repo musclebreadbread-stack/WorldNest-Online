@@ -11,10 +11,12 @@ import {
   INVENTORY_CHANGED_EVENT,
   PLAYERS_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
+  STATS_CHANGED_EVENT,
   type ClockChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type PlayersChangedEvent,
+  type StatsChangedEvent,
 } from "../game/events";
 
 /**
@@ -32,6 +34,7 @@ export function GameCanvas() {
   const removeOnlinePlayer = useGameStore((s) => s.removeOnlinePlayer);
   const updateOnlinePlayer = useGameStore((s) => s.updateOnlinePlayer);
   const setInventory = useGameStore((s) => s.setInventory);
+  const setStats = useGameStore((s) => s.setStats);
   const setClock = useUIStore((s) => s.setClock);
   const user = useAuthStore((s) => s.user);
   const authLoading = useAuthStore((s) => s.loading);
@@ -68,6 +71,11 @@ export function GameCanvas() {
       setInventory(event.slots, event.selectedSlot);
     });
 
+    // Mirror the local player's health/energy into the HUD store
+    game.events.on(STATS_CHANGED_EVENT, (event: StatsChangedEvent) => {
+      setStats(event);
+    });
+
     // Mirror remote player joins/leaves/moves into the React store
     game.events.on(PLAYERS_CHANGED_EVENT, (event: PlayersChangedEvent) => {
       switch (event.type) {
@@ -98,6 +106,7 @@ export function GameCanvas() {
     removeOnlinePlayer,
     updateOnlinePlayer,
     setInventory,
+    setStats,
     setClock,
     user,
   ]);
