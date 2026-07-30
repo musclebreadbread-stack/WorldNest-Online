@@ -191,7 +191,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase D — World clock and day/night
 
-- [ ] 11. Add the shared clock: `packages/game-engine/src/world/WorldClock.ts` with
+- [x] 11. Add the shared clock: `packages/game-engine/src/world/WorldClock.ts` with
       `WorldClock.fromWallClock(nowMs)` → `{ totalMinutes, day, hour, minute, phase }` where `phase` is
       `"dawn" | "day" | "dusk" | "night"`, derived from `WORLD_EPOCH_MS`, `GAME_MINUTES_PER_REAL_SECOND` and
       `DAY_LENGTH_MINUTES` (decision D3), plus `TimeComponent` (type `"time"`, holds the latest snapshot)
@@ -204,7 +204,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/game-engine/src/__tests__/world-clock.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes.
 
-- [ ] 12. Surface time in the client: register `TimeSystem` on a singleton `world-clock` entity, tint the
+- [x] 12. Surface time in the client: register `TimeSystem` on a singleton `world-clock` entity, tint the
       camera per phase in `GameScene` (a full-screen `Phaser.GameObjects.Rectangle` with `setScrollFactor(0)`
       whose alpha/colour is driven by phase, tweened over 1 s on change), emit `clock-changed` to React, hold
       it in a new `uiStore`, and render a `ClockHud` (`Day 3 · 07:20 · dawn`) in `GameUI`. Add a unit test for
@@ -218,7 +218,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase E — Items and inventory
 
-- [ ] 13. Add inventory to the engine per decision D5: `InventoryComponent` (type `"inventory"`;
+- [x] 13. Add inventory to the engine per decision D5: `InventoryComponent` (type `"inventory"`;
       `slots: Array<{ itemId: ItemId; quantity: number } | null>` sized `INVENTORY_SLOTS`,
       `selectedSlot: number`) and `packages/game-engine/src/inventory/inventoryOps.ts` with pure
       `addItem(inv, itemId, qty): number` (returns the remainder that did not fit, respecting
@@ -232,7 +232,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/game-engine/src/__tests__/inventory.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — new suite passes.
 
-- [ ] 14. Add the inventory UI. Put `inventorySlots` + `selectedSlot` + `setInventory`/`setSelectedSlot` in
+- [x] 14. Add the inventory UI. Put `inventorySlots` + `selectedSlot` + `setInventory`/`setSelectedSlot` in
       `gameStore`; give the player entity an `InventoryComponent`; emit `inventory-changed` from `GameScene`
       whenever the component version counter changes; bind number keys `1`–`8` and `I` in `GameScene`
       (hotbar select / toggle panel via `uiStore`). Build `HotBar` (bottom-centre, 8 slots, selection ring)
@@ -246,7 +246,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
 
 ## Phase F — Interaction, stats, harvesting
 
-- [ ] 15. Add the interaction loop to the engine. `StatsComponent` (`health`, `maxHealth`, `energy`,
+- [x] 15. Add the interaction loop to the engine. `StatsComponent` (`health`, `maxHealth`, `energy`,
       `maxEnergy`, `regenPerMinute`), `StatsSystem` (`["stats"]`, regenerates energy from `deltaTime`,
       clamped, at double rate during the `night` phase read from the time entity via an injected getter),
       `InteractionComponent` (`facing: "up"|"down"|"left"|"right"`, `interactRequested: boolean`,
@@ -267,7 +267,7 @@ Goal: develop every remaining developable area of the project, in dependency ord
       `packages/game-engine/src/__tests__/harvest.test.ts`, `packages/game-engine/src/__tests__/stats.test.ts`
       Verify: `pnpm --filter @worldnest/game-engine test` — both new suites pass.
 
-- [ ] 16. Wire interaction into the client: track facing from the last non-zero input direction, bind `E` /
+- [x] 16. Wire interaction into the client: track facing from the last non-zero input direction, bind `E` /
       `Space` to set `interactRequested`, register `StatsSystem` + `HarvestSystem`, implement
       `ChunkRenderer.redrawTile(tileX, tileY, tileType)` and hook it to `WorldManager.onTileChanged` so
       harvested tiles repaint without rebuilding the whole chunk texture, and add an energy/health bar to
@@ -494,3 +494,41 @@ Goal: develop every remaining developable area of the project, in dependency ord
 - React consumes `players-changed` (payload type in `apps/web/src/game/events.ts`); later HUD events
   should follow the same pattern.
 - Generated `*.tsbuildinfo` files are now gitignored and untracked.
+
+---
+
+## Implementation notes for items 11-16 (deviations worth knowing for items 17-28)
+
+- `createGameWorld` now also returns `clockEntity` (id `WORLD_CLOCK_ENTITY_ID = "world-clock"`), and the
+  clock entity is built **before** the systems object so `StatsSystem` can be constructed with a
+  `() => timeComponent.snapshot.phase` getter. Item 17's `CropGrowthSystem` should take its clock the same
+  way (`() => timeComponent.snapshot.totalMinutes`) instead of querying the world for the entity.
+- System registration order is now: Time → Input → Collision → Movement → Chunk → Interpolation → Stats →
+  Harvest → NetworkSync → Render. `PlantSystem`/`CropGrowthSystem`/`BuildSystem` belong next to Harvest,
+  before NetworkSync, so a request made this frame is consumed this frame.
+- Facing lives in `packages/game-engine/src/interaction/facing.ts` (a new directory, exported from the
+  package barrel as `Facing`, `FACING_OFFSETS`, `getFacedTile`). `getFacedTile(pixelX, pixelY, facing,
+  range?)` is the shared target resolver — planting and building must use it so all three agree.
+- `InventoryComponent` carries a `version` counter that every mutating op in `inventoryOps` bumps; that is
+  how the HUD detects changes. `inventoryOps` also exports `hasSpaceFor` (not in the plan text), which
+  `HarvestSystem` uses to avoid consuming a tile when the yield would not fit.
+- Phaser keyboard handling moved out of `GameScene` into `apps/web/src/game/PlayerController.ts` (movement
+  polling, facing from the last non-zero direction, hotbar `1`-`8`, `I`, and `E`/`Space` interact with a
+  250 ms cooldown written through `InteractionComponent.lastInteractAt`). Item 20's `B`/`Q` build bindings
+  and item 24's chat-focus gate belong there, not in the scene.
+- All Phaser→React HUD traffic goes through `apps/web/src/game/HudBridge.ts`, called once per frame from
+  `GameScene.update`. It de-duplicates: clock by `totalMinutes`, inventory by `version`, stats by rounded
+  whole points. New HUD events should be added there plus `apps/web/src/game/events.ts` and subscribed in
+  `GameCanvas`.
+- Day/night tinting lives in `apps/web/src/game/DayNightOverlay.ts` (scroll-factor-0 rectangle, 1 s tween
+  on phase change), not inline in the scene.
+- `WorldManager.setTileChangeCallback` is wired to `ChunkRenderer.redrawTile` in `GameScene.create`, so any
+  `setTileOverride` call now repaints that one tile. Item 17's `FARMLAND` needs only a `tile_6` texture in
+  `BootScene` for this to work, and item 23 can reuse the same callback to persist the diff.
+- HUD components: `ClockHud`, `HotBar`, `InventoryPanel` and `StatusBars`, with a shared `ItemSlot` cell.
+  Clock/inventory-panel toggles live in `uiStore`; position, inventory mirror and stats live in `gameStore`.
+- Web test placement: engine-level gameplay wiring is covered in `apps/web/src/__tests__/gameWorld.test.ts`
+  by driving `createGameWorld` directly (it is Phaser-free). The harvest test stands the player on tile
+  `(20, 14)` facing east into the stone tile `(21, 14)` — a deterministic pair for `WORLD_SEED = 42`;
+  there is no forest within the first few chunks, so use stone for tile-harvest tests.
+- Test totals after item 16: `@worldnest/shared` 10, `@worldnest/game-engine` 101, `@worldnest/web` 31 = 142.
