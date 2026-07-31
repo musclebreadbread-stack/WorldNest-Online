@@ -139,7 +139,11 @@ export class GameScene extends Phaser.Scene {
     );
 
     // React HUD bridge
-    this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
+    this.hudBridge = new HudBridge(
+      this.game.events,
+      this.playerEntity,
+      this.clockEntity,
+    );
     // Dialogue answers, shop trades and quest requests travel back the other
     // way, through injected callbacks (decision D13)
     const unwireDialogue = wireDialogue(this.playerEntity);
@@ -221,8 +225,7 @@ export class GameScene extends Phaser.Scene {
    */
   private getBootstrap(): GameBootstrap {
     const bootstrap = this.registry.get(BOOTSTRAP_REGISTRY_KEY) as
-      | GameBootstrap
-      | undefined;
+      GameBootstrap | undefined;
     return bootstrap ?? FALLBACK_BOOTSTRAP;
   }
 

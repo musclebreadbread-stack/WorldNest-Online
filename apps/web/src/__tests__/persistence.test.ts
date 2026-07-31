@@ -9,7 +9,11 @@ import {
   getTileKey,
   structureEntityId,
 } from "@worldnest/game-engine";
-import type { CropComponent, QuestEntry, WalletComponent } from "@worldnest/game-engine";
+import type {
+  CropComponent,
+  QuestEntry,
+  WalletComponent,
+} from "@worldnest/game-engine";
 import { INVENTORY_SLOTS, STARTING_COINS, TILE_SIZE } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
 import {

@@ -86,8 +86,7 @@ export const ja: LocaleMessages = {
     "売る値段より少し安く買い取ります。そうしないとお店が続かないので。それでもたくさん集めればちゃんと儲かりますよ。",
   "dialogue.juno.option.shop": "品物を見せて",
   "dialogue.juno.option.prices": "値段はどう決まるの？",
-  "dialogue.ada.greeting":
-    "やあ、探検家さん！村でやるべき仕事を一覧にしてあります。",
+  "dialogue.ada.greeting": "やあ、探検家さん！村でやるべき仕事を一覧にしてあります。",
   "dialogue.ada.quests": "ひとつ選んでくれたら、名前を書いておきますね。",
   "dialogue.ada.report": "終わりましたか？どの仕事をしたか教えてください。",
   "dialogue.ada.option.quests": "どんな仕事があるの？",
@@ -125,9 +124,11 @@ export const ja: LocaleMessages = {
   "quest.collect_wood.title": "村のためのたきぎ",
   "quest.collect_wood.description": "木材を5個集めてエイダに見せましょう。",
   "quest.build_fence.title": "庭に柵を立てる",
-  "quest.build_fence.description": "どこでもいいので柵を2つ置いて、エイダに伝えましょう。",
+  "quest.build_fence.description":
+    "どこでもいいので柵を2つ置いて、エイダに伝えましょう。",
   "quest.greet_pip.title": "ピップに挨拶する",
-  "quest.greet_pip.description": "庭師のピップはお客さんが大好きです。話しかけてみましょう。",
+  "quest.greet_pip.description":
+    "庭師のピップはお客さんが大好きです。話しかけてみましょう。",
 
   "item.wood": "木材",
   "item.stone": "石",

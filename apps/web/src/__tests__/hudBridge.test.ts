@@ -3,7 +3,11 @@ import { addItem, TimeComponent, WorldClock } from "@worldnest/game-engine";
 import type { InventoryComponent, StatsComponent } from "@worldnest/game-engine";
 import { DAY_LENGTH_MINUTES, WORLD_EPOCH_MS } from "@worldnest/shared";
 import { HudBridge, type HudEventEmitter } from "../game/HudBridge";
-import { createGameWorld, DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } from "../game/createGameWorld";
+import {
+  createGameWorld,
+  DEFAULT_SPAWN_X,
+  DEFAULT_SPAWN_Y,
+} from "../game/createGameWorld";
 import {
   CLOCK_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,

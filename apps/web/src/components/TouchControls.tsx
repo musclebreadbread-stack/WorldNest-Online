@@ -159,7 +159,9 @@ function TouchButton({ glyph, label, onPress, disabled, active }: TouchButtonPro
         onPress();
       }}
       className={`h-14 w-14 touch-none rounded-full border text-sm font-semibold text-white transition-colors disabled:opacity-30 ${
-        active ? "border-worldnest-primary bg-worldnest-primary/40" : "border-white/20 bg-black/50"
+        active
+          ? "border-worldnest-primary bg-worldnest-primary/40"
+          : "border-white/20 bg-black/50"
       }`}
     >
       {glyph}

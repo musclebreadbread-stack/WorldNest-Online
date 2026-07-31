@@ -51,7 +51,10 @@ export function wireDialogue(playerEntity: Entity): () => void {
  * `close` is handled by the engine itself and `undefined` just means "walk to the
  * next node", so both fall through to the normal path.
  */
-function routeAction(action: DialogueAction | undefined, npcId: string | null): boolean {
+function routeAction(
+  action: DialogueAction | undefined,
+  npcId: string | null,
+): boolean {
   if (!action || npcId === null) return false;
 
   if (action.kind === "openShop") {

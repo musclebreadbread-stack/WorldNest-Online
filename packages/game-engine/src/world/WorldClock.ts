@@ -40,9 +40,7 @@ export class WorldClock {
    */
   static fromWallClock(nowMs: number): ClockSnapshot {
     const elapsedRealSeconds = Math.max(0, nowMs - WORLD_EPOCH_MS) / 1000;
-    const totalMinutes = Math.floor(
-      elapsedRealSeconds * GAME_MINUTES_PER_REAL_SECOND,
-    );
+    const totalMinutes = Math.floor(elapsedRealSeconds * GAME_MINUTES_PER_REAL_SECOND);
     const minuteOfDay = totalMinutes % DAY_LENGTH_MINUTES;
     const hour = Math.floor(minuteOfDay / MINUTES_PER_HOUR);
 

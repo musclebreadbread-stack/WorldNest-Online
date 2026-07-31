@@ -266,5 +266,4 @@ export class BootScene extends Phaser.Scene {
       graphics.destroy();
     }
   }
-
 }

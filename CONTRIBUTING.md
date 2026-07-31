@@ -9,12 +9,12 @@ Thank you for your interest in contributing to WorldNest Online! This guide cove
 3. **Write/update tests** for any new functionality
 4. **Run the full check suite** — `pnpm lint && pnpm build && pnpm test`, plus whichever of these your change touches:
 
-   | Command | When |
-   |---------|------|
-   | `pnpm test:e2e` | anything in `apps/web` (needs `pnpm build` first) |
-   | `pnpm db:verify` | anything under `packages/database/supabase/` (needs Docker) |
-   | `pnpm docs:check` | any edit to `docs/SETUP_GUIDE_KR.md` or its `.doc` mirror |
-   | `docker build -t worldnest .` | anything affecting the production image |
+   | Command                       | When                                                        |
+   | ----------------------------- | ----------------------------------------------------------- |
+   | `pnpm test:e2e`               | anything in `apps/web` (needs `pnpm build` first)           |
+   | `pnpm db:verify`              | anything under `packages/database/supabase/` (needs Docker) |
+   | `pnpm docs:check`             | any edit to `docs/SETUP_GUIDE_KR.md` or its `.doc` mirror   |
+   | `docker build -t worldnest .` | anything affecting the production image                     |
 
 5. **Submit a Pull Request** with a clear description
 
@@ -22,13 +22,13 @@ Thank you for your interest in contributing to WorldNest Online! This guide cove
 
 Use the following prefixes for branch names:
 
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `feat/` | New features | `feat/fishing-system` |
-| `fix/` | Bug fixes | `fix/chunk-loading-race` |
-| `chore/` | Maintenance, deps, CI | `chore/update-dependencies` |
-| `docs/` | Documentation only | `docs/add-api-reference` |
-| `refactor/` | Code restructuring | `refactor/ecs-performance` |
+| Prefix      | Purpose               | Example                     |
+| ----------- | --------------------- | --------------------------- |
+| `feat/`     | New features          | `feat/fishing-system`       |
+| `fix/`      | Bug fixes             | `fix/chunk-loading-race`    |
+| `chore/`    | Maintenance, deps, CI | `chore/update-dependencies` |
+| `docs/`     | Documentation only    | `docs/add-api-reference`    |
+| `refactor/` | Code restructuring    | `refactor/ecs-performance`  |
 
 ## Commit Message Format
 
@@ -98,7 +98,7 @@ docs: update architecture diagram with new systems
 ### ESLint & Prettier
 
 - ESLint enforces code quality rules
-- Prettier describes the formatting, but **do not run `pnpm format`**: `.prettierrc` sets `printWidth: 100` while the tree is hand-wrapped near 88 columns, so it rewrites dozens of files you did not touch. Check only your own with `npx prettier --check <files>`, and leave markdown tables compact rather than letting Prettier repad them — see the caveat in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md#project-scripts-reference). Reconciling the two is its own dedicated commit, still outstanding.
+- Prettier owns the formatting and the whole tree is formatted, so **run `pnpm format` before you commit**. `.prettierrc` sets `printWidth: 88`, which is what the code was already hand-wrapped at, so formatting now only touches what you changed. `pnpm format:check` is a CI gate: if it lists a file, run `pnpm format` and commit the result.
 
 ### File Organization
 

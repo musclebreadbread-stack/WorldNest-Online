@@ -21,7 +21,8 @@ export const es: LocaleMessages = {
   "auth.submitting": "Espera un momento...",
   "auth.switchToSignUp": "¿No tienes cuenta? Regístrate",
   "auth.switchToSignIn": "¿Ya tienes cuenta? Inicia sesión",
-  "auth.genericError": "No se pudo iniciar sesión. Revisa la configuración de Supabase.",
+  "auth.genericError":
+    "No se pudo iniciar sesión. Revisa la configuración de Supabase.",
 
   "game.loading": "Cargando el juego...",
 
@@ -115,7 +116,8 @@ export const es: LocaleMessages = {
 
   "quest.title": "Diario de misiones",
   "quest.close": "Cerrar (J)",
-  "quest.empty": "Aún no tienes encargos. Ada guarda la lista del pueblo; ve a preguntarle.",
+  "quest.empty":
+    "Aún no tienes encargos. Ada guarda la lista del pueblo; ve a preguntarle.",
   "quest.progress": "{current} / {target}",
   "quest.state.available": "Ofrecida",
   "quest.state.active": "En curso",
@@ -127,7 +129,8 @@ export const es: LocaleMessages = {
   "quest.build_fence.title": "Vallar el huerto",
   "quest.build_fence.description": "Coloca 2 vallas donde quieras y avisa a Ada.",
   "quest.greet_pip.title": "Saluda a Pip",
-  "quest.greet_pip.description": "A Pip el jardinero le encantan las visitas. Ve a hablar con él.",
+  "quest.greet_pip.description":
+    "A Pip el jardinero le encantan las visitas. Ve a hablar con él.",
 
   "item.wood": "Madera",
   "item.stone": "Piedra",

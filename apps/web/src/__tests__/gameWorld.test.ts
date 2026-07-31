@@ -426,8 +426,7 @@ describe("NPC wiring", () => {
 
   it("should open dialogue on an interact aimed at an NPC, and till nothing", () => {
     const { context, interaction } = createWorldFacingNpc();
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
 
     interaction.interactRequested = true;
     context.world.update(1 / 60);
@@ -446,8 +445,7 @@ describe("NPC wiring", () => {
 
   it("should advance the conversation from the option the HUD requests", () => {
     const { context, interaction } = createWorldFacingNpc();
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
 
     interaction.interactRequested = true;
     context.world.update(1 / 60);
@@ -521,7 +519,8 @@ describe("quest wiring", () => {
       const tileX = npc.tileX + dx;
       const tileY = npc.tileY + dy;
       if (probe.systems.npc.getNpcAt(tileX, tileY)) continue;
-      if (!TILE_PROPERTIES[probe.worldManager.getTileAt(tileX, tileY)].walkable) continue;
+      if (!TILE_PROPERTIES[probe.worldManager.getTileAt(tileX, tileY)].walkable)
+        continue;
 
       return {
         facing,
@@ -542,8 +541,7 @@ describe("quest wiring", () => {
     });
     const interaction =
       context.playerEntity.getComponent<InteractionComponent>("interaction")!;
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
     const quest = context.playerEntity.getComponent<QuestComponent>("quest")!;
     const inventory =
       context.playerEntity.getComponent<InventoryComponent>("inventory")!;
@@ -643,9 +641,8 @@ describe("animation wiring", () => {
     const entity = createRemotePlayerEntity("remote-1", "Friend", 0, 0);
     context.world.addEntity(entity);
 
-    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    )!;
+    const interpolation =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation")!;
     interpolation.targetX = 1000;
 
     // A velocity component would let MovementSystem fight the interpolation

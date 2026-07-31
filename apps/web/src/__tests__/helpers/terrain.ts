@@ -30,11 +30,7 @@ export interface FacingPair {
   spawnY: number;
 }
 
-function pairAt(
-  standTileX: number,
-  standTileY: number,
-  facing: Facing,
-): FacingPair {
+function pairAt(standTileX: number, standTileY: number, facing: Facing): FacingPair {
   const offset = FACING_OFFSETS[facing];
   return {
     standTileX,
@@ -62,9 +58,7 @@ export function findFacingPair(
   for (let tileY = 0; tileY < SEARCH_SIZE; tileY++) {
     for (let tileX = 0; tileX < SEARCH_SIZE; tileX++) {
       if (worldManager.getTileAt(tileX, tileY) !== standType) continue;
-      if (
-        worldManager.getTileAt(tileX + offset.dx, tileY + offset.dy) !== targetType
-      ) {
+      if (worldManager.getTileAt(tileX + offset.dx, tileY + offset.dy) !== targetType) {
         continue;
       }
       return pairAt(tileX, tileY, facing);

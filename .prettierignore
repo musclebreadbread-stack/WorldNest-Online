@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.next/
+.turbo/
+test-results/
+playwright-report/
+pnpm-lock.yaml
+
+# The implementation plans are the project's historical record. Repadding their
+# markdown tables would corrupt the diffs that document how the code got here.
+.agents/

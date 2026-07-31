@@ -21,8 +21,8 @@ describe("hasSupabaseAuthCookie", () => {
   });
 
   it("should find the auth cookie among other cookies", () => {
-    expect(
-      hasSupabaseAuthCookie(["theme", "sb-project-auth-token", "locale"]),
-    ).toBe(true);
+    expect(hasSupabaseAuthCookie(["theme", "sb-project-auth-token", "locale"])).toBe(
+      true,
+    );
   });
 });

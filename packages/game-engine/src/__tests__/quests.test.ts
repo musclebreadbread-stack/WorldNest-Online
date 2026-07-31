@@ -31,7 +31,9 @@ const FENCE_QUEST = QUEST_DEFINITIONS.build_fence;
 const TALK_QUEST = QUEST_DEFINITIONS.greet_pip;
 
 /** A progress source that counts nothing, so a test can opt in per objective. */
-function emptySource(overrides: Partial<QuestProgressSource> = {}): QuestProgressSource {
+function emptySource(
+  overrides: Partial<QuestProgressSource> = {},
+): QuestProgressSource {
   return { itemCount: () => 0, structureCount: () => 0, ...overrides };
 }
 
@@ -160,7 +162,11 @@ describe("objectiveProgress", () => {
     const entry = { state: "active" as const, progress: 0 };
 
     expect(
-      objectiveProgress(WOOD_QUEST.objective, entry, emptySource({ itemCount: () => 2 })),
+      objectiveProgress(
+        WOOD_QUEST.objective,
+        entry,
+        emptySource({ itemCount: () => 2 }),
+      ),
     ).toBe(2);
     expect(
       objectiveProgress(
@@ -186,10 +192,18 @@ describe("objectiveProgress", () => {
   // A visit is a moment, not a state, so it is recorded rather than polled
   it("should read a talk objective back off the entry", () => {
     expect(
-      objectiveProgress(TALK_QUEST.objective, { state: "active", progress: 1 }, emptySource()),
+      objectiveProgress(
+        TALK_QUEST.objective,
+        { state: "active", progress: 1 },
+        emptySource(),
+      ),
     ).toBe(1);
     expect(
-      objectiveProgress(TALK_QUEST.objective, { state: "active", progress: 0 }, emptySource()),
+      objectiveProgress(
+        TALK_QUEST.objective,
+        { state: "active", progress: 0 },
+        emptySource(),
+      ),
     ).toBe(0);
   });
 

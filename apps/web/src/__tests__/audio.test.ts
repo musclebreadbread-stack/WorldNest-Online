@@ -305,9 +305,9 @@ describe("audioStore", () => {
 
     useAudioStore.getState().setMuted(true);
     expect(useAudioStore.getState().muted).toBe(true);
-    expect(
-      JSON.parse(window.localStorage.getItem(AUDIO_STORAGE_KEY)!).muted,
-    ).toBe(true);
+    expect(JSON.parse(window.localStorage.getItem(AUDIO_STORAGE_KEY)!).muted).toBe(
+      true,
+    );
   });
 
   it("should adopt the stored settings on hydrate", () => {
@@ -404,9 +404,10 @@ describe("diffCues", () => {
 
   it("should layer harvest and pickup when a tile pays out", () => {
     // Harvesting spends energy and adds an item in the same frame
-    expect(
-      diffCues(QUIET, { ...QUIET, energy: 72, inventoryVersion: 5 }),
-    ).toEqual(["harvest", "pickup"]);
+    expect(diffCues(QUIET, { ...QUIET, energy: 72, inventoryVersion: 5 })).toEqual([
+      "harvest",
+      "pickup",
+    ]);
   });
 
   it("should emit ui for a build-mode toggle in either direction", () => {
@@ -422,9 +423,9 @@ describe("diffCues", () => {
   });
 
   it("should emit ui only once when build mode and chat both change", () => {
-    expect(
-      diffCues(QUIET, { ...QUIET, buildMode: true, chatCount: 9 }),
-    ).toEqual(["ui"]);
+    expect(diffCues(QUIET, { ...QUIET, buildMode: true, chatCount: 9 })).toEqual([
+      "ui",
+    ]);
   });
 
   it("should emit dialogue for a conversation opening, moving on or ending", () => {
@@ -435,9 +436,9 @@ describe("diffCues", () => {
 
   it("should emit plant instead of pickup when a seed goes into the ground", () => {
     // Sowing spends the seed, so the inventory bumps in the same frame
-    expect(
-      diffCues(QUIET, { ...QUIET, cropCount: 3, inventoryVersion: 5 }),
-    ).toEqual(["plant"]);
+    expect(diffCues(QUIET, { ...QUIET, cropCount: 3, inventoryVersion: 5 })).toEqual([
+      "plant",
+    ]);
   });
 
   it("should emit build instead of pickup when a structure is placed", () => {

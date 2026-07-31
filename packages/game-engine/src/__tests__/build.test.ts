@@ -29,10 +29,8 @@ class FakeTileQuery implements TileQuery {
 
   isWalkableAt(pixelX: number, pixelY: number): boolean {
     return (
-      this.getTileAt(
-        Math.floor(pixelX / TILE_SIZE),
-        Math.floor(pixelY / TILE_SIZE),
-      ) !== TileType.WATER
+      this.getTileAt(Math.floor(pixelX / TILE_SIZE), Math.floor(pixelY / TILE_SIZE)) !==
+      TileType.WATER
     );
   }
 }

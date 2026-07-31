@@ -47,18 +47,18 @@ The client runs entirely in the browser as a Next.js application with Phaser han
 
 ### State Management (Zustand)
 
-| Store | Contents |
-|-------|----------|
-| `authStore` | Signed-in user, session, loading flag |
-| `gameStore` | Player position/chunk, inventory mirror, stats mirror, coins, online players, connection status |
-| `uiStore` | Panel toggles (inventory, minimap, quest log, settings), build mode, latest clock snapshot |
-| `chatStore` | Message list (capped at 100), unread count, a monotonic `received` counter, `inputFocused`, the injected send function |
-| `localeStore` | Active locale, `hydrated` flag; persisted to `localStorage["worldnest.locale"]` |
-| `audioStore` | Master volume, music volume, muted; persisted to `localStorage["worldnest.audio"]` |
-| `touchStore` | Virtual axis and the one-shot interact/place flags written by the on-screen controls |
-| `dialogueStore` | The open conversation node and its options, plus the injected `respond`/`close` |
-| `shopStore` | The open shop, plus the injected `trade`/`close` |
-| `questStore` | The quest log mirror, plus the injected `turnIn` |
+| Store           | Contents                                                                                                               |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `authStore`     | Signed-in user, session, loading flag                                                                                  |
+| `gameStore`     | Player position/chunk, inventory mirror, stats mirror, coins, online players, connection status                        |
+| `uiStore`       | Panel toggles (inventory, minimap, quest log, settings), build mode, latest clock snapshot                             |
+| `chatStore`     | Message list (capped at 100), unread count, a monotonic `received` counter, `inputFocused`, the injected send function |
+| `localeStore`   | Active locale, `hydrated` flag; persisted to `localStorage["worldnest.locale"]`                                        |
+| `audioStore`    | Master volume, music volume, muted; persisted to `localStorage["worldnest.audio"]`                                     |
+| `touchStore`    | Virtual axis and the one-shot interact/place flags written by the on-screen controls                                   |
+| `dialogueStore` | The open conversation node and its options, plus the injected `respond`/`close`                                        |
+| `shopStore`     | The open shop, plus the injected `trade`/`close`                                                                       |
+| `questStore`    | The quest log mirror, plus the injected `turnIn`                                                                       |
 
 Zustand was chosen for its minimal boilerplate, TypeScript support, and compatibility with React's concurrent features.
 
@@ -99,21 +99,21 @@ React → ECS       an injected callback writing a request field on a component,
 
 The Phaser side of `apps/web/src/game/` is deliberately split so no file approaches the ~300-line cap in `CONTRIBUTING.md`:
 
-| File | Responsibility |
-|------|----------------|
-| `createGameWorld.ts` | ECS assembly and system registration — **Phaser-free**, which is what makes gameplay testable under jsdom |
-| `savedWorld.ts` | Restoring persisted terrain, structures and crops into a fresh world |
-| `PlayerController.ts` | Movement polling, facing, and the rate-limited request helpers |
-| `keyBindings.ts` | `ONE_SHOT_BINDINGS`, the number-key handler and the `whenPlaying` gate (imports Phaser) |
-| `panelStack.ts` | `isTyping()`, `isHudModal()`, `closeTopmostPanel()` — **Phaser-free on purpose** (see below) |
-| `SpriteSync.ts` + `NameTags.ts` | Every sprite, its depth and tint; every floating label |
-| `ChunkRenderer.ts` | One `RenderTexture` per loaded chunk, plus single-tile repaints |
-| `SceneOverlay.ts` | The `SceneOverlay` / `OverlayContext` contract and the `OverlayStack` |
-| `DayNightOverlay.ts`, `BuildGhost.ts`, `Minimap.ts` (+ `minimapLayout.ts`), `audio/SoundManager.ts` | The registered overlays |
-| `HudBridge.ts` | The one per-frame ECS → React publisher |
-| `ChatBridge.ts`, `DialogueBridge.ts`, `ShopBridge.ts`, `QuestBridge.ts` | Callback injection and action routing |
-| `NetworkBridge.ts` | All realtime plumbing, behind a narrow `NetworkTransport` interface |
-| `loadSession.ts`, `SessionPersistence.ts` | Session load and autosave |
+| File                                                                                                | Responsibility                                                                                            |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `createGameWorld.ts`                                                                                | ECS assembly and system registration — **Phaser-free**, which is what makes gameplay testable under jsdom |
+| `savedWorld.ts`                                                                                     | Restoring persisted terrain, structures and crops into a fresh world                                      |
+| `PlayerController.ts`                                                                               | Movement polling, facing, and the rate-limited request helpers                                            |
+| `keyBindings.ts`                                                                                    | `ONE_SHOT_BINDINGS`, the number-key handler and the `whenPlaying` gate (imports Phaser)                   |
+| `panelStack.ts`                                                                                     | `isTyping()`, `isHudModal()`, `closeTopmostPanel()` — **Phaser-free on purpose** (see below)              |
+| `SpriteSync.ts` + `NameTags.ts`                                                                     | Every sprite, its depth and tint; every floating label                                                    |
+| `ChunkRenderer.ts`                                                                                  | One `RenderTexture` per loaded chunk, plus single-tile repaints                                           |
+| `SceneOverlay.ts`                                                                                   | The `SceneOverlay` / `OverlayContext` contract and the `OverlayStack`                                     |
+| `DayNightOverlay.ts`, `BuildGhost.ts`, `Minimap.ts` (+ `minimapLayout.ts`), `audio/SoundManager.ts` | The registered overlays                                                                                   |
+| `HudBridge.ts`                                                                                      | The one per-frame ECS → React publisher                                                                   |
+| `ChatBridge.ts`, `DialogueBridge.ts`, `ShopBridge.ts`, `QuestBridge.ts`                             | Callback injection and action routing                                                                     |
+| `NetworkBridge.ts`                                                                                  | All realtime plumbing, behind a narrow `NetworkTransport` interface                                       |
+| `loadSession.ts`, `SessionPersistence.ts`                                                           | Session load and autosave                                                                                 |
 
 Two of those splits exist for a reason worth remembering: **importing Phaser under jsdom throws** (inside `checkInverseAlpha`), so anything a Vitest suite needs to reason about must live in a module that does not import it. That is why `panelStack.ts` is separate from `keyBindings.ts` and `minimapLayout.ts` separate from `Minimap.ts`.
 
@@ -158,29 +158,29 @@ Anything external a system needs is injected through its constructor: a `TileQue
 
 ### Components
 
-| Component | Type key | Data |
-|-----------|----------|------|
-| `PositionComponent` | `position` | x, y, chunkX, chunkY |
-| `VelocityComponent` | `velocity` | vx, vy |
-| `SpriteComponent` | `sprite` | textureKey, frame, visible |
-| `AnimationComponent` | `animation` | state, direction, elapsed, frameIndex, frameDurationMs, frameCount |
-| `PlayerComponent` | `player` | playerId, username, isLocal |
-| `ChunkComponent` | `chunk` | chunkX, chunkY |
-| `InputComponent` | `input` | key state |
-| `NetworkComponent` | `network` | dirty flag, last sync time |
-| `RemoteInterpolationComponent` | `remoteInterpolation` | targetX, targetY, lerpFactor |
-| `ColliderComponent` | `collider` | width, height, enabled |
-| `TimeComponent` | `time` | latest `ClockSnapshot` |
-| `InventoryComponent` | `inventory` | slots, selectedSlot, version |
-| `StatsComponent` | `stats` | health, maxHealth, energy, maxEnergy, regenPerMinute |
-| `InteractionComponent` | `interaction` | facing, interactRequested/lastInteractAt, buildRequested/lastBuildAt |
-| `CropComponent` | `crop` | seed itemId, plantedAtMinute, stage, stageCount, minutesPerStage, tileX, tileY |
-| `StructureComponent` | `structure` | itemId, tileX, tileY, collidable |
-| `NpcComponent` | `npc` | npcId, nameKey, dialogueId, role, tileX, tileY |
-| `DialogueComponent` | `dialogue` | activeNpcId, dialogueId, nodeId, requestedOption, closeRequested, version |
-| `WalletComponent` | `wallet` | coins |
-| `ShopComponent` | `shop` | openNpcId, requestedOpenNpcId, closeRequested, requestedTrade, refusals, version |
-| `QuestComponent` | `quest` | entries (`Record<questId, { state, progress }>`), requestedOffer, requestedTurnIn, refusals, version |
+| Component                      | Type key              | Data                                                                                                 |
+| ------------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `PositionComponent`            | `position`            | x, y, chunkX, chunkY                                                                                 |
+| `VelocityComponent`            | `velocity`            | vx, vy                                                                                               |
+| `SpriteComponent`              | `sprite`              | textureKey, frame, visible                                                                           |
+| `AnimationComponent`           | `animation`           | state, direction, elapsed, frameIndex, frameDurationMs, frameCount                                   |
+| `PlayerComponent`              | `player`              | playerId, username, isLocal                                                                          |
+| `ChunkComponent`               | `chunk`               | chunkX, chunkY                                                                                       |
+| `InputComponent`               | `input`               | key state                                                                                            |
+| `NetworkComponent`             | `network`             | dirty flag, last sync time                                                                           |
+| `RemoteInterpolationComponent` | `remoteInterpolation` | targetX, targetY, lerpFactor                                                                         |
+| `ColliderComponent`            | `collider`            | width, height, enabled                                                                               |
+| `TimeComponent`                | `time`                | latest `ClockSnapshot`                                                                               |
+| `InventoryComponent`           | `inventory`           | slots, selectedSlot, version                                                                         |
+| `StatsComponent`               | `stats`               | health, maxHealth, energy, maxEnergy, regenPerMinute                                                 |
+| `InteractionComponent`         | `interaction`         | facing, interactRequested/lastInteractAt, buildRequested/lastBuildAt                                 |
+| `CropComponent`                | `crop`                | seed itemId, plantedAtMinute, stage, stageCount, minutesPerStage, tileX, tileY                       |
+| `StructureComponent`           | `structure`           | itemId, tileX, tileY, collidable                                                                     |
+| `NpcComponent`                 | `npc`                 | npcId, nameKey, dialogueId, role, tileX, tileY                                                       |
+| `DialogueComponent`            | `dialogue`            | activeNpcId, dialogueId, nodeId, requestedOption, closeRequested, version                            |
+| `WalletComponent`              | `wallet`              | coins                                                                                                |
+| `ShopComponent`                | `shop`                | openNpcId, requestedOpenNpcId, closeRequested, requestedTrade, refusals, version                     |
+| `QuestComponent`               | `quest`               | entries (`Record<questId, { state, progress }>`), requestedOffer, requestedTurnIn, refusals, version |
 
 The last three follow one shape deliberately: a **request** field React writes, a **state** field only the system writes, a `refusals` counter (which is what the apologetic `deny` sound is played from) and a `version` bumped **only** by accepted changes, so the HUD never re-renders on a no-op.
 
@@ -188,25 +188,25 @@ The last three follow one shape deliberately: a **request** field React writes, 
 
 Registered in `apps/web/src/game/createGameWorld.ts`; insertion order **is** execution order, and several positions are load-bearing:
 
-| # | System | Why it sits here |
-|---|--------|------------------|
-| 1 | `TimeSystem` | Refreshes the clock first so every later system sees the same instant |
-| 2 | `InputSystem` | Turns key state into velocity |
-| 3 | `CollisionSystem` | Vetoes velocity **before** it is integrated, which is what makes per-axis wall sliding trivial |
-| 4 | `MovementSystem` | Integrates the surviving velocity |
-| 5 | `ChunkSystem` | Streams chunks around the new position |
-| 6 | `InterpolationSystem` | Eases remote players toward their network target (and animates them) |
-| 7 | `StatsSystem` | Regenerates energy, at double rate at night |
-| 8 | `NpcSystem` | Spawns the catalogue NPCs, owns their occupancy index, opens/advances conversations. **Before planting**, so talking to a villager can never till the ground under them — it consumes `interactRequested` first |
-| 9 | `ShopSystem` | Resolves open/trade/close requests, so a shop a conversation asked for opens in that same frame |
-| 10 | `QuestSystem` | Polls objective progress, records greetings, pays out turn-ins — after the conversation that triggered them |
-| 11 | `PlantSystem` | Tills/sows; only clears `interactRequested` when it acted |
-| 12 | `CropGrowthSystem` | Recomputes crop stages from the clock |
-| 13 | `BuildSystem` | Consumes `buildRequested`, spawns structures, owns the occupancy index |
-| 14 | `HarvestSystem` | Last consumer of `interactRequested`, so it sees requests planting ignored |
-| 15 | `NetworkSyncSystem` | Emits throttled position payloads |
-| 16 | `AnimationSystem` | Runs after velocity has settled, so a player pressed against a wall reads as idle |
-| 17 | `RenderSystem` | Collects `renderData` for the Phaser layer |
+| #   | System                | Why it sits here                                                                                                                                                                                                |
+| --- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `TimeSystem`          | Refreshes the clock first so every later system sees the same instant                                                                                                                                           |
+| 2   | `InputSystem`         | Turns key state into velocity                                                                                                                                                                                   |
+| 3   | `CollisionSystem`     | Vetoes velocity **before** it is integrated, which is what makes per-axis wall sliding trivial                                                                                                                  |
+| 4   | `MovementSystem`      | Integrates the surviving velocity                                                                                                                                                                               |
+| 5   | `ChunkSystem`         | Streams chunks around the new position                                                                                                                                                                          |
+| 6   | `InterpolationSystem` | Eases remote players toward their network target (and animates them)                                                                                                                                            |
+| 7   | `StatsSystem`         | Regenerates energy, at double rate at night                                                                                                                                                                     |
+| 8   | `NpcSystem`           | Spawns the catalogue NPCs, owns their occupancy index, opens/advances conversations. **Before planting**, so talking to a villager can never till the ground under them — it consumes `interactRequested` first |
+| 9   | `ShopSystem`          | Resolves open/trade/close requests, so a shop a conversation asked for opens in that same frame                                                                                                                 |
+| 10  | `QuestSystem`         | Polls objective progress, records greetings, pays out turn-ins — after the conversation that triggered them                                                                                                     |
+| 11  | `PlantSystem`         | Tills/sows; only clears `interactRequested` when it acted                                                                                                                                                       |
+| 12  | `CropGrowthSystem`    | Recomputes crop stages from the clock                                                                                                                                                                           |
+| 13  | `BuildSystem`         | Consumes `buildRequested`, spawns structures, owns the occupancy index                                                                                                                                          |
+| 14  | `HarvestSystem`       | Last consumer of `interactRequested`, so it sees requests planting ignored                                                                                                                                      |
+| 15  | `NetworkSyncSystem`   | Emits throttled position payloads                                                                                                                                                                               |
+| 16  | `AnimationSystem`     | Runs after velocity has settled, so a player pressed against a wall reads as idle                                                                                                                               |
+| 17  | `RenderSystem`        | Collects `renderData` for the Phaser layer                                                                                                                                                                      |
 
 This list is not documentation on trust: `apps/web/src/__tests__/gameWorld.test.ts` asserts `Object.keys(context.systems)` equals it verbatim, so changing the registration order without updating this table fails the suite.
 
@@ -249,13 +249,13 @@ The world is divided into fixed-size chunks (`CHUNK_SIZE = 16` tiles of `TILE_SI
 
 ### The five noise channels
 
-| Channel | Seed | Scale | What it decides |
-|---------|------|-------|-----------------|
-| elevation | `seed` | 0.02 | Water, shore and rock; also a lapse rate on temperature |
-| moisture | `seed + 1000` | 0.015 | Half of the biome classification |
-| detail | `seed + 2000` | 0.1 | Accent-tile scatter, and where an ore vein sits |
+| Channel     | Seed          | Scale | What it decides                                                                  |
+| ----------- | ------------- | ----- | -------------------------------------------------------------------------------- |
+| elevation   | `seed`        | 0.02  | Water, shore and rock; also a lapse rate on temperature                          |
+| moisture    | `seed + 1000` | 0.015 | Half of the biome classification                                                 |
+| detail      | `seed + 2000` | 0.1   | Accent-tile scatter, and where an ore vein sits                                  |
 | temperature | `seed + 3000` | 0.008 | The other half of the classification — broadest scale, so climate bands are wide |
-| caves | `seed + 4000` | 0.06 | Which high rock is hollowed out |
+| caves       | `seed + 4000` | 0.06  | Which high rock is hollowed out                                                  |
 
 `getTileType()` resolves them in a fixed priority order, and the order is the design:
 
@@ -271,14 +271,14 @@ otherwise          → the biome's surfaceTile, or its accentTile where detail >
 
 `classifyBiome(elevation, moisture, temperature)` in `world/Biomes.ts` is pure, total over the whole noise cube, and free of the generator. It first applies elevation as a **lapse rate** — `effective = temperature - max(0, elevation) * 0.25`, so highlands are colder than lowlands at the same latitude — then splits on temperature and moisture:
 
-| Biome | Surface | Accent |
-|-------|---------|--------|
-| `TUNDRA` | snow | stone |
-| `TAIGA` | forest | snow |
-| `GRASSLAND` | grass | flowers |
-| `FOREST` | forest | flowers |
-| `SAVANNA` | grass | forest |
-| `DESERT` | sand | stone |
+| Biome       | Surface | Accent  |
+| ----------- | ------- | ------- |
+| `TUNDRA`    | snow    | stone   |
+| `TAIGA`     | forest  | snow    |
+| `GRASSLAND` | grass   | flowers |
+| `FOREST`    | forest  | flowers |
+| `SAVANNA`   | grass   | forest  |
+| `DESERT`    | sand    | stone   |
 
 The chill constant is deliberately small. A larger one turned every mountain fringe into tundra and removed the grass-beside-stone tiles the gameplay tests search for. `WorldManager.getBiomeAt(tileX, tileY)` exposes the classification and deliberately **ignores the override layer** — a tilled field is still in the biome it was dug from — which is why it is a method on the class and not part of `TileQuery`.
 
@@ -300,19 +300,19 @@ Generation is a pure function of `WORLD_SEED` (42, in `@worldnest/shared`) and t
 
 ### Tile Types
 
-| Tile | Value | Source | walkable | buildable | harvestable |
-|------|-------|--------|----------|-----------|-------------|
-| Grass | 0 | elevation default | yes | yes | no |
-| Water | 1 | elevation `< -0.3` | **no** | no | no |
-| Sand | 2 | elevation `< -0.1` | yes | yes | no |
-| Forest | 3 | moisture `> 0.2` and elevation `> 0.1` | yes | no | yes → wood |
-| Stone | 4 | elevation `> 0.6` | yes | no | yes → stone |
-| Flowers | 5 | biome accent (grassland, forest) | yes | no | yes → flower |
-| Farmland | 6 | **override layer only** (tilling) | yes | yes | no |
-| Snow | 7 | tundra surface, taiga accent | yes | yes | no |
-| Cave floor | 8 | cave channel | yes | yes | no |
-| Cave wall | 9 | cave boundary against solid rock | **no** | no | no |
-| Ore | 10 | cave interior, high detail | yes | no | yes → ore |
+| Tile       | Value | Source                                 | walkable | buildable | harvestable  |
+| ---------- | ----- | -------------------------------------- | -------- | --------- | ------------ |
+| Grass      | 0     | elevation default                      | yes      | yes       | no           |
+| Water      | 1     | elevation `< -0.3`                     | **no**   | no        | no           |
+| Sand       | 2     | elevation `< -0.1`                     | yes      | yes       | no           |
+| Forest     | 3     | moisture `> 0.2` and elevation `> 0.1` | yes      | no        | yes → wood   |
+| Stone      | 4     | elevation `> 0.6`                      | yes      | no        | yes → stone  |
+| Flowers    | 5     | biome accent (grassland, forest)       | yes      | no        | yes → flower |
+| Farmland   | 6     | **override layer only** (tilling)      | yes      | yes       | no           |
+| Snow       | 7     | tundra surface, taiga accent           | yes      | yes       | no           |
+| Cave floor | 8     | cave channel                           | yes      | yes       | no           |
+| Cave wall  | 9     | cave boundary against solid rock       | **no**   | no        | no           |
+| Ore        | 10    | cave interior, high detail             | yes      | no        | yes → ore    |
 
 New generated tile ids start at 7 on purpose: `FARMLAND = 6` is override-only and must stay so, and every id is a persisted `world_modifications.tile_type` smallint that cannot be renumbered.
 
@@ -471,23 +471,23 @@ Meanwhile:
 
 ### Scene structure
 
-| Scene | Responsibility |
-|-------|----------------|
+| Scene       | Responsibility                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BootScene` | Generates every placeholder texture — one `tile_<n>` per `TileType` (derived from `Object.values(TileType)`, so a new tile can never be missed), `crop_wheat_0..3`, `structure_*`, one `npc_<role>` per catalogue role (via `scenes/npcTextures.ts`), and the 4-direction × 2-frame `player_<dir>_<n>` spritesheet — then starts the other scenes. **There are no binary assets in this repository** |
-| `GameScene` | Owns the ECS world, chunk textures, camera, input, networking and persistence wiring |
-| `UIScene` | A minimal canvas-side position/chunk readout (depth 1000, scroll factor 0); the real HUD is React |
+| `GameScene` | Owns the ECS world, chunk textures, camera, input, networking and persistence wiring                                                                                                                                                                                                                                                                                                                 |
+| `UIScene`   | A minimal canvas-side position/chunk readout (depth 1000, scroll factor 0); the real HUD is React                                                                                                                                                                                                                                                                                                    |
 
 ### Depth layers
 
-| Depth | Contents |
-|-------|----------|
-| 1000 | `UIScene`'s canvas-side position/chunk readout |
-| 900 | Day/night tint, then the minimap — registered after it, so the map is not dimmed at night |
-| 110 | Remote player and NPC labels (`NameTags`) |
-| 100 / 99 / 98 | Local player / remote players / NPCs |
-| 61 / 60 | Build ghost / placed structures |
-| 50 | Crops and other world-bound sprites |
-| 0 | Chunk render textures drawn by `ChunkRenderer` |
+| Depth         | Contents                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| 1000          | `UIScene`'s canvas-side position/chunk readout                                            |
+| 900           | Day/night tint, then the minimap — registered after it, so the map is not dimmed at night |
+| 110           | Remote player and NPC labels (`NameTags`)                                                 |
+| 100 / 99 / 98 | Local player / remote players / NPCs                                                      |
+| 61 / 60       | Build ghost / placed structures                                                           |
+| 50            | Crops and other world-bound sprites                                                       |
+| 0             | Chunk render textures drawn by `ChunkRenderer`                                            |
 
 `NameTags` compares `label.text` every pass, so switching language relabels the whole village without a reload.
 
@@ -534,28 +534,28 @@ PostgreSQL via Supabase. **Three** migrations, run in order, in `packages/databa
 
 ### 001_initial_schema.sql
 
-| Table | Key columns | Notes |
-|-------|-------------|-------|
-| `profiles` | `id` → `auth.users`, `username`, `avatar`, `created_at` | Public read, owner-only writes |
-| `player_state` | `player_id` → `profiles`, `x`, `y`, `chunk`, `inventory` jsonb, `last_online` | Owner-only read **and** write |
-| `worlds` | `id`, `name`, `seed`, `created_at` | Public read; seeded with `('Default World', 42)` |
+| Table          | Key columns                                                                   | Notes                                            |
+| -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------ |
+| `profiles`     | `id` → `auth.users`, `username`, `avatar`, `created_at`                       | Public read, owner-only writes                   |
+| `player_state` | `player_id` → `profiles`, `x`, `y`, `chunk`, `inventory` jsonb, `last_online` | Owner-only read **and** write                    |
+| `worlds`       | `id`, `name`, `seed`, `created_at`                                            | Public read; seeded with `('Default World', 42)` |
 
 ### 002_gameplay_schema.sql
 
-| Object | Purpose |
-|--------|---------|
+| Object                                               | Purpose                                                                                                                                                                                                          |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `handle_new_user()` + `on_auth_user_created` trigger | `security definer`, inserts a `profiles` row and a `player_state` row on sign-up (`on conflict do nothing`). Without it the `player_state` foreign key is unusable, because nothing else ever creates a profile. |
-| `world_modifications` | PK `(world_id, tile_x, tile_y)`, `tile_type`, `modified_by` (`on delete set null`), `updated_at` — the terrain diff |
-| `structures` | `id`, `world_id`, `owner_id`, `item_id`, tile, unique `(world_id, tile_x, tile_y)` |
-| `crops` | as above plus `planted_at_minute`; `item_id` is the **seed** |
-| `chat_messages` | `id`, `world_id`, `sender_id`, `username`, `body`, `created_at`, indexed `(world_id, created_at desc)` |
+| `world_modifications`                                | PK `(world_id, tile_x, tile_y)`, `tile_type`, `modified_by` (`on delete set null`), `updated_at` — the terrain diff                                                                                              |
+| `structures`                                         | `id`, `world_id`, `owner_id`, `item_id`, tile, unique `(world_id, tile_x, tile_y)`                                                                                                                               |
+| `crops`                                              | as above plus `planted_at_minute`; `item_id` is the **seed**                                                                                                                                                     |
+| `chat_messages`                                      | `id`, `world_id`, `sender_id`, `username`, `body`, `created_at`, indexed `(world_id, created_at desc)`                                                                                                           |
 
 ### 003_progression_schema.sql
 
-| Object | Purpose |
-|--------|---------|
-| `player_state.coins` | `integer default 0 not null`, added with `add column if not exists`. One column rather than a `player_wallet` table (D19), because that row is already written by every autosave |
-| `player_quests` | Primary key `(player_id, quest_id)`, `state text` with a `check (state in ('available','active','completed'))`, `progress integer`, `updated_at`. `player_id` cascades from `profiles` |
+| Object               | Purpose                                                                                                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `player_state.coins` | `integer default 0 not null`, added with `add column if not exists`. One column rather than a `player_wallet` table (D19), because that row is already written by every autosave       |
+| `player_quests`      | Primary key `(player_id, quest_id)`, `state text` with a `check (state in ('available','active','completed'))`, `progress integer`, `updated_at`. `player_id` cascades from `profiles` |
 
 `quest_id` is plain `text` and **deliberately not a foreign key**: the quest catalogue lives in the client, so a quest removed from it must leave a harmless orphan row rather than break the schema. The client validates ids on the way back in. The `check` constraint is the only thing stopping a typo'd state reaching a session, which is why `pnpm db:verify` asserts it rejects one.
 

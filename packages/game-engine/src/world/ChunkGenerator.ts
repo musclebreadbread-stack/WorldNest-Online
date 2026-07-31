@@ -157,11 +157,7 @@ export class ChunkGenerator {
    * below the rock line the cave simply opens onto the surface, which is how the
    * player gets in. Ore veins sit in the interior, on the high detail values.
    */
-  private getCaveTile(
-    worldX: number,
-    worldY: number,
-    detail: number,
-  ): TileType | null {
+  private getCaveTile(worldX: number, worldY: number, detail: number): TileType | null {
     if (!this.isCaveRegion(worldX, worldY)) return null;
 
     let cavernNeighbours = 0;

@@ -95,9 +95,7 @@ export class HarvestSystem extends System {
     if (!definition) return true;
 
     const inventory = entity.getComponent<InventoryComponent>("inventory")!;
-    if (
-      !hasSpaceFor(inventory, definition.produceItemId, definition.produceQuantity)
-    ) {
+    if (!hasSpaceFor(inventory, definition.produceItemId, definition.produceQuantity)) {
       return true;
     }
 

@@ -9,8 +9,8 @@ never be part of a production project's schema history.
 Creates three confirmed accounts so a maintainer can sign in and test the game
 without registering by hand:
 
-| Email | Password | Username |
-|-------|----------|----------|
+| Email                    | Password       | Username  |
+| ------------------------ | -------------- | --------- |
 | `tester1@worldnest.test` | `worldnest123` | `Tester1` |
 | `tester2@worldnest.test` | `worldnest123` | `Tester2` |
 | `tester3@worldnest.test` | `worldnest123` | `Tester3` |

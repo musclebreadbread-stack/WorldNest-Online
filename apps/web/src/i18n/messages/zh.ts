@@ -86,8 +86,7 @@ export const zh: LocaleMessages = {
     "我收货的价钱会比卖价低一点，这样小店才开得下去。不过只要多采集，你还是划得来的。",
   "dialogue.juno.option.shop": "让我看看你的货",
   "dialogue.juno.option.prices": "价钱是怎么定的？",
-  "dialogue.ada.greeting":
-    "你好，探险家！村里要做的事我都记在一张单子上。",
+  "dialogue.ada.greeting": "你好，探险家！村里要做的事我都记在一张单子上。",
   "dialogue.ada.quests": "挑一件吧，我把你的名字记在旁边。",
   "dialogue.ada.report": "都做完了吗？告诉我你完成了哪一件。",
   "dialogue.ada.option.quests": "有什么要做的？",

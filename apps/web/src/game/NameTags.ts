@@ -81,7 +81,12 @@ export class NameTags {
   }
 
   private createLabel(data: RenderData, name: string): Phaser.GameObjects.Text {
-    const label = this.scene.add.text(data.x, data.y - NAME_TAG_OFFSET_Y, name, NAME_TAG_STYLE);
+    const label = this.scene.add.text(
+      data.x,
+      data.y - NAME_TAG_OFFSET_Y,
+      name,
+      NAME_TAG_STYLE,
+    );
     label.setOrigin(0.5, 1);
     label.setDepth(NAME_TAG_DEPTH);
 

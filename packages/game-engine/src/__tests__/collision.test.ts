@@ -19,9 +19,7 @@ class FakeTileQuery implements TileQuery {
   }
 
   getTileAt(tileX: number, tileY: number): TileType {
-    return this.blocked.has(getTileKey(tileX, tileY))
-      ? TileType.WATER
-      : TileType.GRASS;
+    return this.blocked.has(getTileKey(tileX, tileY)) ? TileType.WATER : TileType.GRASS;
   }
 
   isWalkableAt(pixelX: number, pixelY: number): boolean {

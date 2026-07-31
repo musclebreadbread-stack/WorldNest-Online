@@ -12,7 +12,8 @@ export const en = {
   "common.loading": "Loading...",
 
   "landing.tagline": "A browser-based 2D MMO life simulation game",
-  "landing.subtitle": "Explore procedurally generated worlds, build, and play with friends",
+  "landing.subtitle":
+    "Explore procedurally generated worlds, build, and play with friends",
   "landing.play": "Play Now",
 
   "auth.signInSubtitle": "Sign in to your account",

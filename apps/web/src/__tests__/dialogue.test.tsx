@@ -5,10 +5,7 @@ import type { DialogueComponent, InteractionComponent } from "@worldnest/game-en
 import { DialoguePanel } from "../components/DialoguePanel";
 import { wireDialogue } from "../game/DialogueBridge";
 import { HudBridge, type HudEventEmitter } from "../game/HudBridge";
-import {
-  DIALOGUE_CHANGED_EVENT,
-  type DialogueChangedEvent,
-} from "../game/events";
+import { DIALOGUE_CHANGED_EVENT, type DialogueChangedEvent } from "../game/events";
 import {
   createGameWorld,
   DEFAULT_SPAWN_X,
@@ -80,9 +77,7 @@ describe("dialogueStore", () => {
     useDialogueStore.getState().setSnapshot(PIP_SNAPSHOT);
 
     expect(useDialogueStore.getState().textKey).toBe(PIP_ROOT.textKey);
-    expect(useDialogueStore.getState().options).toHaveLength(
-      PIP_ROOT.options.length,
-    );
+    expect(useDialogueStore.getState().options).toHaveLength(PIP_ROOT.options.length);
     expect(isDialogueOpen()).toBe(true);
 
     useDialogueStore.getState().setSnapshot(CLOSED_SNAPSHOT);
@@ -165,9 +160,7 @@ describe("dialogue round trip", () => {
       bridge.flush();
       useDialogueStore
         .getState()
-        .setSnapshot(
-          emitter.dialogueEvents().at(-1) ?? CLOSED_SNAPSHOT,
-        );
+        .setSnapshot(emitter.dialogueEvents().at(-1) ?? CLOSED_SNAPSHOT);
     };
 
     return { context, emitter, interaction, frame, unwire };
@@ -175,8 +168,7 @@ describe("dialogue round trip", () => {
 
   it("should carry a conversation from an interact to the panel and back", () => {
     const { context, interaction, frame } = createTalkingSession();
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
 
     // The player walks up and presses E
     interaction.interactRequested = true;
@@ -295,9 +287,10 @@ describe("DialoguePanel", () => {
   it("should call the injected responder with the option index", () => {
     const picked: number[] = [];
     useDialogueStore.getState().setSnapshot(PIP_SNAPSHOT);
-    useDialogueStore
-      .getState()
-      .setCallbacks((optionIndex) => picked.push(optionIndex), () => undefined);
+    useDialogueStore.getState().setCallbacks(
+      (optionIndex) => picked.push(optionIndex),
+      () => undefined,
+    );
 
     render(<DialoguePanel />);
     const label = en[PIP_ROOT.options[1].labelKey as keyof typeof en];
@@ -309,11 +302,12 @@ describe("DialoguePanel", () => {
   it("should call the injected closer from the leave button", () => {
     let closed = 0;
     useDialogueStore.getState().setSnapshot(PIP_SNAPSHOT);
-    useDialogueStore
-      .getState()
-      .setCallbacks(() => undefined, () => {
+    useDialogueStore.getState().setCallbacks(
+      () => undefined,
+      () => {
         closed++;
-      });
+      },
+    );
 
     render(<DialoguePanel />);
     fireEvent.click(screen.getByText(en["dialogue.close"]));

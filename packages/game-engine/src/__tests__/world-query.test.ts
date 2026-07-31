@@ -42,9 +42,7 @@ describe("WorldManager tile query", () => {
     // Nothing has been loaded yet, so this tile is only reachable by generating
     const far = generator.generateChunk(12, -9);
     expect(manager.getLoadedChunks().size).toBe(0);
-    expect(manager.getTileAt(12 * CHUNK_SIZE + 4, -9 * CHUNK_SIZE + 7)).toBe(
-      far[7][4],
-    );
+    expect(manager.getTileAt(12 * CHUNK_SIZE + 4, -9 * CHUNK_SIZE + 7)).toBe(far[7][4]);
   });
 
   it("should resolve negative tile coordinates to the right chunk", () => {
@@ -104,9 +102,7 @@ describe("WorldManager tile query", () => {
       [7, 21],
       [-13, 4],
     ]) {
-      expect(manager.getBiomeAt(tileX, tileY)).toBe(
-        generator.getBiomeAt(tileX, tileY),
-      );
+      expect(manager.getBiomeAt(tileX, tileY)).toBe(generator.getBiomeAt(tileX, tileY));
     }
 
     // Editing the tile does not move the climate the tile sits in
@@ -121,12 +117,12 @@ describe("WorldManager tile query", () => {
     const water = findTile(manager, TileType.WATER);
     const grass = findTile(manager, TileType.GRASS);
 
-    expect(
-      manager.isWalkableAt(water.x * TILE_SIZE + 1, water.y * TILE_SIZE + 1),
-    ).toBe(false);
-    expect(
-      manager.isWalkableAt(grass.x * TILE_SIZE + 1, grass.y * TILE_SIZE + 1),
-    ).toBe(true);
+    expect(manager.isWalkableAt(water.x * TILE_SIZE + 1, water.y * TILE_SIZE + 1)).toBe(
+      false,
+    );
+    expect(manager.isWalkableAt(grass.x * TILE_SIZE + 1, grass.y * TILE_SIZE + 1)).toBe(
+      true,
+    );
   });
 
   it("should reflect overrides in walkability", () => {
@@ -135,9 +131,9 @@ describe("WorldManager tile query", () => {
 
     manager.setTileOverride(grass.x, grass.y, TileType.WATER);
 
-    expect(
-      manager.isWalkableAt(grass.x * TILE_SIZE + 5, grass.y * TILE_SIZE + 5),
-    ).toBe(false);
+    expect(manager.isWalkableAt(grass.x * TILE_SIZE + 5, grass.y * TILE_SIZE + 5)).toBe(
+      false,
+    );
   });
 
   it("should handle negative pixel coordinates in isWalkableAt", () => {

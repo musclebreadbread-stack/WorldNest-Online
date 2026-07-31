@@ -116,9 +116,9 @@ describe("canTrade", () => {
   it("should agree with what the trade actually does", () => {
     const { inventory, wallet } = createTrader(WOOD.buy);
 
-    expect(canTrade(inventory, wallet, { kind: "buy", itemId: "wood", quantity: 1 })).toBe(
-      true,
-    );
+    expect(
+      canTrade(inventory, wallet, { kind: "buy", itemId: "wood", quantity: 1 }),
+    ).toBe(true);
     expect(
       canTrade(inventory, wallet, { kind: "buy", itemId: "wood", quantity: 2 }),
     ).toBe(false);

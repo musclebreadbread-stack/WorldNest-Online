@@ -15,10 +15,7 @@ const HISTORY_LIMIT = 50;
  *
  * Returns a teardown function for the effect that created it.
  */
-export function wireChat(
-  manager: RealtimeManager,
-  worldId: string | null,
-): () => void {
+export function wireChat(manager: RealtimeManager, worldId: string | null): () => void {
   const { addMessage, prependHistory, setSender } = useChatStore.getState();
 
   manager.setChatCallback((message) => addMessage(message));
@@ -51,12 +48,9 @@ async function loadHistory(
 
 function persist(worldId: string, message: ChatMessage): void {
   try {
-    void sendMessage(
-      worldId,
-      message.playerId,
-      message.username,
-      message.body,
-    ).catch(() => undefined);
+    void sendMessage(worldId, message.playerId, message.username, message.body).catch(
+      () => undefined,
+    );
   } catch {
     // Best-effort: a failed write must not swallow the message locally
   }

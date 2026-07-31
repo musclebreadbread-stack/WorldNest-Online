@@ -5,7 +5,8 @@ export const ko: LocaleMessages = {
   "common.loading": "불러오는 중...",
 
   "landing.tagline": "브라우저에서 바로 즐기는 2D 생활 시뮬레이션 MMO",
-  "landing.subtitle": "끝없이 생성되는 세계를 탐험하고, 건설하고, 친구와 함께 플레이하세요",
+  "landing.subtitle":
+    "끝없이 생성되는 세계를 탐험하고, 건설하고, 친구와 함께 플레이하세요",
   "landing.play": "지금 플레이",
 
   "auth.signInSubtitle": "계정에 로그인하세요",
@@ -125,7 +126,8 @@ export const ko: LocaleMessages = {
   "quest.collect_wood.title": "마을에 필요한 땔감",
   "quest.collect_wood.description": "나무 5개를 모아 에이다에게 보여 주세요.",
   "quest.build_fence.title": "정원에 울타리 세우기",
-  "quest.build_fence.description": "아무 곳에나 울타리를 2개 세우고 에이다에게 알려 주세요.",
+  "quest.build_fence.description":
+    "아무 곳에나 울타리를 2개 세우고 에이다에게 알려 주세요.",
   "quest.greet_pip.title": "핍에게 인사하기",
   "quest.greet_pip.description": "정원사 핍은 손님을 좋아해요. 가서 말을 걸어 보세요.",
 

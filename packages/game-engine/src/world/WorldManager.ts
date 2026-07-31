@@ -69,10 +69,7 @@ export class WorldManager implements TileQuery {
    * Loads new chunks that come into range and unloads chunks that leave range.
    */
   updateLoadedChunks(centerChunkX: number, centerChunkY: number): void {
-    if (
-      centerChunkX === this.currentCenterX &&
-      centerChunkY === this.currentCenterY
-    ) {
+    if (centerChunkX === this.currentCenterX && centerChunkY === this.currentCenterY) {
       return; // No change in player chunk position
     }
 

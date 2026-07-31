@@ -127,7 +127,8 @@ export const de: LocaleMessages = {
   "quest.build_fence.title": "Den Garten einzäunen",
   "quest.build_fence.description": "Setze 2 Zäune irgendwohin und sag Ada Bescheid.",
   "quest.greet_pip.title": "Sag Pip Hallo",
-  "quest.greet_pip.description": "Pip der Gärtner freut sich über Besuch. Sprich ihn an.",
+  "quest.greet_pip.description":
+    "Pip der Gärtner freut sich über Besuch. Sprich ihn an.",
 
   "item.wood": "Holz",
   "item.stone": "Stein",

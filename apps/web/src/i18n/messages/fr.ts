@@ -5,7 +5,8 @@ export const fr: LocaleMessages = {
   "common.loading": "Chargement...",
 
   "landing.tagline": "Un MMO de simulation de vie en 2D directement dans le navigateur",
-  "landing.subtitle": "Explore des mondes générés à l'infini, construis et joue avec tes amis",
+  "landing.subtitle":
+    "Explore des mondes générés à l'infini, construis et joue avec tes amis",
   "landing.play": "Jouer maintenant",
 
   "auth.signInSubtitle": "Connecte-toi à ton compte",
@@ -115,7 +116,8 @@ export const fr: LocaleMessages = {
 
   "quest.title": "Journal des quêtes",
   "quest.close": "Fermer (J)",
-  "quest.empty": "Aucune tâche pour l'instant. Ada tient la liste du village, va lui demander.",
+  "quest.empty":
+    "Aucune tâche pour l'instant. Ada tient la liste du village, va lui demander.",
   "quest.progress": "{current} / {target}",
   "quest.state.available": "Proposée",
   "quest.state.active": "En cours",

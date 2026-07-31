@@ -5,7 +5,8 @@ export const hi: LocaleMessages = {
   "common.loading": "लोड हो रहा है...",
 
   "landing.tagline": "ब्राउज़र में खेलने वाला 2D जीवन-सिमुलेशन MMO",
-  "landing.subtitle": "अपने आप बनने वाली दुनिया घूमें, निर्माण करें और दोस्तों के साथ खेलें",
+  "landing.subtitle":
+    "अपने आप बनने वाली दुनिया घूमें, निर्माण करें और दोस्तों के साथ खेलें",
   "landing.play": "अभी खेलें",
 
   "auth.signInSubtitle": "अपने खाते में साइन इन करें",

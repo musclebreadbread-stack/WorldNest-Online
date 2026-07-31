@@ -20,7 +20,9 @@ export interface PersistedQuest {
  * Returns an empty array for a player who has never taken a quest, so callers
  * never have to tell "no rows" from "no backend".
  */
-export async function loadQuests(playerId: string): Promise<DbResult<PersistedQuest[]>> {
+export async function loadQuests(
+  playerId: string,
+): Promise<DbResult<PersistedQuest[]>> {
   const client = createSupabaseClient();
   const { data, error } = await client
     .from("player_quests")
@@ -70,9 +72,7 @@ export async function saveQuests(
   playerId: string,
   quests: PersistedQuest[],
 ): Promise<DbResult<null>> {
-  const results = await Promise.all(
-    quests.map((quest) => saveQuest(playerId, quest)),
-  );
+  const results = await Promise.all(quests.map((quest) => saveQuest(playerId, quest)));
 
   return {
     data: null,

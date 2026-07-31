@@ -46,11 +46,7 @@ export function generateNpcTextures(scene: Phaser.Scene): void {
     graphics.fillStyle(accent, 1);
     graphics.fillRect(11, 7, 4, 4);
 
-    graphics.generateTexture(
-      definition.textureKey,
-      NPC_TEXTURE_SIZE,
-      NPC_TEXTURE_SIZE,
-    );
+    graphics.generateTexture(definition.textureKey, NPC_TEXTURE_SIZE, NPC_TEXTURE_SIZE);
     graphics.destroy();
   }
 }

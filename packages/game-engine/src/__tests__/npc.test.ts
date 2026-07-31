@@ -234,17 +234,22 @@ describe("NpcSystem conversations", () => {
   /** Put one NPC on a known tile with a player facing it. */
   function createHarness(onTalk?: (npcId: string) => void) {
     const tileQuery = new FakeTileQuery();
-    const system = new NpcSystem(tileQuery, () => undefined, [
-      {
-        id: "villager_pip",
-        nameKey: "npc.pip.name",
-        dialogueId: "pip_welcome",
-        anchorTileX: 5,
-        anchorTileY: 4,
-        textureKey: "npc_villager",
-        role: "villager",
-      },
-    ], onTalk);
+    const system = new NpcSystem(
+      tileQuery,
+      () => undefined,
+      [
+        {
+          id: "villager_pip",
+          nameKey: "npc.pip.name",
+          dialogueId: "pip_welcome",
+          anchorTileX: 5,
+          anchorTileY: 4,
+          textureKey: "npc_villager",
+          role: "villager",
+        },
+      ],
+      onTalk,
+    );
     const talker = createTalker(4, 4, "right");
 
     return { ...talker, system, tileQuery };

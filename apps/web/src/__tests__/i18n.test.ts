@@ -23,7 +23,11 @@ import {
 } from "../i18n";
 import { en } from "../i18n/messages/en";
 import { ko } from "../i18n/messages/ko";
-import { LOCALE_STORAGE_KEY, detectLocale, useLocaleStore } from "../stores/localeStore";
+import {
+  LOCALE_STORAGE_KEY,
+  detectLocale,
+  useLocaleStore,
+} from "../stores/localeStore";
 
 const EN_KEYS = Object.keys(en) as MessageKey[];
 
@@ -210,9 +214,9 @@ describe("translate", () => {
   });
 
   it("should interpolate into the translated string, not the English one", () => {
-    expect(translate("ko", "clock.format", { day: 4, time: "07:20", phase: "새벽" })).toBe(
-      "4일차 · 07:20 · 새벽",
-    );
+    expect(
+      translate("ko", "clock.format", { day: 4, time: "07:20", phase: "새벽" }),
+    ).toBe("4일차 · 07:20 · 새벽");
   });
 });
 

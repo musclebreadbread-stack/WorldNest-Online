@@ -29,11 +29,7 @@ export interface WorldConfig {
 }
 
 export type GameEventType =
-  | "player_move"
-  | "player_join"
-  | "player_leave"
-  | "chat_message"
-  | "world_update";
+  "player_move" | "player_join" | "player_leave" | "chat_message" | "world_update";
 
 export interface GameEvent {
   type: GameEventType;

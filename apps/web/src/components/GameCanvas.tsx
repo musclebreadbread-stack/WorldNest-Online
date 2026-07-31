@@ -63,9 +63,8 @@ export function GameCanvas() {
 
     // Dynamic import to avoid SSR issues (Phaser requires window)
     const { createPhaserGame } = await import("../game/PhaserGame");
-    const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } = await import(
-      "../game/createGameWorld"
-    );
+    const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } =
+      await import("../game/createGameWorld");
     const { loadSession } = await import("../game/loadSession");
 
     // Saved world and player state, or null when Supabase is unconfigured

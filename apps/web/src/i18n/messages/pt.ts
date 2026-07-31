@@ -5,7 +5,8 @@ export const pt: LocaleMessages = {
   "common.loading": "Carregando...",
 
   "landing.tagline": "Um MMO de simulação de vida em 2D direto no navegador",
-  "landing.subtitle": "Explore mundos gerados automaticamente, construa e jogue com amigos",
+  "landing.subtitle":
+    "Explore mundos gerados automaticamente, construa e jogue com amigos",
   "landing.play": "Jogar agora",
 
   "auth.signInSubtitle": "Entre na sua conta",
@@ -127,7 +128,8 @@ export const pt: LocaleMessages = {
   "quest.build_fence.title": "Cercar a horta",
   "quest.build_fence.description": "Coloque 2 cercas onde quiser e avise a Ada.",
   "quest.greet_pip.title": "Diga olá ao Pip",
-  "quest.greet_pip.description": "O jardineiro Pip adora visitas. Vá conversar com ele.",
+  "quest.greet_pip.description":
+    "O jardineiro Pip adora visitas. Vá conversar com ele.",
 
   "item.wood": "Madeira",
   "item.stone": "Pedra",

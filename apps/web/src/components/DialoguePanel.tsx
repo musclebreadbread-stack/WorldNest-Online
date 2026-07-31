@@ -42,9 +42,7 @@ export function DialoguePanel() {
                 {resolve(t, nameKey)}
               </h3>
             )}
-            <p className="text-sm leading-relaxed text-white">
-              {resolve(t, textKey!)}
-            </p>
+            <p className="text-sm leading-relaxed text-white">{resolve(t, textKey!)}</p>
 
             <ul className="mt-3 space-y-1">
               {options.map((option, index) => (

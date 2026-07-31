@@ -269,7 +269,9 @@ describe("openShop dialogue action", () => {
       npcId: "shopkeeper_juno",
       nameKey: "npc.juno.name",
       textKey: "dialogue.juno.greeting",
-      options: [{ labelKey: "dialogue.juno.option.shop", action: { kind: "openShop" } }],
+      options: [
+        { labelKey: "dialogue.juno.option.shop", action: { kind: "openShop" } },
+      ],
     });
     useDialogueStore.getState().respond(0);
 
@@ -456,7 +458,9 @@ describe("ShopPanel", () => {
       within(row).getByTitle(`Pays ${WOOD.sell} coins`).hasAttribute("disabled"),
     ).toBe(false);
     expect(
-      within(row).getByTitle(`Pays ${WOOD.sell * 10} coins`).hasAttribute("disabled"),
+      within(row)
+        .getByTitle(`Pays ${WOOD.sell * 10} coins`)
+        .hasAttribute("disabled"),
     ).toBe(true);
   });
 });

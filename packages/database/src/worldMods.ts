@@ -109,7 +109,10 @@ export async function deleteStructure(
 
 export async function loadCrops(worldId: string): Promise<DbResult<Crop[]>> {
   const client = createSupabaseClient();
-  const { data, error } = await client.from("crops").select("*").eq("world_id", worldId);
+  const { data, error } = await client
+    .from("crops")
+    .select("*")
+    .eq("world_id", worldId);
 
   return { data: data ?? [], error: toError(error) };
 }

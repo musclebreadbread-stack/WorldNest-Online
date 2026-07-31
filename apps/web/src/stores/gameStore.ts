@@ -35,10 +35,7 @@ interface GameState {
 
   setPlayerPosition: (x: number, y: number, chunkX: number, chunkY: number) => void;
   setConnectionStatus: (status: ConnectionStatus) => void;
-  setInventory: (
-    slots: Array<InventorySlot | null>,
-    selectedSlot: number,
-  ) => void;
+  setInventory: (slots: Array<InventorySlot | null>, selectedSlot: number) => void;
   setSelectedSlot: (selectedSlot: number) => void;
   setCoins: (coins: number) => void;
   setStats: (stats: {
