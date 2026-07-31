@@ -241,4 +241,33 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
       },
     },
   },
+
+  // Professor Owl: the daily quiz host. Explains the quiz and starts it.
+  owl_quiz: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.owl.greeting",
+        options: [
+          { labelKey: "dialogue.owl.option.start", next: "start" },
+          { labelKey: "dialogue.owl.option.explain", next: "explain" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      start: {
+        textKey: "dialogue.owl.start",
+        options: [
+          { labelKey: "dialogue.option.back", next: "greeting" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      explain: {
+        textKey: "dialogue.owl.explain",
+        options: [
+          { labelKey: "dialogue.owl.option.start", next: "start" },
+          { labelKey: "dialogue.option.back", next: "greeting" },
+        ],
+      },
+    },
+  },
 };

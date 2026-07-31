@@ -5,6 +5,7 @@ import { AchievementComponent } from "../components/AchievementComponent";
 import { CollectionComponent } from "../components/CollectionComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { QuestComponent } from "../components/QuestComponent";
+import { QuizComponent } from "../components/QuizComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
 import { isCategoryComplete } from "../collection/collectionOps";
@@ -36,6 +37,8 @@ export class AchievementSystem extends System {
   private structureCount: AchievementStructureCounter;
   /** Fish caught since last update, reported by FishingSystem. */
   private pendingFishCaught = 0;
+  /** Current quiz streak, updated by QuizSystem via listener. */
+  private currentQuizStreak = 0;
 
   constructor(structureCount: AchievementStructureCounter = () => 0) {
     super(["achievement", "inventory", "wallet", "collection", "quest"]);
@@ -50,6 +53,11 @@ export class AchievementSystem extends System {
     this.pendingFishCaught++;
   }
 
+  /** Update quiz streak from QuizSystem listener. */
+  recordQuizStreak(streak: number): void {
+    this.currentQuizStreak = streak;
+  }
+
   update(entities: Entity[], _deltaTime: number): void {
     for (const entity of entities) {
       const achievement = entity.getComponent<AchievementComponent>("achievement")!;
@@ -57,6 +65,12 @@ export class AchievementSystem extends System {
       const wallet = entity.getComponent<WalletComponent>("wallet")!;
       const collection = entity.getComponent<CollectionComponent>("collection")!;
       const quest = entity.getComponent<QuestComponent>("quest")!;
+
+      // Read quiz streak directly from the QuizComponent when available.
+      const quizComp = entity.getComponent<QuizComponent>("quiz");
+      if (quizComp) {
+        this.currentQuizStreak = quizComp.streak;
+      }
 
       // Pay out any pending reward first
       if (achievement.pendingReward !== null) {
@@ -120,6 +134,7 @@ export class AchievementSystem extends System {
       fishCaughtCount: achievement.totalFishCaught,
       totalCoinsEarned: achievement.totalCoinsEarned,
       animalsTamedCount: achievement.totalAnimalsTamed,
+      quizStreak: this.currentQuizStreak,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

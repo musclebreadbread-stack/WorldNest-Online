@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Education Quiz system: daily quiz mini-game about nature/science/culture topics, quiz catalogue with question bank, QuizComponent, QuizSystem, reward mechanism (coins + energy), quiz-related achievement, NPC 'Professor Owl' as quiz host, and full i18n across 12 locales.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "1. Create packages/game-engine/src/quiz/ directory with: quizDefinitions.ts (QuizQuestion interface with id, questionKey, answerOptions as array of {key, correct boolean}, category, difficulty; question bank of 12-16 questions across 3-4 categories: nature, science, culture, geography), quizOps.ts (pure functions: getDailyQuiz using day number from WorldClock to deterministically select 3 questions, answerQuestion, calculateReward, canTakeQuiz checking cooldown), quizState.ts (QuizState type: 'idle'|'active'|'reviewing'|'completed'), index.ts re-exporting.",
     "2. Create packages/game-engine/src/components/QuizComponent.ts extending Component('quiz') with fields: state (QuizState), currentQuestions (QuizQuestion[]), currentIndex (number), answers (boolean[]), lastQuizDay (number for cooldown), streak (consecutive correct days), version.",

@@ -12,7 +12,7 @@
 import type { NpcScheduleEntry } from "./npcSchedule";
 
 export type NpcRole =
-  "villager" | "shopkeeper" | "questgiver" | "curator" | "chef" | "rancher";
+  "villager" | "shopkeeper" | "questgiver" | "curator" | "chef" | "rancher" | "teacher";
 
 export interface NpcDefinition {
   id: string;
@@ -126,6 +126,21 @@ export const NPC_DEFINITIONS: readonly NpcDefinition[] = [
       { fromHour: 6, activity: "ranch", tileX: 22, tileY: 11 },
       { fromHour: 12, activity: "market", tileX: 17, tileY: 10 },
       { fromHour: 19, activity: "rest", tileX: 22, tileY: 12 },
+    ],
+  },
+  {
+    id: "professor_owl",
+    nameKey: "npc.owl.name",
+    dialogueId: "owl_quiz",
+    anchorTileX: 16,
+    anchorTileY: 15,
+    textureKey: "npc_teacher",
+    role: "teacher",
+    schedule: [
+      { fromHour: 0, activity: "rest", tileX: 16, tileY: 16 },
+      { fromHour: 8, activity: "teaching", tileX: 16, tileY: 15 },
+      { fromHour: 14, activity: "market", tileX: 17, tileY: 10 },
+      { fromHour: 20, activity: "rest", tileX: 16, tileY: 16 },
     ],
   },
 ];

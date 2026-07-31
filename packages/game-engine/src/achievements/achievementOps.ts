@@ -50,6 +50,8 @@ export function checkCondition(
       );
     case "tame":
       return source.animalsTamedCount >= condition.count;
+    case "quiz_streak":
+      return source.quizStreak >= condition.count;
   }
 }
 

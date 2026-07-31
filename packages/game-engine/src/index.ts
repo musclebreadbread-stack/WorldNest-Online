@@ -38,6 +38,7 @@ export {
   CookingComponent,
   FestivalComponent,
   AnimalComponent,
+  QuizComponent,
 } from "./components";
 export type {
   KeyState,
@@ -123,6 +124,27 @@ export {
   tickWander,
 } from "./animals";
 export type { AnimalBehavior, AnimalDefinition, AnimalSpecies } from "./animals";
+
+// Quiz (pure; daily quiz mini-game with question bank and reward logic)
+export {
+  DAILY_QUIZ_COUNT,
+  QUIZ_ENERGY_REWARD,
+  QUIZ_QUESTIONS,
+  QUIZ_REWARD_COINS,
+  QUIZ_STREAK_BONUS_COINS,
+  answerQuestion,
+  calculateEnergyReward,
+  calculateReward,
+  canTakeQuiz,
+  getDailyQuiz,
+} from "./quiz";
+export type {
+  QuizAnswerOption,
+  QuizCategory,
+  QuizDifficulty,
+  QuizQuestion,
+  QuizState,
+} from "./quiz";
 
 // Collection (pure; museum donation and category tracking)
 export {
@@ -252,6 +274,7 @@ export {
   CookingSystem,
   FestivalSystem,
   AnimalSystem,
+  QuizSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -272,6 +295,8 @@ export type {
   AchievementStructureCounter,
   DayGetter,
   TameListener,
+  QuizDayGetter,
+  QuizStreakListener,
 } from "./systems";
 
 // World Generation

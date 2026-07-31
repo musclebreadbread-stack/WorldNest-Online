@@ -42,6 +42,29 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "hud.coordinates",
   "quest.progress",
   "collection.progress",
+  // Quiz answers: proper nouns, numbers, and universal terms that are
+  // legitimately identical across many languages.
+  "quiz.answer.nature_3_c",
+  "quiz.answer.science_3_b",
+  "quiz.answer.science_3_c",
+  "quiz.answer.science_4_a",
+  "quiz.answer.science_4_b",
+  "quiz.answer.science_4_c",
+  "quiz.answer.culture_1_a",
+  "quiz.answer.culture_1_b",
+  "quiz.answer.culture_2_c",
+  "quiz.answer.culture_3_c",
+  "quiz.answer.geography_2_a",
+  "quiz.answer.geography_2_b",
+  "quiz.answer.geography_2_c",
+  "quiz.answer.geography_3_a",
+  "quiz.answer.geography_3_b",
+  "quiz.answer.geography_3_c",
+  "quiz.answer.geography_4_a",
+  "quiz.answer.geography_4_b",
+  "quiz.answer.science_2_b",
+  "quiz.answer.culture_4_c",
+  "quiz.answer.culture_3_b",
 ];
 
 describe("message catalogue", () => {

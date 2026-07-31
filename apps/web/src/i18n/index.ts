@@ -156,6 +156,7 @@ export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
   museum: "npc.activity.museum",
   cooking: "npc.activity.cooking",
   ranch: "npc.activity.ranch",
+  teaching: "npc.activity.teaching",
 };
 
 /**
