@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Achievement/Badge system - horizontal progression that rewards milestones. Follows the same pattern as the collection system: a definitions file, an ops file, a component, and a system. Achievements are triggered by polled state (item counts, donation counts, structure counts, quest completions, fish caught totals) and one-time events (first harvest, first fish). Each badge has an i18n title/description key and a coin reward. All 12 locales updated.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create packages/game-engine/src/achievements/achievementDefinitions.ts with AchievementDefinition interface (id, titleKey, descriptionKey, rewardCoins, condition type union: {kind:'collect', itemId, count} | {kind:'donate', count} | {kind:'build', count} | {kind:'quest', count} | {kind:'fish', count} | {kind:'total_coins', amount}). Define 8-10 achievements: first_harvest, first_fish, collector_5 (donate 5), builder_10 (build 10), quest_master (complete 3 quests), big_spender (earn 200 coins total through quests/sales), fish_master (catch 10 fish), full_gathering (complete gathering collection category).",
     "Create packages/game-engine/src/achievements/achievementOps.ts with pure functions: checkAchievement(state, definition, source) -> boolean, unlockAchievement(state, achievementId) -> boolean, getUnlockedCount(state) -> number. The source interface provides item counts, donation count, structure count, quest completion count, fish caught count, total coins earned.",
@@ -30,5 +30,5 @@
     "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Achievement system implemented following the collection pattern. The AchievementSystem pays out rewards at the start of the NEXT frame after unlocking (same frame pattern as other systems). Only one achievement unlocks per frame to prevent double-reward edge cases. The full_gathering achievement uses a special gatheringCategoryComplete flag in addition to the donate count condition. v2 review fix: wired all three lifetime accumulators - totalCoinsEarned uses delta detection on wallet.coins (lastKnownCoins field added), totalFishCaught uses FishCaughtListener from FishingSystem, totalQuestsCompleted polled from QuestComponent.entries."
 }

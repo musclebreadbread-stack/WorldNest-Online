@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Cooking mini-game with recipe system. Adds new cooked food items to the shared catalogue, a recipe definitions file, a CookingComponent, and a CookingSystem. The pattern follows FishingSystem: a state machine (idle -> selecting -> cooking -> done) driven by interaction requests. A new NPC 'Chef Bao' offers cooking access. Cooked items restore energy (extending StatsSystem or adding an energy restore on consume). Recipes combine existing items (wheat -> bread, fish_common + wheat -> fish_pie, carrot + wheat -> carrot_soup, melon -> fruit_salad). All 12 locales updated.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add new items to packages/shared/src/items.ts ItemId union and ITEM_DEFINITIONS: bread (stackSize 20), fish_pie (stackSize 10), carrot_soup (stackSize 10), fruit_salad (stackSize 10). These are cooked foods that restore energy when consumed.",
     "Add prices for new items in packages/shared/src/economy.ts ITEM_PRICES: bread {buy:25, sell:12}, fish_pie {buy:50, sell:24}, carrot_soup {buy:40, sell:18}, fruit_salad {buy:35, sell:16}.",
@@ -36,5 +36,5 @@
     "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Added 'chef' to NpcRole type and 'cooking' to NpcActivity type, which required updating npcTextures.ts in apps/web (NPC_COLORS record), npcSchedule.test.ts (validActivities set and activity regex), and NPC_ACTIVITY_KEYS in i18n/index.ts. Also had to update the dialogue definitions (bao_cooking tree), the SQL migration (004) with new food prices, items.test.ts expected IDs, collection.test.ts category count (now 5), and npc.test.ts NPC count (now 5). Spanish/French/Portuguese locale npc.bao.name had to differ from English ('Chef Bao') to pass the i18n parity test."
 }
