@@ -28,6 +28,7 @@ import {
   AccessibilitySystem,
   HousingSystem,
   CraftingSystem,
+  AchievementSystem,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
@@ -74,6 +75,7 @@ export interface GameWorldSystems {
   accessibility: AccessibilitySystem;
   housing: HousingSystem;
   crafting: CraftingSystem;
+  achievement: AchievementSystem;
 }
 
 export interface GameWorldContext {
@@ -160,6 +162,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     (nextLayer) => worldManager.setLayer(nextLayer),
   );
 
+  // AchievementSystem tracks lifetime counters and polls conditions each frame.
+  // It is declared here so the CraftingSystem can reference it in its callback.
+  const achievement = new AchievementSystem((itemId) => build.countStructures(itemId));
+
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
@@ -204,7 +210,8 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     render: new RenderSystem(),
     accessibility: new AccessibilitySystem(),
     housing: new HousingSystem(),
-    crafting: new CraftingSystem(),
+    crafting: new CraftingSystem(() => achievement.recordCraftCompleted()),
+    achievement,
   };
 
   world.addSystem(systems.time);
@@ -229,6 +236,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.accessibility);
   world.addSystem(systems.housing);
   world.addSystem(systems.crafting);
+  world.addSystem(systems.achievement);
 
   // Saved terrain, structures and crops go in before the first chunk load so
   // the very first render pass already shows the restored world.

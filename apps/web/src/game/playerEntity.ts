@@ -16,6 +16,8 @@ import {
   ShopComponent,
   WalletComponent,
   AnimationComponent,
+  AchievementComponent,
+  CollectionComponent,
   addItem,
 } from "@worldnest/game-engine";
 import type { QuestEntry } from "@worldnest/game-engine";
@@ -111,7 +113,9 @@ export function createPlayerEntity(bootstrap: GameBootstrap): Entity {
     .addComponent(wallet)
     .addComponent(new ShopComponent())
     .addComponent(questLog)
-    .addComponent(new AnimationComponent());
+    .addComponent(new AnimationComponent())
+    .addComponent(new AchievementComponent())
+    .addComponent(new CollectionComponent());
 
   return playerEntity;
 }

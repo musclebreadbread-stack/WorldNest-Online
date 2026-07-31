@@ -102,9 +102,11 @@ export const useAccessibilityStore = create<AccessibilityState>((set, get) => {
     },
 
     pushAnnouncement: (announcement) => {
-      set((state) => ({
-        announcements: [...state.announcements, announcement],
-      }));
+      set((state) => {
+        const updated = [...state.announcements, announcement];
+        // Keep only the last 10 announcements to prevent unbounded growth
+        return { announcements: updated.length > 10 ? updated.slice(-10) : updated };
+      });
     },
 
     clearAnnouncements: () => set({ announcements: [] }),

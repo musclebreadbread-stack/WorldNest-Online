@@ -59,7 +59,7 @@ export function HousingPanel() {
           <ul className="max-h-32 overflow-y-auto text-xs">
             {room.furniture.map((f, i) => (
               <li key={i} className="flex items-center justify-between py-0.5">
-                <span>{f.itemId}</span>
+                <span>{t(("item." + f.itemId) as MessageKey)}</span>
                 <span className="text-gray-400">
                   ({f.x}, {f.y})
                 </span>
