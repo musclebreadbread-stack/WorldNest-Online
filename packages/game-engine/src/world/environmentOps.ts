@@ -5,7 +5,7 @@
  * from the clock and the biome. The multiplier is bounded to [0.5, 1.5] and
  * never touches health.
  */
-import { Biome, BIOME_DEFINITIONS } from "./Biomes";
+import { Biome } from "./Biomes";
 import { Season, SEASON_DEFINITIONS, seasonForDay } from "./Seasons";
 import { weatherAt, weatherPeriodIndex, type WeatherKind } from "./Weather";
 import type { ClockSnapshot, DayPhase } from "./WorldClock";

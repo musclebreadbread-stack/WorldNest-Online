@@ -504,6 +504,29 @@ npx kill-port 3000
 PORT=3001 pnpm dev
 ```
 
+### 상점 구매 후 코인이 원래대로 돌아옴
+
+**원인**: `004_authority_schema.sql`이 실행되지 않아 `worldnest_shop_trade` RPC가 없음.
+클라이언트는 낙관적으로 잔액을 변경하지만 서버가 거부하면 원래 값으로 복원됩니다.
+
+**해결**: Supabase SQL Editor에서 `004_authority_schema.sql`을 실행하세요. 재실행해도
+안전합니다 (re-runnable).
+
+### 코인이 아예 변하지 않음 (채집/판매 후에도)
+
+**원인**: `004`가 적용된 상태에서 정상적인 동작입니다. 코인 잔액은 이제 서버만 변경할 수 있으며,
+클라이언트가 직접 `coins` 컬럼에 쓰는 것은 거부됩니다.
+
+**해결**: 이것은 정상입니다. 상점 거래와 퀘스트 보상만이 코인을 이동시킵니다.
+
+### 퀘스트를 완료했는데 보상을 받을 수 없음
+
+**원인**: `004`가 적용된 후 `state = 'completed'`는 서버 RPC만 설정할 수 있습니다.
+클라이언트가 직접 상태를 바꾸려는 시도는 거부됩니다.
+
+**해결**: 퀘스트를 정상적으로 제출(턴인)하면 서버가 목표를 확인하고 보상을 지급합니다.
+RPC가 거부하면 목표가 아직 달성되지 않은 것입니다.
+
 ---
 
 ## 9. Vercel 배포 — 테스트 서버 링크 만들기
@@ -643,33 +666,38 @@ Supabase 대시보드 → **Authentication** → **URL Configuration**:
 
 ### 전체 체크리스트
 
-| #   | 해야 하는 작업                          | 어디서                      | 결과물                         | 확인 방법                        |
-| --- | --------------------------------------- | --------------------------- | ------------------------------ | -------------------------------- |
-| 1   | Node.js 22+ 설치                        | 내 PC                       | `node` 명령 사용 가능          | `node --version`                 |
-| 2   | pnpm 10+ 활성화                         | 내 PC                       | `pnpm` 명령 사용 가능          | `pnpm --version`                 |
-| 3   | 저장소 클론 + `pnpm install`            | 내 PC                       | `node_modules` 설치 완료       | 오류 없이 종료                   |
-| 4   | GitHub·Supabase·Vercel 계정 준비        | 웹                          | 로그인 가능한 계정 3개         | 각 대시보드 접속                 |
-| 5   | Supabase 프로젝트 생성                  | Supabase                    | 프로젝트 1개                   | 대시보드에 프로젝트 표시         |
-| 6   | Project URL·anon key 복사               | Supabase Settings → API     | 값 2개                         | 메모해 둠                        |
-| 7   | `001_initial_schema.sql` 실행           | SQL Editor                  | 테이블 3개 + 기본 월드         | Table Editor에 3개               |
-| 8   | `002_gameplay_schema.sql` 실행          | SQL Editor                  | 회원가입 트리거 + 테이블 4개   | Table Editor에 7개               |
-| 9   | `003_progression_schema.sql` 실행       | SQL Editor                  | `coins` 컬럼 + `player_quests` | Table Editor에 8개, `coins` 존재 |
-| 10  | (선택) `seed/test_accounts.sql` 실행    | SQL Editor                  | 테스트 계정 3개                | Authentication → Users 에 3명    |
-| 11  | (선택) `pnpm db:verify` 로 SQL 리허설   | 내 PC + Docker              | SQL 검증 통과                  | 종료 코드 0                      |
-| 12  | Confirm email OFF (개발 중)             | Authentication → Providers  | 메일 인증 없이 가입 가능       | 새 계정 가입 즉시 로그인됨       |
-| 13  | `.env.local` 작성                       | 내 PC                       | 환경 변수 2개                  | `pnpm dev` 후 에러 없음          |
-| 14  | `pnpm dev` 로 로컬 실행                 | 내 PC                       | `http://localhost:3000`        | `/auth` 화면 표시                |
-| 15  | 로그인 후 게임 동작 확인                | 브라우저                    | 월드·이동·채집                 | 7단계 항목 통과                  |
-| 16  | 저장 확인 (새로고침)                    | 브라우저                    | 위치·인벤토리·코인·퀘스트 복원 | 새로고침 후 그대로               |
-| 17  | 멀티플레이·채팅 확인                    | 브라우저 2개                | 서로 보이고 채팅됨             | 이름표와 메시지 표시             |
-| 18  | `git push` 로 브랜치 올리기             | 내 PC                       | GitHub에 브랜치                | GitHub에서 확인                  |
-| 19  | Vercel에 저장소 가져오기 + Deploy       | Vercel                      | **공개 테스트 서버 주소**      | 배포 URL 접속됨                  |
-| 20  | Vercel 환경 변수 3개 환경에 등록        | Vercel Settings             | 배포본이 Supabase에 연결       | 로그인 화면이 정상 동작          |
-| 21  | Supabase Site URL·Redirect URLs 등록    | Authentication → URL Config | 배포 주소로 로그인 성공        | 로그인 후 `/game` 유지           |
-| 22  | (선택) 커스텀 도메인 연결 + 21번 재등록 | Vercel + Supabase           | 내 도메인                      | 도메인으로 로그인 성공           |
-| 23  | 배포 후 확인 목록 통과                  | 브라우저·스마트폰           | 서비스 가능 상태               | 9단계 체크박스 전부              |
-| 24  | 계정·주소 정리표 작성 후 전달           | 문서                        | 테스터에게 줄 정보             | 표가 채워짐                      |
-| 25  | 테스트 종료 후 시드 계정 삭제           | SQL Editor                  | 공개 비밀번호 제거             | Users 목록에서 사라짐            |
+| #   | 해야 하는 작업                          | 어디서                       | 결과물                         | 확인 방법                         |
+| --- | --------------------------------------- | ---------------------------- | ------------------------------ | --------------------------------- |
+| 1   | Node.js 22+ 설치                        | 내 PC                        | `node` 명령 사용 가능          | `node --version`                  |
+| 2   | pnpm 10+ 활성화                         | 내 PC                        | `pnpm` 명령 사용 가능          | `pnpm --version`                  |
+| 3   | 저장소 클론 + `pnpm install`            | 내 PC                        | `node_modules` 설치 완료       | 오류 없이 종료                    |
+| 4   | GitHub·Supabase·Vercel 계정 준비        | 웹                           | 로그인 가능한 계정 3개         | 각 대시보드 접속                  |
+| 5   | Supabase 프로젝트 생성                  | Supabase                     | 프로젝트 1개                   | 대시보드에 프로젝트 표시          |
+| 6   | Project URL·anon key 복사               | Supabase Settings -> API     | 값 2개                         | 메모해 둠                         |
+| 7   | `001_initial_schema.sql` 실행           | SQL Editor                   | 테이블 3개 + 기본 월드         | Table Editor에 3개                |
+| 8   | `002_gameplay_schema.sql` 실행          | SQL Editor                   | 회원가입 트리거 + 테이블 4개   | Table Editor에 7개                |
+| 9   | `003_progression_schema.sql` 실행       | SQL Editor                   | `coins` 컬럼 + `player_quests` | Table Editor에 8개, `coins` 존재  |
+| 10  | `004_authority_schema.sql` 실행         | SQL Editor                   | 서버 권한 + 코인 원장          | `shop_prices`, `coin_ledger` 존재 |
+| 11  | `005_world_layer_schema.sql` 실행       | SQL Editor                   | 레이어 컬럼 + 퀘스트 기준선    | `layer` 컬럼, `baseline` 컬럼     |
+| 12  | (선택) `seed/test_accounts.sql` 실행    | SQL Editor                   | 테스트 계정 3개                | Authentication -> Users 에 3명    |
+| 13  | (선택) `pnpm db:verify` 로 SQL 리허설   | 내 PC + Docker               | SQL 검증 통과                  | 종료 코드 0                       |
+| 14  | Confirm email OFF (개발 중)             | Authentication -> Providers  | 메일 인증 없이 가입 가능       | 새 계정 가입 즉시 로그인됨        |
+| 15  | `.env.local` 작성                       | 내 PC                        | 환경 변수 2개                  | `pnpm dev` 후 에러 없음           |
+| 16  | `pnpm dev` 로 로컬 실행                 | 내 PC                        | `http://localhost:3000`        | `/auth` 화면 표시                 |
+| 17  | 로그인 후 게임 동작 확인                | 브라우저                     | 월드·이동·채집                 | 7단계 항목 통과                   |
+| 18  | 저장 확인 (새로고침)                    | 브라우저                     | 위치·인벤토리·코인·퀘스트 복원 | 새로고침 후 그대로                |
+| 19  | 동굴 입장 확인                          | 브라우저                     | 사다리 상호작용 -> 지하 진입   | 화면이 어두워지고 동굴 타일 표시  |
+| 20  | 날씨·계절 HUD 확인                      | 브라우저                     | 계절·날씨 아이콘 표시          | 우측 상단 HUD에 날씨 표시         |
+| 21  | NPC 일과 확인                           | 브라우저                     | NPC가 시간에 따라 이동         | 시간 경과 후 NPC 위치 변경        |
+| 22  | 멀티플레이·채팅 확인                    | 브라우저 2개                 | 서로 보이고 채팅됨             | 이름표와 메시지 표시              |
+| 23  | `git push` 로 브랜치 올리기             | 내 PC                        | GitHub에 브랜치                | GitHub에서 확인                   |
+| 24  | Vercel에 저장소 가져오기 + Deploy       | Vercel                       | **공개 테스트 서버 주소**      | 배포 URL 접속됨                   |
+| 25  | Vercel 환경 변수 3개 환경에 등록        | Vercel Settings              | 배포본이 Supabase에 연결       | 로그인 화면이 정상 동작           |
+| 26  | Supabase Site URL·Redirect URLs 등록    | Authentication -> URL Config | 배포 주소로 로그인 성공        | 로그인 후 `/game` 유지            |
+| 27  | (선택) 커스텀 도메인 연결 + 26번 재등록 | Vercel + Supabase            | 내 도메인                      | 도메인으로 로그인 성공            |
+| 28  | 배포 후 확인 목록 통과                  | 브라우저·스마트폰            | 서비스 가능 상태               | 9단계 체크박스 전부               |
+| 29  | 계정·주소 정리표 작성 후 전달           | 문서                         | 테스터에게 줄 정보             | 표가 채워짐                       |
+| 30  | 테스트 종료 후 시드 계정 삭제           | SQL Editor                   | 공개 비밀번호 제거             | Users 목록에서 사라짐             |
 
 ### 자동으로 검증되는 것과 사람이 확인해야 하는 것
 
@@ -681,7 +709,8 @@ Supabase 대시보드 → **Authentication** → **URL Configuration**:
 | `pnpm build`         | 5개 패키지 빌드                                        |
 | `pnpm test`          | 단위·통합 테스트 전체                                  |
 | `pnpm test:e2e`      | 운영 빌드 대상 브라우저 스모크 테스트                  |
-| `pnpm db:verify`     | 마이그레이션 3개 + 시드가 실제 PostgreSQL에 적용되는지 |
+| `pnpm db:verify`     | 마이그레이션 5개 + 시드가 실제 PostgreSQL에 적용되는지 |
+| `pnpm format:check`  | 코드 포맷 일관성                                       |
 | `pnpm docs:check`    | 이 문서와 Word 사본(`.doc`)의 목차 일치                |
 
 | 사람이 확인해야 하는 것   | 이유                                          |

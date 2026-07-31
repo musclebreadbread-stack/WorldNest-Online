@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Entity } from "../ecs/Entity";
 import { Biome } from "../world/Biomes";
-import { Season } from "../world/Seasons";
 import { WEATHER_KINDS } from "../world/Weather";
 import { deriveEnvironment } from "../world/environmentOps";
 import { EnvironmentComponent } from "../components/EnvironmentComponent";
@@ -27,7 +26,6 @@ describe("deriveEnvironment", () => {
   const allBiomes = Object.values(Biome).filter(
     (v) => typeof v === "number",
   ) as Biome[];
-  const allSeasons = [Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER];
   const allPhases: DayPhase[] = ["dawn", "day", "dusk", "night"];
 
   it("should produce a multiplier in [0.5, 1.5] for every combination", () => {

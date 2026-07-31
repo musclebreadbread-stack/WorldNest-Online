@@ -9,7 +9,7 @@
     "test:e2e": "playwright test",
     "lint": "turbo run lint",
     "db:verify": "bash scripts/verify-sql.sh",
-    "docs:check": "node scripts/check-kr-doc-sync.mjs",
+    "docs:check": "node scripts/check-kr-doc-sync.mjs && node scripts/build-manual-work-doc.mjs --check",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
   },

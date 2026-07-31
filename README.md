@@ -27,7 +27,7 @@ worldnest-online/
 │   └── ui/                   # Shared React UI components
 ├── docs/                     # Architecture, development, deployment, 한국어 설정 가이드
 ├── e2e/                      # Playwright smoke specs
-├── scripts/                  # verify-sql.sh, check-kr-doc-sync.mjs
+├── scripts/                  # verify-sql.sh, check-kr-doc-sync.mjs, build-manual-work-doc.mjs
 ├── .github/workflows/        # CI/CD configuration
 ├── turbo.json                # Turborepo task configuration
 ├── pnpm-workspace.yaml       # Workspace package definitions
@@ -82,10 +82,12 @@ pnpm install
 cp .env.example .env.local
 # Edit .env.local with your Supabase credentials
 
-# Run all three SQL migrations in the Supabase SQL Editor, in this order:
+# Run all five SQL migrations in the Supabase SQL Editor, in this order:
 #   packages/database/supabase/migrations/001_initial_schema.sql
 #   packages/database/supabase/migrations/002_gameplay_schema.sql
 #   packages/database/supabase/migrations/003_progression_schema.sql
+#   packages/database/supabase/migrations/004_authority_schema.sql
+#   packages/database/supabase/migrations/005_world_layer_schema.sql
 #
 # Optional, development only — three ready-to-use test logins:
 #   packages/database/supabase/seed/test_accounts.sql
@@ -94,8 +96,8 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Have Docker? `pnpm db:verify` applies all four files to a throwaway Postgres and asserts the schema,
-so you can check the SQL before pasting it into a project that matters.
+Have Docker? `pnpm db:verify` applies all five migrations plus the seed to a throwaway Postgres and
+asserts the schema, so you can check the SQL before pasting it into a project that matters.
 
 The game will be available at `http://localhost:3000`. Without Supabase credentials it still boots as a single-player sandbox — authentication, chat and persistence switch themselves off.
 
@@ -160,6 +162,7 @@ WorldNest Online uses a **client-authoritative** architecture with server valida
 - [Development Guide](docs/DEVELOPMENT.md) - Detailed setup and extension guide
 - [Deployment Guide](docs/DEPLOYMENT.md) - Fresh clone to a live public URL on Vercel + Supabase
 - [설정 가이드 (한국어)](docs/SETUP_GUIDE_KR.md) - 직접 해야 하는 모든 작업을 정리한 한국어 안내서
+- [작업 체크리스트 (한국어)](docs/MANUAL_WORK_KR.doc) - 직접 해야 하는 작업 목록 (Word 파일, 자동 생성)
 - [Contributing](CONTRIBUTING.md) - How to contribute to the project
 
 ## License

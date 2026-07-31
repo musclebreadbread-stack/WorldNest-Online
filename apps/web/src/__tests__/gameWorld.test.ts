@@ -63,6 +63,7 @@ const BOOTSTRAP = {
  */
 const DOCUMENTED_SYSTEM_ORDER = [
   "time",
+  "environment",
   "input",
   "collision",
   "movement",

@@ -3,6 +3,8 @@ import {
   Entity,
   TimeComponent,
   TimeSystem,
+  EnvironmentSystem,
+  EnvironmentComponent,
   InputSystem,
   CollisionSystem,
   MovementSystem,
@@ -48,6 +50,7 @@ export {
 
 export interface GameWorldSystems {
   time: TimeSystem;
+  environment: EnvironmentSystem;
   input: InputSystem;
   collision: CollisionSystem;
   movement: MovementSystem;
@@ -104,7 +107,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   // The clock entity exists up front so systems can read the phase through a getter
   const clockEntity = new Entity(WORLD_CLOCK_ENTITY_ID);
   const timeComponent = new TimeComponent();
+  const environmentComponent = new EnvironmentComponent();
   clockEntity.addComponent(timeComponent);
+  clockEntity.addComponent(environmentComponent);
 
   // Terrain edits go through the override layer, never into the generator
   const setTileOverride = (tileX: number, tileY: number, tileType: TileType) =>
@@ -152,6 +157,13 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
+    // Environment derives season/weather/temperature from the clock immediately
+    // after it refreshes, so every later system sees this frame's weather.
+    environment: new EnvironmentSystem(() => {
+      const spawnTileX = Math.floor(DEFAULT_SPAWN_X / 32);
+      const spawnTileY = Math.floor(DEFAULT_SPAWN_Y / 32);
+      return worldManager.getBiomeAt(spawnTileX, spawnTileY);
+    }),
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
@@ -187,6 +199,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   };
 
   world.addSystem(systems.time);
+  world.addSystem(systems.environment);
   world.addSystem(systems.input);
   world.addSystem(systems.collision);
   world.addSystem(systems.movement);
