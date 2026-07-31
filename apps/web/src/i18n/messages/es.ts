@@ -262,4 +262,22 @@ export const es: LocaleMessages = {
   "item.fruit_salad": "Ensalada de frutas",
 
   "collection.category.cooking": "Cocina",
+
+  "festival.title": "Festivales",
+  "festival.active": "Festival en curso",
+  "festival.inactive": "Hoy no hay festival",
+  "festival.reward": "Reclamar recompensa",
+  "festival.claimed": "Recompensa ya reclamada",
+  "festival.blossom_fest.title": "Festival de las Flores",
+  "festival.blossom_fest.description":
+    "Celebra la llegada de la primavera con flores y festejos.",
+  "festival.harvest_moon.title": "Luna de Cosecha",
+  "festival.harvest_moon.description":
+    "Una fiesta de verano para celebrar la cosecha abundante bajo la luna llena.",
+  "festival.mushroom_fair.title": "Feria de Setas",
+  "festival.mushroom_fair.description":
+    "El otoño trae la feria con setas raras y guisos calientes.",
+  "festival.starlight_night.title": "Noche Estrellada",
+  "festival.starlight_night.description":
+    "Una noche invernal donde las estrellas brillan con fuerza.",
 };

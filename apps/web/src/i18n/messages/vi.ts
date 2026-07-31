@@ -258,4 +258,21 @@ export const vi: LocaleMessages = {
   "item.fruit_salad": "Salad trái cây",
 
   "collection.category.cooking": "Nấu ăn",
+
+  "festival.title": "Le hoi",
+  "festival.active": "Le hoi dang dien ra!",
+  "festival.inactive": "Hom nay khong co le hoi",
+  "festival.reward": "Nhan thuong",
+  "festival.claimed": "Da nhan thuong roi",
+  "festival.blossom_fest.title": "Le hoi Hoa no",
+  "festival.blossom_fest.description": "Chao don mua xuan voi hoa va le hoi!",
+  "festival.harvest_moon.title": "Trang Thu hoach",
+  "festival.harvest_moon.description":
+    "Le hoi mua he an mung vu mua boi thu duoi trang tron.",
+  "festival.mushroom_fair.title": "Hoi cho Nam",
+  "festival.mushroom_fair.description":
+    "Mua thu mang den hoi cho voi nam hiem va mon ham nong hoi.",
+  "festival.starlight_night.title": "Dem Anh sao",
+  "festival.starlight_night.description":
+    "Mot dem dong huyen ao khi nhung vi sao toa sang ruc ro nhat.",
 };

@@ -261,4 +261,22 @@ export const pt: LocaleMessages = {
   "item.fruit_salad": "Salada de frutas",
 
   "collection.category.cooking": "Culinaria",
+
+  "festival.title": "Festivais",
+  "festival.active": "Festival em andamento!",
+  "festival.inactive": "Nenhum festival hoje",
+  "festival.reward": "Reivindicar recompensa",
+  "festival.claimed": "Recompensa ja reivindicada",
+  "festival.blossom_fest.title": "Festival das Flores",
+  "festival.blossom_fest.description":
+    "Celebre a chegada da primavera com flores e festividades!",
+  "festival.harvest_moon.title": "Lua da Colheita",
+  "festival.harvest_moon.description":
+    "Uma festa de verao para celebrar a colheita farta sob a lua cheia.",
+  "festival.mushroom_fair.title": "Feira dos Cogumelos",
+  "festival.mushroom_fair.description":
+    "O outono traz a feira com cogumelos raros e ensopados quentes.",
+  "festival.starlight_night.title": "Noite Estrelada",
+  "festival.starlight_night.description":
+    "Uma noite magica de inverno onde as estrelas brilham intensamente.",
 };

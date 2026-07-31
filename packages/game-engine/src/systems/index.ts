@@ -34,3 +34,5 @@ export { CollectionSystem } from "./CollectionSystem";
 export { AchievementSystem } from "./AchievementSystem";
 export type { AchievementStructureCounter } from "./AchievementSystem";
 export { CookingSystem } from "./CookingSystem";
+export { FestivalSystem } from "./FestivalSystem";
+export type { DayGetter } from "./FestivalSystem";

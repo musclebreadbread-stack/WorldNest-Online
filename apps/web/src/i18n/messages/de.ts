@@ -262,4 +262,22 @@ export const de: LocaleMessages = {
   "item.fruit_salad": "Obstsalat",
 
   "collection.category.cooking": "Kochen",
+
+  "festival.title": "Festtag",
+  "festival.active": "Fest im Gange!",
+  "festival.inactive": "Heute kein Fest",
+  "festival.reward": "Belohnung abholen",
+  "festival.claimed": "Belohnung bereits abgeholt",
+  "festival.blossom_fest.title": "Blumenfest",
+  "festival.blossom_fest.description":
+    "Feiert die Ankunft des Fruhlings mit Blumen und Festlichkeiten!",
+  "festival.harvest_moon.title": "Erntemond",
+  "festival.harvest_moon.description":
+    "Ein Sommerfest zur Feier der reichen Ernte unter dem Vollmond.",
+  "festival.mushroom_fair.title": "Pilzmarkt",
+  "festival.mushroom_fair.description":
+    "Der Herbst bringt den Pilzmarkt mit seltenen Funden und warmen Eintopfen.",
+  "festival.starlight_night.title": "Sternennacht",
+  "festival.starlight_night.description":
+    "Ein magischer Winterabend, an dem die Sterne am hellsten leuchten.",
 };

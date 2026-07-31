@@ -259,4 +259,19 @@ export const ja: LocaleMessages = {
   "item.fruit_salad": "フルーツサラダ",
 
   "collection.category.cooking": "料理",
+
+  "festival.title": "お祭り",
+  "festival.active": "お祭り開催中！",
+  "festival.inactive": "今日はお祭りはありません",
+  "festival.reward": "報酬を受け取る",
+  "festival.claimed": "報酬は受取済みです",
+  "festival.blossom_fest.title": "花まつり",
+  "festival.blossom_fest.description": "花と共に春の訪れを祝いましょう！",
+  "festival.harvest_moon.title": "収穫の月",
+  "festival.harvest_moon.description": "満月の下で豊かな収穫を祝う夏のお祭りです。",
+  "festival.mushroom_fair.title": "きのこ市",
+  "festival.mushroom_fair.description":
+    "秋は珍しいきのことあたたかいシチューの市が開かれます。",
+  "festival.starlight_night.title": "星降る夜",
+  "festival.starlight_night.description": "星が最も明るく輝く魔法のような冬の夜です。",
 };

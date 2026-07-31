@@ -36,6 +36,7 @@ export {
   CollectionComponent,
   AchievementComponent,
   CookingComponent,
+  FestivalComponent,
 } from "./components";
 export type {
   KeyState,
@@ -86,6 +87,21 @@ export {
   tickCooking,
 } from "./cooking";
 export type { CookingState, RecipeDefinition, RecipeIngredient } from "./cooking";
+
+// Festivals (pure; seasonal timed world events)
+export {
+  FESTIVAL_DEFINITIONS,
+  FESTIVAL_IDS,
+  claimFestivalReward,
+  dayOfSeason,
+  getActiveFestival,
+  getCycleKey,
+  getCycleNumber,
+  getFestival,
+  getFestivalProgress,
+  isFestivalActive,
+} from "./festivals";
+export type { FestivalDefinition } from "./festivals";
 
 // Collection (pure; museum donation and category tracking)
 export {
@@ -212,6 +228,7 @@ export {
   CollectionSystem,
   AchievementSystem,
   CookingSystem,
+  FestivalSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -230,6 +247,7 @@ export type {
   BiomeAtTile,
   RngFn,
   AchievementStructureCounter,
+  DayGetter,
 } from "./systems";
 
 // World Generation

@@ -257,4 +257,18 @@ export const zh: LocaleMessages = {
   "item.fruit_salad": "水果沙拉",
 
   "collection.category.cooking": "烹饪",
+
+  "festival.title": "节日",
+  "festival.active": "节日进行中！",
+  "festival.inactive": "今天没有节日",
+  "festival.reward": "领取奖励",
+  "festival.claimed": "奖励已领取",
+  "festival.blossom_fest.title": "花之祭",
+  "festival.blossom_fest.description": "用鲜花和欢庆迎接春天的到来！",
+  "festival.harvest_moon.title": "丰收之月",
+  "festival.harvest_moon.description": "在满月下庆祝丰收的夏日盛典。",
+  "festival.mushroom_fair.title": "蘑菇集市",
+  "festival.mushroom_fair.description": "秋天带来蘑菇集市，珍稀食材和热腾腾的炖菜。",
+  "festival.starlight_night.title": "星光之夜",
+  "festival.starlight_night.description": "星光最为璀璨的冬日魔幻之夜。",
 };

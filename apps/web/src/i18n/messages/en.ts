@@ -266,4 +266,22 @@ export const en = {
   "item.fruit_salad": "Fruit Salad",
 
   "collection.category.cooking": "Cooking",
+
+  "festival.title": "Festival",
+  "festival.active": "Festival in progress!",
+  "festival.inactive": "No festival today",
+  "festival.reward": "Claim reward",
+  "festival.claimed": "Reward already claimed",
+  "festival.blossom_fest.title": "Blossom Festival",
+  "festival.blossom_fest.description":
+    "Celebrate the arrival of spring with flowers and festivities!",
+  "festival.harvest_moon.title": "Harvest Moon",
+  "festival.harvest_moon.description":
+    "A summer celebration of bountiful harvests under the full moon.",
+  "festival.mushroom_fair.title": "Mushroom Fair",
+  "festival.mushroom_fair.description":
+    "Autumn brings the mushroom fair with rare finds and warm stews.",
+  "festival.starlight_night.title": "Starlight Night",
+  "festival.starlight_night.description":
+    "A magical winter evening where the stars shine brightest.",
 } as const;

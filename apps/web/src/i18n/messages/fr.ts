@@ -264,4 +264,22 @@ export const fr: LocaleMessages = {
   "item.fruit_salad": "Salade de fruits",
 
   "collection.category.cooking": "Cuisine",
+
+  "festival.title": "Festivites",
+  "festival.active": "Festival en cours!",
+  "festival.inactive": "Pas de festival aujourd'hui",
+  "festival.reward": "Recevoir la recompense",
+  "festival.claimed": "Recompense deja recue",
+  "festival.blossom_fest.title": "Fete des Fleurs",
+  "festival.blossom_fest.description":
+    "Celebrez l'arrivee du printemps avec des fleurs et des festivites !",
+  "festival.harvest_moon.title": "Lune des Moissons",
+  "festival.harvest_moon.description":
+    "Une celebration estivale des recoltes abondantes sous la pleine lune.",
+  "festival.mushroom_fair.title": "Foire aux Champignons",
+  "festival.mushroom_fair.description":
+    "L'automne amene la foire avec des champignons rares et des ragouts.",
+  "festival.starlight_night.title": "Nuit Etoilee",
+  "festival.starlight_night.description":
+    "Une soiree magique d'hiver ou les etoiles brillent intensement.",
 };

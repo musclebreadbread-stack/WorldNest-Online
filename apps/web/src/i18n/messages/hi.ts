@@ -259,4 +259,21 @@ export const hi: LocaleMessages = {
   "item.fruit_salad": "फल सलाद",
 
   "collection.category.cooking": "खाना पकाना",
+
+  "festival.title": "उत्सव",
+  "festival.active": "उत्सव चल रहा है!",
+  "festival.inactive": "आज कोई उत्सव नहीं है",
+  "festival.reward": "पुरस्कार प्राप्त करें",
+  "festival.claimed": "पुरस्कार पहले ही प्राप्त किया जा चुका है",
+  "festival.blossom_fest.title": "फूलों का उत्सव",
+  "festival.blossom_fest.description":
+    "फूलों और उत्सव के साथ बसंत के आगमन का जश्न मनाएं!",
+  "festival.harvest_moon.title": "फसल का चाँद",
+  "festival.harvest_moon.description": "पूर्णिमा के नीचे भरपूर फसल का ग्रीष्म उत्सव।",
+  "festival.mushroom_fair.title": "मशरूम मेला",
+  "festival.mushroom_fair.description":
+    "शरद ऋतु दुर्लभ मशरूम और गरम स्टू का मेला लाती है।",
+  "festival.starlight_night.title": "तारों की रात",
+  "festival.starlight_night.description":
+    "एक जादुई शीतकालीन शाम जब तारे सबसे चमकीले होते हैं।",
 };

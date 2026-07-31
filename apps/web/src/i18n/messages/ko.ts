@@ -261,4 +261,21 @@ export const ko: LocaleMessages = {
   "item.fruit_salad": "과일 샐러드",
 
   "collection.category.cooking": "요리",
+
+  "festival.title": "축제",
+  "festival.active": "축제가 열리고 있어요!",
+  "festival.inactive": "오늘은 축제가 없어요",
+  "festival.reward": "보상 받기",
+  "festival.claimed": "이미 보상을 받았어요",
+  "festival.blossom_fest.title": "꽃 축제",
+  "festival.blossom_fest.description": "꽃과 함께 봄의 도착을 축하하세요!",
+  "festival.harvest_moon.title": "추수의 달",
+  "festival.harvest_moon.description":
+    "보름달 아래 풍성한 수확을 기념하는 여름 축제예요.",
+  "festival.mushroom_fair.title": "버섯 장터",
+  "festival.mushroom_fair.description":
+    "가을이 가져온 희귀한 버섯과 따뜻한 스튜의 장터예요.",
+  "festival.starlight_night.title": "별빛의 밤",
+  "festival.starlight_night.description":
+    "별이 가장 밝게 빛나는 마법 같은 겨울 저녁이에요.",
 };

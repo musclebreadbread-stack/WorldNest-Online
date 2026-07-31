@@ -257,4 +257,22 @@ export const th: LocaleMessages = {
   "item.fruit_salad": "สลัดผลไม้",
 
   "collection.category.cooking": "ทำอาหาร",
+
+  "festival.title": "เทศกาล",
+  "festival.active": "เทศกาลกำลังดำเนินอยู่!",
+  "festival.inactive": "วันนี้ไม่มีเทศกาล",
+  "festival.reward": "รับรางวัล",
+  "festival.claimed": "รับรางวัลไปแล้ว",
+  "festival.blossom_fest.title": "เทศกาลดอกไม้บาน",
+  "festival.blossom_fest.description":
+    "ฉลองการมาถึงของฤดูใบไม้ผลิด้วยดอกไม้และงานรื่นเริง!",
+  "festival.harvest_moon.title": "พระจันทร์เก็บเกี่ยว",
+  "festival.harvest_moon.description":
+    "งานเฉลิมฉลองฤดูร้อนของการเก็บเกี่ยวอันอุดมสมบูรณ์ใต้แสงจันทร์เต็มดวง",
+  "festival.mushroom_fair.title": "งานเห็ด",
+  "festival.mushroom_fair.description":
+    "ฤดูใบไม้ร่วงนำมาซึ่งงานเห็ดที่มีของหายากและสตูอุ่นๆ",
+  "festival.starlight_night.title": "คืนแสงดาว",
+  "festival.starlight_night.description":
+    "ค่ำคืนฤดูหนาวอันมหัศจรรย์ที่ดวงดาวส่องสว่างที่สุด",
 };

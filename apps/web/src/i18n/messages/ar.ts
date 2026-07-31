@@ -261,4 +261,20 @@ export const ar: LocaleMessages = {
   "item.fruit_salad": "سلطة فواكه",
 
   "collection.category.cooking": "الطبخ",
+
+  "festival.title": "مهرجان",
+  "festival.active": "المهرجان جارٍ!",
+  "festival.inactive": "لا يوجد مهرجان اليوم",
+  "festival.reward": "استلام المكافأة",
+  "festival.claimed": "تم استلام المكافأة بالفعل",
+  "festival.blossom_fest.title": "مهرجان الأزهار",
+  "festival.blossom_fest.description": "احتفل بقدوم الربيع مع الأزهار والاحتفالات!",
+  "festival.harvest_moon.title": "قمر الحصاد",
+  "festival.harvest_moon.description": "احتفال صيفي بالحصاد الوفير تحت ضوء القمر.",
+  "festival.mushroom_fair.title": "سوق الفطر",
+  "festival.mushroom_fair.description":
+    "يجلب الخريف سوق الفطر بالنوادر والحساء الدافئ.",
+  "festival.starlight_night.title": "ليلة النجوم",
+  "festival.starlight_night.description":
+    "ليلة شتوية ساحرة حيث تتألق النجوم بأقصى سطوع.",
 };
