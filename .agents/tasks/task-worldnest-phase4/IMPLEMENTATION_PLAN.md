@@ -385,7 +385,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
 
 ## Phase B1 — Server authority: the SQL, and proving it (items 3-5)
 
-- [ ] 3. Write `004_authority_schema.sql` — the whole authority migration in one file, because a
+- [x] 3. Write `004_authority_schema.sql` — the whole authority migration in one file, because a
       maintainer pastes one file (decisions D1-D7). It must be **re-runnable**: `create table if not
       exists`, `drop policy if exists` before each `create policy`, `create or replace function`, and
       `insert … on conflict … do update` for the seeded reference rows, so re-running it is also how a
@@ -432,7 +432,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
       and to assert the policy count either side of it via a new `EXPECTED_POLICIES_AFTER_004` constant
       set to the number the migration actually writes. Exit 0.
 
-- [ ] 4. Prove the authority, as `authenticated`, against real Postgres. Add the Supabase default table
+- [x] 4. Prove the authority, as `authenticated`, against real Postgres. Add the Supabase default table
       grants to `packages/database/supabase/test/auth_stub.sql` (decision D6) — `grant usage on schema
       public` plus `grant all on all tables in schema public to anon, authenticated, service_role` and
       the matching `alter default privileges`, with a comment that this reproduces what a real project
@@ -461,7 +461,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
       line printed as `ok`. Deliberately break one revoke in `004` once to confirm the harness turns
       red, then restore it.
 
-- [ ] 5. Pin the SQL reference tables to the client catalogues with tests, so they cannot drift. Add
+- [x] 5. Pin the SQL reference tables to the client catalogues with tests, so they cannot drift. Add
       `packages/shared/src/__tests__/authoritySql.test.ts`, which reads
       `packages/database/supabase/migrations/004_authority_schema.sql` relative to `import.meta.url`
       and asserts: every `shop_prices` row matches `ITEM_PRICES` exactly in both directions (no missing
@@ -995,3 +995,131 @@ past.
 - **Playwright's chromium binary was not present in the sandbox** and had to be installed with
   `npx playwright install chromium` before `pnpm test:e2e` would run. That is an environment
   characteristic, not a repository change — expect to do it again in a fresh sandbox.
+
+---
+
+## Implementation notes for items 3-5 (deviations worth knowing for items 6-24)
+
+Phase B1 is complete. Commits, one per item, on `feat/mvp-foundation`:
+`4e7992b` (3), `5f1b698` (4), `54ae9e6` (5).
+
+### Gate results after item 5
+
+| Command | Result |
+|---------|--------|
+| `pnpm db:verify` | **56 assertions, exit 0** — was 18. `001`+`002`+`003`+`004`(twice)+seed(twice) against dockerised Postgres, then the whole authority section as the `authenticated` role |
+| `pnpm format:check` | exit 0, nothing listed |
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared **29** (+5), game-engine **266** (+3), web 290 = **585** |
+| `pnpm docs:check` | 62 headings still match |
+
+`EXPECTED_POLICIES_AFTER_004` is **30**, observed and asserted, not guessed: three new
+`select` policies (`shop_prices`, `quest_rewards`, `coin_ledger`) on top of 27.
+
+### The refusal vocabulary items 6 and 8 have to speak
+
+Both functions return jsonb and never raise. Success is `{"ok": true, "coins": <balance>}`.
+A refusal is `{"ok": false, "reason": "<one of>"}`, and `insufficient_coins` additionally
+carries `"coins"` with the _unchanged_ balance so the client can reconcile off a refusal too:
+
+- `worldnest_shop_trade`: `unauthenticated`, `bad_kind`, `bad_quantity`, `unknown_item`,
+  `rate_limited`, `no_player_state`, `insufficient_coins`.
+- `worldnest_claim_quest_reward`: `unauthenticated`, `unknown_quest`, `rate_limited`,
+  `no_player_state`, `not_started`, `already_completed`, `not_active`, `objective_unmet`.
+
+`AuthorityResult.reason` in item 6 should carry these through untranslated — they are
+diagnostic strings, not user copy. Only `insufficient_coins` and `already_completed` are
+states the player can cause in normal play; the rest mean the client sent something the UI
+cannot actually ask for.
+
+### Item 3 — three deviations
+
+- **The migration is 354 lines**, over `CONTRIBUTING.md`'s ~300 cap. The item requires one
+  file ("a maintainer pastes one file") so splitting it would break the deliverable, and the
+  cap sits under _File Organization_ for TypeScript sources. Precedent: `gameWorld.test.ts`
+  is 671. Roughly a third of the file is the D1-D9 rationale in comments, which is the part
+  worth keeping.
+- **Three revokes the item did not name were needed, and only became visible in item 4.**
+  Once `auth_stub.sql` reproduces Supabase's default privileges, `authenticated` holds
+  `all` on every _new_ table too — so `coin_ledger`, `shop_prices` and `quest_rewards` each
+  get an explicit `revoke insert, update, delete`. A missing policy already refuses the
+  write, but D7 says "no policy _or grant_", and privilege-level refusal is the one that
+  cannot be undone by someone adding a permissive policy later. They live in the item 3
+  commit because they are migration content.
+- **`revoke execute` is `from public, anon`, not `from public`.** Default privileges grant
+  `anon` execute on new functions explicitly, and `revoke ... from public` does not remove an
+  explicit grant. An `anon` caller would only ever get `unauthenticated` back, so this is
+  belt-and-braces rather than a hole — but it fails closed now.
+- Rate limit: `MAX_LEDGER_ENTRIES_PER_MINUTE` is 60 and the test is `>= 60`, so 60 movements
+  per minute is a ceiling rather than a threshold you may exceed once.
+- Ledger `ref` is `'<item_id> x<quantity>'` for a trade and the quest id for a reward. It is
+  free text on purpose; nothing parses it.
+
+### Item 4 — where 004 goes in the harness, and one psql trap
+
+- **`004` is applied _before_ the provisioning-trigger probe**, not after the seed. That
+  ordering is what makes `trigger provisioned coins=50` an assertion about the column default
+  rather than about the backfill: the probe row and all three tester rows are created by
+  `handle_new_user` after the default exists. The pre-existing `coins persist=137` case still
+  passes because it runs as `postgres`, which owns the tables and is exempt from both RLS and
+  the revokes — that exemption is exactly why the new section exists.
+- **`psql -c` needs `-q` or the `SET` command tags land in the scalar.** `query_as_authenticated`
+  sends `set role authenticated; set "request.jwt.claim.sub" = '<uuid>'; <sql>` as one `-c`,
+  and without `-q` the output is `SET\nSET\n<value>`. Twelve assertions failed on that alone
+  before the flag went in. The existing `query` helper does not need it because it sends one
+  statement.
+- One `-c` is one implicit transaction, so a refused statement rolls the whole thing back —
+  which is why `refusals moved nothing=36/2` can be asserted at all.
+- **`tester2` (`…550002`) is the authority fixture.** `tester1` is already used by the older
+  progression block (coins 137, `collect_wood` forced to `completed` as `postgres`), so
+  reusing it would have made the claim assertions meaningless. Later items adding assertions
+  should take `tester3`.
+- New helpers: `query_as_authenticated`, `authority_result` (flattens the jsonb to
+  `true:<coins>` / `false:<reason>` so one `expect` line reads it), `expect_denied` (prints
+  which wall stopped it) and `expect_allowed` (a lockdown that also breaks the game is not a
+  fix).
+- **The deliberate break was performed.** Commenting out
+  `revoke insert, update on public.player_state from anon, authenticated;` and re-running:
+  **10 assertions turned red**, including `FAIL player_state coins update was ALLOWED`,
+  `FAIL player_state upsert mentioning coins was ALLOWED` and
+  `FAIL buy beyond the balance=true:10351 (expected false:insufficient_coins)` — the cheat
+  had set itself 12345 coins two assertions earlier, so the shop then happily served it. The
+  revoke was restored and the run is back to 56 `ok`, exit 0.
+
+### Item 5 — one dependency added
+
+- `@types/node` (`^22.5.4`, already the version `apps/web` and `packages/database` pin) is
+  now a devDependency of `@worldnest/shared` and `@worldnest/game-engine`. Both `build`
+  scripts are a plain `tsc` over `src/**/*`, which includes `src/__tests__`, so
+  `import { readFileSync } from "node:fs"` fails the _build_ without it even though Vitest
+  runs it fine. `pnpm install` resolved it from the lockfile with nothing downloaded.
+- Both suites read the migration **as text** and compare in both directions, so a row added
+  to the SQL for an item or quest that does not exist fails just as loudly as a missing one.
+  They parse only the `insert into public.<table>` block up to its semicolon, so the
+  `on conflict do update` tail and every other number in the file are invisible to the regex.
+- The shared suite also pins the **backfill** amount, not just the column default: both `50`s
+  in the migration are `STARTING_COINS`.
+- **The price change was performed.** Setting `fence` to `buy: 22` fails
+  `should seed a row for every priced item, with the same numbers` with
+  `shop_prices is missing fence: expected { buy: 20, sell: 6 } to deeply equal { buy: 22, sell: 6 }`
+  — and passes again once `004` is edited to match. Reverted.
+
+### Known-broken until item 6, on purpose
+
+`savePlayerState`'s upsert still names `coins`, and that statement is now **refused outright**
+for `authenticated` — the harness asserts the refusal as
+`player_state upsert mentioning coins denied`. So between this batch and item 6 the client's
+autosave fails against a real Supabase project. Nothing in the sandbox can observe it (there
+is no reachable project) and `pnpm build`/`pnpm test` are unaffected, but item 6 is not
+optional and should not be deferred behind anything else in Phase B2.
+
+### Environment notes for items 6-24
+
+- **Node and pnpm are not on `PATH` in a fresh sandbox.** They are installed but unshimmed:
+  `export PATH="/root/.nvm/versions/node/v22.23.1/bin:$PATH"` gives Node 22.23.1 and pnpm
+  10.28.1. Same class of thing as the Playwright chromium note above.
+- `/tmp` did not persist between shell invocations, so keep scratch copies inside the
+  workspace (and delete them before committing).
+- `docker` is podman-backed and worked throughout; `pnpm db:verify` takes roughly a minute,
+  most of it waiting on `pg_isready`.
