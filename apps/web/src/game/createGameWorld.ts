@@ -1,23 +1,7 @@
 import {
   World,
   Entity,
-  PositionComponent,
-  VelocityComponent,
-  SpriteComponent,
-  PlayerComponent,
-  InputComponent,
-  NetworkComponent,
-  RemoteInterpolationComponent,
-  ColliderComponent,
   TimeComponent,
-  InventoryComponent,
-  StatsComponent,
-  InteractionComponent,
-  DialogueComponent,
-  QuestComponent,
-  ShopComponent,
-  WalletComponent,
-  AnimationComponent,
   TimeSystem,
   InputSystem,
   CollisionSystem,
@@ -36,41 +20,29 @@ import {
   AnimationSystem,
   RenderSystem,
   WorldManager,
-  addItem,
   composeBlockers,
 } from "@worldnest/game-engine";
-import type { QuestEntry, TileType } from "@worldnest/game-engine";
-import { STARTING_COINS, SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
-import type { PersistedInventory } from "@worldnest/database";
-import { restoreInventory } from "../lib/inventorySnapshot";
-import { restoreQuests } from "../lib/questSnapshot";
-import { restoreSavedWorld, type SavedWorldState } from "./savedWorld";
+import type { TileType } from "@worldnest/game-engine";
+import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
+import { restoreSavedWorld } from "./savedWorld";
+import { createPlayerEntity, type GameBootstrap } from "./playerEntity";
 
 // Restoring the shared world lives in `savedWorld.ts`; re-exported here because
 // this module is what `loadSession` and the persistence layer import from.
 export type { SavedCrop, SavedStructure, SavedWorldState } from "./savedWorld";
 
-/**
- * Identity, spawn and saved state handed to the game by React through the
- * Phaser registry. Everything past the identity is optional so the game still
- * boots when Supabase is unconfigured.
- */
-export interface GameBootstrap {
-  playerId: string;
-  username: string;
-  spawnX: number;
-  spawnY: number;
-  /** World rows are written against this id; `null` disables persistence. */
-  worldId?: string | null;
-  /** Saved inventory; when absent the starting kit is granted instead. */
-  inventory?: PersistedInventory | null;
-  /** Saved coin balance; when absent the starting purse is granted instead. */
-  coins?: number | null;
-  /** Saved quest log; when absent the player starts with no quests taken. */
-  quests?: Record<string, QuestEntry> | null;
-  /** Saved shared-world state, applied before the first chunk load. */
-  savedWorld?: SavedWorldState | null;
-}
+// Assembling player entities lives in `playerEntity.ts`, for the same reason.
+// Everything it exports is re-exported here so every existing importer keeps
+// working: this module is still the app's single entry point into the wiring.
+export type { GameBootstrap } from "./playerEntity";
+export {
+  LOCAL_PLAYER_ENTITY_ID,
+  PLAYER_COLLIDER_SIZE,
+  STARTING_WHEAT_SEEDS,
+  createPlayerEntity,
+  createRemotePlayerEntity,
+  remotePlayerEntityId,
+} from "./playerEntity";
 
 export interface GameWorldSystems {
   time: TimeSystem;
@@ -103,8 +75,6 @@ export interface GameWorldContext {
 /** Registry key the bootstrap payload is published under. */
 export const BOOTSTRAP_REGISTRY_KEY = "bootstrap";
 
-export const LOCAL_PLAYER_ENTITY_ID = "local-player";
-
 /** Singleton entity carrying the shared world clock snapshot. */
 export const WORLD_CLOCK_ENTITY_ID = "world-clock";
 
@@ -116,12 +86,6 @@ export const WORLD_CLOCK_ENTITY_ID = "world-clock";
  */
 export const DEFAULT_SPAWN_X = 496;
 export const DEFAULT_SPAWN_Y = 336;
-
-/** Player collision box, slightly smaller than a tile so doorways feel forgiving. */
-export const PLAYER_COLLIDER_SIZE = 24;
-
-/** Seeds handed to a new player so the farming loop is playable immediately. */
-export const STARTING_WHEAT_SEEDS = 5;
 
 /**
  * Build the ECS world, its systems and the local player entity.
@@ -228,69 +192,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     restoreSavedWorld(worldManager, plant, build, bootstrap.savedWorld);
   }
 
-  const inventory = new InventoryComponent();
-  if (bootstrap.inventory) {
-    restoreInventory(inventory, bootstrap.inventory);
-  } else {
-    addItem(inventory, "wheat_seed", STARTING_WHEAT_SEEDS);
-  }
-
-  // Coins and quests are granted only when nothing was saved, the same rule the
-  // starting seeds follow: a returning player who spent down to zero keeps their
-  // empty purse instead of being handed another fifty on every reload.
-  const wallet = new WalletComponent(bootstrap.coins ?? STARTING_COINS);
-  const questLog = new QuestComponent();
-  if (bootstrap.quests) {
-    restoreQuests(questLog, bootstrap.quests);
-  }
-
-  const playerEntity = new Entity(LOCAL_PLAYER_ENTITY_ID);
-  playerEntity
-    .addComponent(new PositionComponent(bootstrap.spawnX, bootstrap.spawnY))
-    .addComponent(new VelocityComponent(0, 0))
-    .addComponent(new SpriteComponent("player", 0, true))
-    .addComponent(new PlayerComponent(bootstrap.playerId, bootstrap.username, true))
-    .addComponent(new InputComponent())
-    .addComponent(new NetworkComponent())
-    .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
-    .addComponent(inventory)
-    .addComponent(new StatsComponent())
-    .addComponent(new InteractionComponent())
-    .addComponent(new DialogueComponent())
-    .addComponent(wallet)
-    .addComponent(new ShopComponent())
-    .addComponent(questLog)
-    .addComponent(new AnimationComponent());
+  const playerEntity = createPlayerEntity(bootstrap);
 
   world.addEntity(playerEntity);
   world.addEntity(clockEntity);
 
   return { world, worldManager, systems, playerEntity, clockEntity };
-}
-
-/** Entity id used for the remote player owned by `playerId`. */
-export function remotePlayerEntityId(playerId: string): string {
-  return `remote-${playerId}`;
-}
-
-/**
- * Build a remote player entity. Remote players are real ECS entities so they
- * share the single render path and get network smoothing for free.
- */
-export function createRemotePlayerEntity(
-  playerId: string,
-  username: string,
-  x: number,
-  y: number,
-): Entity {
-  const entity = new Entity(remotePlayerEntityId(playerId));
-  entity
-    .addComponent(new PositionComponent(x, y))
-    .addComponent(new SpriteComponent("player", 0, true))
-    .addComponent(new PlayerComponent(playerId, username, false))
-    .addComponent(new RemoteInterpolationComponent(x, y))
-    // No velocity component: MovementSystem would integrate it and fight the
-    // smoothing, so InterpolationSystem drives this animation instead.
-    .addComponent(new AnimationComponent());
-  return entity;
 }

@@ -103,6 +103,7 @@ The Phaser side of `apps/web/src/game/` is deliberately split so no file approac
 | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `createGameWorld.ts`                                                                                | ECS assembly and system registration — **Phaser-free**, which is what makes gameplay testable under jsdom |
 | `savedWorld.ts`                                                                                     | Restoring persisted terrain, structures and crops into a fresh world                                      |
+| `playerEntity.ts`                                                                                   | `GameBootstrap`, the local and remote player component assembly, and the starting-kit rules               |
 | `PlayerController.ts`                                                                               | Movement polling, facing, and the rate-limited request helpers                                            |
 | `keyBindings.ts`                                                                                    | `ONE_SHOT_BINDINGS`, the number-key handler and the `whenPlaying` gate (imports Phaser)                   |
 | `panelStack.ts`                                                                                     | `isTyping()`, `isHudModal()`, `closeTopmostPanel()` — **Phaser-free on purpose** (see below)              |
