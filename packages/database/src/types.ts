@@ -273,6 +273,7 @@ export interface Database {
         Row: {
           id: string;
           player_id: string;
+          operation_id: string;
           delta: number;
           reason: string;
           ref: string | null;
@@ -282,6 +283,7 @@ export interface Database {
         Insert: {
           id?: string;
           player_id: string;
+          operation_id: string;
           delta: number;
           reason: string;
           ref?: string | null;
@@ -291,6 +293,7 @@ export interface Database {
         Update: {
           id?: string;
           player_id?: string;
+          operation_id?: string;
           delta?: number;
           reason?: string;
           ref?: string | null;
@@ -308,11 +311,16 @@ export interface Database {
      */
     Functions: {
       worldnest_shop_trade: {
-        Args: { p_kind: string; p_item_id: string; p_quantity: number };
+        Args: {
+          p_operation_id: string;
+          p_kind: string;
+          p_item_id: string;
+          p_quantity: number;
+        };
         Returns: unknown;
       };
       worldnest_claim_quest_reward: {
-        Args: { p_quest_id: string };
+        Args: { p_quest_id: string; p_progress: number };
         Returns: unknown;
       };
     };

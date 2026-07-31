@@ -352,9 +352,13 @@ expect_denied "coin_ledger insert" "$TESTER2" \
   "insert into public.coin_ledger (player_id, delta, reason, balance_after)
    values ('$TESTER2', 100000, 'shop_sell', 100000);"
 
+# Stable UUIDs stand in for the browser-generated operation ids.
+OP_BUY_FENCE="aaaaaaaa-0000-4000-8000-000000000001"
+OP_SELL_WOOD="aaaaaaaa-0000-4000-8000-000000000002"
+
 # The shop function: the price comes from shop_prices, never from the caller.
 expect "buy fence" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('buy', 'fence', 1)")" "true:30"
+  "public.worldnest_shop_trade('$OP_BUY_FENCE', 'buy', 'fence', 1)")" "true:30"
 expect "buy wrote one ledger row" \
   "$(query "select count(*) from public.coin_ledger where player_id = '$TESTER2';")" "1"
 expect "ledger records the balance" \
@@ -366,36 +370,43 @@ expect "owner can read their ledger" \
 # A sell is deliberately not checked against the persisted inventory (decision
 # D9), and tester2 owns no wood - so this succeeding is the decision, asserted.
 expect "sell wood the row does not hold" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('sell', 'wood', 2)")" "true:36"
+  "public.worldnest_shop_trade('$OP_SELL_WOOD', 'sell', 'wood', 2)")" "true:36"
+
+expect "duplicate trade returns original balance" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('$OP_BUY_FENCE', 'buy', 'fence', 1)")" "true:30"
+expect "duplicate trade wrote no ledger row" \
+  "$(query "select count(*) from public.coin_ledger
+     where player_id = '$TESTER2' and operation_id = '$OP_BUY_FENCE';")" "1"
 
 expect "buy beyond the balance" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('buy', 'fence', 99)")" "false:insufficient_coins"
+  "public.worldnest_shop_trade('aaaaaaaa-0000-4000-8000-000000000003', 'buy', 'fence', 99)")" "false:insufficient_coins"
 expect "buy an unknown item" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('buy', 'not_an_item', 1)")" "false:unknown_item"
+  "public.worldnest_shop_trade('aaaaaaaa-0000-4000-8000-000000000004', 'buy', 'not_an_item', 1)")" "false:unknown_item"
 expect "trade in an unknown direction" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('sideways', 'fence', 1)")" "false:bad_kind"
+  "public.worldnest_shop_trade('aaaaaaaa-0000-4000-8000-000000000005', 'sideways', 'fence', 1)")" "false:bad_kind"
 expect "trade zero" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('buy', 'fence', 0)")" "false:bad_quantity"
+  "public.worldnest_shop_trade('aaaaaaaa-0000-4000-8000-000000000006', 'buy', 'fence', 0)")" "false:bad_quantity"
 expect "trade a thousand" "$(authority_result "$TESTER2" \
-  "public.worldnest_shop_trade('buy', 'fence', 1000)")" "false:bad_quantity"
+  "public.worldnest_shop_trade('aaaaaaaa-0000-4000-8000-000000000007', 'buy', 'fence', 1000)")" "false:bad_quantity"
+expect_denied "malformed operation id" "$TESTER2" \
+  "select public.worldnest_shop_trade('not-a-uuid', 'sell', 'wood', 1);"
 expect "refusals moved nothing" \
   "$(query "select coins || '/' || (select count(*) from public.coin_ledger
      where player_id = '$TESTER2') from public.player_state
      where player_id = '$TESTER2';")" "36/2"
 
-# The quest function: paid at the catalogued amount, at most once, and the only
-# thing in the system that can write 'completed'.
+# The quest function atomically upserts the supplied client-owned progress,
+# pays the catalogued amount at most once, and is the only state writer.
 expect "claim an unmet objective" "$(authority_result "$TESTER2" \
-  "public.worldnest_claim_quest_reward('collect_wood')")" "false:objective_unmet"
+  "public.worldnest_claim_quest_reward('collect_wood', 2)")" "false:objective_unmet"
 expect "claim an unknown quest" "$(authority_result "$TESTER2" \
-  "public.worldnest_claim_quest_reward('not_a_quest')")" "false:unknown_quest"
-expect_allowed "progress reaches the target" "$TESTER2" \
-  "update public.player_quests set progress = 5, updated_at = now()
-   where player_id = '$TESTER2' and quest_id = 'collect_wood';"
-expect "claim a met objective" "$(authority_result "$TESTER2" \
-  "public.worldnest_claim_quest_reward('collect_wood')")" "true:66"
+  "public.worldnest_claim_quest_reward('not_a_quest', 1)")" "false:unknown_quest"
+expect "claim with malformed progress" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('collect_wood', -1)")" "false:bad_progress"
+expect "claim a met objective without an autosave" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('collect_wood', 5)")" "true:66"
 expect "claim it a second time" "$(authority_result "$TESTER2" \
-  "public.worldnest_claim_quest_reward('collect_wood')")" "false:already_completed"
+  "public.worldnest_claim_quest_reward('collect_wood', 5)")" "false:already_completed"
 expect "the reward completed the quest" \
   "$(query "select state from public.player_quests
      where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "completed"
@@ -403,6 +414,43 @@ expect "the reward was paid once" \
   "$(query "select coins || '/' || (select count(*) from public.coin_ledger
      where player_id = '$TESTER2' and reason = 'quest_reward')
      from public.player_state where player_id = '$TESTER2';")" "66/1"
+
+# No player_quests row exists for greet_pip: progress and payment must land in
+# this one call rather than racing the debounced autosave.
+expect "immediate quest completion" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('greet_pip', 1)")" "true:81"
+expect "immediate quest retry pays once" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('greet_pip', 1)")" "false:already_completed"
+expect "immediate completion persisted once" \
+  "$(query "select coins || '/' || (select count(*) from public.coin_ledger
+     where player_id = '$TESTER2' and reason = 'quest_reward')
+     from public.player_state where player_id = '$TESTER2';")" "81/2"
+
+# Two separate authenticated sessions race the same operation id. The purse
+# lock serializes them and the second session observes the first ledger row.
+TESTER3="11111111-2222-4333-8444-555555550003"
+CONCURRENT_OP="aaaaaaaa-0000-4000-8000-000000000008"
+authority_result "$TESTER3" \
+  "public.worldnest_shop_trade('$CONCURRENT_OP', 'sell', 'flower', 1)" >/dev/null &
+first_pid=$!
+authority_result "$TESTER3" \
+  "public.worldnest_shop_trade('$CONCURRENT_OP', 'sell', 'flower', 1)" >/dev/null &
+second_pid=$!
+wait "$first_pid"
+wait "$second_pid"
+expect "concurrent duplicate balance" \
+  "$(query "select coins from public.player_state where player_id = '$TESTER3';")" "55"
+expect "concurrent duplicate ledger row" \
+  "$(query "select count(*) from public.coin_ledger
+     where player_id = '$TESTER3' and operation_id = '$CONCURRENT_OP';")" "1"
+
+# Upgrading 004 must remove the unsafe signatures rather than merely adding
+# overloads beside them.
+expect "obsolete authority overloads" \
+  "$(query "select count(*) from pg_proc
+     where pronamespace = 'public'::regnamespace
+       and ((proname = 'worldnest_shop_trade' and pronargs = 3)
+         or (proname = 'worldnest_claim_quest_reward' and pronargs = 1));")" "0"
 
 echo
 if [ "$failures" -ne 0 ]; then

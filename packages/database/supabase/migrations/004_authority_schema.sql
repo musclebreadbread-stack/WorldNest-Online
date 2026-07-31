@@ -82,6 +82,7 @@ on conflict (quest_id) do update
 create table if not exists public.coin_ledger (
   id uuid primary key default uuid_generate_v4(),
   player_id uuid references public.profiles(id) on delete cascade not null,
+  operation_id uuid,
   delta integer not null,
   reason text not null check (reason in ('shop_buy', 'shop_sell', 'quest_reward')),
   ref text,
@@ -89,8 +90,16 @@ create table if not exists public.coin_ledger (
   created_at timestamptz default now() not null
 );
 
+-- Projects that ran the first version of 004 already have ledger rows. Reuse
+-- each row's primary key as its operation id before enforcing the new contract.
+alter table public.coin_ledger add column if not exists operation_id uuid;
+update public.coin_ledger set operation_id = id where operation_id is null;
+alter table public.coin_ledger alter column operation_id set not null;
+
 create index if not exists coin_ledger_player_created_idx
   on public.coin_ledger (player_id, created_at desc);
+create unique index if not exists coin_ledger_player_operation_idx
+  on public.coin_ledger (player_id, operation_id);
 
 -- ---------------------------------------------------------------------------
 -- Row level security on the three new tables
@@ -182,7 +191,14 @@ grant update (progress, updated_at)
 -- MAX_LEDGER_ENTRIES_PER_MINUTE is 60. It is an anti-abuse ceiling, not
 -- monetisation: no amount of waiting buys anything the game does not give away.
 
+-- Remove the pre-idempotency overload when upgrading a database that already
+-- ran an earlier copy of this migration. Function privileges belong to a
+-- signature, so leaving it in place would preserve an unsafe public API.
+drop function if exists public.worldnest_shop_trade(text, text, integer);
+drop function if exists public.worldnest_claim_quest_reward(text);
+
 create or replace function public.worldnest_shop_trade(
+  p_operation_id uuid,
   p_kind text,
   p_item_id text,
   p_quantity integer
@@ -196,11 +212,16 @@ declare
   v_player uuid := auth.uid();
   v_price public.shop_prices;
   v_balance integer;
+  v_duplicate_balance integer;
   v_delta integer;
   v_recent integer;
 begin
   if v_player is null then
     return jsonb_build_object('ok', false, 'reason', 'unauthenticated');
+  end if;
+
+  if p_operation_id is null then
+    return jsonb_build_object('ok', false, 'reason', 'bad_operation_id');
   end if;
 
   if p_kind is null or p_kind not in ('buy', 'sell') then
@@ -218,17 +239,28 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'unknown_item');
   end if;
 
-  select count(*) into v_recent from public.coin_ledger
-  where player_id = v_player and created_at > now() - interval '1 minute';
-  if v_recent >= 60 then
-    return jsonb_build_object('ok', false, 'reason', 'rate_limited');
-  end if;
-
+  -- Every authority operation locks the purse first. That gives one total order
+  -- per player and makes two concurrent calls carrying the same operation id
+  -- observe the ledger row written by whichever acquired the lock first.
   select coins into v_balance from public.player_state
   where player_id = v_player
   for update;
   if not found then
     return jsonb_build_object('ok', false, 'reason', 'no_player_state');
+  end if;
+
+  select balance_after into v_duplicate_balance from public.coin_ledger
+  where player_id = v_player and operation_id = p_operation_id;
+  if found then
+    return jsonb_build_object('ok', true, 'coins', v_duplicate_balance);
+  end if;
+
+  select count(*) into v_recent from public.coin_ledger
+  where player_id = v_player and created_at > now() - interval '1 minute';
+  if v_recent >= 60 then
+    return jsonb_build_object(
+      'ok', false, 'reason', 'rate_limited', 'coins', v_balance
+    );
   end if;
 
   if p_kind = 'buy' then
@@ -252,9 +284,12 @@ begin
 
   update public.player_state set coins = v_balance where player_id = v_player;
 
-  insert into public.coin_ledger (player_id, delta, reason, ref, balance_after)
+  insert into public.coin_ledger (
+    player_id, operation_id, delta, reason, ref, balance_after
+  )
   values (
     v_player,
+    p_operation_id,
     v_delta,
     case when p_kind = 'buy' then 'shop_buy' else 'shop_sell' end,
     p_item_id || ' x' || p_quantity,
@@ -265,7 +300,10 @@ begin
 end;
 $$;
 
-create or replace function public.worldnest_claim_quest_reward(p_quest_id text)
+create or replace function public.worldnest_claim_quest_reward(
+  p_quest_id text,
+  p_progress integer
+)
 returns jsonb
 language plpgsql
 security definer
@@ -283,17 +321,17 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'unauthenticated');
   end if;
 
+  if p_progress is null or p_progress < 0 then
+    return jsonb_build_object('ok', false, 'reason', 'bad_progress');
+  end if;
+
   select * into v_reward from public.quest_rewards where quest_id = p_quest_id;
   if not found then
     return jsonb_build_object('ok', false, 'reason', 'unknown_quest');
   end if;
 
-  select count(*) into v_recent from public.coin_ledger
-  where player_id = v_player and created_at > now() - interval '1 minute';
-  if v_recent >= 60 then
-    return jsonb_build_object('ok', false, 'reason', 'rate_limited');
-  end if;
-
+  -- Share the purse lock with shop operations so all returned balances form one
+  -- serial order, even when a trade and completion arrive together.
   select coins into v_balance from public.player_state
   where player_id = v_player
   for update;
@@ -301,27 +339,45 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'no_player_state');
   end if;
 
+  select count(*) into v_recent from public.coin_ledger
+  where player_id = v_player and created_at > now() - interval '1 minute';
+  if v_recent >= 60 then
+    return jsonb_build_object(
+      'ok', false, 'reason', 'rate_limited', 'coins', v_balance
+    );
+  end if;
+
+  -- Progress is explicitly client-owned. Carrying the live value into this
+  -- transaction closes the autosave race without pretending it proves the
+  -- objective happened. Never regress progress if an older retry arrives.
+  insert into public.player_quests (player_id, quest_id, progress, updated_at)
+  values (v_player, p_quest_id, p_progress, now())
+  on conflict (player_id, quest_id) do update
+    set progress = greatest(public.player_quests.progress, excluded.progress),
+        updated_at = excluded.updated_at;
+
   select state, progress into v_state, v_progress from public.player_quests
   where player_id = v_player and quest_id = p_quest_id
   for update;
-  if not found then
-    return jsonb_build_object('ok', false, 'reason', 'not_started');
-  end if;
 
-  -- The whole point of the function: the row is the record of payment, so the
-  -- second attempt is refused rather than paid.
+  -- The row is the record of payment, so the second attempt is refused rather
+  -- than paid. Include the balance because this is a terminal, useful answer.
   if v_state = 'completed' then
-    return jsonb_build_object('ok', false, 'reason', 'already_completed');
+    return jsonb_build_object(
+      'ok', false, 'reason', 'already_completed', 'coins', v_balance
+    );
   end if;
 
   if v_state <> 'active' then
-    return jsonb_build_object('ok', false, 'reason', 'not_active');
+    return jsonb_build_object(
+      'ok', false, 'reason', 'not_active', 'coins', v_balance
+    );
   end if;
 
-  -- `progress` is client-written, so this is not proof the player did the work.
-  -- It is proof they are paid the catalogued amount exactly once.
   if v_progress < v_reward.target then
-    return jsonb_build_object('ok', false, 'reason', 'objective_unmet');
+    return jsonb_build_object(
+      'ok', false, 'reason', 'objective_unmet', 'coins', v_balance
+    );
   end if;
 
   v_balance := v_balance + v_reward.reward_coins;
@@ -332,8 +388,17 @@ begin
   set state = 'completed', updated_at = now()
   where player_id = v_player and quest_id = p_quest_id;
 
-  insert into public.coin_ledger (player_id, delta, reason, ref, balance_after)
-  values (v_player, v_reward.reward_coins, 'quest_reward', p_quest_id, v_balance);
+  insert into public.coin_ledger (
+    player_id, operation_id, delta, reason, ref, balance_after
+  )
+  values (
+    v_player,
+    extensions.uuid_generate_v4(),
+    v_reward.reward_coins,
+    'quest_reward',
+    p_quest_id,
+    v_balance
+  );
 
   return jsonb_build_object('ok', true, 'coins', v_balance);
 end;
@@ -341,14 +406,13 @@ $$;
 
 -- A function is executable by `public` unless told otherwise, and a Supabase
 -- project's default privileges grant `anon` execute on new functions as well, so
--- revoke both before granting. Only a signed-in player may call these; a signed
--- out caller has no `auth.uid()` to spend coins from anyway.
-revoke execute on function public.worldnest_shop_trade(text, text, integer)
-  from public, anon;
-revoke execute on function public.worldnest_claim_quest_reward(text)
-  from public, anon;
+-- revoke every role before granting the exact current signatures explicitly.
+revoke execute on function public.worldnest_shop_trade(uuid, text, text, integer)
+  from public, anon, authenticated;
+revoke execute on function public.worldnest_claim_quest_reward(text, integer)
+  from public, anon, authenticated;
 
-grant execute on function public.worldnest_shop_trade(text, text, integer)
+grant execute on function public.worldnest_shop_trade(uuid, text, text, integer)
   to authenticated;
-grant execute on function public.worldnest_claim_quest_reward(text)
+grant execute on function public.worldnest_claim_quest_reward(text, integer)
   to authenticated;

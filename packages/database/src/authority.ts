@@ -37,12 +37,14 @@ const UNREACHABLE: AuthorityResult = { ok: false, coins: null, reason: "unreacha
  * spend anybody's coins and a signed-in one cannot spend somebody else's.
  */
 export async function shopTrade(
+  operationId: string,
   kind: string,
   itemId: string,
   quantity: number,
 ): Promise<DbResult<AuthorityResult>> {
   const client = createSupabaseClient();
   const { data, error } = await client.rpc("worldnest_shop_trade", {
+    p_operation_id: operationId,
     p_kind: kind,
     p_item_id: itemId,
     p_quantity: quantity,
@@ -60,10 +62,12 @@ export async function shopTrade(
  */
 export async function claimQuestReward(
   questId: string,
+  progress: number,
 ): Promise<DbResult<AuthorityResult>> {
   const client = createSupabaseClient();
   const { data, error } = await client.rpc("worldnest_claim_quest_reward", {
     p_quest_id: questId,
+    p_progress: progress,
   });
 
   return toAuthorityResult(data, error);
