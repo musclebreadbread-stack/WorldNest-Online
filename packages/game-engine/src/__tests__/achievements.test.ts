@@ -274,8 +274,10 @@ describe("AchievementSystem", () => {
   });
 
   it("should unlock quest_master with enough completed quests", () => {
-    const { entity, achievement } = createPlayer();
-    achievement.totalQuestsCompleted = 3;
+    const { entity, achievement, quest } = createPlayer();
+    quest.entries["q1"] = { state: "completed", progress: 1, baseline: 0 };
+    quest.entries["q2"] = { state: "completed", progress: 1, baseline: 0 };
+    quest.entries["q3"] = { state: "completed", progress: 1, baseline: 0 };
     for (let i = 0; i < 10; i++) system.update([entity], 1 / 60);
     expect(achievement.unlocked.has("quest_master")).toBe(true);
   });
@@ -291,5 +293,69 @@ describe("AchievementSystem", () => {
     const { entity, achievement } = createPlayer();
     system.update([entity], 1 / 60);
     expect(achievement.unlocked.size).toBe(0);
+  });
+
+  it("should accumulate totalCoinsEarned from wallet increases", () => {
+    const { entity, achievement, wallet } = createPlayer();
+    // Simulate selling items (external coin increase)
+    wallet.coins += 100;
+    system.update([entity], 1 / 60);
+    expect(achievement.totalCoinsEarned).toBe(100);
+    expect(achievement.lastKnownCoins).toBe(100);
+  });
+
+  it("should not decrease totalCoinsEarned when coins are spent", () => {
+    const { entity, achievement, wallet } = createPlayer();
+    wallet.coins += 150;
+    system.update([entity], 1 / 60);
+    // Spend coins (purchase)
+    wallet.coins -= 50;
+    system.update([entity], 1 / 60);
+    expect(achievement.totalCoinsEarned).toBe(150);
+    expect(achievement.lastKnownCoins).toBe(100);
+  });
+
+  it("should unlock big_spender from cumulative coin earnings", () => {
+    const { entity, achievement, wallet } = createPlayer();
+    // Simulate multiple income sources over several frames
+    wallet.coins += 120;
+    system.update([entity], 1 / 60);
+    system.update([entity], 1 / 60); // pay reward for first_harvest etc
+    wallet.coins += 100;
+    for (let i = 0; i < 10; i++) system.update([entity], 1 / 60);
+    expect(achievement.totalCoinsEarned).toBeGreaterThanOrEqual(200);
+    expect(achievement.unlocked.has("big_spender")).toBe(true);
+  });
+
+  it("should increment totalFishCaught via recordFishCaught listener", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordFishCaught();
+    system.recordFishCaught();
+    system.update([entity], 1 / 60);
+    expect(achievement.totalFishCaught).toBe(2);
+  });
+
+  it("should unlock first_fish when recordFishCaught is called", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordFishCaught();
+    system.update([entity], 1 / 60);
+    expect(achievement.unlocked.has("first_fish")).toBe(true);
+  });
+
+  it("should derive totalQuestsCompleted from quest entries", () => {
+    const { entity, achievement, quest } = createPlayer();
+    quest.entries["q1"] = { state: "completed", progress: 1, baseline: 0 };
+    quest.entries["q2"] = { state: "active", progress: 0, baseline: 0 };
+    system.update([entity], 1 / 60);
+    expect(achievement.totalQuestsCompleted).toBe(1);
+  });
+
+  it("should clear pending fish after update", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordFishCaught();
+    system.update([entity], 1 / 60);
+    // Second update with no new fish
+    system.update([entity], 1 / 60);
+    expect(achievement.totalFishCaught).toBe(1);
   });
 });

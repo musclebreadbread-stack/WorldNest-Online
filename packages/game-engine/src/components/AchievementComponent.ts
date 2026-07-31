@@ -20,6 +20,12 @@ export class AchievementComponent extends Component {
   public totalQuestsCompleted: number;
   /** Lifetime coins earned (monotonically increasing, never decremented). */
   public totalCoinsEarned: number;
+  /**
+   * Last observed wallet.coins value. Used by AchievementSystem to detect
+   * coin increases from any source (selling, quest rewards, festival rewards,
+   * collection rewards) and add the delta to totalCoinsEarned.
+   */
+  public lastKnownCoins: number;
 
   constructor() {
     super("achievement");
@@ -29,5 +35,6 @@ export class AchievementComponent extends Component {
     this.totalFishCaught = 0;
     this.totalQuestsCompleted = 0;
     this.totalCoinsEarned = 0;
+    this.lastKnownCoins = 0;
   }
 }

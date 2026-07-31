@@ -29,7 +29,7 @@ export { QuestSystem } from "./QuestSystem";
 export type { StructureCounter } from "./QuestSystem";
 export { AnimationSystem } from "./AnimationSystem";
 export { FishingSystem } from "./FishingSystem";
-export type { BiomeAtTile, RngFn } from "./FishingSystem";
+export type { BiomeAtTile, FishCaughtListener, RngFn } from "./FishingSystem";
 export { CollectionSystem } from "./CollectionSystem";
 export { AchievementSystem } from "./AchievementSystem";
 export type { AchievementStructureCounter } from "./AchievementSystem";

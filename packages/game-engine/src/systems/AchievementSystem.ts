@@ -4,6 +4,7 @@ import { System } from "../ecs/System";
 import { AchievementComponent } from "../components/AchievementComponent";
 import { CollectionComponent } from "../components/CollectionComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
+import { QuestComponent } from "../components/QuestComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
 import { isCategoryComplete } from "../collection/collectionOps";
@@ -25,13 +26,28 @@ export type AchievementStructureCounter = (itemId: ItemId) => number;
  *
  * The system uses the same "polled progress" approach as QuestSystem: counters
  * are read from existing components each frame rather than relying on events.
+ *
+ * Lifetime counters are maintained as follows:
+ * - `totalCoinsEarned`: delta detection on wallet.coins each frame
+ * - `totalFishCaught`: incremented via `recordFishCaught()` listener
+ * - `totalQuestsCompleted`: polled from QuestComponent.entries
  */
 export class AchievementSystem extends System {
   private structureCount: AchievementStructureCounter;
+  /** Fish caught since last update, reported by FishingSystem. */
+  private pendingFishCaught = 0;
 
   constructor(structureCount: AchievementStructureCounter = () => 0) {
     super(["achievement", "inventory", "wallet", "collection", "quest"]);
     this.structureCount = structureCount;
+  }
+
+  /**
+   * Note that the player caught a fish. Injected into `FishingSystem` as a
+   * listener, matching the `QuestSystem.recordTalk` pattern.
+   */
+  recordFishCaught(): void {
+    this.pendingFishCaught++;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -40,6 +56,7 @@ export class AchievementSystem extends System {
       const inventory = entity.getComponent<InventoryComponent>("inventory")!;
       const wallet = entity.getComponent<WalletComponent>("wallet")!;
       const collection = entity.getComponent<CollectionComponent>("collection")!;
+      const quest = entity.getComponent<QuestComponent>("quest")!;
 
       // Pay out any pending reward first
       if (achievement.pendingReward !== null) {
@@ -48,10 +65,28 @@ export class AchievementSystem extends System {
         );
         if (def) {
           wallet.coins += def.rewardCoins;
-          achievement.totalCoinsEarned += def.rewardCoins;
         }
         achievement.pendingReward = null;
       }
+
+      // --- Accumulator maintenance ---
+
+      // totalCoinsEarned: detect wallet.coins increases from any source.
+      // If coins went up, that delta is earnings. If coins went down, that
+      // was a purchase (no change to totalCoinsEarned).
+      if (wallet.coins > achievement.lastKnownCoins) {
+        achievement.totalCoinsEarned += wallet.coins - achievement.lastKnownCoins;
+      }
+      achievement.lastKnownCoins = wallet.coins;
+
+      // totalFishCaught: apply pending fish from the listener
+      achievement.totalFishCaught += this.pendingFishCaught;
+
+      // totalQuestsCompleted: poll from quest entries (monotonic counter)
+      const completedCount = Object.values(quest.entries).filter(
+        (e) => e.state === "completed",
+      ).length;
+      achievement.totalQuestsCompleted = completedCount;
 
       // Build the polled source
       const source = this.buildSource(inventory, collection, wallet, achievement);
@@ -65,6 +100,10 @@ export class AchievementSystem extends System {
         }
       }
     }
+
+    // Cleared unconditionally: a catch nobody was there to hear is dropped
+    // rather than queued forever.
+    this.pendingFishCaught = 0;
   }
 
   private buildSource(

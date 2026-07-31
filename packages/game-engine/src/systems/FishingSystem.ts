@@ -25,6 +25,9 @@ export type BiomeAtTile = (tileX: number, tileY: number) => Biome;
 /** Returns a random number in [0, 1). */
 export type RngFn = () => number;
 
+/** Called when a fish is successfully caught. */
+export type FishCaughtListener = () => void;
+
 /**
  * FishingSystem processes the fishing state machine for entities.
  *
@@ -43,12 +46,19 @@ export class FishingSystem extends System {
   private tileQuery: TileQuery;
   private biomeAtTile: BiomeAtTile;
   private rng: RngFn;
+  private onFishCaught?: FishCaughtListener;
 
-  constructor(tileQuery: TileQuery, biomeAtTile: BiomeAtTile, rng?: RngFn) {
+  constructor(
+    tileQuery: TileQuery,
+    biomeAtTile: BiomeAtTile,
+    rng?: RngFn,
+    onFishCaught?: FishCaughtListener,
+  ) {
     super(["position", "interaction", "inventory", "stats", "fishing"]);
     this.tileQuery = tileQuery;
     this.biomeAtTile = biomeAtTile;
     this.rng = rng ?? Math.random;
+    this.onFishCaught = onFishCaught;
   }
 
   update(entities: Entity[], deltaTime: number): void {
@@ -132,6 +142,7 @@ export class FishingSystem extends System {
           addItem(inventory, catchItemId, 1);
           fishing.catchItemId = catchItemId;
           fishing.state = "caught";
+          this.onFishCaught?.();
         } else {
           // Inventory is full for this specific catch type
           fishing.state = "missed";

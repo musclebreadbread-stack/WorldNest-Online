@@ -57,6 +57,7 @@ function createHarness(
   targetTile: TileType = TileType.WATER,
   biome: Biome = Biome.GRASSLAND,
   rngValues: number[] = [0.5, 0.5],
+  onFishCaught?: () => void,
 ): Harness {
   const tileQuery = new FakeTileQuery([[TARGET_TILE_X, PLAYER_TILE, targetTile]]);
   let rngIndex = 0;
@@ -77,7 +78,7 @@ function createHarness(
   // Give the player a fishing rod
   addItem(inventory, "fishing_rod", 1);
 
-  const system = new FishingSystem(tileQuery, biomeAtTile, rng);
+  const system = new FishingSystem(tileQuery, biomeAtTile, rng, onFishCaught);
 
   return { entity, interaction, inventory, stats, fishing, tileQuery, system };
 }
@@ -401,5 +402,44 @@ describe("FishingSystem", () => {
     const expectedCommonCount =
       (harness.inventory.slots.length - 2) * ITEM_DEFINITIONS.fish_common.stackSize;
     expect(countItem(harness.inventory, "fish_common")).toBe(expectedCommonCount);
+  });
+
+  it("should call onFishCaught listener on successful catch", () => {
+    let fishCaughtCalls = 0;
+    const harness = createHarness(
+      TileType.WATER,
+      Biome.GRASSLAND,
+      [0.5, 0.0],
+      () => fishCaughtCalls++,
+    );
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    // Advance to biting
+    harness.system.update([harness.entity], 4);
+
+    // Reel in during the window
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    expect(fishCaughtCalls).toBe(1);
+  });
+
+  it("should not call onFishCaught listener on missed catch", () => {
+    let fishCaughtCalls = 0;
+    const harness = createHarness(
+      TileType.WATER,
+      Biome.GRASSLAND,
+      [0.5, 0.5],
+      () => fishCaughtCalls++,
+    );
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    // Try to reel in too early (still waiting)
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    expect(fishCaughtCalls).toBe(0);
   });
 });
