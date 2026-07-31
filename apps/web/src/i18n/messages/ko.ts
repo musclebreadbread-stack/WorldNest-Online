@@ -146,4 +146,18 @@ export const ko: LocaleMessages = {
   "item.wheat": "밀",
   "item.fence": "울타리",
   "item.chest": "상자",
+
+  "weather.clear": "맑음",
+  "weather.rain": "비",
+  "weather.snow": "눈",
+  "weather.fog": "안개",
+  "weather.storm": "폭풍",
+  "weather.rainbow": "무지개",
+  "weather.aurora": "오로라",
+  "weather.wind": "바람",
+
+  "season.spring": "봄",
+  "season.summer": "여름",
+  "season.autumn": "가을",
+  "season.winter": "겨울",
 };

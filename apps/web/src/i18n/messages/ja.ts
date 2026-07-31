@@ -145,4 +145,18 @@ export const ja: LocaleMessages = {
   "item.wheat": "小麦",
   "item.fence": "フェンス",
   "item.chest": "チェスト",
+
+  "weather.clear": "晴れ",
+  "weather.rain": "雨",
+  "weather.snow": "雪",
+  "weather.fog": "霧",
+  "weather.storm": "嵐",
+  "weather.rainbow": "虹",
+  "weather.aurora": "オーロラ",
+  "weather.wind": "風",
+
+  "season.spring": "春",
+  "season.summer": "夏",
+  "season.autumn": "秋",
+  "season.winter": "冬",
 };

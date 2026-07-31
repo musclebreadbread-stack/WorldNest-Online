@@ -2,6 +2,7 @@ import { activeNode, getNpcDefinition } from "@worldnest/game-engine";
 import type {
   DialogueComponent,
   Entity,
+  EnvironmentComponent,
   InventoryComponent,
   PositionComponent,
   QuestComponent,
@@ -13,6 +14,7 @@ import type {
 import {
   CLOCK_CHANGED_EVENT,
   DIALOGUE_CHANGED_EVENT,
+  ENVIRONMENT_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
   QUESTS_CHANGED_EVENT,
@@ -20,6 +22,7 @@ import {
   STATS_CHANGED_EVENT,
   WALLET_CHANGED_EVENT,
   type DialogueChangedEvent,
+  type EnvironmentChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type QuestsChangedEvent,
@@ -57,6 +60,8 @@ export class HudBridge {
   private lastQuestVersion = 0;
   /** Same rule as the dialogue version: an untouched shop publishes nothing. */
   private lastShopVersion = 0;
+  /** Same rule: environment published only when weather/season actually shifts. */
+  private lastEnvironmentVersion = 0;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -74,6 +79,7 @@ export class HudBridge {
     this.emitWallet();
     this.emitShop();
     this.emitQuests();
+    this.emitEnvironment();
   }
 
   private emitPosition(): void {
@@ -213,5 +219,24 @@ export class HudBridge {
       options: node?.options ?? [],
     };
     this.emitter.emit(DIALOGUE_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Publish the environment whenever the weather/season/biome actually changes.
+   */
+  private emitEnvironment(): void {
+    const env = this.clockEntity.getComponent<EnvironmentComponent>("environment");
+    if (!env || env.version === this.lastEnvironmentVersion) return;
+    if (env.season === null || env.weather === null || env.biome === null) return;
+
+    this.lastEnvironmentVersion = env.version;
+    const payload: EnvironmentChangedEvent = {
+      season: env.season,
+      weather: env.weather,
+      biome: env.biome,
+      temperature: env.temperature,
+      energyRegenMultiplier: env.energyRegenMultiplier,
+    };
+    this.emitter.emit(ENVIRONMENT_CHANGED_EVENT, payload);
   }
 }

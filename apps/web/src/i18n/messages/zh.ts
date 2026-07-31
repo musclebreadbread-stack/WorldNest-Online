@@ -143,4 +143,18 @@ export const zh: LocaleMessages = {
   "item.wheat": "小麦",
   "item.fence": "栅栏",
   "item.chest": "箱子",
+
+  "weather.clear": "晴朗",
+  "weather.rain": "下雨",
+  "weather.snow": "下雪",
+  "weather.fog": "雾",
+  "weather.storm": "暴风雨",
+  "weather.rainbow": "彩虹",
+  "weather.aurora": "极光",
+  "weather.wind": "大风",
+
+  "season.spring": "春天",
+  "season.summer": "夏天",
+  "season.autumn": "秋天",
+  "season.winter": "冬天",
 };

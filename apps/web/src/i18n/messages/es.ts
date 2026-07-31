@@ -147,4 +147,18 @@ export const es: LocaleMessages = {
   "item.wheat": "Trigo",
   "item.fence": "Valla",
   "item.chest": "Cofre",
+
+  "weather.clear": "Despejado",
+  "weather.rain": "Lluvia",
+  "weather.snow": "Nieve",
+  "weather.fog": "Niebla",
+  "weather.storm": "Tormenta",
+  "weather.rainbow": "Arcoíris",
+  "weather.aurora": "Aurora boreal",
+  "weather.wind": "Ventoso",
+
+  "season.spring": "Primavera",
+  "season.summer": "Verano",
+  "season.autumn": "Otoño",
+  "season.winter": "Invierno",
 };

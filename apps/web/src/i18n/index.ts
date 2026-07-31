@@ -1,4 +1,4 @@
-import type { DayPhase, NpcActivity } from "@worldnest/game-engine";
+import type { DayPhase, NpcActivity, Season, WeatherKind } from "@worldnest/game-engine";
 import type { ItemId } from "@worldnest/shared";
 import { ar } from "./messages/ar";
 import { de } from "./messages/de";
@@ -88,6 +88,13 @@ export const MESSAGES: Record<Locale, Partial<LocaleMessages>> = {
 export const DEFAULT_LOCALE: Locale = "en";
 
 /**
+ * The default locale presented to users who have not made a choice yet.
+ * Drives `resolveLocale` fallback and the initial UI language for unknown
+ * browsers. Settings UI lets users switch to any of the 12 locales.
+ */
+export const DEFAULT_USER_LOCALE: Locale = "ko";
+
+/**
  * Display-name key for every catalogue item.
  *
  * A `Record` rather than a `` `item.${id}` `` template so both directions are
@@ -128,6 +135,31 @@ export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
   rest: "npc.activity.rest",
 };
 
+/**
+ * Name key for each weather kind. The engine reports the weather as a
+ * `WeatherKind`; the translation of it lives here.
+ */
+export const WEATHER_KEYS: Record<WeatherKind, MessageKey> = {
+  clear: "weather.clear",
+  rain: "weather.rain",
+  snow: "weather.snow",
+  fog: "weather.fog",
+  storm: "weather.storm",
+  rainbow: "weather.rainbow",
+  aurora: "weather.aurora",
+  wind: "weather.wind",
+};
+
+/**
+ * Name key for each season.
+ */
+export const SEASON_KEYS: Record<Season, MessageKey> = {
+  0: "season.spring",
+  1: "season.summer",
+  2: "season.autumn",
+  3: "season.winter",
+};
+
 export type TranslateParams = Record<string, string | number>;
 
 /** Whether a string names a supported locale. */
@@ -150,15 +182,16 @@ export function isMessageKey(value: string): value is MessageKey {
 
 /**
  * Best supported locale for a browser language tag.
- * Matches the full tag first, then the primary subtag, so `ko-KR` → `ko` and
- * `pt-BR` → `pt`; anything unknown falls back to English.
+ * Matches the full tag first, then the primary subtag, so `ko-KR` -> `ko` and
+ * `pt-BR` -> `pt`; anything unknown falls back to Korean (the default user
+ * locale).
  */
 export function resolveLocale(navigatorLanguage: string): Locale {
   const tag = navigatorLanguage.trim().toLowerCase();
   if (isLocale(tag)) return tag;
 
   const primary = tag.split(/[-_]/)[0];
-  return isLocale(primary) ? primary : DEFAULT_LOCALE;
+  return isLocale(primary) ? primary : DEFAULT_USER_LOCALE;
 }
 
 /** Writing direction for a locale. */

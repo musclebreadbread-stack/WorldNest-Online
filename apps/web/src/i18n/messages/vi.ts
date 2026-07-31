@@ -144,4 +144,18 @@ export const vi: LocaleMessages = {
   "item.wheat": "Lúa mì",
   "item.fence": "Hàng rào",
   "item.chest": "Hòm",
+
+  "weather.clear": "Trời quang",
+  "weather.rain": "Mưa",
+  "weather.snow": "Tuyết",
+  "weather.fog": "Sương mù",
+  "weather.storm": "Bão",
+  "weather.rainbow": "Cầu vồng",
+  "weather.aurora": "Cực quang",
+  "weather.wind": "Gió",
+
+  "season.spring": "Xuân",
+  "season.summer": "Hạ",
+  "season.autumn": "Thu",
+  "season.winter": "Đông",
 };

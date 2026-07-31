@@ -152,4 +152,18 @@ export const en = {
   "item.wheat": "Wheat",
   "item.fence": "Fence",
   "item.chest": "Chest",
+
+  "weather.clear": "Clear",
+  "weather.rain": "Rain",
+  "weather.snow": "Snow",
+  "weather.fog": "Fog",
+  "weather.storm": "Storm",
+  "weather.rainbow": "Rainbow",
+  "weather.aurora": "Aurora",
+  "weather.wind": "Windy",
+
+  "season.spring": "Spring",
+  "season.summer": "Summer",
+  "season.autumn": "Autumn",
+  "season.winter": "Winter",
 } as const;

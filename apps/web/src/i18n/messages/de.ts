@@ -145,4 +145,18 @@ export const de: LocaleMessages = {
   "item.wheat": "Weizen",
   "item.fence": "Zaun",
   "item.chest": "Kiste",
+
+  "weather.clear": "Klar",
+  "weather.rain": "Regen",
+  "weather.snow": "Schnee",
+  "weather.fog": "Nebel",
+  "weather.storm": "Sturm",
+  "weather.rainbow": "Regenbogen",
+  "weather.aurora": "Polarlicht",
+  "weather.wind": "Windig",
+
+  "season.spring": "Frühling",
+  "season.summer": "Sommer",
+  "season.autumn": "Herbst",
+  "season.winter": "Winterzeit",
 };

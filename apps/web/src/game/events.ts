@@ -8,6 +8,9 @@ import type {
   DialogueOption,
   InventorySlot,
   QuestEntry,
+  Season,
+  WeatherKind,
+  Biome,
 } from "@worldnest/game-engine";
 
 export const PLAYERS_CHANGED_EVENT = "players-changed";
@@ -99,4 +102,18 @@ export interface DialogueChangedEvent {
   nameKey: string | null;
   textKey: string | null;
   options: DialogueOption[];
+}
+
+export const ENVIRONMENT_CHANGED_EVENT = "environment-changed";
+
+/**
+ * Current season, weather and biome, published whenever the environment
+ * component's version bumps. The HUD and weather overlay read this.
+ */
+export interface EnvironmentChangedEvent {
+  season: Season;
+  weather: WeatherKind;
+  biome: Biome;
+  temperature: number;
+  energyRegenMultiplier: number;
 }

@@ -146,4 +146,18 @@ export const fr: LocaleMessages = {
   "item.wheat": "Blé",
   "item.fence": "Clôture",
   "item.chest": "Coffre",
+
+  "weather.clear": "Dégagé",
+  "weather.rain": "Pluie",
+  "weather.snow": "Neige",
+  "weather.fog": "Brouillard",
+  "weather.storm": "Tempête",
+  "weather.rainbow": "Arc-en-ciel",
+  "weather.aurora": "Aurore",
+  "weather.wind": "Venteux",
+
+  "season.spring": "Printemps",
+  "season.summer": "Été",
+  "season.autumn": "Automne",
+  "season.winter": "Hiver",
 };

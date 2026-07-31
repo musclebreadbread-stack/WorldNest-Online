@@ -147,4 +147,18 @@ export const ar: LocaleMessages = {
   "item.wheat": "قمح",
   "item.fence": "سياج",
   "item.chest": "صندوق",
+
+  "weather.clear": "صافٍ",
+  "weather.rain": "مطر",
+  "weather.snow": "ثلج",
+  "weather.fog": "ضباب",
+  "weather.storm": "عاصفة",
+  "weather.rainbow": "قوس قزح",
+  "weather.aurora": "شفق قطبي",
+  "weather.wind": "رياح",
+
+  "season.spring": "ربيع",
+  "season.summer": "صيف",
+  "season.autumn": "خريف",
+  "season.winter": "شتاء",
 };

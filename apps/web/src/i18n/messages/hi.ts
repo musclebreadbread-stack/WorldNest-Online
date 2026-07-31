@@ -145,4 +145,18 @@ export const hi: LocaleMessages = {
   "item.wheat": "गेहूँ",
   "item.fence": "बाड़",
   "item.chest": "संदूक",
+
+  "weather.clear": "साफ़",
+  "weather.rain": "बारिश",
+  "weather.snow": "बर्फ",
+  "weather.fog": "कोहरा",
+  "weather.storm": "तूफ़ान",
+  "weather.rainbow": "इंद्रधनुष",
+  "weather.aurora": "ध्रुवीय ज्योति",
+  "weather.wind": "हवादार",
+
+  "season.spring": "वसंत",
+  "season.summer": "ग्रीष्म",
+  "season.autumn": "शरद",
+  "season.winter": "शीत",
 };

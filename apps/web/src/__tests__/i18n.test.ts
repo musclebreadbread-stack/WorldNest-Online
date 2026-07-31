@@ -233,10 +233,10 @@ describe("resolveLocale", () => {
     expect(resolveLocale("es_MX")).toBe("es");
   });
 
-  it("should fall back to English for anything unsupported", () => {
-    expect(resolveLocale("xx")).toBe("en");
-    expect(resolveLocale("")).toBe("en");
-    expect(resolveLocale("sv-SE")).toBe("en");
+  it("should fall back to Korean for anything unsupported", () => {
+    expect(resolveLocale("xx")).toBe("ko");
+    expect(resolveLocale("")).toBe("ko");
+    expect(resolveLocale("sv-SE")).toBe("ko");
   });
 
   it("should recognise supported locales only", () => {

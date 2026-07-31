@@ -143,4 +143,18 @@ export const th: LocaleMessages = {
   "item.wheat": "ข้าวสาลี",
   "item.fence": "รั้ว",
   "item.chest": "หีบ",
+
+  "weather.clear": "อากาศแจ่มใส",
+  "weather.rain": "ฝนตก",
+  "weather.snow": "หิมะตก",
+  "weather.fog": "หมอก",
+  "weather.storm": "พายุ",
+  "weather.rainbow": "รุ้ง",
+  "weather.aurora": "แสงเหนือ",
+  "weather.wind": "ลมแรง",
+
+  "season.spring": "ฤดูใบไม้ผลิ",
+  "season.summer": "ฤดูร้อน",
+  "season.autumn": "ฤดูใบไม้ร่วง",
+  "season.winter": "ฤดูหนาว",
 };

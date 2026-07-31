@@ -146,4 +146,18 @@ export const pt: LocaleMessages = {
   "item.wheat": "Trigo",
   "item.fence": "Cerca",
   "item.chest": "Baú",
+
+  "weather.clear": "Limpo",
+  "weather.rain": "Chuva",
+  "weather.snow": "Neve",
+  "weather.fog": "Nevoeiro",
+  "weather.storm": "Tempestade",
+  "weather.rainbow": "Arco-íris",
+  "weather.aurora": "Aurora boreal",
+  "weather.wind": "Ventoso",
+
+  "season.spring": "Primavera",
+  "season.summer": "Verão",
+  "season.autumn": "Outono",
+  "season.winter": "Inverno",
 };
