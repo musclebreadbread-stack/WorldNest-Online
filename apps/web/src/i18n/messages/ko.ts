@@ -212,4 +212,24 @@ export const ko: LocaleMessages = {
 
   "quest.donate_first.title": "첫 번째 기증",
   "quest.donate_first.description": "박물관의 마일로에게 아이템을 기증하세요.",
+
+  "achievement.title": "업적",
+  "achievement.unlocked": "업적 달성: {name}",
+  "achievement.first_harvest.title": "첫 수확",
+  "achievement.first_harvest.description": "밀을 처음으로 수확하세요.",
+  "achievement.first_fish.title": "첫 물고기",
+  "achievement.first_fish.description": "물고기를 처음으로 잡으세요.",
+  "achievement.collector_5.title": "열정적인 수집가",
+  "achievement.collector_5.description": "박물관에 아이템을 5개 기증하세요.",
+  "achievement.builder_10.title": "건축 달인",
+  "achievement.builder_10.description": "세계에 구조물을 10개 배치하세요.",
+  "achievement.quest_master.title": "퀘스트 달인",
+  "achievement.quest_master.description": "마을 퀘스트를 3개 완료하세요.",
+  "achievement.big_spender.title": "큰 수입가",
+  "achievement.big_spender.description": "모험을 통해 200 코인을 모으세요.",
+  "achievement.fish_master.title": "낚시 달인",
+  "achievement.fish_master.description":
+    "어떤 생물 군계에서든 물고기를 10마리 잡으세요.",
+  "achievement.full_gathering.title": "자연 전문가",
+  "achievement.full_gathering.description": "채집 컬렉션을 모두 완성하세요.",
 };

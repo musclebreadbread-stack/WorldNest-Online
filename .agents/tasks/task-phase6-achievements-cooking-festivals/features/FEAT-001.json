@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Achievement/Badge system - horizontal progression that rewards milestones. Follows the same pattern as the collection system: a definitions file, an ops file, a component, and a system. Achievements are triggered by polled state (item counts, donation counts, structure counts, quest completions, fish caught totals) and one-time events (first harvest, first fish). Each badge has an i18n title/description key and a coin reward. All 12 locales updated.",
+  "status": "in_progress",
+  "steps": [
+    "Create packages/game-engine/src/achievements/achievementDefinitions.ts with AchievementDefinition interface (id, titleKey, descriptionKey, rewardCoins, condition type union: {kind:'collect', itemId, count} | {kind:'donate', count} | {kind:'build', count} | {kind:'quest', count} | {kind:'fish', count} | {kind:'total_coins', amount}). Define 8-10 achievements: first_harvest, first_fish, collector_5 (donate 5), builder_10 (build 10), quest_master (complete 3 quests), big_spender (earn 200 coins total through quests/sales), fish_master (catch 10 fish), full_gathering (complete gathering collection category).",
+    "Create packages/game-engine/src/achievements/achievementOps.ts with pure functions: checkAchievement(state, definition, source) -> boolean, unlockAchievement(state, achievementId) -> boolean, getUnlockedCount(state) -> number. The source interface provides item counts, donation count, structure count, quest completion count, fish caught count, total coins earned.",
+    "Create packages/game-engine/src/achievements/index.ts re-exporting definitions and ops.",
+    "Create packages/game-engine/src/components/AchievementComponent.ts extending Component with type 'achievement'. Fields: unlocked Set<string>, pendingReward string|null, version number, totalFishCaught number, totalQuestsCompleted number.",
+    "Create packages/game-engine/src/systems/AchievementSystem.ts that polls achievement conditions each frame (like QuestSystem polls quest progress). On unlock: sets pendingReward for the wallet system to pay out, bumps version. Requires components: ['achievement', 'inventory', 'wallet', 'collection', 'quest'].",
+    "Register AchievementComponent in packages/game-engine/src/components/index.ts and AchievementSystem in packages/game-engine/src/systems/index.ts. Export from packages/game-engine/src/index.ts.",
+    "Add i18n keys for all achievements in apps/web/src/i18n/messages/en.ts (achievement.title, achievement.unlocked, achievement.{id}.title, achievement.{id}.description for each). Update all 11 other locale files with translated equivalents.",
+    "Create packages/game-engine/src/__tests__/achievements.test.ts with comprehensive tests: each achievement condition triggers correctly, double-unlock prevention, reward payout, system processes entities correctly, edge cases (zero progress, already unlocked).",
+    "Run pnpm format && pnpm lint && pnpm build && pnpm test to verify everything passes."
+  ],
+  "acceptance_criteria": [
+    "AchievementComponent, AchievementSystem, achievementDefinitions, and achievementOps exist and follow ECS patterns",
+    "8-10 achievement definitions with i18n keys that resolve in all 12 locales",
+    "Achievement unlock is idempotent (cannot unlock twice)",
+    "Each achievement condition is testable via the polled source interface",
+    "pnpm build passes with no TypeScript errors",
+    "pnpm test passes including new achievement tests and existing i18n parity test",
+    "All files under 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

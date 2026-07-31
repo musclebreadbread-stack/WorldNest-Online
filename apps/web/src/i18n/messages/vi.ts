@@ -210,4 +210,23 @@ export const vi: LocaleMessages = {
 
   "quest.donate_first.title": "Quyên góp đầu tiên",
   "quest.donate_first.description": "Quyên góp vật phẩm bất kỳ cho Milo tại bảo tàng.",
+
+  "achievement.title": "Thành tựu",
+  "achievement.unlocked": "Mở khóa thành tựu: {name}",
+  "achievement.first_harvest.title": "Thu hoạch đầu tiên",
+  "achievement.first_harvest.description": "Thu hoạch vụ lúa mì đầu tiên.",
+  "achievement.first_fish.title": "Cá đầu tiên",
+  "achievement.first_fish.description": "Bắt con cá đầu tiên của bạn.",
+  "achievement.collector_5.title": "Nhà sưu tầm nhiệt tình",
+  "achievement.collector_5.description": "Quyên góp 5 vật phẩm cho bảo tàng.",
+  "achievement.builder_10.title": "Bậc thầy xây dựng",
+  "achievement.builder_10.description": "Đặt 10 công trình trong thế giới.",
+  "achievement.quest_master.title": "Bậc thầy nhiệm vụ",
+  "achievement.quest_master.description": "Hoàn thành 3 nhiệm vụ cho ngôi làng.",
+  "achievement.big_spender.title": "Thu nhập lớn",
+  "achievement.big_spender.description": "Kiếm 200 xu qua các cuộc phiêu lưu.",
+  "achievement.fish_master.title": "Bậc thầy câu cá",
+  "achievement.fish_master.description": "Bắt 10 con cá từ bất kỳ vùng sinh thái nào.",
+  "achievement.full_gathering.title": "Chuyên gia thiên nhiên",
+  "achievement.full_gathering.description": "Hoàn thành toàn bộ bộ sưu tập thu thập.",
 };

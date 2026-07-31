@@ -213,4 +213,23 @@ export const ar: LocaleMessages = {
 
   "quest.donate_first.title": "أول تبرع",
   "quest.donate_first.description": "تبرع بأي عنصر لمايلو في المتحف.",
+
+  "achievement.title": "الإنجازات",
+  "achievement.unlocked": "تم فتح إنجاز: {name}",
+  "achievement.first_harvest.title": "أول حصاد",
+  "achievement.first_harvest.description": "احصد أول محصول قمح لك.",
+  "achievement.first_fish.title": "أول صيد",
+  "achievement.first_fish.description": "اصطد أول سمكة لك.",
+  "achievement.collector_5.title": "جامع متحمس",
+  "achievement.collector_5.description": "تبرع بخمسة عناصر للمتحف.",
+  "achievement.builder_10.title": "بنّاء ماهر",
+  "achievement.builder_10.description": "ضع 10 مبانٍ في العالم.",
+  "achievement.quest_master.title": "سيد المهام",
+  "achievement.quest_master.description": "أكمل 3 مهام للقرية.",
+  "achievement.big_spender.title": "كسب كبير",
+  "achievement.big_spender.description": "اكسب 200 عملة من خلال مغامراتك.",
+  "achievement.fish_master.title": "سيد الصيد",
+  "achievement.fish_master.description": "اصطد 10 أسماك من أي منطقة حيوية.",
+  "achievement.full_gathering.title": "خبير الطبيعة",
+  "achievement.full_gathering.description": "أكمل مجموعة الجمع بالكامل.",
 };

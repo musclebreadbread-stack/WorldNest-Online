@@ -209,4 +209,23 @@ export const th: LocaleMessages = {
 
   "quest.donate_first.title": "การบริจาคครั้งแรก",
   "quest.donate_first.description": "บริจาคสิ่งของใดก็ได้ให้ไมโลที่พิพิธภัณฑ์",
+
+  "achievement.title": "ความสำเร็จ",
+  "achievement.unlocked": "ปลดล็อกความสำเร็จ: {name}",
+  "achievement.first_harvest.title": "เก็บเกี่ยวครั้งแรก",
+  "achievement.first_harvest.description": "เก็บเกี่ยวข้าวสาลีครั้งแรกของคุณ",
+  "achievement.first_fish.title": "ตกปลาครั้งแรก",
+  "achievement.first_fish.description": "จับปลาตัวแรกของคุณ",
+  "achievement.collector_5.title": "นักสะสมตัวยง",
+  "achievement.collector_5.description": "บริจาคสิ่งของ 5 ชิ้นให้พิพิธภัณฑ์",
+  "achievement.builder_10.title": "สถาปนิกผู้เชี่ยวชาญ",
+  "achievement.builder_10.description": "วางสิ่งก่อสร้าง 10 ชิ้นในโลก",
+  "achievement.quest_master.title": "ผู้เชี่ยวชาญภารกิจ",
+  "achievement.quest_master.description": "ทำภารกิจ 3 อย่างให้หมู่บ้าน",
+  "achievement.big_spender.title": "รายได้มหาศาล",
+  "achievement.big_spender.description": "หาเหรียญ 200 เหรียญจากการผจญภัย",
+  "achievement.fish_master.title": "ราชาแห่งการตกปลา",
+  "achievement.fish_master.description": "จับปลา 10 ตัวจากไบโอมใดก็ได้",
+  "achievement.full_gathering.title": "ผู้เชี่ยวชาญธรรมชาติ",
+  "achievement.full_gathering.description": "ทำคอลเลกชันเก็บเกี่ยวให้ครบ",
 };

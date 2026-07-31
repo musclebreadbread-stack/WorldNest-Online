@@ -213,4 +213,24 @@ export const de: LocaleMessages = {
   "quest.donate_first.title": "Erste Spende",
   "quest.donate_first.description":
     "Spende einen beliebigen Gegenstand an Milo im Museum.",
+
+  "achievement.title": "Erfolge",
+  "achievement.unlocked": "Erfolg freigeschaltet: {name}",
+  "achievement.first_harvest.title": "Erste Ernte",
+  "achievement.first_harvest.description": "Ernte deinen ersten Weizen.",
+  "achievement.first_fish.title": "Erster Fang",
+  "achievement.first_fish.description": "Fange deinen ersten Fisch.",
+  "achievement.collector_5.title": "Eifriger Sammler",
+  "achievement.collector_5.description": "Spende 5 Gegenstände an das Museum.",
+  "achievement.builder_10.title": "Meisterbauer",
+  "achievement.builder_10.description": "Platziere 10 Bauwerke in der Welt.",
+  "achievement.quest_master.title": "Auftragsmeister",
+  "achievement.quest_master.description": "Schließe 3 Aufträge für das Dorf ab.",
+  "achievement.big_spender.title": "Großverdiener",
+  "achievement.big_spender.description": "Verdiene 200 Münzen durch deine Abenteuer.",
+  "achievement.fish_master.title": "Angelmeister",
+  "achievement.fish_master.description": "Fange 10 Fische aus einem beliebigen Biom.",
+  "achievement.full_gathering.title": "Naturexperte",
+  "achievement.full_gathering.description":
+    "Vervollständige die gesamte Sammelkollektion.",
 };

@@ -218,4 +218,23 @@ export const en = {
 
   "quest.donate_first.title": "First Donation",
   "quest.donate_first.description": "Donate any item to Milo at the museum.",
+
+  "achievement.title": "Achievements",
+  "achievement.unlocked": "Achievement unlocked: {name}",
+  "achievement.first_harvest.title": "First Harvest",
+  "achievement.first_harvest.description": "Harvest your first wheat crop.",
+  "achievement.first_fish.title": "First Catch",
+  "achievement.first_fish.description": "Catch your first fish.",
+  "achievement.collector_5.title": "Keen Collector",
+  "achievement.collector_5.description": "Donate 5 items to the museum.",
+  "achievement.builder_10.title": "Master Builder",
+  "achievement.builder_10.description": "Place 10 structures in the world.",
+  "achievement.quest_master.title": "Quest Master",
+  "achievement.quest_master.description": "Complete 3 quests for the village.",
+  "achievement.big_spender.title": "Big Earner",
+  "achievement.big_spender.description": "Earn 200 coins through your adventures.",
+  "achievement.fish_master.title": "Fish Master",
+  "achievement.fish_master.description": "Catch 10 fish from any biome.",
+  "achievement.full_gathering.title": "Nature Expert",
+  "achievement.full_gathering.description": "Complete the entire gathering collection.",
 } as const;

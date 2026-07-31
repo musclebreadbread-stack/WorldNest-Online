@@ -211,4 +211,23 @@ export const ja: LocaleMessages = {
 
   "quest.donate_first.title": "初めての寄贈",
   "quest.donate_first.description": "博物館のマイロにアイテムを寄贈しましょう。",
+
+  "achievement.title": "実績",
+  "achievement.unlocked": "実績解除: {name}",
+  "achievement.first_harvest.title": "初めての収穫",
+  "achievement.first_harvest.description": "初めて小麦を収穫しましょう。",
+  "achievement.first_fish.title": "初めての釣果",
+  "achievement.first_fish.description": "初めて魚を釣りましょう。",
+  "achievement.collector_5.title": "熱心な収集家",
+  "achievement.collector_5.description": "博物館にアイテムを5つ寄贈しましょう。",
+  "achievement.builder_10.title": "建築名人",
+  "achievement.builder_10.description": "世界に建造物を10個配置しましょう。",
+  "achievement.quest_master.title": "クエスト名人",
+  "achievement.quest_master.description": "村のクエストを3つ完了しましょう。",
+  "achievement.big_spender.title": "大稼ぎ",
+  "achievement.big_spender.description": "冒険で200コインを稼ぎましょう。",
+  "achievement.fish_master.title": "釣りの達人",
+  "achievement.fish_master.description": "どのバイオームからでも魚を10匹釣りましょう。",
+  "achievement.full_gathering.title": "自然の専門家",
+  "achievement.full_gathering.description": "採集コレクションを全て完成させましょう。",
 };

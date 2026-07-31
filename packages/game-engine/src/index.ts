@@ -34,6 +34,7 @@ export {
   DEFAULT_FRAME_COUNT,
   FishingComponent,
   CollectionComponent,
+  AchievementComponent,
 } from "./components";
 export type {
   KeyState,
@@ -86,6 +87,24 @@ export {
   totalDonated,
 } from "./collection";
 export type { CollectionCategory, CollectionState } from "./collection";
+
+// Achievements (pure; badge system with polled conditions)
+export {
+  ACHIEVEMENT_DEFINITIONS,
+  ACHIEVEMENT_IDS,
+  checkAchievement,
+  checkCondition,
+  getAchievement,
+  getUnlockedCount,
+  getPendingAchievements,
+  unlockAchievement,
+} from "./achievements";
+export type {
+  AchievementCondition,
+  AchievementDefinition,
+  AchievementSource,
+  AchievementState,
+} from "./achievements";
 
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
@@ -176,6 +195,7 @@ export {
   AnimationSystem,
   FishingSystem,
   CollectionSystem,
+  AchievementSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -193,6 +213,7 @@ export type {
   ClockSnapshotGetter,
   BiomeAtTile,
   RngFn,
+  AchievementStructureCounter,
 } from "./systems";
 
 // World Generation

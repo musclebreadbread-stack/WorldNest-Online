@@ -31,3 +31,5 @@ export { AnimationSystem } from "./AnimationSystem";
 export { FishingSystem } from "./FishingSystem";
 export type { BiomeAtTile, RngFn } from "./FishingSystem";
 export { CollectionSystem } from "./CollectionSystem";
+export { AchievementSystem } from "./AchievementSystem";
+export type { AchievementStructureCounter } from "./AchievementSystem";

@@ -211,4 +211,23 @@ export const hi: LocaleMessages = {
 
   "quest.donate_first.title": "पहला दान",
   "quest.donate_first.description": "संग्रहालय में माइलो को कोई भी वस्तु दान करें।",
+
+  "achievement.title": "उपलब्धियाँ",
+  "achievement.unlocked": "उपलब्धि अनलॉक: {name}",
+  "achievement.first_harvest.title": "पहली फसल",
+  "achievement.first_harvest.description": "अपनी पहली गेहूँ की फसल काटें।",
+  "achievement.first_fish.title": "पहली मछली",
+  "achievement.first_fish.description": "अपनी पहली मछली पकड़ें।",
+  "achievement.collector_5.title": "उत्साही संग्रहकर्ता",
+  "achievement.collector_5.description": "संग्रहालय को 5 वस्तुएँ दान करें।",
+  "achievement.builder_10.title": "निर्माण विशेषज्ञ",
+  "achievement.builder_10.description": "दुनिया में 10 ढाँचे रखें।",
+  "achievement.quest_master.title": "कार्य विशेषज्ञ",
+  "achievement.quest_master.description": "गाँव के लिए 3 कार्य पूरे करें।",
+  "achievement.big_spender.title": "बड़ी कमाई",
+  "achievement.big_spender.description": "अपने रोमांच से 200 सिक्के कमाएँ।",
+  "achievement.fish_master.title": "मछली पकड़ने का विशेषज्ञ",
+  "achievement.fish_master.description": "किसी भी बायोम से 10 मछलियाँ पकड़ें।",
+  "achievement.full_gathering.title": "प्रकृति विशेषज्ञ",
+  "achievement.full_gathering.description": "पूरा संग्रह संकलन पूरा करें।",
 };

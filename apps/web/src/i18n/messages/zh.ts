@@ -209,4 +209,23 @@ export const zh: LocaleMessages = {
 
   "quest.donate_first.title": "第一次捐赠",
   "quest.donate_first.description": "向博物馆的米洛捐赠任意物品。",
+
+  "achievement.title": "成就",
+  "achievement.unlocked": "成就解锁：{name}",
+  "achievement.first_harvest.title": "初次收获",
+  "achievement.first_harvest.description": "收获你的第一株小麦。",
+  "achievement.first_fish.title": "初次钓鱼",
+  "achievement.first_fish.description": "钓到你的第一条鱼。",
+  "achievement.collector_5.title": "热心收藏家",
+  "achievement.collector_5.description": "向博物馆捐赠5件物品。",
+  "achievement.builder_10.title": "建造大师",
+  "achievement.builder_10.description": "在世界中放置10个建筑。",
+  "achievement.quest_master.title": "任务大师",
+  "achievement.quest_master.description": "为村庄完成3个任务。",
+  "achievement.big_spender.title": "大赚一笔",
+  "achievement.big_spender.description": "通过冒险赚取200金币。",
+  "achievement.fish_master.title": "钓鱼达人",
+  "achievement.fish_master.description": "在任何生物群落钓到10条鱼。",
+  "achievement.full_gathering.title": "自然专家",
+  "achievement.full_gathering.description": "完成整个采集收藏。",
 };

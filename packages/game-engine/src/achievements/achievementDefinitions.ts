@@ -1,0 +1,104 @@
+/**
+ * Achievement definitions for the horizontal progression badge system.
+ *
+ * Each achievement has a condition (polled or threshold-based) and a coin reward.
+ * Conditions are a tagged union so the system can evaluate them generically.
+ * Every player-visible string is an i18n key (decision D8).
+ */
+
+export type AchievementCondition =
+  | { kind: "collect"; itemId: string; count: number }
+  | { kind: "donate"; count: number }
+  | { kind: "build"; count: number }
+  | { kind: "quest"; count: number }
+  | { kind: "fish"; count: number }
+  | { kind: "total_coins"; amount: number };
+
+export interface AchievementDefinition {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  rewardCoins: number;
+  condition: AchievementCondition;
+}
+
+/**
+ * Source interface for achievement condition evaluation.
+ * Provides polled counters from the entity state.
+ */
+export interface AchievementSource {
+  itemCount: (itemId: string) => number;
+  donationCount: number;
+  structureCount: number;
+  questCompletionCount: number;
+  fishCaughtCount: number;
+  totalCoinsEarned: number;
+  gatheringCategoryComplete: boolean;
+}
+
+export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
+  {
+    id: "first_harvest",
+    titleKey: "achievement.first_harvest.title",
+    descriptionKey: "achievement.first_harvest.description",
+    rewardCoins: 10,
+    condition: { kind: "collect", itemId: "wheat", count: 1 },
+  },
+  {
+    id: "first_fish",
+    titleKey: "achievement.first_fish.title",
+    descriptionKey: "achievement.first_fish.description",
+    rewardCoins: 10,
+    condition: { kind: "fish", count: 1 },
+  },
+  {
+    id: "collector_5",
+    titleKey: "achievement.collector_5.title",
+    descriptionKey: "achievement.collector_5.description",
+    rewardCoins: 25,
+    condition: { kind: "donate", count: 5 },
+  },
+  {
+    id: "builder_10",
+    titleKey: "achievement.builder_10.title",
+    descriptionKey: "achievement.builder_10.description",
+    rewardCoins: 30,
+    condition: { kind: "build", count: 10 },
+  },
+  {
+    id: "quest_master",
+    titleKey: "achievement.quest_master.title",
+    descriptionKey: "achievement.quest_master.description",
+    rewardCoins: 50,
+    condition: { kind: "quest", count: 3 },
+  },
+  {
+    id: "big_spender",
+    titleKey: "achievement.big_spender.title",
+    descriptionKey: "achievement.big_spender.description",
+    rewardCoins: 40,
+    condition: { kind: "total_coins", amount: 200 },
+  },
+  {
+    id: "fish_master",
+    titleKey: "achievement.fish_master.title",
+    descriptionKey: "achievement.fish_master.description",
+    rewardCoins: 35,
+    condition: { kind: "fish", count: 10 },
+  },
+  {
+    id: "full_gathering",
+    titleKey: "achievement.full_gathering.title",
+    descriptionKey: "achievement.full_gathering.description",
+    rewardCoins: 60,
+    condition: { kind: "donate", count: 5 },
+  },
+];
+
+/** All achievement ids in definition order. */
+export const ACHIEVEMENT_IDS = ACHIEVEMENT_DEFINITIONS.map((a) => a.id);
+
+/** Look up an achievement definition by id. */
+export function getAchievement(id: string): AchievementDefinition | undefined {
+  return ACHIEVEMENT_DEFINITIONS.find((a) => a.id === id);
+}

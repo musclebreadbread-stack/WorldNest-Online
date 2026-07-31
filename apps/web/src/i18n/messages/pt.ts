@@ -212,4 +212,23 @@ export const pt: LocaleMessages = {
 
   "quest.donate_first.title": "Primeira doação",
   "quest.donate_first.description": "Doe qualquer item para Milo no museu.",
+
+  "achievement.title": "Conquistas",
+  "achievement.unlocked": "Conquista desbloqueada: {name}",
+  "achievement.first_harvest.title": "Primeira colheita",
+  "achievement.first_harvest.description": "Colha seu primeiro trigo.",
+  "achievement.first_fish.title": "Primeira pesca",
+  "achievement.first_fish.description": "Pegue seu primeiro peixe.",
+  "achievement.collector_5.title": "Colecionador dedicado",
+  "achievement.collector_5.description": "Doe 5 itens para o museu.",
+  "achievement.builder_10.title": "Mestre construtor",
+  "achievement.builder_10.description": "Coloque 10 estruturas no mundo.",
+  "achievement.quest_master.title": "Mestre de missões",
+  "achievement.quest_master.description": "Complete 3 missões para a vila.",
+  "achievement.big_spender.title": "Grande ganho",
+  "achievement.big_spender.description": "Ganhe 200 moedas com suas aventuras.",
+  "achievement.fish_master.title": "Mestre pescador",
+  "achievement.fish_master.description": "Pegue 10 peixes de qualquer bioma.",
+  "achievement.full_gathering.title": "Especialista em natureza",
+  "achievement.full_gathering.description": "Complete toda a coleção de coleta.",
 };

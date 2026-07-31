@@ -213,4 +213,25 @@ export const fr: LocaleMessages = {
 
   "quest.donate_first.title": "Première donation",
   "quest.donate_first.description": "Donnez un objet à Milo au musée.",
+
+  "achievement.title": "Succès",
+  "achievement.unlocked": "Succès débloqué : {name}",
+  "achievement.first_harvest.title": "Première récolte",
+  "achievement.first_harvest.description": "Récoltez votre premier blé.",
+  "achievement.first_fish.title": "Première prise",
+  "achievement.first_fish.description": "Attrapez votre premier poisson.",
+  "achievement.collector_5.title": "Collectionneur passionné",
+  "achievement.collector_5.description": "Donnez 5 objets au musée.",
+  "achievement.builder_10.title": "Maître bâtisseur",
+  "achievement.builder_10.description": "Placez 10 structures dans le monde.",
+  "achievement.quest_master.title": "Maître des quêtes",
+  "achievement.quest_master.description": "Terminez 3 quêtes pour le village.",
+  "achievement.big_spender.title": "Gros gains",
+  "achievement.big_spender.description": "Gagnez 200 pièces grâce à vos aventures.",
+  "achievement.fish_master.title": "Maître pêcheur",
+  "achievement.fish_master.description":
+    "Attrapez 10 poissons dans n'importe quel biome.",
+  "achievement.full_gathering.title": "Expert de la nature",
+  "achievement.full_gathering.description":
+    "Complétez toute la collection de cueillette.",
 };
