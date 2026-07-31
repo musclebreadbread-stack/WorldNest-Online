@@ -35,6 +35,16 @@ export class ShopComponent extends Component {
    * is what the refusal sound is played from.
    */
   public refusals: number;
+  /**
+   * The last trade `ShopSystem` actually made, or `null` before the first one.
+   *
+   * Written on an **accepted** trade only, together with `tradeSeq`, so whoever
+   * reports trades to the server has something to send and never reports one the
+   * shop turned down.
+   */
+  public lastTrade: ShopTrade | null;
+  /** Bumped alongside `lastTrade`, so a repeat of the same trade still reads as new. */
+  public tradeSeq: number;
   /** Bumped by every accepted change, so the HUD can publish without diffing. */
   public version: number;
 
@@ -45,6 +55,8 @@ export class ShopComponent extends Component {
     this.closeRequested = false;
     this.requestedTrade = null;
     this.refusals = 0;
+    this.lastTrade = null;
+    this.tradeSeq = 0;
     this.version = 0;
   }
 }

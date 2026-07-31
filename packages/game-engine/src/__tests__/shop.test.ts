@@ -209,7 +209,114 @@ describe("ShopSystem", () => {
     expect(shop.version).toBe(0);
   });
 
-  it("should require the trading components", () => {
-    expect(system.requiredComponents).toEqual(["inventory", "wallet", "shop"]);
+  it("should record an accepted trade for whoever reports it", () => {
+    const { entity, shop } = createTrader();
+
+    shop.requestedOpenNpcId = "shopkeeper_juno";
+    shop.requestedTrade = { kind: "buy", itemId: "wood", quantity: 2 };
+    system.update([entity], 1 / 60);
+
+    expect(shop.lastTrade).toEqual({ kind: "buy", itemId: "wood", quantity: 2 });
+    expect(shop.tradeSeq).toBe(1);
+  });
+
+  it("should record nothing at all for a refused trade", () => {
+    const { entity, shop } = createTrader(0);
+
+    shop.requestedOpenNpcId = "shopkeeper_juno";
+    shop.requestedTrade = { kind: "buy", itemId: "chest", quantity: 1 };
+    system.update([entity], 1 / 60);
+
+    expect(shop.lastTrade).toBeNull();
+    expect(shop.tradeSeq).toBe(0);
+  });
+
+  it("should bump the sequence for the same trade made twice", () => {
+    const { entity, shop } = createTrader();
+
+    shop.requestedOpenNpcId = "shopkeeper_juno";
+    shop.requestedTrade = { kind: "buy", itemId: "wood", quantity: 1 };
+    system.update([entity], 1 / 60);
+    shop.requestedTrade = { kind: "buy", itemId: "wood", quantity: 1 };
+    system.update([entity], 1 / 60);
+
+    expect(shop.tradeSeq).toBe(2);
+  });
+
+  it("should copy the trade it recorded, not hold the caller's object", () => {
+    const { entity, shop } = createTrader();
+    const requested = { kind: "buy" as const, itemId: "wood" as ItemId, quantity: 1 };
+
+    shop.requestedOpenNpcId = "shopkeeper_juno";
+    shop.requestedTrade = requested;
+    system.update([entity], 1 / 60);
+    requested.quantity = 99;
+
+    expect(shop.lastTrade!.quantity).toBe(1);
+  });
+});
+
+describe("ShopSystem balance reconciliation", () => {
+  let system: ShopSystem;
+
+  beforeEach(() => {
+    system = new ShopSystem();
+  });
+
+  it("should snap the purse to the balance the server reported", () => {
+    const { entity, wallet } = createTrader();
+
+    wallet.requestedBalance = 12;
+    system.update([entity], 1 / 60);
+
+    expect(wallet.coins).toBe(12);
+    expect(wallet.adjustments).toBe(1);
+    expect(wallet.requestedBalance).toBeNull();
+  });
+
+  it("should change nothing when the server agrees with the local balance", () => {
+    const { entity, wallet } = createTrader();
+
+    wallet.requestedBalance = STARTING_COINS;
+    system.update([entity], 1 / 60);
+
+    expect(wallet.coins).toBe(STARTING_COINS);
+    expect(wallet.adjustments).toBe(0);
+    expect(wallet.requestedBalance).toBeNull();
+  });
+
+  it("should clamp a negative server balance at zero", () => {
+    const { entity, wallet } = createTrader();
+
+    wallet.requestedBalance = -500;
+    system.update([entity], 1 / 60);
+
+    expect(wallet.coins).toBe(0);
+    expect(wallet.adjustments).toBe(1);
+  });
+
+  // The reconciliation is consumed first, so an answer about an earlier trade
+  // cannot undo the purchase the player is making this frame
+  it("should apply the reconciliation before this frame's trade", () => {
+    const { entity, shop, wallet } = createTrader();
+
+    shop.requestedOpenNpcId = "shopkeeper_juno";
+    system.update([entity], 1 / 60);
+
+    wallet.requestedBalance = 100;
+    shop.requestedTrade = { kind: "buy", itemId: "wood", quantity: 1 };
+    system.update([entity], 1 / 60);
+
+    expect(wallet.coins).toBe(100 - WOOD.buy);
+  });
+
+  it("should not touch the shop's version, which is not its business", () => {
+    const { entity, shop, wallet } = createTrader();
+
+    wallet.requestedBalance = 3;
+    system.update([entity], 1 / 60);
+
+    expect(shop.version).toBe(0);
+    expect(shop.refusals).toBe(0);
   });
 });

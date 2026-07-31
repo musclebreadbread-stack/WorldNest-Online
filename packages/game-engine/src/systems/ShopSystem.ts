@@ -13,6 +13,11 @@ import { applyTrade } from "../shop/shopOps";
  * outright unless a shop is actually open, so a stale request that arrives after
  * the panel has gone cannot spend anything.
  *
+ * It is also the only applier of `WalletComponent.requestedBalance`, the seam the
+ * server reconciles through (decision D4). The reconciliation is consumed
+ * **before** this frame's trade, so a balance the server sent about an earlier
+ * trade cannot undo a purchase the player has just made.
+ *
  * Registered immediately after `NpcSystem`, because opening a shop is something a
  * conversation asks for and the conversation is resolved one system earlier.
  */
@@ -24,6 +29,12 @@ export class ShopSystem extends System {
   update(entities: Entity[], _deltaTime: number): void {
     for (const entity of entities) {
       const shop = entity.getComponent<ShopComponent>("shop")!;
+      const wallet = entity.getComponent<WalletComponent>("wallet")!;
+
+      if (wallet.requestedBalance !== null) {
+        this.reconcile(wallet, wallet.requestedBalance);
+        wallet.requestedBalance = null;
+      }
 
       if (shop.requestedOpenNpcId !== null) {
         this.open(shop, shop.requestedOpenNpcId);
@@ -53,11 +64,29 @@ export class ShopSystem extends System {
     const wallet = entity.getComponent<WalletComponent>("wallet")!;
 
     if (shop.openNpcId !== null && applyTrade(inventory, wallet, trade)) {
+      shop.lastTrade = { ...trade };
+      shop.tradeSeq++;
       shop.version++;
       return;
     }
 
     shop.refusals++;
+  }
+
+  /**
+   * Snap the purse to the balance the server reported.
+   *
+   * The server wins, because it is the only party that cannot be edited by the
+   * player. A negative number clamps at zero — a purse cannot owe coins, and a
+   * malformed answer must not be able to make one. A balance that already agrees
+   * is not a disagreement: nothing is counted, and nothing is published.
+   */
+  private reconcile(wallet: WalletComponent, balance: number): void {
+    const settled = Math.max(0, Math.floor(balance));
+    if (settled === wallet.coins) return;
+
+    wallet.coins = settled;
+    wallet.adjustments++;
   }
 
   /** Open a shop. Re-opening the same one is not a change worth publishing. */
