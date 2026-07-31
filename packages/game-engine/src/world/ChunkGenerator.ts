@@ -1,7 +1,8 @@
 import { createNoise2D, type NoiseFunction2D } from "simplex-noise";
 import { CHUNK_SIZE } from "@worldnest/shared";
 import { BIOME_DEFINITIONS, classifyBiome, type Biome } from "./Biomes";
-import { TileType } from "./Tilemap";
+import { TILE_PROPERTIES, TileType } from "./Tilemap";
+import { WorldLayer } from "./WorldLayer";
 
 /**
  * Seeded pseudo-random number generator (mulberry32).
@@ -93,7 +94,11 @@ export class ChunkGenerator {
    * Generate a CHUNK_SIZE x CHUNK_SIZE grid of tile types for the given chunk coordinates.
    * The generation is fully deterministic based on the seed and chunk position.
    */
-  generateChunk(chunkX: number, chunkY: number): number[][] {
+  generateChunk(
+    chunkX: number,
+    chunkY: number,
+    layer: WorldLayer = WorldLayer.SURFACE,
+  ): number[][] {
     const tiles: number[][] = [];
 
     for (let y = 0; y < CHUNK_SIZE; y++) {
@@ -101,7 +106,11 @@ export class ChunkGenerator {
       for (let x = 0; x < CHUNK_SIZE; x++) {
         const worldX = chunkX * CHUNK_SIZE + x;
         const worldY = chunkY * CHUNK_SIZE + y;
-        row.push(this.getTileType(worldX, worldY));
+        row.push(
+          layer === WorldLayer.SURFACE
+            ? this.getSurfaceTile(worldX, worldY)
+            : this.getUndergroundTile(worldX, worldY),
+        );
       }
       tiles.push(row);
     }
@@ -182,7 +191,40 @@ export class ChunkGenerator {
     return TileType.CAVE_FLOOR;
   }
 
-  private getTileType(worldX: number, worldY: number): TileType {
+  /** A surface cave mouth: walkable cave floor beside walkable open land. */
+  private isSurfaceEntrance(worldX: number, worldY: number): boolean {
+    const detail = this.sampleClimate(worldX, worldY).detail;
+    if (this.getCaveTile(worldX, worldY, detail) !== TileType.CAVE_FLOOR) {
+      return false;
+    }
+
+    return NEIGHBOUR_OFFSETS.some(({ dx, dy }) => {
+      const neighbourX = worldX + dx;
+      const neighbourY = worldY + dy;
+      if (this.isCaveRegion(neighbourX, neighbourY)) return false;
+      return TILE_PROPERTIES[this.getSurfaceTile(neighbourX, neighbourY)].walkable;
+    });
+  }
+
+  /** Underground cave channel, with a guaranteed landing around every mouth. */
+  private getUndergroundTile(worldX: number, worldY: number): TileType {
+    if (
+      this.isSurfaceEntrance(worldX, worldY) ||
+      NEIGHBOUR_OFFSETS.some(({ dx, dy }) =>
+        this.isSurfaceEntrance(worldX + dx, worldY + dy),
+      )
+    ) {
+      return TileType.CAVE_FLOOR;
+    }
+
+    const cave = this.caveNoise(worldX * CAVE_SCALE, worldY * CAVE_SCALE);
+    if (cave <= CAVE_THRESHOLD) return TileType.CAVE_WALL;
+
+    const detail = this.sampleClimate(worldX, worldY).detail;
+    return detail > ORE_DETAIL ? TileType.ORE : TileType.CAVE_FLOOR;
+  }
+
+  private getSurfaceTile(worldX: number, worldY: number): TileType {
     const climate = this.sampleClimate(worldX, worldY);
     const { elevation, moisture, detail, temperature } = climate;
 

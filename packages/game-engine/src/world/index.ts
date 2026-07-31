@@ -1,4 +1,5 @@
 export { ChunkGenerator } from "./ChunkGenerator";
+export { WorldLayer, getLayerTileKey, parseLayerTileKey } from "./WorldLayer";
 export { WorldManager } from "./WorldManager";
 export type {
   ChunkData,

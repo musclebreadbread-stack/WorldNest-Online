@@ -2,7 +2,8 @@ import { CHUNK_SIZE, TILE_SIZE, getChunkKey } from "@worldnest/shared";
 import type { Biome } from "./Biomes";
 import { ChunkGenerator } from "./ChunkGenerator";
 import { TILE_PROPERTIES, TileType } from "./Tilemap";
-import { getTileKey, type TileQuery } from "./TileQuery";
+import { getLayerTileKey, WorldLayer } from "./WorldLayer";
+import type { TileQuery } from "./TileQuery";
 
 export interface ChunkData {
   chunkX: number;
@@ -13,6 +14,7 @@ export interface ChunkData {
 export type ChunkLoadCallback = (chunk: ChunkData) => void;
 export type ChunkUnloadCallback = (chunkX: number, chunkY: number) => void;
 export type TileChangeCallback = (
+  layer: WorldLayer,
   tileX: number,
   tileY: number,
   tileType: TileType,
@@ -30,6 +32,7 @@ export class WorldManager implements TileQuery {
   private generator: ChunkGenerator;
   private loadedChunks: Map<string, ChunkData> = new Map();
   private tileOverrides: Map<string, TileType> = new Map();
+  private activeLayer = WorldLayer.SURFACE;
   private currentCenterX: number = Number.MAX_SAFE_INTEGER;
   private currentCenterY: number = Number.MAX_SAFE_INTEGER;
   private loadRadius: number;
@@ -58,6 +61,23 @@ export class WorldManager implements TileQuery {
 
   getLoadedChunks(): Map<string, ChunkData> {
     return this.loadedChunks;
+  }
+
+  getLayer(): WorldLayer {
+    return this.activeLayer;
+  }
+
+  /** Switch terrain layers and force the next stream update to reload all chunks. */
+  setLayer(layer: WorldLayer): void {
+    if (layer === this.activeLayer) return;
+
+    for (const chunk of this.loadedChunks.values()) {
+      this.onChunkUnload?.(chunk.chunkX, chunk.chunkY);
+    }
+    this.loadedChunks.clear();
+    this.activeLayer = layer;
+    this.currentCenterX = Number.MAX_SAFE_INTEGER;
+    this.currentCenterY = Number.MAX_SAFE_INTEGER;
   }
 
   getChunk(chunkX: number, chunkY: number): ChunkData | undefined {
@@ -100,7 +120,7 @@ export class WorldManager implements TileQuery {
         const [cxStr, cyStr] = key.split(",");
         const cx = parseInt(cxStr, 10);
         const cy = parseInt(cyStr, 10);
-        const tiles = this.generator.generateChunk(cx, cy);
+        const tiles = this.generator.generateChunk(cx, cy, this.activeLayer);
         const chunkData: ChunkData = { chunkX: cx, chunkY: cy, tiles };
         this.loadedChunks.set(key, chunkData);
         this.onChunkLoad?.(chunkData);
@@ -114,7 +134,9 @@ export class WorldManager implements TileQuery {
    * generated on demand — generation is deterministic, so this needs no cache.
    */
   getTileAt(tileX: number, tileY: number): TileType {
-    const override = this.tileOverrides.get(getTileKey(tileX, tileY));
+    const override = this.tileOverrides.get(
+      getLayerTileKey(this.activeLayer, tileX, tileY),
+    );
     if (override !== undefined) {
       return override;
     }
@@ -125,7 +147,9 @@ export class WorldManager implements TileQuery {
     const localY = tileY - chunkY * CHUNK_SIZE;
 
     const chunk = this.loadedChunks.get(getChunkKey(chunkX, chunkY));
-    const tiles = chunk ? chunk.tiles : this.generator.generateChunk(chunkX, chunkY);
+    const tiles = chunk
+      ? chunk.tiles
+      : this.generator.generateChunk(chunkX, chunkY, this.activeLayer);
 
     return tiles[localY][localX] as TileType;
   }
@@ -155,8 +179,8 @@ export class WorldManager implements TileQuery {
    * Record a player-caused terrain change. Notifies the tile change listener.
    */
   setTileOverride(tileX: number, tileY: number, tileType: TileType): void {
-    this.tileOverrides.set(getTileKey(tileX, tileY), tileType);
-    this.onTileChanged?.(tileX, tileY, tileType);
+    this.tileOverrides.set(getLayerTileKey(this.activeLayer, tileX, tileY), tileType);
+    this.onTileChanged?.(this.activeLayer, tileX, tileY, tileType);
   }
 
   /**

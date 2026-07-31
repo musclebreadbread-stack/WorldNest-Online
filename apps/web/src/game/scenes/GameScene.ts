@@ -120,7 +120,7 @@ export class GameScene extends Phaser.Scene {
     );
     // Harvested/modified tiles repaint in place instead of rebuilding the chunk,
     // and the same diff is what gets persisted
-    this.worldManager.setTileChangeCallback((tileX, tileY, tileType) => {
+    this.worldManager.setTileChangeCallback((_layer, tileX, tileY, tileType) => {
       this.chunkRenderer.redrawTile(tileX, tileY, tileType);
       this.persistence?.saveTile(tileX, tileY, tileType);
     });

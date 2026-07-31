@@ -154,6 +154,9 @@ export type {
 export {
   ChunkGenerator,
   WorldManager,
+  WorldLayer,
+  getLayerTileKey,
+  parseLayerTileKey,
   TileType,
   TILE_PROPERTIES,
   TILE_HARVEST_YIELD,

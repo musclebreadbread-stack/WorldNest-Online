@@ -4,6 +4,7 @@ import { ChunkGenerator } from "../world/ChunkGenerator";
 import { WorldManager } from "../world/WorldManager";
 import { TileType, TILE_PROPERTIES } from "../world/Tilemap";
 import { getTileKey, parseTileKey } from "../world/TileQuery";
+import { getLayerTileKey, parseLayerTileKey, WorldLayer } from "../world/WorldLayer";
 
 /** Find a tile of the given type near the origin, for walkability assertions. */
 function findTile(manager: WorldManager, type: TileType): { x: number; y: number } {
@@ -19,6 +20,21 @@ describe("getTileKey / parseTileKey", () => {
   it("should round-trip tile coordinates including negatives", () => {
     expect(getTileKey(3, -7)).toBe("3,-7");
     expect(parseTileKey("3,-7")).toEqual({ tileX: 3, tileY: -7 });
+  });
+
+  it("should keep surface keys byte-compatible and prefix underground keys", () => {
+    expect(getLayerTileKey(WorldLayer.SURFACE, 3, -7)).toBe(getTileKey(3, -7));
+    expect(getLayerTileKey(WorldLayer.UNDERGROUND, 3, -7)).toBe("1:3,-7");
+    expect(parseLayerTileKey("3,-7")).toEqual({
+      layer: WorldLayer.SURFACE,
+      tileX: 3,
+      tileY: -7,
+    });
+    expect(parseLayerTileKey("1:3,-7")).toEqual({
+      layer: WorldLayer.UNDERGROUND,
+      tileX: 3,
+      tileY: -7,
+    });
   });
 });
 
@@ -66,10 +82,48 @@ describe("WorldManager tile query", () => {
     expect(manager.getTileOverrides().get(getTileKey(2, 3))).toBe(override);
   });
 
+  it("should keep overrides isolated between layers", () => {
+    const manager = new WorldManager(WORLD_SEED, 1);
+    const surface = manager.getTileAt(2, 3);
+    const surfaceOverride =
+      surface === TileType.WATER ? TileType.STONE : TileType.WATER;
+
+    manager.setTileOverride(2, 3, surfaceOverride);
+    manager.setLayer(WorldLayer.UNDERGROUND);
+    const underground = manager.getTileAt(2, 3);
+    expect(underground).not.toBe(surfaceOverride);
+
+    manager.setTileOverride(2, 3, TileType.CAVE_FLOOR);
+    manager.setLayer(WorldLayer.SURFACE);
+    expect(manager.getTileAt(2, 3)).toBe(surfaceOverride);
+    expect(
+      manager.getTileOverrides().get(getLayerTileKey(WorldLayer.UNDERGROUND, 2, 3)),
+    ).toBe(TileType.CAVE_FLOOR);
+  });
+
+  it("should unload every chunk and reload after switching layers", () => {
+    const manager = new WorldManager(WORLD_SEED, 1);
+    const unloaded: string[] = [];
+    manager.setCallbacks(
+      () => undefined,
+      (chunkX, chunkY) => unloaded.push(`${chunkX},${chunkY}`),
+    );
+    manager.updateLoadedChunks(0, 0);
+    expect(manager.getLoadedChunks().size).toBe(9);
+
+    manager.setLayer(WorldLayer.UNDERGROUND);
+    expect(unloaded).toHaveLength(9);
+    expect(manager.getLoadedChunks().size).toBe(0);
+
+    manager.updateLoadedChunks(0, 0);
+    expect(manager.getLoadedChunks().size).toBe(9);
+    expect(manager.getLayer()).toBe(WorldLayer.UNDERGROUND);
+  });
+
   it("should notify the tile change listener on override", () => {
     const manager = new WorldManager(WORLD_SEED, 1);
     const changes: Array<[number, number, TileType]> = [];
-    manager.setTileChangeCallback((tileX, tileY, tileType) =>
+    manager.setTileChangeCallback((_layer, tileX, tileY, tileType) =>
       changes.push([tileX, tileY, tileType]),
     );
 
