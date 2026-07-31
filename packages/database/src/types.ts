@@ -1,8 +1,8 @@
 /**
  * Database type definitions for Supabase.
  * Aligned with the actual SQL migrations (001_initial_schema.sql,
- * 002_gameplay_schema.sql, 003_progression_schema.sql and
- * 004_authority_schema.sql).
+ * 002_gameplay_schema.sql, 003_progression_schema.sql,
+ * 004_authority_schema.sql and 005_world_layer_schema.sql).
  * These will be auto-generated from the Supabase schema in production.
  *
  * `Relationships` is required by postgrest-js for a table to be recognised as
@@ -71,6 +71,7 @@ export interface Database {
           quest_id: string;
           state: string;
           progress: number;
+          baseline: number;
           updated_at: string;
         };
         // `state` follows the same rule as `player_state.coins`: readable, and
@@ -82,12 +83,14 @@ export interface Database {
           player_id: string;
           quest_id: string;
           progress?: number;
+          baseline?: number;
           updated_at?: string;
         };
         Update: {
           player_id?: string;
           quest_id?: string;
           progress?: number;
+          baseline?: number;
           updated_at?: string;
         };
         Relationships: [];
@@ -116,6 +119,7 @@ export interface Database {
       world_modifications: {
         Row: {
           world_id: string;
+          layer: number;
           tile_x: number;
           tile_y: number;
           tile_type: number;
@@ -124,6 +128,7 @@ export interface Database {
         };
         Insert: {
           world_id: string;
+          layer?: number;
           tile_x: number;
           tile_y: number;
           tile_type: number;
@@ -132,6 +137,7 @@ export interface Database {
         };
         Update: {
           world_id?: string;
+          layer?: number;
           tile_x?: number;
           tile_y?: number;
           tile_type?: number;

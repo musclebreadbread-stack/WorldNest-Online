@@ -15,6 +15,7 @@ export function toPersistedQuests(quest: QuestComponent): PersistedQuest[] {
     questId,
     state: entry.state,
     progress: entry.progress,
+    baseline: 0,
   }));
 }
 

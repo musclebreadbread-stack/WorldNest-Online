@@ -124,7 +124,7 @@ export class GameScene extends Phaser.Scene {
     this.worldManager.setTileChangeCallback((layer, tileX, tileY, tileType) => {
       if (!isActiveLayerChange(this.worldManager.getLayer(), layer)) return;
       this.chunkRenderer.redrawTile(tileX, tileY, tileType);
-      this.persistence?.saveTile(tileX, tileY, tileType);
+      this.persistence?.saveTile(layer, tileX, tileY, tileType);
     });
 
     // Prime the ECS once so chunks load and the render pass creates sprites

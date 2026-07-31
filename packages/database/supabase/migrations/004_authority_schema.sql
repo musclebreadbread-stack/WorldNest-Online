@@ -179,6 +179,23 @@ grant insert (player_id, quest_id, progress, updated_at)
 grant update (progress, updated_at)
   on public.player_quests to authenticated;
 
+-- Migration 005 adds the client-owned build-objective baseline. Keep this file
+-- re-runnable after that upgrade: the broad revoke above also removes column
+-- grants added by later migrations, so restore the baseline grant when present.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'player_quests'
+      and column_name = 'baseline'
+  ) then
+    grant insert (baseline) on public.player_quests to authenticated;
+    grant update (baseline) on public.player_quests to authenticated;
+  end if;
+end;
+$$;
+
 -- ---------------------------------------------------------------------------
 -- The authoritative operations
 -- ---------------------------------------------------------------------------

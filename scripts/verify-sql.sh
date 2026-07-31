@@ -31,6 +31,7 @@ SQL_SRC="$REPO_ROOT/packages/database/supabase"
 EXPECTED_POLICIES_AFTER_002=23
 EXPECTED_POLICIES_AFTER_003=27
 EXPECTED_POLICIES_AFTER_004=30
+EXPECTED_POLICIES_AFTER_005=30
 POLICY_COUNT="select count(*) from pg_policies where schemaname = 'public'"
 
 # The seeded test accounts, and the predicate that finds exactly them - the
@@ -202,6 +203,52 @@ expect "player_quests state default" \
      where table_schema = 'public' and table_name = 'player_quests'
        and column_name = 'state';")" "'active'::text"
 
+# Seed one terrain edit before 005 to prove the new default preserves every
+# existing modification as a surface-layer row.
+psql_run -c "insert into public.world_modifications
+    (world_id, tile_x, tile_y, tile_type)
+  select id, 17, 23, 1 from public.worlds where name = 'Default World';" >/dev/null
+
+# 005 adds layer-aware terrain keys and the quest baseline. It is deliberately
+# applied twice, then 004 is applied again: this proves both migrations remain
+# safe when a maintainer re-runs authority after the schema extension.
+echo "== applying 005 and compatibility re-run =="
+apply "005" /sql/migrations/005_world_layer_schema.sql
+apply "005 (re-run)" /sql/migrations/005_world_layer_schema.sql
+apply "004 (after 005)" /sql/migrations/004_authority_schema.sql
+
+echo "== asserting 005 and 004 -> 005 -> 004 compatibility =="
+expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_005"
+expect "world_modifications primary key" \
+  "$(query "select string_agg(kcu.column_name, ',' order by kcu.ordinal_position)
+     from information_schema.table_constraints tc
+     join information_schema.key_column_usage kcu
+       on kcu.constraint_schema = tc.constraint_schema
+      and kcu.constraint_name = tc.constraint_name
+     where tc.table_schema = 'public'
+       and tc.table_name = 'world_modifications'
+       and tc.constraint_type = 'PRIMARY KEY';")" \
+  "world_id,layer,tile_x,tile_y"
+expect "pre-005 terrain defaults to surface" \
+  "$(query "select layer from public.world_modifications
+     where tile_x = 17 and tile_y = 23;")" "0"
+
+psql_run -c "insert into public.world_modifications
+    (world_id, layer, tile_x, tile_y, tile_type)
+  select id, 1, 17, 23, 9 from public.worlds where name = 'Default World';" >/dev/null
+expect "same coordinates coexist on two layers" \
+  "$(query "select string_agg(layer || ':' || tile_type, ',' order by layer)
+     from public.world_modifications where tile_x = 17 and tile_y = 23;")" \
+  "0:1,1:9"
+expect "player_quests baseline exists" \
+  "$(query "select count(*) from information_schema.columns
+     where table_schema = 'public' and table_name = 'player_quests'
+       and column_name = 'baseline' and is_nullable = 'NO';")" "1"
+expect "player_quests baseline default" \
+  "$(query "select column_default from information_schema.columns
+     where table_schema = 'public' and table_name = 'player_quests'
+       and column_name = 'baseline';")" "0"
+
 # The whole point of 002: inserting into auth.users must provision the two
 # public rows a session needs, taking the username from the GoTrue metadata.
 echo "== asserting the provisioning trigger =="
@@ -335,17 +382,21 @@ expect_denied "player_quests insert naming state" "$TESTER2" \
   "insert into public.player_quests (player_id, quest_id, progress, state)
    values ('$TESTER2', 'collect_wood', 0, 'completed');"
 expect_allowed "player_quests insert without state" "$TESTER2" \
-  "insert into public.player_quests (player_id, quest_id, progress, updated_at)
-   values ('$TESTER2', 'collect_wood', 0, now());"
-expect "quest default state" \
-  "$(query "select state from public.player_quests
-     where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "active"
+  "insert into public.player_quests
+     (player_id, quest_id, progress, baseline, updated_at)
+   values ('$TESTER2', 'collect_wood', 0, 4, now());"
+expect "quest default state and baseline write" \
+  "$(query "select state || ':' || baseline from public.player_quests
+     where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "active:4"
 expect_denied "player_quests state update" "$TESTER2" \
   "update public.player_quests set state = 'completed'
    where player_id = '$TESTER2' and quest_id = 'collect_wood';"
-expect_allowed "player_quests progress update" "$TESTER2" \
-  "update public.player_quests set progress = 2, updated_at = now()
+expect_allowed "player_quests progress and baseline update" "$TESTER2" \
+  "update public.player_quests set progress = 2, baseline = 6, updated_at = now()
    where player_id = '$TESTER2' and quest_id = 'collect_wood';"
+expect "quest baseline update landed" \
+  "$(query "select progress || ':' || baseline from public.player_quests
+     where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "2:6"
 
 # The ledger is the audit trail, so nothing but the functions may write it.
 expect_denied "coin_ledger insert" "$TESTER2" \

@@ -18,6 +18,7 @@ import type {
   QuestComponent,
   StructureComponent,
   TileType,
+  WorldLayer,
 } from "@worldnest/game-engine";
 import { getChunkKey } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
@@ -89,9 +90,10 @@ export class SessionPersistence {
   }
 
   /** Persist a tile the player just changed. */
-  saveTile(tileX: number, tileY: number, tileType: TileType): void {
+  saveTile(layer: WorldLayer, tileX: number, tileY: number, tileType: TileType): void {
     this.write(() =>
       saveWorldModification(this.worldId, {
+        layer,
         tileX,
         tileY,
         tileType,

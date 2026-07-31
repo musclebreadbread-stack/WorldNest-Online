@@ -7,6 +7,7 @@ export type Crop = Tables<"crops">;
 
 /** A tile the player base has changed, in the shape the engine overlay wants. */
 export interface WorldModificationSave {
+  layer: number;
   tileX: number;
   tileY: number;
   tileType: number;
@@ -43,20 +44,24 @@ export async function loadWorldModifications(
   return { data: data ?? [], error: toError(error) };
 }
 
-/** Upsert one changed tile; the primary key is (world_id, tile_x, tile_y). */
+/** Upsert one changed tile; the primary key includes its world layer. */
 export async function saveWorldModification(
   worldId: string,
   modification: WorldModificationSave,
 ): Promise<DbResult<null>> {
   const client = createSupabaseClient();
-  const { error } = await client.from("world_modifications").upsert({
-    world_id: worldId,
-    tile_x: modification.tileX,
-    tile_y: modification.tileY,
-    tile_type: modification.tileType,
-    modified_by: modification.modifiedBy,
-    updated_at: new Date().toISOString(),
-  });
+  const { error } = await client.from("world_modifications").upsert(
+    {
+      world_id: worldId,
+      layer: modification.layer,
+      tile_x: modification.tileX,
+      tile_y: modification.tileY,
+      tile_type: modification.tileType,
+      modified_by: modification.modifiedBy,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "world_id,layer,tile_x,tile_y" },
+  );
 
   return { data: null, error: toError(error) };
 }

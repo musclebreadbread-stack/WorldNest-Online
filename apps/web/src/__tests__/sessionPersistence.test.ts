@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QuestComponent } from "@worldnest/game-engine";
+import { QuestComponent, TileType, WorldLayer } from "@worldnest/game-engine";
 import type { InventoryComponent, WalletComponent } from "@worldnest/game-engine";
 import {
   createGameWorld,
@@ -27,7 +27,8 @@ vi.mock("@worldnest/database", () => {
   };
 });
 
-const { savePlayerState, saveQuests } = await import("@worldnest/database");
+const { savePlayerState, saveQuests, saveWorldModification } =
+  await import("@worldnest/database");
 
 const BOOTSTRAP: GameBootstrap = {
   playerId: "user-1",
@@ -51,12 +52,37 @@ describe("SessionPersistence", () => {
   beforeEach(() => {
     vi.mocked(savePlayerState).mockClear();
     vi.mocked(saveQuests).mockClear();
+    vi.mocked(saveWorldModification).mockClear();
   });
 
   it("should not persist anything without a world id", () => {
     const bootstrap = { ...BOOTSTRAP, worldId: null };
 
     expect(createSessionPersistence(bootstrap, createGameWorld(bootstrap))).toBeNull();
+  });
+
+  it("should preserve the terrain layer in an immediate tile write", () => {
+    const { persistence } = startSession();
+
+    persistence.saveTile(WorldLayer.UNDERGROUND, 17, 23, TileType.CAVE_FLOOR);
+
+    expect(saveWorldModification).toHaveBeenCalledWith("world-1", {
+      layer: WorldLayer.UNDERGROUND,
+      tileX: 17,
+      tileY: 23,
+      tileType: TileType.CAVE_FLOOR,
+      modifiedBy: "user-1",
+    });
+  });
+
+  it("should not persist the player's current layer", () => {
+    const { persistence, context } = startSession();
+
+    context.worldManager.setLayer(WorldLayer.UNDERGROUND);
+    persistence.flush();
+
+    const [, payload] = vi.mocked(savePlayerState).mock.calls[0]!;
+    expect(payload).not.toHaveProperty("layer");
   });
 
   it("should never send the coin balance with the player row", () => {
@@ -80,7 +106,7 @@ describe("SessionPersistence", () => {
     persistence.flush();
 
     expect(saveQuests).toHaveBeenCalledWith("user-1", [
-      { questId: "collect_wood", state: "active", progress: 3 },
+      { questId: "collect_wood", state: "active", progress: 3, baseline: 0 },
     ]);
   });
 

@@ -195,8 +195,13 @@ describe("quest snapshots", () => {
 
   it("should drop a quest id the catalogue no longer knows", () => {
     const parsed = parsePersistedQuests([
-      { questId: "collect_wood", state: "active", progress: 2 },
-      { questId: "slay_the_dragon", state: "active", progress: 99 },
+      { questId: "collect_wood", state: "active", progress: 2, baseline: 0 },
+      {
+        questId: "slay_the_dragon",
+        state: "active",
+        progress: 99,
+        baseline: 0,
+      },
     ]);
 
     expect(parsed).toEqual({ collect_wood: { state: "active", progress: 2 } });
@@ -205,7 +210,7 @@ describe("quest snapshots", () => {
   it("should drop a row whose state or progress is not usable", () => {
     expect(
       parsePersistedQuests([
-        { questId: "collect_wood", state: "abandoned", progress: 1 },
+        { questId: "collect_wood", state: "abandoned", progress: 1, baseline: 0 },
       ]),
     ).toBeNull();
     expect(

@@ -7,8 +7,8 @@ import {
   loadWorldModifications,
 } from "@worldnest/database";
 import type { PersistedInventory } from "@worldnest/database";
-import { getTileKey } from "@worldnest/game-engine";
-import type { QuestEntry, TileType } from "@worldnest/game-engine";
+import { getLayerTileKey } from "@worldnest/game-engine";
+import type { QuestEntry, TileType, WorldLayer } from "@worldnest/game-engine";
 import { isItemId } from "@worldnest/shared";
 import { parsePersistedInventory } from "../lib/inventorySnapshot";
 import { parsePersistedQuests } from "../lib/questSnapshot";
@@ -73,7 +73,7 @@ export async function loadSession(
       quests: parsePersistedQuests(quests.data),
       savedWorld: {
         tileOverrides: modifications.data.map<[string, TileType]>((row) => [
-          getTileKey(row.tile_x, row.tile_y),
+          getLayerTileKey(row.layer as WorldLayer, row.tile_x, row.tile_y),
           row.tile_type as TileType,
         ]),
         structures: structures.data.filter(isSavedItem).map(toSavedStructure),

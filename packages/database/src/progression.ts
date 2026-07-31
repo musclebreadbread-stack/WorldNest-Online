@@ -14,6 +14,8 @@ export interface PersistedQuest {
   /** Read-only from the client's side; see `saveQuest`. */
   state: string;
   progress: number;
+  /** Structure count captured when a build objective is accepted. */
+  baseline: number;
 }
 
 /**
@@ -35,6 +37,7 @@ export async function loadQuests(
       questId: row.quest_id,
       state: row.state,
       progress: row.progress,
+      baseline: row.baseline,
     })),
     error: error ? new Error(error.message) : null,
   };
@@ -61,6 +64,7 @@ export async function saveQuest(
       player_id: playerId,
       quest_id: quest.questId,
       progress: quest.progress,
+      baseline: quest.baseline,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "player_id,quest_id" },
