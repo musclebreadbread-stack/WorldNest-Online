@@ -109,6 +109,10 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   flower: "item.flower",
   wheat_seed: "item.wheat_seed",
   wheat: "item.wheat",
+  carrot_seed: "item.carrot_seed",
+  carrot: "item.carrot",
+  melon_seed: "item.melon_seed",
+  melon: "item.melon",
   fence: "item.fence",
   chest: "item.chest",
 };

@@ -1,4 +1,6 @@
 import type { ItemId } from "@worldnest/shared";
+import type { Biome } from "./Biomes";
+import type { Season } from "./Seasons";
 
 /**
  * What a seed grows into. Keyed by the seed item so both planting and the
@@ -14,6 +16,10 @@ export interface CropDefinition {
   minutesPerStage: number;
   /** Texture key prefix; the renderer appends `_<stage>`. */
   textureKey: string;
+  /** Biomes where this crop can be sown. Empty means any biome (wheat). */
+  biomes?: readonly Biome[];
+  /** Seasons in which this crop can be sown. Empty means any season. */
+  seasons?: readonly Season[];
 }
 
 /**
@@ -27,6 +33,24 @@ export const CROP_DEFINITIONS: Partial<Record<ItemId, CropDefinition>> = {
     stageCount: 4,
     minutesPerStage: 30,
     textureKey: "crop_wheat",
+  },
+  carrot_seed: {
+    produceItemId: "carrot",
+    produceQuantity: 2,
+    stageCount: 4,
+    minutesPerStage: 40,
+    textureKey: "crop_carrot",
+    biomes: [0, 1, 2], // Tundra, Taiga, Grassland (cool)
+    seasons: [0, 2, 3], // Spring, Autumn, Winter (not summer)
+  },
+  melon_seed: {
+    produceItemId: "melon",
+    produceQuantity: 2,
+    stageCount: 4,
+    minutesPerStage: 50,
+    textureKey: "crop_melon",
+    biomes: [3, 4, 5], // Forest, Savanna, Desert (hot)
+    seasons: [0, 1, 2], // Spring, Summer, Autumn (not winter)
   },
 };
 

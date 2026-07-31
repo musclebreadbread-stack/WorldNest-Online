@@ -144,6 +144,10 @@ export const ko: LocaleMessages = {
   "item.flower": "꽃",
   "item.wheat_seed": "밀 씨앗",
   "item.wheat": "밀",
+  "item.carrot_seed": "당근 씨앗",
+  "item.carrot": "당근",
+  "item.melon_seed": "수박 씨앗",
+  "item.melon": "수박",
   "item.fence": "울타리",
   "item.chest": "상자",
 

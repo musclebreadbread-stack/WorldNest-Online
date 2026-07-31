@@ -142,6 +142,10 @@ export const vi: LocaleMessages = {
   "item.flower": "Hoa",
   "item.wheat_seed": "Hạt lúa mì",
   "item.wheat": "Lúa mì",
+  "item.carrot_seed": "Hạt cà rốt",
+  "item.carrot": "Cà rốt",
+  "item.melon_seed": "Hạt dưa hấu",
+  "item.melon": "Dưa hấu",
   "item.fence": "Hàng rào",
   "item.chest": "Hòm",
 

@@ -141,6 +141,10 @@ export const th: LocaleMessages = {
   "item.flower": "ดอกไม้",
   "item.wheat_seed": "เมล็ดข้าวสาลี",
   "item.wheat": "ข้าวสาลี",
+  "item.carrot_seed": "เมล็ดแครอท",
+  "item.carrot": "แครอท",
+  "item.melon_seed": "เมล็ดแตงโม",
+  "item.melon": "แตงโม",
   "item.fence": "รั้ว",
   "item.chest": "หีบ",
 

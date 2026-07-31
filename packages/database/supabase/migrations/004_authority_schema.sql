@@ -44,6 +44,10 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('ore', 30, 14),
   ('wheat_seed', 10, 3),
   ('wheat', 20, 9),
+  ('carrot_seed', 12, 4),
+  ('carrot', 24, 11),
+  ('melon_seed', 14, 5),
+  ('melon', 28, 13),
   ('fence', 20, 6),
   ('chest', 60, 20)
 on conflict (item_id) do update

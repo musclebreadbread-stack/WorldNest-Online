@@ -143,6 +143,10 @@ export const hi: LocaleMessages = {
   "item.flower": "फूल",
   "item.wheat_seed": "गेहूँ का बीज",
   "item.wheat": "गेहूँ",
+  "item.carrot_seed": "गाजर का बीज",
+  "item.carrot": "गाजर",
+  "item.melon_seed": "तरबूज का बीज",
+  "item.melon": "तरबूज",
   "item.fence": "बाड़",
   "item.chest": "संदूक",
 

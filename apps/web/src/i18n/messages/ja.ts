@@ -143,6 +143,10 @@ export const ja: LocaleMessages = {
   "item.flower": "花",
   "item.wheat_seed": "小麦の種",
   "item.wheat": "小麦",
+  "item.carrot_seed": "にんじんの種",
+  "item.carrot": "にんじん",
+  "item.melon_seed": "スイカの種",
+  "item.melon": "スイカ",
   "item.fence": "フェンス",
   "item.chest": "チェスト",
 

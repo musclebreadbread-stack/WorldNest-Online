@@ -16,6 +16,10 @@ const EXPECTED_IDS: ItemId[] = [
   "flower",
   "wheat_seed",
   "wheat",
+  "carrot_seed",
+  "carrot",
+  "melon_seed",
+  "melon",
   "fence",
   "chest",
 ];

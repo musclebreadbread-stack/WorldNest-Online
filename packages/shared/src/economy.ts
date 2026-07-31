@@ -48,6 +48,12 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   // is profitable — but only by a fixed amount per seed, never compounding.
   wheat_seed: { buy: 10, sell: 3 },
   wheat: { buy: 20, sell: 9 },
+  // Cool-climate crop: carrots grow in tundra, taiga and grassland
+  carrot_seed: { buy: 12, sell: 4 },
+  carrot: { buy: 24, sell: 11 },
+  // Hot-climate crop: melons grow in desert, savanna and forest
+  melon_seed: { buy: 14, sell: 5 },
+  melon: { buy: 28, sell: 13 },
   // Crafted goods the player cannot make yet, which is why they are worth buying
   fence: { buy: 20, sell: 6 },
   chest: { buy: 60, sell: 20 },

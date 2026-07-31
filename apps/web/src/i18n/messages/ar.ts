@@ -145,6 +145,10 @@ export const ar: LocaleMessages = {
   "item.flower": "زهرة",
   "item.wheat_seed": "بذور قمح",
   "item.wheat": "قمح",
+  "item.carrot_seed": "بذور جزر",
+  "item.carrot": "جزر",
+  "item.melon_seed": "بذور بطيخ",
+  "item.melon": "بطيخ",
   "item.fence": "سياج",
   "item.chest": "صندوق",
 

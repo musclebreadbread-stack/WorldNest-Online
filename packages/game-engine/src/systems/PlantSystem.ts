@@ -9,7 +9,9 @@ import { InteractionComponent } from "../components/InteractionComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { getSelectedItem, removeItem } from "../inventory/inventoryOps";
 import { getFacedTile } from "../interaction/facing";
+import type { Biome } from "../world/Biomes";
 import { CROP_DEFINITIONS } from "../world/Crops";
+import type { Season } from "../world/Seasons";
 import { TileType } from "../world/Tilemap";
 import { getTileKey, type TileQuery } from "../world/TileQuery";
 import type { SetTileOverride } from "./HarvestSystem";
@@ -43,6 +45,8 @@ export class PlantSystem extends System implements CropSource {
   private addEntity: AddEntity;
   private removeEntity: RemoveEntityById;
   private getNowMinutes: MinuteGetter;
+  private getBiome: () => Biome;
+  private getSeason: () => Season;
   private crops: Map<string, Entity> = new Map();
 
   constructor(
@@ -51,6 +55,8 @@ export class PlantSystem extends System implements CropSource {
     addEntity: AddEntity,
     removeEntity: RemoveEntityById,
     getNowMinutes: MinuteGetter = () => 0,
+    getBiome: () => Biome = () => 2 as Biome, // GRASSLAND default
+    getSeason: () => Season = () => 0 as Season, // SPRING default
   ) {
     super(["position", "interaction", "inventory"]);
     this.tileQuery = tileQuery;
@@ -58,6 +64,8 @@ export class PlantSystem extends System implements CropSource {
     this.addEntity = addEntity;
     this.removeEntity = removeEntity;
     this.getNowMinutes = getNowMinutes;
+    this.getBiome = getBiome;
+    this.getSeason = getSeason;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -149,6 +157,16 @@ export class PlantSystem extends System implements CropSource {
     }
 
     if (tileType !== TileType.FARMLAND) return false;
+
+    // Check biome/season constraints (decision D18)
+    if (definition.biomes && !definition.biomes.includes(this.getBiome())) {
+      interaction.refusals = (interaction.refusals ?? 0) + 1;
+      return true; // Consumed the request, but refused
+    }
+    if (definition.seasons && !definition.seasons.includes(this.getSeason())) {
+      interaction.refusals = (interaction.refusals ?? 0) + 1;
+      return true; // Consumed the request, but refused
+    }
 
     return this.sow(inventory, selected.itemId, tileX, tileY);
   }

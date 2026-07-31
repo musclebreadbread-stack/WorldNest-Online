@@ -141,6 +141,10 @@ export const zh: LocaleMessages = {
   "item.flower": "花朵",
   "item.wheat_seed": "小麦种子",
   "item.wheat": "小麦",
+  "item.carrot_seed": "胡萝卜种子",
+  "item.carrot": "胡萝卜",
+  "item.melon_seed": "西瓜种子",
+  "item.melon": "西瓜",
   "item.fence": "栅栏",
   "item.chest": "箱子",
 

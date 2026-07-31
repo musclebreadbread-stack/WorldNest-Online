@@ -11,6 +11,10 @@ export type ItemId =
   | "flower"
   | "wheat_seed"
   | "wheat"
+  | "carrot_seed"
+  | "carrot"
+  | "melon_seed"
+  | "melon"
   | "fence"
   | "chest";
 
@@ -40,6 +44,10 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
   flower: { id: "flower", displayName: "Flower", stackSize: 99 },
   wheat_seed: { id: "wheat_seed", displayName: "Wheat Seed", stackSize: 50 },
   wheat: { id: "wheat", displayName: "Wheat", stackSize: 99 },
+  carrot_seed: { id: "carrot_seed", displayName: "Carrot Seed", stackSize: 50 },
+  carrot: { id: "carrot", displayName: "Carrot", stackSize: 99 },
+  melon_seed: { id: "melon_seed", displayName: "Melon Seed", stackSize: 50 },
+  melon: { id: "melon", displayName: "Melon", stackSize: 99 },
   fence: {
     id: "fence",
     displayName: "Fence",

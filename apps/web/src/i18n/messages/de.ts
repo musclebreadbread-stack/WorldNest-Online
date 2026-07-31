@@ -143,6 +143,10 @@ export const de: LocaleMessages = {
   "item.flower": "Blume",
   "item.wheat_seed": "Weizensamen",
   "item.wheat": "Weizen",
+  "item.carrot_seed": "Karottensamen",
+  "item.carrot": "Karotte",
+  "item.melon_seed": "Melonensamen",
+  "item.melon": "Melone",
   "item.fence": "Zaun",
   "item.chest": "Kiste",
 

@@ -150,6 +150,10 @@ export const en = {
   "item.flower": "Flower",
   "item.wheat_seed": "Wheat Seed",
   "item.wheat": "Wheat",
+  "item.carrot_seed": "Carrot Seed",
+  "item.carrot": "Carrot",
+  "item.melon_seed": "Melon Seed",
+  "item.melon": "Melon",
   "item.fence": "Fence",
   "item.chest": "Chest",
 
