@@ -9,6 +9,7 @@ export { NetworkComponent } from "./NetworkComponent";
 export { RemoteInterpolationComponent } from "./RemoteInterpolationComponent";
 export { ColliderComponent } from "./ColliderComponent";
 export { TimeComponent } from "./TimeComponent";
+export { EnvironmentComponent } from "./EnvironmentComponent";
 export { InventoryComponent } from "./InventoryComponent";
 export type { InventorySlot } from "./InventoryComponent";
 export { StatsComponent } from "./StatsComponent";

@@ -22,5 +22,9 @@ export const GAME_MINUTES_PER_REAL_SECOND = 1;
 export const DAY_LENGTH_MINUTES = 1440;
 export const WORLD_EPOCH_MS = 1700000000000;
 
+// Seasons and weather
+export const DAYS_PER_SEASON = 7;
+export const WEATHER_PERIOD_MINUTES = 180;
+
 // Player stats
 export const MAX_ENERGY = 100;

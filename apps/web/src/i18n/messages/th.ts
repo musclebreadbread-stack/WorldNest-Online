@@ -72,6 +72,11 @@ export const th: LocaleMessages = {
   "npc.juno.name": "จูโน เจ้าของร้าน",
   "npc.ada.name": "เอดา นักสำรวจ",
 
+  "npc.activity.home": "อยู่บ้าน",
+  "npc.activity.work": "ทำงานอยู่",
+  "npc.activity.market": "อยู่ตลาด",
+  "npc.activity.rest": "พักผ่อนอยู่",
+
   "dialogue.close": "จบการสนทนา",
   "dialogue.hint": "กด 1-4 หรือแตะคำตอบ",
   "dialogue.option.bye": "ไว้เจอกันนะ!",

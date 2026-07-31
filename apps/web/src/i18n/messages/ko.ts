@@ -73,6 +73,11 @@ export const ko: LocaleMessages = {
   "npc.juno.name": "상점 주인 주노",
   "npc.ada.name": "탐험가 에이다",
 
+  "npc.activity.home": "집에 있음",
+  "npc.activity.work": "일하는 중",
+  "npc.activity.market": "시장에 있음",
+  "npc.activity.rest": "쉬는 중",
+
   "dialogue.close": "대화 끝내기",
   "dialogue.hint": "1-4 키를 누르거나 답을 눌러 주세요",
   "dialogue.option.bye": "다음에 또 봐요!",

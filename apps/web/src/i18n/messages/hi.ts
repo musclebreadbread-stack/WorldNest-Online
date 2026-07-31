@@ -73,6 +73,11 @@ export const hi: LocaleMessages = {
   "npc.juno.name": "दुकानदार जूनो",
   "npc.ada.name": "खोजी एडा",
 
+  "npc.activity.home": "घर पर",
+  "npc.activity.work": "काम पर",
+  "npc.activity.market": "बाज़ार में",
+  "npc.activity.rest": "आराम कर रहा है",
+
   "dialogue.close": "बातचीत खत्म करें",
   "dialogue.hint": "1-4 दबाएँ या कोई जवाब चुनें",
   "dialogue.option.bye": "फिर मिलेंगे!",

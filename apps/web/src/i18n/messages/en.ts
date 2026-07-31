@@ -80,6 +80,11 @@ export const en = {
   "npc.juno.name": "Juno the Shopkeeper",
   "npc.ada.name": "Ada the Explorer",
 
+  "npc.activity.home": "At home",
+  "npc.activity.work": "Working",
+  "npc.activity.market": "At the market",
+  "npc.activity.rest": "Resting",
+
   "dialogue.close": "Leave",
   "dialogue.hint": "Press 1-4 or tap an answer",
   "dialogue.option.bye": "Goodbye for now!",

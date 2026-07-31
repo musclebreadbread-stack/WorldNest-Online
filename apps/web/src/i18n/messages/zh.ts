@@ -72,6 +72,11 @@ export const zh: LocaleMessages = {
   "npc.juno.name": "店主朱诺",
   "npc.ada.name": "探险家艾达",
 
+  "npc.activity.home": "在家",
+  "npc.activity.work": "工作中",
+  "npc.activity.market": "在市场",
+  "npc.activity.rest": "休息中",
+
   "dialogue.close": "结束对话",
   "dialogue.hint": "按 1-4 或点选一个回答",
   "dialogue.option.bye": "下次再聊！",

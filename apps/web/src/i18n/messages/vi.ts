@@ -72,6 +72,11 @@ export const vi: LocaleMessages = {
   "npc.juno.name": "Juno chủ tiệm",
   "npc.ada.name": "Ada nhà thám hiểm",
 
+  "npc.activity.home": "Ở nhà",
+  "npc.activity.work": "Đang làm việc",
+  "npc.activity.market": "Ở chợ",
+  "npc.activity.rest": "Đang nghỉ ngơi",
+
   "dialogue.close": "Kết thúc trò chuyện",
   "dialogue.hint": "Nhấn 1-4 hoặc chạm vào một câu trả lời",
   "dialogue.option.bye": "Hẹn gặp lại nhé!",

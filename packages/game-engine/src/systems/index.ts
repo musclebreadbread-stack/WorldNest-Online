@@ -9,6 +9,8 @@ export { InterpolationSystem } from "./InterpolationSystem";
 export { CollisionSystem } from "./CollisionSystem";
 export { TimeSystem } from "./TimeSystem";
 export type { NowFn } from "./TimeSystem";
+export { EnvironmentSystem } from "./EnvironmentSystem";
+export type { BiomeGetter } from "./EnvironmentSystem";
 export { StatsSystem } from "./StatsSystem";
 export type { PhaseGetter } from "./StatsSystem";
 export { HarvestSystem } from "./HarvestSystem";
@@ -21,7 +23,7 @@ export { CropGrowthSystem, cropStageAt, isCropMature } from "./CropGrowthSystem"
 export type { MinuteGetter } from "./CropGrowthSystem";
 export { BuildSystem, structureEntityId } from "./BuildSystem";
 export { NpcSystem, npcEntityId } from "./NpcSystem";
-export type { TalkListener } from "./NpcSystem";
+export type { TalkListener, ClockSnapshotGetter } from "./NpcSystem";
 export { ShopSystem } from "./ShopSystem";
 export { QuestSystem } from "./QuestSystem";
 export type { StructureCounter } from "./QuestSystem";

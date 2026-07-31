@@ -73,6 +73,11 @@ export const es: LocaleMessages = {
   "npc.juno.name": "Juno la tendera",
   "npc.ada.name": "Ada la exploradora",
 
+  "npc.activity.home": "En casa",
+  "npc.activity.work": "Trabajando",
+  "npc.activity.market": "En el mercado",
+  "npc.activity.rest": "Descansando",
+
   "dialogue.close": "Despedirse",
   "dialogue.hint": "Pulsa 1-4 o toca una respuesta",
   "dialogue.option.bye": "¡Hasta pronto!",

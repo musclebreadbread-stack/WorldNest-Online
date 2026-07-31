@@ -75,6 +75,11 @@ export const ar: LocaleMessages = {
   "npc.juno.name": "جونو صاحبة الدكان",
   "npc.ada.name": "آدا المستكشفة",
 
+  "npc.activity.home": "في المنزل",
+  "npc.activity.work": "يعمل",
+  "npc.activity.market": "في السوق",
+  "npc.activity.rest": "يستريح",
+
   "dialogue.close": "إنهاء الحديث",
   "dialogue.hint": "اضغط 1-4 أو المس أحد الردود",
   "dialogue.option.bye": "إلى اللقاء!",

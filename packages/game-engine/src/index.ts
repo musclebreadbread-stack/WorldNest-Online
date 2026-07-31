@@ -18,6 +18,7 @@ export {
   RemoteInterpolationComponent,
   ColliderComponent,
   TimeComponent,
+  EnvironmentComponent,
   InventoryComponent,
   StatsComponent,
   InteractionComponent,
@@ -123,6 +124,7 @@ export {
   InterpolationSystem,
   CollisionSystem,
   TimeSystem,
+  EnvironmentSystem,
   StatsSystem,
   HarvestSystem,
   PlantSystem,
@@ -143,6 +145,7 @@ export type {
   RenderData,
   SyncPayload,
   NowFn,
+  BiomeGetter,
   PhaseGetter,
   SetTileOverride,
   CropSource,
@@ -151,6 +154,7 @@ export type {
   MinuteGetter,
   StructureCounter,
   TalkListener,
+  ClockSnapshotGetter,
 } from "./systems";
 
 // World Generation
@@ -180,8 +184,15 @@ export {
   getNpcDefinition,
   isNpcPlaceableTile,
   resolveNpcTile,
+  scheduledEntry,
   WorldClock,
   PHASE_START_HOURS,
+  Season,
+  SEASON_DEFINITIONS,
+  seasonForDay,
+  WEATHER_KINDS,
+  weatherPeriodIndex,
+  weatherAt,
 } from "./world";
 export type {
   ChunkData,
@@ -195,9 +206,13 @@ export type {
   CropDefinition,
   NpcDefinition,
   NpcRole,
+  NpcActivity,
+  NpcScheduleEntry,
   NpcTile,
   TileQuery,
   StructureQuery,
   ClockSnapshot,
   DayPhase,
+  SeasonDefinition,
+  WeatherKind,
 } from "./world";

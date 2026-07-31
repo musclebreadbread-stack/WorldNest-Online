@@ -1,4 +1,4 @@
-import type { DayPhase } from "@worldnest/game-engine";
+import type { DayPhase, NpcActivity } from "@worldnest/game-engine";
 import type { ItemId } from "@worldnest/shared";
 import { ar } from "./messages/ar";
 import { de } from "./messages/de";
@@ -115,6 +115,17 @@ export const CLOCK_PHASE_KEYS: Record<DayPhase, MessageKey> = {
   day: "clock.phase.day",
   dusk: "clock.phase.dusk",
   night: "clock.phase.night",
+};
+
+/**
+ * Name key for each NPC activity. The engine reports the activity as an
+ * `NpcActivity`; the translation of it lives here, not in the engine.
+ */
+export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
+  home: "npc.activity.home",
+  work: "npc.activity.work",
+  market: "npc.activity.market",
+  rest: "npc.activity.rest",
 };
 
 export type TranslateParams = Record<string, string | number>;

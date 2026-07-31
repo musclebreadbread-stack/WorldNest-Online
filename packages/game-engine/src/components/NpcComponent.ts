@@ -1,4 +1,5 @@
 import { Component } from "../ecs/Component";
+import type { NpcActivity } from "../world/npcSchedule";
 import type { NpcRole } from "../world/NpcCatalogue";
 
 /**
@@ -13,9 +14,11 @@ export class NpcComponent extends Component {
   public nameKey: string;
   public dialogueId: string;
   public role: NpcRole;
-  /** Tile the NPC was placed on; NPCs never move. */
+  /** Tile the NPC is currently placed on. */
   public tileX: number;
   public tileY: number;
+  /** Current activity from the schedule, if the NPC has one. */
+  public activity: NpcActivity | null;
 
   constructor(
     npcId: string,
@@ -24,6 +27,7 @@ export class NpcComponent extends Component {
     role: NpcRole,
     tileX: number,
     tileY: number,
+    activity: NpcActivity | null = null,
   ) {
     super("npc");
     this.npcId = npcId;
@@ -32,5 +36,6 @@ export class NpcComponent extends Component {
     this.role = role;
     this.tileX = tileX;
     this.tileY = tileY;
+    this.activity = activity;
   }
 }

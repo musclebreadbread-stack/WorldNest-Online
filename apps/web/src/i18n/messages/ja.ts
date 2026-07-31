@@ -72,6 +72,11 @@ export const ja: LocaleMessages = {
   "npc.juno.name": "店主のジュノ",
   "npc.ada.name": "探検家のエイダ",
 
+  "npc.activity.home": "自宅にいます",
+  "npc.activity.work": "仕事中",
+  "npc.activity.market": "市場にいます",
+  "npc.activity.rest": "休憩中",
+
   "dialogue.close": "会話を終える",
   "dialogue.hint": "1-4 キーを押すか、答えをタップしてください",
   "dialogue.option.bye": "またね！",
