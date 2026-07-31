@@ -485,4 +485,22 @@ export const pt: LocaleMessages = {
   "achievement.rhythm_master.title": "Mestre do ritmo",
   "achievement.rhythm_master.description":
     "Consiga 500 pontos ou mais em uma unica musica.",
+
+  "transport.mount": "Montar",
+  "transport.dismount": "Desmontar",
+  "transport.board": "Embarcar",
+  "transport.disembark": "Desembarcar",
+  "transport.exhausted": "Sua montaria esta exausta!",
+  "transport.feed": "Alimentar montaria",
+  "transport.bond": "Nivel de vinculo: {level}",
+  "transport.noStamina": "Sem resistencia",
+  "item.mount_saddle": "Sela de montaria",
+  "item.boat": "Barco",
+  "item.horse_whistle": "Apito de cavalo",
+  "item.donkey_whistle": "Apito de burro",
+  "item.camel_whistle": "Apito de camelo",
+  "achievement.first_ride.title": "Primeira cavalgada",
+  "achievement.first_ride.description": "Monte em qualquer animal pela primeira vez.",
+  "achievement.sea_explorer.title": "Explorador maritimo",
+  "achievement.sea_explorer.description": "Percorra 100 blocos de agua de barco.",
 };

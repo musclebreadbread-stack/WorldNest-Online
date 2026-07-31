@@ -60,6 +60,10 @@ export function checkCondition(
       return source.rhythmPerfectCount >= condition.count;
     case "rhythm_score":
       return source.rhythmScore >= condition.score;
+    case "mount_bond":
+      return source.mountBondLevel >= condition.level;
+    case "water_travel":
+      return source.waterTilesTraversed >= condition.tiles;
   }
 }
 

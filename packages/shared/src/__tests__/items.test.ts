@@ -55,6 +55,11 @@ const EXPECTED_IDS: ItemId[] = [
   "rhythm_flute",
   "rhythm_harp",
   "rhythm_xylophone",
+  "mount_saddle",
+  "boat",
+  "horse_whistle",
+  "donkey_whistle",
+  "camel_whistle",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Transportation and Mounts system - boats for water travel and mounts for faster land movement. Includes rideable mount entities (horse, donkey, camel), a craftable boat item for crossing water tiles, speed multipliers, stamina for mounts, feeding/bonding mechanics, and mount persistence.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create packages/game-engine/src/transport/ directory with index.ts, transportDefinitions.ts, transportOps.ts, and transportState.ts",
     "In transportDefinitions.ts: define MountSpecies union (horse, donkey, camel), MountDefinition interface (species, speedMultiplier, stamina, feedItem), MOUNT_DEFINITIONS record with 3 mounts (horse: 2.0x speed/100 stamina, donkey: 1.5x/150 stamina, camel: 1.8x/120 stamina), BOAT_SPEED_MULTIPLIER (1.5), MOUNT_STAMINA_DRAIN_PER_SECOND, MOUNT_FEED_RESTORE constants",

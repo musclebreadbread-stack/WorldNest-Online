@@ -43,6 +43,7 @@ export {
   HousingComponent,
   CraftingComponent,
   MusicComponent,
+  TransportComponent,
 } from "./components";
 export type {
   KeyState,
@@ -149,6 +150,31 @@ export type {
   StartSongResult,
   TickRhythmResult,
 } from "./music";
+
+// Transport (pure; mounts, boats, stamina, speed multipliers)
+export {
+  BOAT_SPEED_MULTIPLIER,
+  MOUNT_DEFINITIONS,
+  MOUNT_FEED_RESTORE,
+  MOUNT_SPECIES,
+  MOUNT_STAMINA_DRAIN_PER_SECOND,
+  boatCanTraverse,
+  calculateSpeed,
+  canBoard,
+  canMount,
+  dismount,
+  feedMount,
+  getMountBondLevel,
+  isMountExhausted,
+  mount as mountTransport,
+  tickMountStamina,
+} from "./transport";
+export type {
+  MountDefinition,
+  MountSpecies,
+  MountState,
+  TransportMode,
+} from "./transport";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -386,6 +412,7 @@ export {
   HousingSystem,
   CraftingSystem,
   MusicSystem,
+  TransportSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -409,6 +436,7 @@ export type {
   QuizDayGetter,
   QuizStreakListener,
   MusicCompleteListener,
+  MountRideListener,
 } from "./systems";
 
 // World Generation

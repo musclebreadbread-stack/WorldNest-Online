@@ -153,6 +153,11 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   rhythm_flute: "item.rhythm_flute",
   rhythm_harp: "item.rhythm_harp",
   rhythm_xylophone: "item.rhythm_xylophone",
+  mount_saddle: "item.mount_saddle",
+  boat: "item.boat",
+  horse_whistle: "item.horse_whistle",
+  donkey_whistle: "item.donkey_whistle",
+  camel_whistle: "item.camel_whistle",
 };
 
 /**

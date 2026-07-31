@@ -488,4 +488,22 @@ export const fr: LocaleMessages = {
   "achievement.rhythm_master.title": "Maitre du rythme",
   "achievement.rhythm_master.description":
     "Obtiens 500 points ou plus dans une chanson.",
+
+  "transport.mount": "Monter",
+  "transport.dismount": "Descendre",
+  "transport.board": "Monter a bord",
+  "transport.disembark": "Debarquer",
+  "transport.exhausted": "Votre monture est epuisee !",
+  "transport.feed": "Nourrir la monture",
+  "transport.bond": "Niveau de lien : {level}",
+  "transport.noStamina": "Pas assez d'endurance",
+  "item.mount_saddle": "Selle de monture",
+  "item.boat": "Bateau",
+  "item.horse_whistle": "Sifflet de cheval",
+  "item.donkey_whistle": "Sifflet d'ane",
+  "item.camel_whistle": "Sifflet de chameau",
+  "achievement.first_ride.title": "Premiere chevauchee",
+  "achievement.first_ride.description": "Montez un animal pour la premiere fois.",
+  "achievement.sea_explorer.title": "Explorateur marin",
+  "achievement.sea_explorer.description": "Parcourez 100 tuiles d'eau en bateau.",
 };

@@ -41,3 +41,4 @@ export { HousingComponent } from "./HousingComponent";
 export type { PlaceRequest, RemoveRequest } from "./HousingComponent";
 export { CraftingComponent } from "./CraftingComponent";
 export { MusicComponent } from "./MusicComponent";
+export { TransportComponent } from "./TransportComponent";

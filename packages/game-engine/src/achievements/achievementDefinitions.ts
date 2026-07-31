@@ -19,7 +19,9 @@ export type AchievementCondition =
   | { kind: "housing_happiness"; threshold: number }
   | { kind: "craft"; count: number }
   | { kind: "rhythm_perfect"; count: number }
-  | { kind: "rhythm_score"; score: number };
+  | { kind: "rhythm_score"; score: number }
+  | { kind: "mount_bond"; level: number }
+  | { kind: "water_travel"; tiles: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -46,6 +48,8 @@ export interface AchievementSource {
   craftCount: number;
   rhythmPerfectCount: number;
   rhythmScore: number;
+  mountBondLevel: number;
+  waterTilesTraversed: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -161,6 +165,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.rhythm_master.description",
     rewardCoins: 50,
     condition: { kind: "rhythm_score", score: 500 },
+  },
+  {
+    id: "first_ride",
+    titleKey: "achievement.first_ride.title",
+    descriptionKey: "achievement.first_ride.description",
+    rewardCoins: 20,
+    condition: { kind: "mount_bond", level: 0 },
+  },
+  {
+    id: "sea_explorer",
+    titleKey: "achievement.sea_explorer.title",
+    descriptionKey: "achievement.sea_explorer.description",
+    rewardCoins: 40,
+    condition: { kind: "water_travel", tiles: 100 },
   },
 ];
 

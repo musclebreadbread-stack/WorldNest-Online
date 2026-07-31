@@ -7,6 +7,7 @@ import { HousingComponent } from "../components/HousingComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
+import { TransportComponent } from "../components/TransportComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
 import { isCategoryComplete } from "../collection/collectionOps";
@@ -44,6 +45,8 @@ export class AchievementSystem extends System {
   private currentQuizStreak = 0;
   /** Crafts completed since last update, reported by CraftingSystem. */
   private pendingCraftsCompleted = 0;
+  /** Mount rides since last update, reported by TransportSystem. */
+  private pendingMountRides = 0;
 
   constructor(structureCount: AchievementStructureCounter = () => 0) {
     super(["achievement", "inventory", "wallet", "collection", "quest"]);
@@ -74,6 +77,11 @@ export class AchievementSystem extends System {
   /** Note that the player completed a craft. */
   recordCraftCompleted(): void {
     this.pendingCraftsCompleted++;
+  }
+
+  /** Note that the player mounted a ride. */
+  recordMountRide(): void {
+    this.pendingMountRides++;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -129,6 +137,24 @@ export class AchievementSystem extends System {
       // Build the polled source
       const housingComp = entity.getComponent<HousingComponent>("housing");
       const housingHappiness = housingComp ? housingComp.state.happiness : 0;
+      const transportComp = entity.getComponent<TransportComponent>("transport");
+      // Update mount bond tracking from transport component
+      if (transportComp?.mountState) {
+        if (transportComp.mountState.bondLevel > achievement.highestMountBondLevel) {
+          achievement.highestMountBondLevel = transportComp.mountState.bondLevel;
+        }
+      }
+      // Apply pending mount rides
+      if (this.pendingMountRides > 0 && achievement.highestMountBondLevel < 0) {
+        achievement.highestMountBondLevel = 0;
+      }
+      // Track water tiles traversed from transport component
+      if (
+        transportComp &&
+        transportComp.waterTilesTraversed > achievement.totalWaterTilesTraversed
+      ) {
+        achievement.totalWaterTilesTraversed = transportComp.waterTilesTraversed;
+      }
       const source = this.buildSource(
         inventory,
         collection,
@@ -152,6 +178,7 @@ export class AchievementSystem extends System {
     this.pendingFishCaught = 0;
     this.pendingAnimalsTamed = 0;
     this.pendingCraftsCompleted = 0;
+    this.pendingMountRides = 0;
   }
 
   private buildSource(
@@ -174,6 +201,8 @@ export class AchievementSystem extends System {
       craftCount: achievement.totalCraftsCompleted,
       rhythmPerfectCount: achievement.totalRhythmPerfects,
       rhythmScore: achievement.bestRhythmScore,
+      mountBondLevel: achievement.highestMountBondLevel,
+      waterTilesTraversed: achievement.totalWaterTilesTraversed,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

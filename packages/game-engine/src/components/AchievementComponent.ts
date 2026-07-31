@@ -34,6 +34,10 @@ export class AchievementComponent extends Component {
   public totalRhythmPerfects: number;
   /** Highest single-song score achieved. */
   public bestRhythmScore: number;
+  /** Highest mount bond level achieved (-1 if never mounted). */
+  public highestMountBondLevel: number;
+  /** Total water tiles traversed by boat. */
+  public totalWaterTilesTraversed: number;
 
   constructor() {
     super("achievement");
@@ -48,5 +52,7 @@ export class AchievementComponent extends Component {
     this.totalCraftsCompleted = 0;
     this.totalRhythmPerfects = 0;
     this.bestRhythmScore = 0;
+    this.highestMountBondLevel = -1;
+    this.totalWaterTilesTraversed = 0;
   }
 }

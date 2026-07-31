@@ -49,7 +49,12 @@ export type ItemId =
   | "rhythm_drum"
   | "rhythm_flute"
   | "rhythm_harp"
-  | "rhythm_xylophone";
+  | "rhythm_xylophone"
+  | "mount_saddle"
+  | "boat"
+  | "horse_whistle"
+  | "donkey_whistle"
+  | "camel_whistle";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -223,6 +228,27 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
   rhythm_xylophone: {
     id: "rhythm_xylophone",
     displayName: "Rhythm Xylophone",
+    stackSize: 1,
+  },
+  mount_saddle: {
+    id: "mount_saddle",
+    displayName: "Mount Saddle",
+    stackSize: 1,
+  },
+  boat: { id: "boat", displayName: "Boat", stackSize: 1 },
+  horse_whistle: {
+    id: "horse_whistle",
+    displayName: "Horse Whistle",
+    stackSize: 1,
+  },
+  donkey_whistle: {
+    id: "donkey_whistle",
+    displayName: "Donkey Whistle",
+    stackSize: 1,
+  },
+  camel_whistle: {
+    id: "camel_whistle",
+    displayName: "Camel Whistle",
     stackSize: 1,
   },
 };

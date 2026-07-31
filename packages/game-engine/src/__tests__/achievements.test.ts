@@ -36,6 +36,8 @@ function emptySource(): AchievementSource {
     craftCount: 0,
     rhythmPerfectCount: 0,
     rhythmScore: 0,
+    mountBondLevel: -1,
+    waterTilesTraversed: 0,
     isCategoryComplete: () => false,
   };
 }
@@ -58,8 +60,8 @@ function createPlayer() {
 
 describe("achievementDefinitions", () => {
   it("should define 8 achievements with valid keys and unique ids", () => {
-    expect(ACHIEVEMENT_IDS).toHaveLength(16);
-    expect(new Set(ACHIEVEMENT_IDS).size).toBe(16);
+    expect(ACHIEVEMENT_IDS).toHaveLength(18);
+    expect(new Set(ACHIEVEMENT_IDS).size).toBe(18);
     for (const def of ACHIEVEMENT_DEFINITIONS) {
       expect(def.titleKey).toMatch(/^achievement\./);
       expect(def.descriptionKey).toMatch(/^achievement\./);

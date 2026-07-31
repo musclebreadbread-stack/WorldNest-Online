@@ -487,4 +487,22 @@ export const es: LocaleMessages = {
   "achievement.rhythm_master.title": "Maestro del ritmo",
   "achievement.rhythm_master.description":
     "Consigue 500 puntos o mas en una sola cancion.",
+
+  "transport.mount": "Montar",
+  "transport.dismount": "Desmontar",
+  "transport.board": "Subir al bote",
+  "transport.disembark": "Desembarcar",
+  "transport.exhausted": "Tu montura esta agotada!",
+  "transport.feed": "Alimentar montura",
+  "transport.bond": "Nivel de vinculo: {level}",
+  "transport.noStamina": "Sin resistencia",
+  "item.mount_saddle": "Silla de montar",
+  "item.boat": "Bote",
+  "item.horse_whistle": "Silbato de caballo",
+  "item.donkey_whistle": "Silbato de burro",
+  "item.camel_whistle": "Silbato de camello",
+  "achievement.first_ride.title": "Primer paseo",
+  "achievement.first_ride.description": "Monta cualquier animal por primera vez.",
+  "achievement.sea_explorer.title": "Explorador marino",
+  "achievement.sea_explorer.description": "Recorre 100 casillas de agua en bote.",
 };

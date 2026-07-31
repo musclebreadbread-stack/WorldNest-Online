@@ -488,4 +488,22 @@ export const de: LocaleMessages = {
   "achievement.rhythm_master.title": "Rhythmusmeister",
   "achievement.rhythm_master.description":
     "Erreiche 500 Punkte oder mehr in einem Lied.",
+
+  "transport.mount": "Aufsteigen",
+  "transport.dismount": "Absteigen",
+  "transport.board": "Boot besteigen",
+  "transport.disembark": "Aussteigen",
+  "transport.exhausted": "Dein Reittier ist erschoepft!",
+  "transport.feed": "Reittier fuettern",
+  "transport.bond": "Bindungsstufe: {level}",
+  "transport.noStamina": "Nicht genug Ausdauer",
+  "item.mount_saddle": "Reitsattel",
+  "item.boat": "Boot",
+  "item.horse_whistle": "Pferdepfeife",
+  "item.donkey_whistle": "Eselpfeife",
+  "item.camel_whistle": "Kamelpfeife",
+  "achievement.first_ride.title": "Erster Ritt",
+  "achievement.first_ride.description": "Reite zum ersten Mal auf einem Tier.",
+  "achievement.sea_explorer.title": "Seefahrer",
+  "achievement.sea_explorer.description": "Lege 100 Wasserfelder per Boot zurueck.",
 };

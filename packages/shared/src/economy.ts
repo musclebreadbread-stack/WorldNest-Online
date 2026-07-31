@@ -100,6 +100,12 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   rhythm_flute: { buy: 40, sell: 13 },
   rhythm_harp: { buy: 50, sell: 16 },
   rhythm_xylophone: { buy: 60, sell: 20 },
+  // Transport: mounts and boats for faster travel
+  mount_saddle: { buy: 80, sell: 25 },
+  boat: { buy: 120, sell: 40 },
+  horse_whistle: { buy: 100, sell: 30 },
+  donkey_whistle: { buy: 70, sell: 22 },
+  camel_whistle: { buy: 90, sell: 28 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */
