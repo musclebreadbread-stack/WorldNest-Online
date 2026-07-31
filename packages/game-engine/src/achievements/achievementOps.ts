@@ -20,12 +20,11 @@ export interface AchievementState {
   version: number;
   totalFishCaught: number;
   totalQuestsCompleted: number;
+  totalCoinsEarned: number;
 }
 
 /**
  * Evaluate whether a single achievement condition is met given the source.
- * The `full_gathering` achievement uses `donate` kind but also requires the
- * gathering category to be complete; this is handled by checking both.
  */
 export function checkCondition(
   condition: AchievementCondition,
@@ -44,15 +43,17 @@ export function checkCondition(
       return source.fishCaughtCount >= condition.count;
     case "total_coins":
       return source.totalCoinsEarned >= condition.amount;
+    case "category_complete":
+      return (
+        source.isCategoryComplete(condition.categoryId) &&
+        source.donationCount >= condition.donateCount
+      );
   }
 }
 
 /**
  * Check whether an achievement should unlock. Returns true only when the
  * condition is met and the achievement has not already been unlocked.
- *
- * `full_gathering` has a special additional requirement: the gathering
- * collection category must be complete.
  */
 export function checkAchievement(
   state: AchievementState,
@@ -60,12 +61,6 @@ export function checkAchievement(
   source: AchievementSource,
 ): boolean {
   if (state.unlocked.has(definition.id)) return false;
-
-  // full_gathering requires the gathering category to be complete
-  if (definition.id === "full_gathering" && !source.gatheringCategoryComplete) {
-    return false;
-  }
-
   return checkCondition(definition.condition, source);
 }
 

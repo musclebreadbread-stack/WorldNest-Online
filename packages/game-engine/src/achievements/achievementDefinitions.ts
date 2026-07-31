@@ -12,7 +12,8 @@ export type AchievementCondition =
   | { kind: "build"; count: number }
   | { kind: "quest"; count: number }
   | { kind: "fish"; count: number }
-  | { kind: "total_coins"; amount: number };
+  | { kind: "total_coins"; amount: number }
+  | { kind: "category_complete"; categoryId: string; donateCount: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -33,7 +34,7 @@ export interface AchievementSource {
   questCompletionCount: number;
   fishCaughtCount: number;
   totalCoinsEarned: number;
-  gatheringCategoryComplete: boolean;
+  isCategoryComplete: (categoryId: string) => boolean;
 }
 
 export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
@@ -91,7 +92,7 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     titleKey: "achievement.full_gathering.title",
     descriptionKey: "achievement.full_gathering.description",
     rewardCoins: 60,
-    condition: { kind: "donate", count: 5 },
+    condition: { kind: "category_complete", categoryId: "gathering", donateCount: 5 },
   },
 ];
 

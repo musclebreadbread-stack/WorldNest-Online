@@ -243,9 +243,13 @@ describe("CookingSystem", () => {
 
     system.update([entity], 1 / 60);
 
-    // failed -> idle in same frame
-    expect(cooking.state).toBe("idle");
+    // failed persists for one frame
+    expect(cooking.state).toBe("failed");
     expect(cooking.requestedCook).toBeNull();
+
+    // next frame resets to idle
+    system.update([entity], 1 / 60);
+    expect(cooking.state).toBe("idle");
   });
 
   it("should complete cooking after elapsed time", () => {
@@ -259,10 +263,14 @@ describe("CookingSystem", () => {
     // Advance past cook time (2000ms = 2s)
     system.update([entity], 3); // 3000ms > 2000ms
 
-    // done -> idle in same frame
-    expect(cooking.state).toBe("idle");
+    // done persists for one frame
+    expect(cooking.state).toBe("done");
     expect(countItem(inventory, "bread")).toBe(1);
     expect(countItem(inventory, "wheat")).toBe(0);
+
+    // next frame resets to idle
+    system.update([entity], 1 / 60);
+    expect(cooking.state).toBe("idle");
   });
 
   it("should handle consume requests independently", () => {

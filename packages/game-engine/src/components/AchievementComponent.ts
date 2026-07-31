@@ -18,6 +18,8 @@ export class AchievementComponent extends Component {
   public totalFishCaught: number;
   /** Lifetime quests completed total. */
   public totalQuestsCompleted: number;
+  /** Lifetime coins earned (monotonically increasing, never decremented). */
+  public totalCoinsEarned: number;
 
   constructor() {
     super("achievement");
@@ -26,5 +28,6 @@ export class AchievementComponent extends Component {
     this.version = 0;
     this.totalFishCaught = 0;
     this.totalQuestsCompleted = 0;
+    this.totalCoinsEarned = 0;
   }
 }

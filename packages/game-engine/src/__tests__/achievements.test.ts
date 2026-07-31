@@ -30,7 +30,7 @@ function emptySource(): AchievementSource {
     questCompletionCount: 0,
     fishCaughtCount: 0,
     totalCoinsEarned: 0,
-    gatheringCategoryComplete: false,
+    isCategoryComplete: () => false,
   };
 }
 
@@ -107,6 +107,32 @@ describe("checkCondition", () => {
     expect(checkCondition({ kind: "total_coins", amount: 200 }, source)).toBe(true);
     expect(checkCondition({ kind: "total_coins", amount: 201 }, source)).toBe(false);
   });
+
+  it("should check category_complete condition", () => {
+    const source = {
+      ...emptySource(),
+      donationCount: 5,
+      isCategoryComplete: (id: string) => id === "gathering",
+    };
+    expect(
+      checkCondition(
+        { kind: "category_complete", categoryId: "gathering", donateCount: 5 },
+        source,
+      ),
+    ).toBe(true);
+    expect(
+      checkCondition(
+        { kind: "category_complete", categoryId: "gathering", donateCount: 6 },
+        source,
+      ),
+    ).toBe(false);
+    expect(
+      checkCondition(
+        { kind: "category_complete", categoryId: "fishing", donateCount: 5 },
+        source,
+      ),
+    ).toBe(false);
+  });
 });
 
 describe("checkAchievement", () => {
@@ -143,7 +169,7 @@ describe("checkAchievement", () => {
     expect(
       checkAchievement(achievement, def, {
         ...source,
-        gatheringCategoryComplete: true,
+        isCategoryComplete: (id: string) => id === "gathering",
       }),
     ).toBe(true);
   });

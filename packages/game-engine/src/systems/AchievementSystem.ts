@@ -48,6 +48,7 @@ export class AchievementSystem extends System {
         );
         if (def) {
           wallet.coins += def.rewardCoins;
+          achievement.totalCoinsEarned += def.rewardCoins;
         }
         achievement.pendingReward = null;
       }
@@ -69,7 +70,7 @@ export class AchievementSystem extends System {
   private buildSource(
     inventory: InventoryComponent,
     collection: CollectionComponent,
-    wallet: WalletComponent,
+    _wallet: WalletComponent,
     achievement: AchievementComponent,
   ): AchievementSource {
     return {
@@ -78,8 +79,9 @@ export class AchievementSystem extends System {
       structureCount: this.totalStructures(),
       questCompletionCount: achievement.totalQuestsCompleted,
       fishCaughtCount: achievement.totalFishCaught,
-      totalCoinsEarned: wallet.coins,
-      gatheringCategoryComplete: isCategoryComplete(collection, "gathering"),
+      totalCoinsEarned: achievement.totalCoinsEarned,
+      isCategoryComplete: (categoryId: string) =>
+        isCategoryComplete(collection, categoryId),
     };
   }
 

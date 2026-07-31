@@ -39,6 +39,15 @@ export class CookingSystem extends System {
       const inventory = entity.getComponent<InventoryComponent>("inventory")!;
       const stats = entity.getComponent<StatsComponent>("stats")!;
 
+      // Reset terminal states back to idle after one frame
+      if (cooking.state === "done" || cooking.state === "failed") {
+        cooking.state = "idle";
+        cooking.selectedRecipe = null;
+        cooking.timer = 0;
+        cooking.version++;
+        continue;
+      }
+
       // Handle consume request (independent of cooking state)
       if (cooking.requestedConsume !== null) {
         consumeFood(stats, inventory, cooking.requestedConsume);
@@ -86,14 +95,6 @@ export class CookingSystem extends System {
           }
           cooking.timer = result.timer;
         }
-      }
-
-      // Reset terminal states back to idle after one frame
-      if (cooking.state === "done" || cooking.state === "failed") {
-        cooking.state = "idle";
-        cooking.selectedRecipe = null;
-        cooking.timer = 0;
-        cooking.version++;
       }
     }
   }
