@@ -480,7 +480,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
 
 ## Phase B2 — Server authority: the client side (items 6-8)
 
-- [ ] 6. Teach `@worldnest/database` about the functions and take `coins` out of the write path.
+- [x] 6. Teach `@worldnest/database` about the functions and take `coins` out of the write path.
       Add the two functions to `Database["public"]["Functions"]` in `packages/database/src/types.ts`
       (`Args` and `Returns` per function) so `client.rpc(...)` typechecks instead of resolving to
       `never`, and add `coin_ledger`, `shop_prices` and `quest_rewards` to `Tables` — **each with
@@ -497,7 +497,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
       `Functions` shape (this is the check that the `rpc` argument types are right), and the web build
       still succeeds, which is what proves nothing else was still passing `coins`.
 
-- [ ] 7. Add balance reconciliation to the engine (decision D4). `WalletComponent` gains
+- [x] 7. Add balance reconciliation to the engine (decision D4). `WalletComponent` gains
       `requestedBalance: number | null` and `adjustments: number` — the first is what the server's
       answer is written into, the second a counter of how many times the server disagreed, so the HUD
       can tell the player once without polling. `ShopComponent` gains `lastTrade: ShopTrade | null` and
@@ -516,7 +516,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
       trade records `lastTrade` and bumps `tradeSeq` while a refused one records neither, and that the
       existing 263 tests still pass.
 
-- [ ] 8. Wire the client to the authority (decisions D2, D4, D5). Add
+- [x] 8. Wire the client to the authority (decisions D2, D4, D5). Add
       `apps/web/src/game/AuthorityBridge.ts` — Phaser-free, constructed with the player entity plus an
       injected `AuthorityClient` (`shopTrade`, `claimQuestReward`) so it is testable with a stub, and
       called once per frame from `GameScene.update` beside `hudBridge.flush()`, which is the pattern it
@@ -1123,3 +1123,57 @@ optional and should not be deferred behind anything else in Phase B2.
   workspace (and delete them before committing).
 - `docker` is podman-backed and worked throughout; `pnpm db:verify` takes roughly a minute,
   most of it waiting on `pg_isready`.
+
+---
+
+## Implementation notes for items 6-8
+
+Phase B2 is complete. Commits on `feat/mvp-foundation`:
+
+- `5b264cd` — item 6, typed authority client and removal of client coin writes.
+- `5c3de29` — item 7, engine wallet reconciliation and accepted-trade sequencing.
+- `68aea27` — item 8 authority hardening: idempotent trades and atomic quest progress.
+- `0d10352` — item 8 web bridge, HUD/session integration and ordered retries.
+
+### Verified results after item 8
+
+| Command | Result |
+|---------|--------|
+| `pnpm db:verify` | **65 assertions, exit 0**; `004` applied twice, duplicate and concurrent operation ids produced one ledger row, and an unsaved quest completion paid once |
+| `pnpm --filter @worldnest/database build` | exit 0 |
+| `pnpm --filter @worldnest/shared test` | **29/29** |
+| `pnpm --filter @worldnest/game-engine test` | **274/274** |
+| `pnpm --filter @worldnest/web test` | **307/307** |
+| `pnpm format:check` | exit 0, nothing listed |
+| `pnpm build` | **5/5 packages** |
+| `pnpm test:e2e` | **3/3 chromium specs** |
+
+### Authority corrections made while completing item 8
+
+- Shop RPCs now require a client-generated UUID. `coin_ledger.operation_id` is non-null and unique per
+  player; old rows are backfilled from their ledger ids, old function overloads are removed, and a
+  duplicate request returns its original `balance_after` without applying another delta. The purse row
+  lock serializes concurrent shop and quest operations for one player.
+- Quest claims carry the live client-owned progress into the security-definer function. It validates
+  and upserts progress in the payment transaction before checking the objective, closing the race with
+  debounced quest persistence. `already_completed` and other useful refusals carry the current balance.
+- `AuthorityBridge` is one FIFO queue. It observes the engine's Shop-before-Quest order, sends one RPC
+  at a time, retains a trade UUID across transport/rate-limit retries, caps exponential retry delay,
+  and writes only `WalletComponent.requestedBalance`. A quest is terminal locally only after success
+  or `already_completed`; restored completed rows are seeded as already terminal. Scene shutdown
+  cancels retry timers and ignores in-flight answers.
+- The adjustment notice, authoritative load behavior, no-backend factory gate, removal of coins from
+  session dirty tracking, and all twelve translated notices are retained from the original item 8
+  implementation.
+
+### Authority boundary after item 8
+
+This is not a general anti-cheat boundary. Coin balance and one-time quest reward payment are
+server-owned, but quest progress, inventory, position, harvests, crops and terrain remain
+client-authored. In particular, carrying progress into the claim transaction removes an autosave race;
+it does not prove the objective was honestly performed. Selling remains intentionally unvalidated
+against lagging persisted inventory (D9), and sessions without a backend continue using the optimistic
+simulation only. Player-to-player trading still requires authoritative inventory and remains out of
+scope. The operation queue is session-local rather than durable across a page close; trade idempotency
+makes retries safe while the session is alive but does not turn optimistic inventory changes into a
+server-owned transaction.
