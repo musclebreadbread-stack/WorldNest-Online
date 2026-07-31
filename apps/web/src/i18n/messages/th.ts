@@ -238,7 +238,6 @@ export const th: LocaleMessages = {
     "ขนมปังใช้ข้าวสาลี พายปลาใช้ปลากับข้าวสาลี ซุปแครอทใช้แครอทกับข้าวสาลี สลัดผลไม้ใช้เมลอน ง่ายแต่อิ่มท้อง!",
   "dialogue.bao.option.cook": "มาทำอาหารกัน!",
   "dialogue.bao.option.recipes": "ทำอะไรได้บ้าง?",
-
   "cooking.title": "ทำอาหาร",
   "cooking.start": "เริ่มทำอาหาร",
   "cooking.inProgress": "กำลังปรุง...",
@@ -250,14 +249,11 @@ export const th: LocaleMessages = {
   "cooking.recipe.fish_pie": "พายปลา",
   "cooking.recipe.carrot_soup": "ซุปแครอท",
   "cooking.recipe.fruit_salad": "สลัดผลไม้",
-
   "item.bread": "ขนมปัง",
   "item.fish_pie": "พายปลา",
   "item.carrot_soup": "ซุปแครอท",
   "item.fruit_salad": "สลัดผลไม้",
-
   "collection.category.cooking": "ทำอาหาร",
-
   "festival.title": "เทศกาล",
   "festival.active": "เทศกาลกำลังดำเนินอยู่!",
   "festival.inactive": "วันนี้ไม่มีเทศกาล",
@@ -275,4 +271,28 @@ export const th: LocaleMessages = {
   "festival.starlight_night.title": "คืนแสงดาว",
   "festival.starlight_night.description":
     "ค่ำคืนฤดูหนาวอันมหัศจรรย์ที่ดวงดาวส่องสว่างที่สุด",
+  "npc.hana.name": "ฮานะ นักเลี้ยงสัตว์",
+  "npc.activity.ranch": "อยู่ที่ฟาร์ม",
+  "dialogue.hana.greeting": "สวัสดี! ฉันดูแลสัตว์แถวนี้ อยากเรียนรู้วิธีเลี้ยงไหม?",
+  "dialogue.hana.taming":
+    "หาสัตว์ป่าแล้วให้อาหารมัน ให้อาหารเรื่อยๆ แล้วมันจะไว้ใจและตามคุณไป!",
+  "dialogue.hana.option.taming": "เลี้ยงสัตว์ยังไง?",
+  "dialogue.hana.option.quest": "มีงานให้ทำไหม?",
+  "animal.rabbit": "กระต่าย",
+  "animal.deer": "กวาง",
+  "animal.fox": "จิ้งจอก",
+  "animal.bird": "นก",
+  "animal.turtle": "เต่า",
+  "animal.tpierce.feeding": "กำลังให้อาหาร...",
+  "animal.tpierce.tamed": "คุณเลี้ยง{animal}สำเร็จ!",
+  "animal.tpierce.fled": "สัตว์หนีไปแล้ว!",
+  "animal.tpierce.following": "{animal}กำลังตามคุณ",
+  "item.animal_feed": "อาหารสัตว์",
+  "item.pet_treat": "ขนมสัตว์เลี้ยง",
+  "quest.tame_animal.title": "เลี้ยงสัตว์ป่า",
+  "quest.tame_animal.description": "หาสัตว์ป่าและให้อาหารจนเชื่อง",
+  "achievement.first_tame.title": "เพื่อนคนแรก",
+  "achievement.first_tame.description": "เลี้ยงสัตว์ป่าตัวแรกสำเร็จ",
+  "achievement.animal_friend.title": "เพื่อนสัตว์",
+  "achievement.animal_friend.description": "เลี้ยงสัตว์ 3 ตัว",
 };

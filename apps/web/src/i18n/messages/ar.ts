@@ -235,14 +235,12 @@ export const ar: LocaleMessages = {
 
   "npc.bao.name": "الشيف باو",
   "npc.activity.cooking": "يطبخ",
-
   "dialogue.bao.greeting":
     "مرحبا في مطبخي! يمكنني تحويل المكونات الطازجة إلى وجبات لذيذة. هل نطبخ شيئا؟",
   "dialogue.bao.recipes":
     "الخبز يحتاج قمح، فطيرة السمك تحتاج سمكة وقمح، حساء الجزر يحتاج جزر وقمح، وسلطة الفواكه تحتاج بطيخ. بسيط لكن مشبع!",
   "dialogue.bao.option.cook": "هيا نطبخ!",
   "dialogue.bao.option.recipes": "ماذا يمكنني تحضيره؟",
-
   "cooking.title": "الطبخ",
   "cooking.start": "ابدأ الطبخ",
   "cooking.inProgress": "جاري الطبخ...",
@@ -254,14 +252,11 @@ export const ar: LocaleMessages = {
   "cooking.recipe.fish_pie": "فطيرة سمك",
   "cooking.recipe.carrot_soup": "حساء الجزر",
   "cooking.recipe.fruit_salad": "سلطة فواكه",
-
   "item.bread": "خبز",
   "item.fish_pie": "فطيرة سمك",
   "item.carrot_soup": "حساء الجزر",
   "item.fruit_salad": "سلطة فواكه",
-
   "collection.category.cooking": "الطبخ",
-
   "festival.title": "مهرجان",
   "festival.active": "المهرجان جارٍ!",
   "festival.inactive": "لا يوجد مهرجان اليوم",
@@ -277,4 +272,27 @@ export const ar: LocaleMessages = {
   "festival.starlight_night.title": "ليلة النجوم",
   "festival.starlight_night.description":
     "ليلة شتوية ساحرة حيث تتألق النجوم بأقصى سطوع.",
+  "npc.hana.name": "هانا المربية",
+  "npc.activity.ranch": "في المزرعة",
+  "dialogue.hana.greeting": "مرحبا! أنا أعتني بالحيوانات هنا. هل تريد تعلم الترويض؟",
+  "dialogue.hana.taming": "ابحث عن حيوان بري وأطعمه. استمر في إطعامه وسيثق بك ويتبعك!",
+  "dialogue.hana.option.taming": "كيف أروض حيوانا؟",
+  "dialogue.hana.option.quest": "هل لديك عمل لي؟",
+  "animal.rabbit": "أرنب",
+  "animal.deer": "غزال",
+  "animal.fox": "ثعلب",
+  "animal.bird": "طائر",
+  "animal.turtle": "سلحفاة",
+  "animal.tpierce.feeding": "جاري الإطعام...",
+  "animal.tpierce.tamed": "لقد روضت {animal}!",
+  "animal.tpierce.fled": "هرب الحيوان!",
+  "animal.tpierce.following": "{animal} يتبعك",
+  "item.animal_feed": "طعام حيوانات",
+  "item.pet_treat": "مكافأة للحيوان الأليف",
+  "quest.tame_animal.title": "روض حيوانا بريا",
+  "quest.tame_animal.description": "ابحث عن حيوان بري وأطعمه حتى يثق بك.",
+  "achievement.first_tame.title": "الصديق الأول",
+  "achievement.first_tame.description": "روض أول حيوان بري.",
+  "achievement.animal_friend.title": "صديق الحيوانات",
+  "achievement.animal_friend.description": "روض 3 حيوانات مختلفة.",
 };

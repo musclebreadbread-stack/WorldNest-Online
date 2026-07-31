@@ -1,0 +1,45 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Animals/Pets system: wild animals with biome-aware spawning, behavior AI (wander/idle/flee), taming via feeding, pet following player with pathfinding. Includes AnimalComponent, AnimalSystem, animal catalogue, taming/pet ops, new items (animal_feed, pet_treat), NPC rancher 'Hana', and full i18n across 12 locales.",
+  "status": "in_progress",
+  "steps": [
+    "1. Add new item types to packages/shared/src/items.ts: 'animal_feed' and 'pet_treat' to the ItemId union and ITEM_DEFINITIONS record.",
+    "2. Create packages/game-engine/src/animals/ directory with: animalDefinitions.ts (AnimalSpecies enum, AnimalDefinition interface with id, nameKey, biomes, tamingFeedCount, speed, fleeDistance, textureKey; catalogue of 4-5 species: rabbit, deer, fox, bird, turtle), animalOps.ts (pure functions: canTame, feedAnimal, tickWander, tickFlee, tickFollow, rollSpawnChance, pickWanderTarget), animalState.ts (AnimalBehavior type: 'idle'|'wander'|'flee'|'follow'|'tamed_idle'), index.ts re-exporting public API.",
+    "3. Create packages/game-engine/src/components/AnimalComponent.ts extending Component('animal') with fields: speciesId, behavior (AnimalBehavior), ownerId (string|null for tamed animals), feedCount, wanderTarget ({x,y}|null), wanderTimer, fleeTimer, version.",
+    "4. Create packages/game-engine/src/systems/AnimalSystem.ts extending System with requiredComponents ['position','animal','velocity']. Logic: idle animals occasionally pick a wander target, wandering animals move toward target then go idle, animals flee when player is within fleeDistance, tamed animals follow their owner with simple path toward owner position. Feed interaction: when player interacts facing an animal tile, consume animal_feed, increment feedCount, if feedCount >= tamingFeedCount then set ownerId and behavior to 'follow'.",
+    "5. Add new NPC 'rancher_hana' to packages/game-engine/src/world/NpcCatalogue.ts with role 'rancher', add 'rancher' to NpcRole type, add schedule, add 'ranch' to NpcActivity type in npcSchedule.ts.",
+    "6. Add dialogue tree for Hana in packages/game-engine/src/dialogue/ following existing patterns (dialogueTrees.ts or similar). Hana explains animal taming and sells animal_feed.",
+    "7. Add animal-related quest to packages/game-engine/src/quests/questDefinitions.ts: 'tame_animal' quest given by Hana with objective kind 'tame' count 1.",
+    "8. Add quest objective kind 'tame' to QuestObjective union type and wire progress tracking in questOps.ts.",
+    "9. Add 2 new achievements to packages/game-engine/src/achievements/achievementDefinitions.ts: 'first_tame' (tame 1 animal) and 'animal_friend' (tame 3 animals). Add 'tame' condition kind to AchievementCondition.",
+    "10. Export new components and systems from packages/game-engine/src/index.ts and packages/game-engine/src/components/index.ts and packages/game-engine/src/systems/index.ts.",
+    "11. Add i18n keys to all 12 locale files in apps/web/src/i18n/messages/*.ts: item.animal_feed, item.pet_treat, npc.hana.name, npc.activity.ranch, dialogue.hana.*, animal.rabbit/deer/fox/bird/turtle, achievement.first_tame.*, achievement.animal_friend.*, quest.tame_animal.*, fishing-style taming status messages.",
+    "12. Update ITEM_NAME_KEYS in apps/web/src/i18n/index.ts for the new items. Add NPC_ACTIVITY_KEYS entry for 'ranch'.",
+    "13. Write comprehensive tests in packages/game-engine/src/__tests__/animals.test.ts covering: animal definition validation, taming ops (feed increments, taming threshold), behavior state machine (idle->wander->idle, flee triggers, follow logic), AnimalSystem update with entities, spawn chance rolling.",
+    "14. Run pnpm format && pnpm lint && pnpm build && pnpm test to verify."
+  ],
+  "acceptance_criteria": [
+    "ItemId type includes 'animal_feed' and 'pet_treat' with valid ITEM_DEFINITIONS entries",
+    "AnimalComponent exists as pure data with 'animal' type string",
+    "AnimalSystem processes entities with position+animal+velocity components",
+    "animalOps.ts contains pure functions for taming and behavior logic",
+    "4-5 animal species defined with biome associations and taming thresholds",
+    "NPC Hana added with rancher role, schedule, and dialogue tree",
+    "Quest 'tame_animal' and achievements 'first_tame'/'animal_friend' are properly defined",
+    "All 12 locale files have matching keys for all new user-facing strings",
+    "ITEM_NAME_KEYS updated for new items",
+    "All tests pass including new animals.test.ts with at least 15 test cases",
+    "pnpm build succeeds with no type errors",
+    "pnpm lint passes with 0 warnings",
+    "All files under 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

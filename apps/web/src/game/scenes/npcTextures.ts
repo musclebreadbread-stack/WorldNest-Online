@@ -12,6 +12,7 @@ const NPC_COLORS: Record<NpcRole, { tunic: number; accent: number }> = {
   questgiver: { tunic: 0xff8a65, accent: 0xfff8e1 },
   curator: { tunic: 0x42a5f5, accent: 0xffe0b2 },
   chef: { tunic: 0xffffff, accent: 0xe53935 },
+  rancher: { tunic: 0x8d6e63, accent: 0xa5d6a7 },
 };
 
 /**

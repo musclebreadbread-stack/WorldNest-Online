@@ -34,3 +34,4 @@ export { CollectionComponent } from "./CollectionComponent";
 export { AchievementComponent } from "./AchievementComponent";
 export { CookingComponent } from "./CookingComponent";
 export { FestivalComponent } from "./FestivalComponent";
+export { AnimalComponent } from "./AnimalComponent";

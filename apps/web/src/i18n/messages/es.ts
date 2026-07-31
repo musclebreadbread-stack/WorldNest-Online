@@ -186,7 +186,6 @@ export const es: LocaleMessages = {
 
   "npc.milo.name": "Milo el Curador",
   "npc.activity.museum": "En el museo",
-
   "dialogue.milo.greeting":
     "Bienvenido a nuestro pequeño museo. Cada objeto que encuentras cuenta una historia. ¿Quieres añadir algo a la colección?",
   "dialogue.milo.donate":
@@ -196,9 +195,7 @@ export const es: LocaleMessages = {
   "dialogue.milo.option.donate": "Quiero donar",
   "dialogue.milo.option.categories": "Muéstrame las categorías",
   "dialogue.milo.option.open": "Abrir libro de colección",
-
   "dialogue.ada.option.donate": "Ayudar al museo",
-
   "collection.title": "Libro de colección",
   "collection.donate": "Donar",
   "collection.donated": "Ya donado",
@@ -210,10 +207,8 @@ export const es: LocaleMessages = {
   "collection.category.farming": "Cultivo",
   "collection.category.fishing": "Pesca",
   "collection.category.crafted": "Artesanía",
-
   "quest.donate_first.title": "Primera donación",
   "quest.donate_first.description": "Dona cualquier objeto a Milo en el museo.",
-
   "achievement.title": "Logros",
   "achievement.unlocked": "Logro desbloqueado: {name}",
   "achievement.first_harvest.title": "Primera cosecha",
@@ -233,17 +228,14 @@ export const es: LocaleMessages = {
   "achievement.full_gathering.title": "Experto en naturaleza",
   "achievement.full_gathering.description":
     "Completa toda la colección de recolección.",
-
   "npc.bao.name": "Chef Bao el cocinero",
   "npc.activity.cooking": "Cocinando",
-
   "dialogue.bao.greeting":
     "Bienvenido a mi cocina. Puedo convertir ingredientes frescos en platos deliciosos. Quieres que cocinemos algo?",
   "dialogue.bao.recipes":
     "El pan necesita trigo, el pastel de pescado necesita un pez y trigo, la sopa de zanahoria necesita zanahorias y trigo, y la ensalada de frutas necesita melones. Sencillo pero nutritivo!",
   "dialogue.bao.option.cook": "Vamos a cocinar!",
   "dialogue.bao.option.recipes": "Que puedo preparar?",
-
   "cooking.title": "Cocina",
   "cooking.start": "Empezar a cocinar",
   "cooking.inProgress": "Cocinando...",
@@ -255,14 +247,11 @@ export const es: LocaleMessages = {
   "cooking.recipe.fish_pie": "Pastel de pescado",
   "cooking.recipe.carrot_soup": "Sopa de zanahoria",
   "cooking.recipe.fruit_salad": "Ensalada de frutas",
-
   "item.bread": "Pan",
   "item.fish_pie": "Pastel de pescado",
   "item.carrot_soup": "Sopa de zanahoria",
   "item.fruit_salad": "Ensalada de frutas",
-
   "collection.category.cooking": "Cocina",
-
   "festival.title": "Festivales",
   "festival.active": "Festival en curso",
   "festival.inactive": "Hoy no hay festival",
@@ -280,4 +269,30 @@ export const es: LocaleMessages = {
   "festival.starlight_night.title": "Noche Estrellada",
   "festival.starlight_night.description":
     "Una noche invernal donde las estrellas brillan con fuerza.",
+  "npc.hana.name": "Hana la Ranchera",
+  "npc.activity.ranch": "En el rancho",
+  "dialogue.hana.greeting":
+    "Hola! Cuido a los animales de por aqui. Quieres aprender a domesticarlos?",
+  "dialogue.hana.taming":
+    "Encuentra un animal salvaje y dale alimento. Sigue alimentandolo y al final confiara en ti y te seguira!",
+  "dialogue.hana.option.taming": "Como domestico un animal?",
+  "dialogue.hana.option.quest": "Tienes algun trabajo para mi?",
+  "animal.rabbit": "Conejo",
+  "animal.deer": "Ciervo",
+  "animal.fox": "Zorro",
+  "animal.bird": "Pajaro",
+  "animal.turtle": "Tortuga",
+  "animal.tpierce.feeding": "Alimentando...",
+  "animal.tpierce.tamed": "Domesticaste un {animal}!",
+  "animal.tpierce.fled": "El animal huyo!",
+  "animal.tpierce.following": "{animal} te esta siguiendo",
+  "item.animal_feed": "Alimento animal",
+  "item.pet_treat": "Golosina para mascota",
+  "quest.tame_animal.title": "Domestica un animal salvaje",
+  "quest.tame_animal.description":
+    "Encuentra un animal salvaje y alimentalo hasta que confie en ti.",
+  "achievement.first_tame.title": "Primer amigo",
+  "achievement.first_tame.description": "Domestica tu primer animal salvaje.",
+  "achievement.animal_friend.title": "Amigo de los animales",
+  "achievement.animal_friend.description": "Domestica 3 animales diferentes.",
 };

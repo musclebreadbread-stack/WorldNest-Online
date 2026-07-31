@@ -11,7 +11,8 @@
  */
 import type { NpcScheduleEntry } from "./npcSchedule";
 
-export type NpcRole = "villager" | "shopkeeper" | "questgiver" | "curator" | "chef";
+export type NpcRole =
+  "villager" | "shopkeeper" | "questgiver" | "curator" | "chef" | "rancher";
 
 export interface NpcDefinition {
   id: string;
@@ -110,6 +111,21 @@ export const NPC_DEFINITIONS: readonly NpcDefinition[] = [
       { fromHour: 7, activity: "cooking", tileX: 12, tileY: 13 },
       { fromHour: 13, activity: "market", tileX: 17, tileY: 11 },
       { fromHour: 20, activity: "rest", tileX: 12, tileY: 14 },
+    ],
+  },
+  {
+    id: "rancher_hana",
+    nameKey: "npc.hana.name",
+    dialogueId: "hana_ranch",
+    anchorTileX: 22,
+    anchorTileY: 11,
+    textureKey: "npc_rancher",
+    role: "rancher",
+    schedule: [
+      { fromHour: 0, activity: "rest", tileX: 22, tileY: 12 },
+      { fromHour: 6, activity: "ranch", tileX: 22, tileY: 11 },
+      { fromHour: 12, activity: "market", tileX: 17, tileY: 10 },
+      { fromHour: 19, activity: "rest", tileX: 22, tileY: 12 },
     ],
   },
 ];

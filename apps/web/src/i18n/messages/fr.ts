@@ -175,7 +175,6 @@ export const fr: LocaleMessages = {
   "season.summer": "Été",
   "season.autumn": "Automne",
   "season.winter": "Hiver",
-
   "fishing.cast": "Lancement...",
   "fishing.waiting": "En attente d'une touche...",
   "fishing.bite": "Quelque chose mord ! Appuyez sur E !",
@@ -183,10 +182,8 @@ export const fr: LocaleMessages = {
   "fishing.missed": "Le poisson s'est échappé...",
   "fishing.noRod": "Il vous faut une canne à pêche",
   "fishing.noEnergy": "Pas assez d'énergie pour pêcher",
-
   "npc.milo.name": "Milo le Conservateur",
   "npc.activity.museum": "Au musée",
-
   "dialogue.milo.greeting":
     "Bienvenue dans notre petit musée ! Chaque objet trouvé raconte une histoire. Voulez-vous enrichir la collection ?",
   "dialogue.milo.donate":
@@ -196,9 +193,7 @@ export const fr: LocaleMessages = {
   "dialogue.milo.option.donate": "Je veux donner",
   "dialogue.milo.option.categories": "Montrer les catégories",
   "dialogue.milo.option.open": "Ouvrir le livre de collection",
-
   "dialogue.ada.option.donate": "Aider le musée",
-
   "collection.title": "Livre de collection",
   "collection.donate": "Donner",
   "collection.donated": "Déjà donné",
@@ -210,10 +205,8 @@ export const fr: LocaleMessages = {
   "collection.category.farming": "Culture",
   "collection.category.fishing": "Pêche",
   "collection.category.crafted": "Artisanat",
-
   "quest.donate_first.title": "Première donation",
   "quest.donate_first.description": "Donnez un objet à Milo au musée.",
-
   "achievement.title": "Succès",
   "achievement.unlocked": "Succès débloqué : {name}",
   "achievement.first_harvest.title": "Première récolte",
@@ -234,17 +227,14 @@ export const fr: LocaleMessages = {
   "achievement.full_gathering.title": "Expert de la nature",
   "achievement.full_gathering.description":
     "Complétez toute la collection de cueillette.",
-
   "npc.bao.name": "Le Chef Bao",
   "npc.activity.cooking": "En cuisine",
-
   "dialogue.bao.greeting":
     "Bienvenue dans ma cuisine ! Je peux transformer des ingredients frais en plats delicieux. On cuisine ensemble ?",
   "dialogue.bao.recipes":
     "Le pain necessite du ble, la tourte au poisson necessite un poisson et du ble, la soupe de carottes necessite des carottes et du ble, et la salade de fruits necessite des melons. Simple mais nourrissant !",
   "dialogue.bao.option.cook": "Cuisinons !",
   "dialogue.bao.option.recipes": "Que puis-je preparer ?",
-
   "cooking.title": "Cuisine",
   "cooking.start": "Commencer a cuisiner",
   "cooking.inProgress": "Cuisson en cours...",
@@ -257,14 +247,11 @@ export const fr: LocaleMessages = {
   "cooking.recipe.fish_pie": "Tourte au poisson",
   "cooking.recipe.carrot_soup": "Soupe de carottes",
   "cooking.recipe.fruit_salad": "Salade de fruits",
-
   "item.bread": "Pain",
   "item.fish_pie": "Tourte au poisson",
   "item.carrot_soup": "Soupe de carottes",
   "item.fruit_salad": "Salade de fruits",
-
   "collection.category.cooking": "Cuisine",
-
   "festival.title": "Festivites",
   "festival.active": "Festival en cours!",
   "festival.inactive": "Pas de festival aujourd'hui",
@@ -282,4 +269,30 @@ export const fr: LocaleMessages = {
   "festival.starlight_night.title": "Nuit Etoilee",
   "festival.starlight_night.description":
     "Une soiree magique d'hiver ou les etoiles brillent intensement.",
+  "npc.hana.name": "Hana la Ranchere",
+  "npc.activity.ranch": "Au ranch",
+  "dialogue.hana.greeting":
+    "Salut ! Je m'occupe des animaux du coin. Tu veux apprendre a les apprivoiser ?",
+  "dialogue.hana.taming":
+    "Trouve un animal sauvage et donne-lui de la nourriture. Continue et il finira par te faire confiance et te suivre !",
+  "dialogue.hana.option.taming": "Comment apprivoiser un animal ?",
+  "dialogue.hana.option.quest": "Tu as du travail pour moi ?",
+  "animal.rabbit": "Lapin",
+  "animal.deer": "Cerf",
+  "animal.fox": "Renard",
+  "animal.bird": "Oiseau",
+  "animal.turtle": "Tortue",
+  "animal.tpierce.feeding": "Nourrissage...",
+  "animal.tpierce.tamed": "Tu as apprivoise un {animal} !",
+  "animal.tpierce.fled": "L'animal s'est enfui !",
+  "animal.tpierce.following": "{animal} te suit",
+  "item.animal_feed": "Nourriture animale",
+  "item.pet_treat": "Friandise pour animal",
+  "quest.tame_animal.title": "Apprivoiser un animal sauvage",
+  "quest.tame_animal.description":
+    "Trouve un animal sauvage et nourris-le jusqu'a ce qu'il te fasse confiance.",
+  "achievement.first_tame.title": "Premier ami",
+  "achievement.first_tame.description": "Apprivoise ton premier animal sauvage.",
+  "achievement.animal_friend.title": "Ami des animaux",
+  "achievement.animal_friend.description": "Apprivoise 3 animaux differents.",
 };

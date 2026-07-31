@@ -58,7 +58,9 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('bread', 25, 12),
   ('fish_pie', 50, 24),
   ('carrot_soup', 40, 18),
-  ('fruit_salad', 35, 16)
+  ('fruit_salad', 35, 16),
+  ('animal_feed', 15, 5),
+  ('pet_treat', 20, 8)
 on conflict (item_id) do update
   set buy = excluded.buy,
       sell = excluded.sell;
@@ -80,7 +82,8 @@ insert into public.quest_rewards (quest_id, target, reward_coins, reward_items) 
   ('collect_wood', 5, 30, '[{"itemId":"wheat_seed","quantity":3}]'::jsonb),
   ('build_fence', 2, 50, '[{"itemId":"wood","quantity":3}]'::jsonb),
   ('greet_pip', 1, 15, '[{"itemId":"flower","quantity":2}]'::jsonb),
-  ('donate_first', 1, 25, '[{"itemId":"flower","quantity":1}]'::jsonb)
+  ('donate_first', 1, 25, '[{"itemId":"flower","quantity":1}]'::jsonb),
+  ('tame_animal', 1, 40, '[{"itemId":"pet_treat","quantity":3}]'::jsonb)
 on conflict (quest_id) do update
   set target = excluded.target,
       reward_coins = excluded.reward_coins,

@@ -119,6 +119,7 @@ export class AchievementSystem extends System {
       questCompletionCount: achievement.totalQuestsCompleted,
       fishCaughtCount: achievement.totalFishCaught,
       totalCoinsEarned: achievement.totalCoinsEarned,
+      animalsTamedCount: achievement.totalAnimalsTamed,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

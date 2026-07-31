@@ -37,6 +37,7 @@ export {
   AchievementComponent,
   CookingComponent,
   FestivalComponent,
+  AnimalComponent,
 } from "./components";
 export type {
   KeyState,
@@ -103,6 +104,26 @@ export {
 } from "./festivals";
 export type { FestivalDefinition } from "./festivals";
 
+// Animals (pure; species catalogue, behavior ops, taming logic)
+export {
+  ANIMAL_DEFINITIONS,
+  ANIMAL_SPECIES,
+  FOLLOW_STOP_DISTANCE,
+  IDLE_WANDER_INTERVAL_MS,
+  WANDER_RADIUS,
+  canTame,
+  feedAnimal,
+  getAnimalDefinition,
+  pickWanderTarget,
+  rollSpawnChance,
+  shouldFlee,
+  tickFlee,
+  tickFollow,
+  tickIdle,
+  tickWander,
+} from "./animals";
+export type { AnimalBehavior, AnimalDefinition, AnimalSpecies } from "./animals";
+
 // Collection (pure; museum donation and category tracking)
 export {
   COLLECTION_CATEGORIES,
@@ -156,6 +177,7 @@ export {
   pollProgress,
   recordDonation,
   recordTalk,
+  recordTame,
 } from "./quests";
 export type {
   QuestDefinition,
@@ -229,6 +251,7 @@ export {
   AchievementSystem,
   CookingSystem,
   FestivalSystem,
+  AnimalSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -248,6 +271,7 @@ export type {
   RngFn,
   AchievementStructureCounter,
   DayGetter,
+  TameListener,
 } from "./systems";
 
 // World Generation

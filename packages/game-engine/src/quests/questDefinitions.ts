@@ -17,7 +17,8 @@ export type QuestObjective =
   | { kind: "collect"; itemId: ItemId; count: number }
   | { kind: "build"; itemId: ItemId; count: number }
   | { kind: "talk"; npcId: string }
-  | { kind: "donate"; count: number };
+  | { kind: "donate"; count: number }
+  | { kind: "tame"; count: number };
 
 /** One reward stack. */
 export interface QuestRewardItem {
@@ -88,6 +89,16 @@ export const QUEST_DEFINITIONS: Record<string, QuestDefinition> = {
     objective: { kind: "donate", count: 1 },
     rewards: { items: [{ itemId: "flower", quantity: 1 }], coins: 25 },
   },
+
+  // Tame: teaches the animal taming mechanic, given by Hana
+  tame_animal: {
+    id: "tame_animal",
+    titleKey: "quest.tame_animal.title",
+    descriptionKey: "quest.tame_animal.description",
+    giverNpcId: "rancher_hana",
+    objective: { kind: "tame", count: 1 },
+    rewards: { items: [{ itemId: "pet_treat", quantity: 3 }], coins: 40 },
+  },
 };
 
 /** Every quest id, in catalogue order, so the quest log is stable. */
@@ -109,6 +120,7 @@ export function objectiveTarget(objective: QuestObjective): number {
     case "collect":
     case "build":
     case "donate":
+    case "tame":
       return objective.count;
   }
 }

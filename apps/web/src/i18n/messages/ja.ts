@@ -240,7 +240,6 @@ export const ja: LocaleMessages = {
     "パンには小麦、フィッシュパイには魚と小麦、にんじんスープにはにんじんと小麦、フルーツサラダにはメロンが必要です。シンプルだけどお腹いっぱいになりますよ！",
   "dialogue.bao.option.cook": "料理しよう！",
   "dialogue.bao.option.recipes": "何が作れますか？",
-
   "cooking.title": "料理",
   "cooking.start": "料理を始める",
   "cooking.inProgress": "調理中...",
@@ -252,14 +251,11 @@ export const ja: LocaleMessages = {
   "cooking.recipe.fish_pie": "フィッシュパイ",
   "cooking.recipe.carrot_soup": "にんじんスープ",
   "cooking.recipe.fruit_salad": "フルーツサラダ",
-
   "item.bread": "パン",
   "item.fish_pie": "フィッシュパイ",
   "item.carrot_soup": "にんじんスープ",
   "item.fruit_salad": "フルーツサラダ",
-
   "collection.category.cooking": "料理",
-
   "festival.title": "お祭り",
   "festival.active": "お祭り開催中！",
   "festival.inactive": "今日はお祭りはありません",
@@ -274,4 +270,29 @@ export const ja: LocaleMessages = {
     "秋は珍しいきのことあたたかいシチューの市が開かれます。",
   "festival.starlight_night.title": "星降る夜",
   "festival.starlight_night.description": "星が最も明るく輝く魔法のような冬の夜です。",
+  "npc.hana.name": "牧場主ハナ",
+  "npc.activity.ranch": "牧場にいる",
+  "dialogue.hana.greeting":
+    "やあ！この辺りの動物たちの世話をしているよ。なつかせ方を知りたい？",
+  "dialogue.hana.taming":
+    "野生の動物を見つけてエサをあげてね。何度もあげれば、ついて来てくれるようになるよ！",
+  "dialogue.hana.option.taming": "動物のなつかせ方は？",
+  "dialogue.hana.option.quest": "何かお手伝いできる？",
+  "animal.rabbit": "ウサギ",
+  "animal.deer": "シカ",
+  "animal.fox": "キツネ",
+  "animal.bird": "トリ",
+  "animal.turtle": "カメ",
+  "animal.tpierce.feeding": "エサをあげている...",
+  "animal.tpierce.tamed": "{animal}をなつかせた！",
+  "animal.tpierce.fled": "動物が逃げた！",
+  "animal.tpierce.following": "{animal}がついて来ている",
+  "item.animal_feed": "動物のエサ",
+  "item.pet_treat": "ペットのおやつ",
+  "quest.tame_animal.title": "野生の動物をなつかせよう",
+  "quest.tame_animal.description": "野生の動物を見つけてエサをあげ、なつかせよう。",
+  "achievement.first_tame.title": "はじめての友だち",
+  "achievement.first_tame.description": "はじめて野生の動物をなつかせよう。",
+  "achievement.animal_friend.title": "動物の友だち",
+  "achievement.animal_friend.description": "動物を3匹なつかせよう。",
 };

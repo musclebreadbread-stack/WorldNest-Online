@@ -230,17 +230,14 @@ export const hi: LocaleMessages = {
   "achievement.fish_master.description": "किसी भी बायोम से 10 मछलियाँ पकड़ें।",
   "achievement.full_gathering.title": "प्रकृति विशेषज्ञ",
   "achievement.full_gathering.description": "पूरा संग्रह संकलन पूरा करें।",
-
   "npc.bao.name": "शेफ बाओ",
   "npc.activity.cooking": "खाना बना रहे हैं",
-
   "dialogue.bao.greeting":
     "मेरी रसोई में आपका स्वागत है! मैं ताज़ी सामग्री से स्वादिष्ट व्यंजन बना सकता हूँ। कुछ पकाएं?",
   "dialogue.bao.recipes":
     "रोटी के लिए गेहूँ चाहिए, मछली पाई के लिए मछली और गेहूँ, गाजर सूप के लिए गाजर और गेहूँ, और फल सलाद के लिए तरबूज़। सादा लेकिन पेट भरने वाला!",
   "dialogue.bao.option.cook": "चलो पकाते हैं!",
   "dialogue.bao.option.recipes": "मैं क्या बना सकता हूँ?",
-
   "cooking.title": "खाना पकाना",
   "cooking.start": "पकाना शुरू करें",
   "cooking.inProgress": "पक रहा है...",
@@ -252,14 +249,11 @@ export const hi: LocaleMessages = {
   "cooking.recipe.fish_pie": "मछली पाई",
   "cooking.recipe.carrot_soup": "गाजर सूप",
   "cooking.recipe.fruit_salad": "फल सलाद",
-
   "item.bread": "रोटी",
   "item.fish_pie": "मछली पाई",
   "item.carrot_soup": "गाजर सूप",
   "item.fruit_salad": "फल सलाद",
-
   "collection.category.cooking": "खाना पकाना",
-
   "festival.title": "उत्सव",
   "festival.active": "उत्सव चल रहा है!",
   "festival.inactive": "आज कोई उत्सव नहीं है",
@@ -276,4 +270,29 @@ export const hi: LocaleMessages = {
   "festival.starlight_night.title": "तारों की रात",
   "festival.starlight_night.description":
     "एक जादुई शीतकालीन शाम जब तारे सबसे चमकीले होते हैं।",
+  "npc.hana.name": "पशुपालक हाना",
+  "npc.activity.ranch": "खेत पर",
+  "dialogue.hana.greeting":
+    "नमस्ते! मैं यहाँ के जानवरों की देखभाल करती हूँ। पालतू बनाना सीखना चाहते हो?",
+  "dialogue.hana.taming":
+    "जंगली जानवर ढूँढो और उसे चारा दो। खिलाते रहो और वो तुम पर भरोसा करके साथ चलने लगेगा!",
+  "dialogue.hana.option.taming": "जानवर कैसे पालें?",
+  "dialogue.hana.option.quest": "मेरे लिए कोई काम है?",
+  "animal.rabbit": "खरगोश",
+  "animal.deer": "हिरण",
+  "animal.fox": "लोमड़ी",
+  "animal.bird": "पक्षी",
+  "animal.turtle": "कछुआ",
+  "animal.tpierce.feeding": "खिला रहे हैं...",
+  "animal.tpierce.tamed": "आपने एक {animal} पाला!",
+  "animal.tpierce.fled": "जानवर भाग गया!",
+  "animal.tpierce.following": "{animal} आपके पीछे आ रहा है",
+  "item.animal_feed": "जानवरों का चारा",
+  "item.pet_treat": "पालतू का नाश्ता",
+  "quest.tame_animal.title": "जंगली जानवर पालें",
+  "quest.tame_animal.description": "एक जंगली जानवर ढूँढो और खिलाकर पालतू बनाओ।",
+  "achievement.first_tame.title": "पहला दोस्त",
+  "achievement.first_tame.description": "अपना पहला जंगली जानवर पालें।",
+  "achievement.animal_friend.title": "जानवरों का दोस्त",
+  "achievement.animal_friend.description": "3 अलग-अलग जानवर पालें।",
 };

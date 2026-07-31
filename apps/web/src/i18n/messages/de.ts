@@ -185,7 +185,6 @@ export const de: LocaleMessages = {
 
   "npc.milo.name": "Milo der Kurator",
   "npc.activity.museum": "Im Museum",
-
   "dialogue.milo.greeting":
     "Willkommen in unserem kleinen Museum! Jeder Fund erzählt eine Geschichte. Möchtest du etwas zur Sammlung hinzufügen?",
   "dialogue.milo.donate":
@@ -195,9 +194,7 @@ export const de: LocaleMessages = {
   "dialogue.milo.option.donate": "Ich möchte spenden",
   "dialogue.milo.option.categories": "Kategorien anzeigen",
   "dialogue.milo.option.open": "Sammlungsbuch öffnen",
-
   "dialogue.ada.option.donate": "Dem Museum helfen",
-
   "collection.title": "Sammlungsbuch",
   "collection.donate": "Spenden",
   "collection.donated": "Bereits gespendet",
@@ -209,11 +206,9 @@ export const de: LocaleMessages = {
   "collection.category.farming": "Anbau",
   "collection.category.fishing": "Angeln",
   "collection.category.crafted": "Handwerk",
-
   "quest.donate_first.title": "Erste Spende",
   "quest.donate_first.description":
     "Spende einen beliebigen Gegenstand an Milo im Museum.",
-
   "achievement.title": "Erfolge",
   "achievement.unlocked": "Erfolg freigeschaltet: {name}",
   "achievement.first_harvest.title": "Erste Ernte",
@@ -233,17 +228,14 @@ export const de: LocaleMessages = {
   "achievement.full_gathering.title": "Naturexperte",
   "achievement.full_gathering.description":
     "Vervollständige die gesamte Sammelkollektion.",
-
   "npc.bao.name": "Koch Bao",
   "npc.activity.cooking": "Kocht gerade",
-
   "dialogue.bao.greeting":
     "Willkommen in meiner Kueche! Ich verwandle frische Zutaten in koestliche Gerichte. Wollen wir etwas kochen?",
   "dialogue.bao.recipes":
     "Brot braucht Weizen, Fischpastete braucht einen Fisch und Weizen, Karottensuppe braucht Karotten und Weizen, und Obstsalat braucht Melonen. Einfach aber saettigend!",
   "dialogue.bao.option.cook": "Lass uns kochen!",
   "dialogue.bao.option.recipes": "Was kann ich zubereiten?",
-
   "cooking.title": "Kochen",
   "cooking.start": "Kochen beginnen",
   "cooking.inProgress": "Wird gekocht...",
@@ -255,14 +247,11 @@ export const de: LocaleMessages = {
   "cooking.recipe.fish_pie": "Fischpastete",
   "cooking.recipe.carrot_soup": "Karottensuppe",
   "cooking.recipe.fruit_salad": "Obstsalat",
-
   "item.bread": "Brot",
   "item.fish_pie": "Fischpastete",
   "item.carrot_soup": "Karottensuppe",
   "item.fruit_salad": "Obstsalat",
-
   "collection.category.cooking": "Kochen",
-
   "festival.title": "Festtag",
   "festival.active": "Fest im Gange!",
   "festival.inactive": "Heute kein Fest",
@@ -280,4 +269,30 @@ export const de: LocaleMessages = {
   "festival.starlight_night.title": "Sternennacht",
   "festival.starlight_night.description":
     "Ein magischer Winterabend, an dem die Sterne am hellsten leuchten.",
+  "npc.hana.name": "Hana die Rancherin",
+  "npc.activity.ranch": "Auf der Ranch",
+  "dialogue.hana.greeting":
+    "Hallo! Ich kuemmere mich um die Tiere hier. Willst du lernen, wie man sie zaehmt?",
+  "dialogue.hana.taming":
+    "Finde ein wildes Tier und gib ihm Futter. Fuettere es weiter und es wird dir vertrauen und dir folgen!",
+  "dialogue.hana.option.taming": "Wie zaehme ich ein Tier?",
+  "dialogue.hana.option.quest": "Hast du Arbeit fuer mich?",
+  "animal.rabbit": "Kaninchen",
+  "animal.deer": "Hirsch",
+  "animal.fox": "Fuchs",
+  "animal.bird": "Vogel",
+  "animal.turtle": "Schildkroete",
+  "animal.tpierce.feeding": "Fuettern...",
+  "animal.tpierce.tamed": "Du hast ein {animal} gezaehmt!",
+  "animal.tpierce.fled": "Das Tier ist geflohen!",
+  "animal.tpierce.following": "{animal} folgt dir",
+  "item.animal_feed": "Tierfutter",
+  "item.pet_treat": "Leckerli",
+  "quest.tame_animal.title": "Ein wildes Tier zaehmen",
+  "quest.tame_animal.description":
+    "Finde ein wildes Tier und fuettere es, bis es dir vertraut.",
+  "achievement.first_tame.title": "Erster Freund",
+  "achievement.first_tame.description": "Zaehme dein erstes wildes Tier.",
+  "achievement.animal_friend.title": "Tierfreund",
+  "achievement.animal_friend.description": "Zaehme 3 verschiedene Tiere.",
 };

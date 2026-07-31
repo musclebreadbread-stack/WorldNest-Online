@@ -62,7 +62,7 @@ function createTalker(
 
 describe("NPC_DEFINITIONS", () => {
   it("should give every NPC a dialogue tree that exists", () => {
-    expect(NPC_DEFINITIONS.length).toBe(5);
+    expect(NPC_DEFINITIONS.length).toBe(6);
 
     for (const definition of NPC_DEFINITIONS) {
       expect(DIALOGUE_DEFINITIONS[definition.dialogueId], definition.id).toBeDefined();

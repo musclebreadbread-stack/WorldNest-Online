@@ -216,4 +216,29 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
       },
     },
   },
+
+  // Hana the rancher: explains animals and taming, offers the tame quest.
+  hana_ranch: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.hana.greeting",
+        options: [
+          { labelKey: "dialogue.hana.option.taming", next: "taming" },
+          {
+            labelKey: "dialogue.hana.option.quest",
+            action: { kind: "offerQuest", questId: "tame_animal" },
+          },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      taming: {
+        textKey: "dialogue.hana.taming",
+        options: [
+          { labelKey: "dialogue.option.back", next: "greeting" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+    },
+  },
 };

@@ -20,5 +20,6 @@ export {
   pollProgress,
   recordDonation,
   recordTalk,
+  recordTame,
 } from "./questOps";
 export type { QuestLog, QuestProgressSource } from "./questOps";

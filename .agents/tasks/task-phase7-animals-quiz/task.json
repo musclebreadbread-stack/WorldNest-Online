@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase7-animals-quiz",
+  "task_description": "Phase 7 implementation: Animals/Pets system with wild animals, taming, and pet following; Education Quiz system with daily quizzes, rewards, and streak tracking. Both features add new ECS systems, components, pure ops modules, NPC characters, achievements, quests, and full 12-locale i18n.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

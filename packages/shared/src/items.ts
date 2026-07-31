@@ -25,7 +25,9 @@ export type ItemId =
   | "bread"
   | "fish_pie"
   | "carrot_soup"
-  | "fruit_salad";
+  | "fruit_salad"
+  | "animal_feed"
+  | "pet_treat";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -94,6 +96,16 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     id: "fruit_salad",
     displayName: "Fruit Salad",
     stackSize: 10,
+  },
+  animal_feed: {
+    id: "animal_feed",
+    displayName: "Animal Feed",
+    stackSize: 30,
+  },
+  pet_treat: {
+    id: "pet_treat",
+    displayName: "Pet Treat",
+    stackSize: 20,
   },
 };
 

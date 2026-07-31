@@ -235,3 +235,28 @@ function rewardsFit(
 
   return true;
 }
+
+/**
+ * Note that the entity tamed an animal. Increments progress on any active
+ * `tame` objective. Called from `AnimalSystem` through an injected callback.
+ */
+export function recordTame(log: QuestLog): boolean {
+  let changed = false;
+
+  for (const [questId, entry] of Object.entries(log.entries)) {
+    if (entry.state !== "active") continue;
+
+    const definition = getQuest(questId);
+    if (definition?.objective.kind !== "tame") continue;
+
+    const target = objectiveTarget(definition.objective);
+    const newProgress = Math.min(target, entry.progress + 1);
+    if (newProgress === entry.progress) continue;
+
+    entry.progress = newProgress;
+    changed = true;
+  }
+
+  if (changed) log.version++;
+  return changed;
+}

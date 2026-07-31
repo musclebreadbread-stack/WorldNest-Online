@@ -209,10 +209,8 @@ export const ko: LocaleMessages = {
   "collection.category.farming": "농사",
   "collection.category.fishing": "낚시",
   "collection.category.crafted": "제작",
-
   "quest.donate_first.title": "첫 번째 기증",
   "quest.donate_first.description": "박물관의 마일로에게 아이템을 기증하세요.",
-
   "achievement.title": "업적",
   "achievement.unlocked": "업적 달성: {name}",
   "achievement.first_harvest.title": "첫 수확",
@@ -232,17 +230,14 @@ export const ko: LocaleMessages = {
     "어떤 생물 군계에서든 물고기를 10마리 잡으세요.",
   "achievement.full_gathering.title": "자연 전문가",
   "achievement.full_gathering.description": "채집 컬렉션을 모두 완성하세요.",
-
   "npc.bao.name": "요리사 바오",
   "npc.activity.cooking": "요리 중",
-
   "dialogue.bao.greeting":
     "내 주방에 잘 오셨어요! 신선한 재료로 맛있는 요리를 만들어 드릴게요. 뭘 만들어 볼까요?",
   "dialogue.bao.recipes":
     "빵은 밀이 필요하고, 생선 파이는 생선과 밀, 당근 수프는 당근과 밀, 과일 샐러드는 멜론이 필요해요. 간단하지만 든든하답니다!",
   "dialogue.bao.option.cook": "요리하자!",
   "dialogue.bao.option.recipes": "뭘 만들 수 있어요?",
-
   "cooking.title": "요리",
   "cooking.start": "요리 시작",
   "cooking.inProgress": "요리 중...",
@@ -254,14 +249,11 @@ export const ko: LocaleMessages = {
   "cooking.recipe.fish_pie": "생선 파이",
   "cooking.recipe.carrot_soup": "당근 수프",
   "cooking.recipe.fruit_salad": "과일 샐러드",
-
   "item.bread": "빵",
   "item.fish_pie": "생선 파이",
   "item.carrot_soup": "당근 수프",
   "item.fruit_salad": "과일 샐러드",
-
   "collection.category.cooking": "요리",
-
   "festival.title": "축제",
   "festival.active": "축제가 열리고 있어요!",
   "festival.inactive": "오늘은 축제가 없어요",
@@ -278,4 +270,29 @@ export const ko: LocaleMessages = {
   "festival.starlight_night.title": "별빛의 밤",
   "festival.starlight_night.description":
     "별이 가장 밝게 빛나는 마법 같은 겨울 저녁이에요.",
+  "npc.hana.name": "목장주 하나",
+  "npc.activity.ranch": "목장에 있음",
+  "dialogue.hana.greeting":
+    "안녕! 이 근처 동물들을 돌보고 있어요. 길들이기에 대해 알고 싶어요?",
+  "dialogue.hana.taming":
+    "야생 동물을 찾아서 사료를 주세요. 계속 먹이를 주면 결국 따라올 만큼 친해질 거예요!",
+  "dialogue.hana.option.taming": "동물은 어떻게 길들여요?",
+  "dialogue.hana.option.quest": "할 일이 있어요?",
+  "animal.rabbit": "토끼",
+  "animal.deer": "사슴",
+  "animal.fox": "여우",
+  "animal.bird": "새",
+  "animal.turtle": "거북이",
+  "animal.tpierce.feeding": "먹이 주는 중...",
+  "animal.tpierce.tamed": "{animal}을(를) 길들였어요!",
+  "animal.tpierce.fled": "동물이 도망갔어요!",
+  "animal.tpierce.following": "{animal}이(가) 따라오고 있어요",
+  "item.animal_feed": "동물 사료",
+  "item.pet_treat": "펫 간식",
+  "quest.tame_animal.title": "야생 동물 길들이기",
+  "quest.tame_animal.description": "야생 동물을 찾아 먹이를 주어 길들이세요.",
+  "achievement.first_tame.title": "첫 번째 친구",
+  "achievement.first_tame.description": "첫 야생 동물을 길들이세요.",
+  "achievement.animal_friend.title": "동물 친구",
+  "achievement.animal_friend.description": "동물을 3마리 길들이세요.",
 };

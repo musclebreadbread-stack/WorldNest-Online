@@ -229,17 +229,14 @@ export const vi: LocaleMessages = {
   "achievement.fish_master.description": "Bắt 10 con cá từ bất kỳ vùng sinh thái nào.",
   "achievement.full_gathering.title": "Chuyên gia thiên nhiên",
   "achievement.full_gathering.description": "Hoàn thành toàn bộ bộ sưu tập thu thập.",
-
   "npc.bao.name": "Đầu bếp Bao",
   "npc.activity.cooking": "Đang nấu ăn",
-
   "dialogue.bao.greeting":
     "Chào mừng đến bếp của tôi! Tôi biến nguyên liệu tươi thành món ăn ngon. Nấu gì nhé?",
   "dialogue.bao.recipes":
     "Bánh mì cần lúa mì, bánh cá cần cá và lúa mì, súp cà rốt cần cà rốt và lúa mì, salad trái cây cần dưa. Đơn giản nhưng no bụng!",
   "dialogue.bao.option.cook": "Nấu ăn thôi!",
   "dialogue.bao.option.recipes": "Tôi nấu được gì?",
-
   "cooking.title": "Nấu ăn",
   "cooking.start": "Bắt đầu nấu",
   "cooking.inProgress": "Đang nấu...",
@@ -251,14 +248,11 @@ export const vi: LocaleMessages = {
   "cooking.recipe.fish_pie": "Bánh cá",
   "cooking.recipe.carrot_soup": "Súp cà rốt",
   "cooking.recipe.fruit_salad": "Salad trái cây",
-
   "item.bread": "Bánh mì",
   "item.fish_pie": "Bánh cá",
   "item.carrot_soup": "Súp cà rốt",
   "item.fruit_salad": "Salad trái cây",
-
   "collection.category.cooking": "Nấu ăn",
-
   "festival.title": "Le hoi",
   "festival.active": "Le hoi dang dien ra!",
   "festival.inactive": "Hom nay khong co le hoi",
@@ -275,4 +269,30 @@ export const vi: LocaleMessages = {
   "festival.starlight_night.title": "Dem Anh sao",
   "festival.starlight_night.description":
     "Mot dem dong huyen ao khi nhung vi sao toa sang ruc ro nhat.",
+  "npc.hana.name": "Hana Chu trang trai",
+  "npc.activity.ranch": "O trang trai",
+  "dialogue.hana.greeting":
+    "Chao ban! Minh cham soc dong vat o day. Ban muon hoc cach thuan hoa khong?",
+  "dialogue.hana.taming":
+    "Tim dong vat hoang da va cho chung an. Cho an nhieu lan va chung se tin tuong va di theo ban!",
+  "dialogue.hana.option.taming": "Lam sao de thuan hoa dong vat?",
+  "dialogue.hana.option.quest": "Co viec gi cho minh khong?",
+  "animal.rabbit": "Tho",
+  "animal.deer": "Huou",
+  "animal.fox": "Cao",
+  "animal.bird": "Chim",
+  "animal.turtle": "Rua",
+  "animal.tpierce.feeding": "Dang cho an...",
+  "animal.tpierce.tamed": "Ban da thuan hoa {animal}!",
+  "animal.tpierce.fled": "Dong vat da chay mat!",
+  "animal.tpierce.following": "{animal} dang di theo ban",
+  "item.animal_feed": "Thuc an dong vat",
+  "item.pet_treat": "Bao thuong thu cung",
+  "quest.tame_animal.title": "Thuan hoa dong vat hoang da",
+  "quest.tame_animal.description":
+    "Tim dong vat hoang da va cho an cho den khi thuan hoa.",
+  "achievement.first_tame.title": "Nguoi ban dau tien",
+  "achievement.first_tame.description": "Thuan hoa dong vat hoang da dau tien.",
+  "achievement.animal_friend.title": "Ban cua dong vat",
+  "achievement.animal_friend.description": "Thuan hoa 3 dong vat khac nhau.",
 };

@@ -48,6 +48,8 @@ export function checkCondition(
         source.isCategoryComplete(condition.categoryId) &&
         source.donationCount >= condition.donateCount
       );
+    case "tame":
+      return source.animalsTamedCount >= condition.count;
   }
 }
 

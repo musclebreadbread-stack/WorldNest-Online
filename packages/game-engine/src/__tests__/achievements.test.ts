@@ -52,8 +52,8 @@ function createPlayer() {
 
 describe("achievementDefinitions", () => {
   it("should define 8 achievements with valid keys and unique ids", () => {
-    expect(ACHIEVEMENT_IDS).toHaveLength(8);
-    expect(new Set(ACHIEVEMENT_IDS).size).toBe(8);
+    expect(ACHIEVEMENT_IDS).toHaveLength(10);
+    expect(new Set(ACHIEVEMENT_IDS).size).toBe(10);
     for (const def of ACHIEVEMENT_DEFINITIONS) {
       expect(def.titleKey).toMatch(/^achievement\./);
       expect(def.descriptionKey).toMatch(/^achievement\./);

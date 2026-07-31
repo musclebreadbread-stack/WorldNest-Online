@@ -97,7 +97,13 @@ describe("DIALOGUE_DEFINITIONS", () => {
     expect(actions).toContain("turnInQuest");
     // Every offered quest can also be handed in
     expect(dialogueQuestIds().sort()).toEqual(
-      ["build_fence", "collect_wood", "donate_first", "greet_pip"].sort(),
+      [
+        "build_fence",
+        "collect_wood",
+        "donate_first",
+        "greet_pip",
+        "tame_animal",
+      ].sort(),
     );
   });
 });

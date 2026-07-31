@@ -195,9 +195,7 @@ export const pt: LocaleMessages = {
   "dialogue.milo.option.donate": "Quero doar",
   "dialogue.milo.option.categories": "Mostrar categorias",
   "dialogue.milo.option.open": "Abrir livro de coleção",
-
   "dialogue.ada.option.donate": "Ajudar o museu",
-
   "collection.title": "Livro de coleção",
   "collection.donate": "Doar",
   "collection.donated": "Já doado",
@@ -209,10 +207,8 @@ export const pt: LocaleMessages = {
   "collection.category.farming": "Cultivo",
   "collection.category.fishing": "Pesca",
   "collection.category.crafted": "Artesanato",
-
   "quest.donate_first.title": "Primeira doação",
   "quest.donate_first.description": "Doe qualquer item para Milo no museu.",
-
   "achievement.title": "Conquistas",
   "achievement.unlocked": "Conquista desbloqueada: {name}",
   "achievement.first_harvest.title": "Primeira colheita",
@@ -231,17 +227,14 @@ export const pt: LocaleMessages = {
   "achievement.fish_master.description": "Pegue 10 peixes de qualquer bioma.",
   "achievement.full_gathering.title": "Especialista em natureza",
   "achievement.full_gathering.description": "Complete toda a coleção de coleta.",
-
   "npc.bao.name": "Chefe Bao",
   "npc.activity.cooking": "Cozinhando",
-
   "dialogue.bao.greeting":
     "Bem-vindo a minha cozinha! Posso transformar ingredientes frescos em refeicoes deliciosas. Vamos cozinhar algo?",
   "dialogue.bao.recipes":
     "Pao precisa de trigo, torta de peixe precisa de um peixe e trigo, sopa de cenoura precisa de cenouras e trigo, e salada de frutas precisa de meloes. Simples mas nutritivo!",
   "dialogue.bao.option.cook": "Vamos cozinhar!",
   "dialogue.bao.option.recipes": "O que posso preparar?",
-
   "cooking.title": "Culinaria",
   "cooking.start": "Comecar a cozinhar",
   "cooking.inProgress": "Cozinhando...",
@@ -254,14 +247,11 @@ export const pt: LocaleMessages = {
   "cooking.recipe.fish_pie": "Torta de peixe",
   "cooking.recipe.carrot_soup": "Sopa de cenoura",
   "cooking.recipe.fruit_salad": "Salada de frutas",
-
   "item.bread": "Pao",
   "item.fish_pie": "Torta de peixe",
   "item.carrot_soup": "Sopa de cenoura",
   "item.fruit_salad": "Salada de frutas",
-
   "collection.category.cooking": "Culinaria",
-
   "festival.title": "Festivais",
   "festival.active": "Festival em andamento!",
   "festival.inactive": "Nenhum festival hoje",
@@ -279,4 +269,30 @@ export const pt: LocaleMessages = {
   "festival.starlight_night.title": "Noite Estrelada",
   "festival.starlight_night.description":
     "Uma noite magica de inverno onde as estrelas brilham intensamente.",
+  "npc.hana.name": "Hana a Fazendeira",
+  "npc.activity.ranch": "Na fazenda",
+  "dialogue.hana.greeting":
+    "Oi! Eu cuido dos animais por aqui. Quer aprender a doma-los?",
+  "dialogue.hana.taming":
+    "Encontre um animal selvagem e de comida. Continue alimentando e ele vai confiar em voce e te seguir!",
+  "dialogue.hana.option.taming": "Como domestico um animal?",
+  "dialogue.hana.option.quest": "Tem algum trabalho pra mim?",
+  "animal.rabbit": "Coelho",
+  "animal.deer": "Cervo",
+  "animal.fox": "Raposa",
+  "animal.bird": "Passaro",
+  "animal.turtle": "Tartaruga",
+  "animal.tpierce.feeding": "Alimentando...",
+  "animal.tpierce.tamed": "Voce domesticou um {animal}!",
+  "animal.tpierce.fled": "O animal fugiu!",
+  "animal.tpierce.following": "{animal} esta te seguindo",
+  "item.animal_feed": "Racao animal",
+  "item.pet_treat": "Petisco para pet",
+  "quest.tame_animal.title": "Domesticar um animal selvagem",
+  "quest.tame_animal.description":
+    "Encontre um animal selvagem e alimente-o ate que confie em voce.",
+  "achievement.first_tame.title": "Primeiro amigo",
+  "achievement.first_tame.description": "Domestique seu primeiro animal selvagem.",
+  "achievement.animal_friend.title": "Amigo dos animais",
+  "achievement.animal_friend.description": "Domestique 3 animais diferentes.",
 };

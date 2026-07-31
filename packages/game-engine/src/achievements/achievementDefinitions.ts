@@ -13,7 +13,8 @@ export type AchievementCondition =
   | { kind: "quest"; count: number }
   | { kind: "fish"; count: number }
   | { kind: "total_coins"; amount: number }
-  | { kind: "category_complete"; categoryId: string; donateCount: number };
+  | { kind: "category_complete"; categoryId: string; donateCount: number }
+  | { kind: "tame"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -34,6 +35,7 @@ export interface AchievementSource {
   questCompletionCount: number;
   fishCaughtCount: number;
   totalCoinsEarned: number;
+  animalsTamedCount: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -93,6 +95,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.full_gathering.description",
     rewardCoins: 60,
     condition: { kind: "category_complete", categoryId: "gathering", donateCount: 5 },
+  },
+  {
+    id: "first_tame",
+    titleKey: "achievement.first_tame.title",
+    descriptionKey: "achievement.first_tame.description",
+    rewardCoins: 20,
+    condition: { kind: "tame", count: 1 },
+  },
+  {
+    id: "animal_friend",
+    titleKey: "achievement.animal_friend.title",
+    descriptionKey: "achievement.animal_friend.description",
+    rewardCoins: 50,
+    condition: { kind: "tame", count: 3 },
   },
 ];
 

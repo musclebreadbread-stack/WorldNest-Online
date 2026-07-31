@@ -26,6 +26,8 @@ export class AchievementComponent extends Component {
    * collection rewards) and add the delta to totalCoinsEarned.
    */
   public lastKnownCoins: number;
+  /** Lifetime animals tamed total. */
+  public totalAnimalsTamed: number;
 
   constructor() {
     super("achievement");
@@ -36,5 +38,6 @@ export class AchievementComponent extends Component {
     this.totalQuestsCompleted = 0;
     this.totalCoinsEarned = 0;
     this.lastKnownCoins = 0;
+    this.totalAnimalsTamed = 0;
   }
 }

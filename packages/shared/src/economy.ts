@@ -70,6 +70,9 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   fish_pie: { buy: 50, sell: 24 },
   carrot_soup: { buy: 40, sell: 18 },
   fruit_salad: { buy: 35, sell: 16 },
+  // Animal items: feed for taming, treats for pet happiness
+  animal_feed: { buy: 15, sell: 5 },
+  pet_treat: { buy: 20, sell: 8 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

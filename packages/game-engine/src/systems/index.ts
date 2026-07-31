@@ -36,3 +36,5 @@ export type { AchievementStructureCounter } from "./AchievementSystem";
 export { CookingSystem } from "./CookingSystem";
 export { FestivalSystem } from "./FestivalSystem";
 export type { DayGetter } from "./FestivalSystem";
+export { AnimalSystem } from "./AnimalSystem";
+export type { TameListener } from "./AnimalSystem";

@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Education Quiz system: daily quiz mini-game about nature/science/culture topics, quiz catalogue with question bank, QuizComponent, QuizSystem, reward mechanism (coins + energy), quiz-related achievement, NPC 'Professor Owl' as quiz host, and full i18n across 12 locales.",
+  "status": "pending",
+  "steps": [
+    "1. Create packages/game-engine/src/quiz/ directory with: quizDefinitions.ts (QuizQuestion interface with id, questionKey, answerOptions as array of {key, correct boolean}, category, difficulty; question bank of 12-16 questions across 3-4 categories: nature, science, culture, geography), quizOps.ts (pure functions: getDailyQuiz using day number from WorldClock to deterministically select 3 questions, answerQuestion, calculateReward, canTakeQuiz checking cooldown), quizState.ts (QuizState type: 'idle'|'active'|'reviewing'|'completed'), index.ts re-exporting.",
+    "2. Create packages/game-engine/src/components/QuizComponent.ts extending Component('quiz') with fields: state (QuizState), currentQuestions (QuizQuestion[]), currentIndex (number), answers (boolean[]), lastQuizDay (number for cooldown), streak (consecutive correct days), version.",
+    "3. Create packages/game-engine/src/systems/QuizSystem.ts extending System with requiredComponents ['quiz','inventory','stats']. Logic: when quiz is started, load daily questions; when answer is submitted, record and advance index; when all answered, compute rewards (coins per correct answer, bonus for streak, energy restore); enforce one quiz per in-game day cooldown.",
+    "4. Add NPC 'professor_owl' to packages/game-engine/src/world/NpcCatalogue.ts with role 'teacher', add 'teacher' to NpcRole type, add schedule with 'teaching' activity, add 'teaching' to NpcActivity type in npcSchedule.ts.",
+    "5. Add dialogue tree for Professor Owl explaining the quiz system and offering to start it.",
+    "6. Add 1 new achievement to packages/game-engine/src/achievements/achievementDefinitions.ts: 'quiz_streak_3' (complete quiz 3 days in a row). Add 'quiz_streak' condition kind to AchievementCondition.",
+    "7. Export new component and system from packages/game-engine/src/index.ts and related barrel files.",
+    "8. Add i18n keys to all 12 locale files: npc.owl.name, npc.activity.teaching, dialogue.owl.*, quiz.title, quiz.start, quiz.correct, quiz.incorrect, quiz.complete, quiz.streak, quiz.reward, quiz.cooldown, quiz.question.* (all question/answer keys), achievement.quiz_streak_3.*.",
+    "9. Update ITEM_NAME_KEYS (if needed) and NPC_ACTIVITY_KEYS in apps/web/src/i18n/index.ts for 'teaching'.",
+    "10. Write comprehensive tests in packages/game-engine/src/__tests__/quiz.test.ts covering: quiz definition validation (all questions have exactly one correct answer), getDailyQuiz determinism (same day = same questions), answer recording, reward calculation (base + streak bonus), cooldown enforcement, QuizSystem update with entities.",
+    "11. Run pnpm format && pnpm lint && pnpm build && pnpm test to verify."
+  ],
+  "acceptance_criteria": [
+    "QuizComponent exists as pure data with 'quiz' type string",
+    "QuizSystem processes entities with quiz+inventory+stats components",
+    "quizOps.ts contains pure functions for quiz logic",
+    "12-16 quiz questions defined across 3-4 categories with i18n keys for all text",
+    "getDailyQuiz is deterministic: same day number always returns same questions",
+    "One quiz per in-game day cooldown is enforced",
+    "Streak tracking works correctly across consecutive days",
+    "NPC Professor Owl added with teacher role, schedule, and dialogue",
+    "Achievement 'quiz_streak_3' properly defined",
+    "All 12 locale files have matching keys for all new user-facing strings",
+    "All tests pass including new quiz.test.ts with at least 12 test cases",
+    "pnpm build succeeds with no type errors",
+    "pnpm lint passes with 0 warnings",
+    "All files under 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

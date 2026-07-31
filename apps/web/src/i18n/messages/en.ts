@@ -10,12 +10,10 @@
  */
 export const en = {
   "common.loading": "Loading...",
-
   "landing.tagline": "A browser-based 2D MMO life simulation game",
   "landing.subtitle":
     "Explore procedurally generated worlds, build, and play with friends",
   "landing.play": "Play Now",
-
   "auth.signInSubtitle": "Sign in to your account",
   "auth.signUpSubtitle": "Create a new account",
   "auth.usernameLabel": "Username",
@@ -30,9 +28,7 @@ export const en = {
   "auth.switchToSignUp": "Don't have an account? Sign up",
   "auth.switchToSignIn": "Already have an account? Sign in",
   "auth.genericError": "Authentication failed. Check your Supabase configuration.",
-
   "game.loading": "Loading game...",
-
   "hud.connected": "Connected",
   "hud.connecting": "Connecting",
   "hud.disconnected": "Disconnected",
@@ -47,20 +43,16 @@ export const en = {
   "hud.signingOut": "Signing out...",
   "hud.coins": "{count} coins",
   "hud.coinsAdjusted": "Balance updated by the server",
-
   "clock.format": "Day {day} · {time} · {phase}",
   "clock.phase.dawn": "dawn",
   "clock.phase.day": "day",
   "clock.phase.dusk": "dusk",
   "clock.phase.night": "night",
-
   "inventory.title": "Inventory",
   "inventory.close": "Close (I)",
-
   "build.title": "Build mode",
   "build.empty": "No placeable items in the hotbar.",
   "build.hint": "Q or click places on the faced tile · B exits",
-
   "chat.placeholder": "Press Enter to chat",
   "chat.unavailable": "Chat unavailable",
   "chat.ariaLabel": "Chat message",
@@ -69,7 +61,6 @@ export const en = {
   "chat.unmuted": "You have unmuted {name}",
   "chat.blocked": "Message could not be sent",
   "chat.filterNotice": "Some words were filtered",
-
   "settings.title": "Settings",
   "settings.open": "Open settings",
   "settings.close": "Close (P)",
@@ -80,7 +71,6 @@ export const en = {
   "settings.musicVolume": "Music volume",
   "settings.mute": "Mute all sound",
   "settings.soundHint": "Sound starts after your first click.",
-
   "npc.pip.name": "Pip the Gardener",
   "npc.juno.name": "Juno the Shopkeeper",
   "npc.ada.name": "Ada the Explorer",
@@ -89,7 +79,6 @@ export const en = {
   "npc.activity.work": "Working",
   "npc.activity.market": "At the market",
   "npc.activity.rest": "Resting",
-
   "dialogue.close": "Leave",
   "dialogue.hint": "Press 1-4 or tap an answer",
   "dialogue.option.bye": "Goodbye for now!",
@@ -114,12 +103,10 @@ export const en = {
   "dialogue.ada.option.wood": "Gather firewood",
   "dialogue.ada.option.fence": "Fence the garden",
   "dialogue.ada.option.greet": "Say hello to Pip",
-
   "touch.stick": "Movement stick",
   "touch.interact": "Use",
   "touch.place": "Place",
   "touch.map": "Map",
-
   "shop.title": "Shop",
   "shop.close": "Close (Esc)",
   "shop.hint": "Fixed prices. The shop always pays a little less than it charges.",
@@ -131,7 +118,6 @@ export const en = {
   "shop.sellQuantity": "Sell {quantity}",
   "shop.buyPrice": "Costs {coins} coins",
   "shop.sellPrice": "Pays {coins} coins",
-
   "quest.title": "Quest log",
   "quest.close": "Close (J)",
   "quest.empty": "No jobs yet. Ada keeps the village list, so go and ask her.",
@@ -147,7 +133,6 @@ export const en = {
   "quest.build_fence.description": "Place 2 fences anywhere, then tell Ada.",
   "quest.greet_pip.title": "Say hello to Pip",
   "quest.greet_pip.description": "Pip the gardener loves visitors. Go and talk to him.",
-
   "item.wood": "Wood",
   "item.stone": "Stone",
   "item.ore": "Ore",
@@ -284,4 +269,30 @@ export const en = {
   "festival.starlight_night.title": "Starlight Night",
   "festival.starlight_night.description":
     "A magical winter evening where the stars shine brightest.",
+  "npc.hana.name": "Hana the Rancher",
+  "npc.activity.ranch": "At the ranch",
+  "dialogue.hana.greeting":
+    "Hey there! I look after the animals around these parts. Want to learn about taming?",
+  "dialogue.hana.taming":
+    "Find a wild animal and offer it some animal feed. Keep feeding it and eventually it will trust you enough to follow you home!",
+  "dialogue.hana.option.taming": "How do I tame an animal?",
+  "dialogue.hana.option.quest": "Any jobs for me?",
+  "animal.rabbit": "Rabbit",
+  "animal.deer": "Deer",
+  "animal.fox": "Fox",
+  "animal.bird": "Bird",
+  "animal.turtle": "Turtle",
+  "animal.tpierce.feeding": "Feeding...",
+  "animal.tpierce.tamed": "You tamed a {animal}!",
+  "animal.tpierce.fled": "The animal fled!",
+  "animal.tpierce.following": "{animal} is following you",
+  "item.animal_feed": "Animal Feed",
+  "item.pet_treat": "Pet Treat",
+  "quest.tame_animal.title": "Tame a Wild Animal",
+  "quest.tame_animal.description":
+    "Find any wild animal and feed it until it trusts you.",
+  "achievement.first_tame.title": "First Friend",
+  "achievement.first_tame.description": "Tame your first wild animal.",
+  "achievement.animal_friend.title": "Animal Friend",
+  "achievement.animal_friend.description": "Tame 3 different animals.",
 } as const;

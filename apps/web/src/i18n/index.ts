@@ -129,6 +129,8 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   fish_pie: "item.fish_pie",
   carrot_soup: "item.carrot_soup",
   fruit_salad: "item.fruit_salad",
+  animal_feed: "item.animal_feed",
+  pet_treat: "item.pet_treat",
 };
 
 /**
@@ -153,6 +155,7 @@ export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
   rest: "npc.activity.rest",
   museum: "npc.activity.museum",
   cooking: "npc.activity.cooking",
+  ranch: "npc.activity.ranch",
 };
 
 /**
