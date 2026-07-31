@@ -149,10 +149,14 @@ export class SessionPersistence {
     this.writeQuests();
   }
 
+  /**
+   * Write position and inventory. Coins are absent on purpose: the column is no
+   * longer writable by a signed-in client, and a statement naming it is refused
+   * along with everything else in the same upsert.
+   */
   private writePlayerState(): void {
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
-    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet")!;
 
     this.write(() =>
       savePlayerState(this.playerId, {
@@ -160,7 +164,6 @@ export class SessionPersistence {
         y: position.y,
         chunk: getChunkKey(position.chunkX, position.chunkY),
         inventory: toPersistedInventory(inventory),
-        coins: wallet.coins,
       }),
     );
   }

@@ -30,6 +30,13 @@ export type {
 } from "./playerState";
 export { loadQuests, saveQuest, saveQuests } from "./progression";
 export type { PlayerQuest, PersistedQuest } from "./progression";
+export {
+  shopTrade,
+  claimQuestReward,
+  loadCoinLedger,
+  parseAuthorityResult,
+} from "./authority";
+export type { AuthorityResult, CoinLedgerEntry } from "./authority";
 export { getDefaultWorld, DEFAULT_WORLD_NAME } from "./worlds";
 export type { World } from "./worlds";
 export {

@@ -58,16 +58,17 @@ describe("SessionPersistence", () => {
     expect(createSessionPersistence(bootstrap, createGameWorld(bootstrap))).toBeNull();
   });
 
-  it("should write the coin balance with the player row", () => {
+  it("should never send the coin balance with the player row", () => {
     const { persistence, wallet } = startSession();
 
     wallet.coins = 137;
     persistence.flush();
 
-    expect(savePlayerState).toHaveBeenCalledWith(
-      "user-1",
-      expect.objectContaining({ coins: 137 }),
-    );
+    // The column is not writable by a signed-in client any more, and Postgres
+    // refuses the whole upsert over one ungranted column — so naming coins here
+    // would silently stop position and inventory persisting too.
+    const [, payload] = vi.mocked(savePlayerState).mock.calls[0]!;
+    expect(payload).not.toHaveProperty("coins");
   });
 
   it("should write the quest log to its own table", () => {

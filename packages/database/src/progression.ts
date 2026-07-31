@@ -11,6 +11,7 @@ export type PlayerQuest = Tables<"player_quests">;
  */
 export interface PersistedQuest {
   questId: string;
+  /** Read-only from the client's side; see `saveQuest`. */
   state: string;
   progress: number;
 }
@@ -40,9 +41,15 @@ export async function loadQuests(
 }
 
 /**
- * Write one quest's state, creating the row when absent.
+ * Write one quest's progress, creating the row when absent.
  * Upserts on the composite primary key, so a quest is stored once per player and
  * its progress is overwritten rather than appended to.
+ *
+ * `state` is read back but never sent: migration 004 grants every column on this
+ * table except that one, so a new row becomes `'active'` from the column default
+ * and only `claimQuestReward` can ever move it to `'completed'` (decision D3).
+ * A statement naming `state` is refused outright, which would lose the progress
+ * with it.
  */
 export async function saveQuest(
   playerId: string,
@@ -53,7 +60,6 @@ export async function saveQuest(
     {
       player_id: playerId,
       quest_id: quest.questId,
-      state: quest.state,
       progress: quest.progress,
       updated_at: new Date().toISOString(),
     },
