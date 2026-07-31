@@ -136,6 +136,14 @@ export class BootScene extends Phaser.Scene {
       graphics.fillStyle(0xd1c4e9, 1);
       graphics.fillRect(4, 5, 1, 2);
       graphics.fillRect(10, 8, 1, 2);
+    } else if (tileType === TileType.CAVE_ENTRANCE) {
+      // A bright ladder remains legible under the fixed underground tint
+      graphics.fillStyle(0xffd54f, 1);
+      graphics.fillRect(4, 2, 2, 13);
+      graphics.fillRect(10, 2, 2, 13);
+      graphics.fillRect(4, 4, 8, 2);
+      graphics.fillRect(4, 8, 8, 2);
+      graphics.fillRect(4, 12, 8, 2);
     }
   }
 

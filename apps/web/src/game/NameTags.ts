@@ -29,9 +29,12 @@ const NAME_TAG_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
  * disappear with their entity without any extra bookkeeping. The local player is
  * skipped — the camera already follows them and they know who they are.
  *
- * NPC names are i18n keys (decision D8), resolved here against `localeStore`; the
- * text is compared every pass, so switching language relabels the village without
- * a reload. A canvas has no `dir`, so the label itself does not mirror in Arabic.
+ * It receives render data already filtered for the active world layer, so
+ * underground presentation cannot leave a remote label floating after its
+ * sprite is hidden. NPC names are i18n keys (decision D8), resolved here against
+ * `localeStore`; the text is compared every pass, so switching language relabels
+ * the village without a reload. A canvas has no `dir`, so the label itself does
+ * not mirror in Arabic.
  */
 export class NameTags {
   private scene: Phaser.Scene;

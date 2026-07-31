@@ -36,6 +36,7 @@ import {
   type GameBootstrap,
 } from "../createGameWorld";
 import { useUIStore } from "../../stores/uiStore";
+import { isActiveLayerChange } from "../layerVisibility";
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
   playerId: "local",
@@ -120,13 +121,16 @@ export class GameScene extends Phaser.Scene {
     );
     // Harvested/modified tiles repaint in place instead of rebuilding the chunk,
     // and the same diff is what gets persisted
-    this.worldManager.setTileChangeCallback((_layer, tileX, tileY, tileType) => {
+    this.worldManager.setTileChangeCallback((layer, tileX, tileY, tileType) => {
+      if (!isActiveLayerChange(this.worldManager.getLayer(), layer)) return;
       this.chunkRenderer.redrawTile(tileX, tileY, tileType);
       this.persistence?.saveTile(tileX, tileY, tileType);
     });
 
     // Prime the ECS once so chunks load and the render pass creates sprites
-    this.spriteSync = new SpriteSync(this, this.ecsWorld);
+    this.spriteSync = new SpriteSync(this, this.ecsWorld, () =>
+      this.worldManager.getLayer(),
+    );
     this.ecsWorld.update(0);
     this.spriteSync.sync(this.renderSystem.renderData);
 
@@ -222,6 +226,7 @@ export class GameScene extends Phaser.Scene {
   private getOverlayContext(deltaMs: number): OverlayContext {
     return {
       phase: this.getClockSnapshot().phase,
+      layer: this.worldManager.getLayer(),
       buildMode: useUIStore.getState().buildMode,
       playerEntity: this.playerEntity,
       worldManager: this.worldManager,

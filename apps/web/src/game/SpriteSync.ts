@@ -7,8 +7,13 @@ import type {
   PlayerComponent,
   RenderData,
   World,
+  WorldLayer,
 } from "@worldnest/game-engine";
 import { NameTags } from "./NameTags";
+import {
+  filterRenderDataForLayer,
+  isRenderDataVisibleOnLayer,
+} from "./layerVisibility";
 
 const LOCAL_PLAYER_DEPTH = 100;
 const REMOTE_PLAYER_DEPTH = 99;
@@ -36,16 +41,19 @@ export class SpriteSync {
   private sprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   /** Floating username labels, driven by the same render data. */
   private nameTags: NameTags;
+  private getLayer: () => WorldLayer;
 
-  constructor(scene: Phaser.Scene, world: World) {
+  constructor(scene: Phaser.Scene, world: World, getLayer: () => WorldLayer) {
     this.scene = scene;
     this.world = world;
+    this.getLayer = getLayer;
     this.nameTags = new NameTags(scene, world);
   }
 
   /** Create, update and destroy sprites to match the latest render data. */
   sync(renderData: RenderData[]): void {
     const seen = new Set<string>();
+    const layer = this.getLayer();
 
     for (const data of renderData) {
       seen.add(data.entityId);
@@ -57,7 +65,9 @@ export class SpriteSync {
         sprite.setTexture(textureKey);
       }
       sprite.setPosition(data.x, data.y);
-      sprite.setVisible(data.visible);
+      sprite.setVisible(
+        data.visible && isRenderDataVisibleOnLayer(data, this.world, layer),
+      );
     }
 
     for (const [entityId, sprite] of this.sprites) {
@@ -67,7 +77,7 @@ export class SpriteSync {
       }
     }
 
-    this.nameTags.sync(renderData);
+    this.nameTags.sync(filterRenderDataForLayer(renderData, this.world, layer));
   }
 
   /** Sprite for an entity, once it has been through a `sync` pass. */

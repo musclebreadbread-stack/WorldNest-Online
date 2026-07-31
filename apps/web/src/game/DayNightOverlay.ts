@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { WorldLayer } from "@worldnest/game-engine";
 import type { DayPhase } from "@worldnest/game-engine";
 import type { OverlayContext, SceneOverlay } from "./SceneOverlay";
 
@@ -9,6 +10,8 @@ const PHASE_TINTS: Record<DayPhase, { color: number; alpha: number }> = {
   dusk: { color: 0xff7043, alpha: 0.22 },
   night: { color: 0x0d1b3a, alpha: 0.45 },
 };
+
+const UNDERGROUND_TINT = { color: 0x090b16, alpha: 0.62 };
 
 /**
  * The rectangle is scroll-locked to the camera but still scaled by camera zoom,
@@ -29,6 +32,7 @@ export class DayNightOverlay implements SceneOverlay {
   private scene: Phaser.Scene;
   private rectangle: Phaser.GameObjects.Rectangle;
   private phase: DayPhase | null = null;
+  private layer = WorldLayer.SURFACE;
   private tween: Phaser.Tweens.Tween | null = null;
 
   constructor(scene: Phaser.Scene) {
@@ -51,15 +55,21 @@ export class DayNightOverlay implements SceneOverlay {
   }
 
   update(ctx: OverlayContext): void {
-    this.setPhase(ctx.phase);
+    this.setTint(ctx.phase, ctx.layer);
   }
 
-  /** Fade to the tint for `phase`; a no-op while the phase is unchanged. */
+  /** Fade to the surface phase tint; used to prime the scene at boot. */
   setPhase(phase: DayPhase): void {
-    if (phase === this.phase) return;
-    this.phase = phase;
+    this.setTint(phase, this.layer);
+  }
 
-    const tint = PHASE_TINTS[phase];
+  private setTint(phase: DayPhase, layer: WorldLayer): void {
+    if (phase === this.phase && layer === this.layer) return;
+    this.phase = phase;
+    this.layer = layer;
+
+    const tint =
+      layer === WorldLayer.UNDERGROUND ? UNDERGROUND_TINT : PHASE_TINTS[phase];
     this.rectangle.setFillStyle(tint.color, 1);
 
     this.tween?.stop();

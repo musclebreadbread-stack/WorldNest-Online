@@ -7,7 +7,9 @@ import {
   QUEST_DEFINITIONS,
   TILE_PROPERTIES,
   TileType,
+  WorldLayer,
   WorldManager,
+  sampleMinimap,
   addItem,
   countItem,
   cropEntityId,
@@ -39,7 +41,12 @@ import {
   LOCAL_PLAYER_ENTITY_ID,
   STARTING_WHEAT_SEEDS,
 } from "../game/createGameWorld";
-import { findFacingPair, findWalkableNeighbourOf } from "./helpers/terrain";
+import {
+  findAnyWalkableNeighbourOf,
+  findFacingPair,
+  findWalkableNeighbourOf,
+} from "./helpers/terrain";
+import { filterRenderDataForLayer, isActiveLayerChange } from "../game/layerVisibility";
 
 const BOOTSTRAP = {
   playerId: "user-1",
@@ -138,6 +145,78 @@ describe("createGameWorld", () => {
     expect(position.x - collider.width / 2).toBeGreaterThanOrEqual(
       shore.standTileX * TILE_SIZE,
     );
+  });
+});
+
+describe("active world layer", () => {
+  it("should descend through an entrance and sample underground cave tiles", () => {
+    const entrance = findAnyWalkableNeighbourOf(
+      new WorldManager(WORLD_SEED, 1),
+      TileType.CAVE_ENTRANCE,
+    );
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: entrance.spawnX,
+      spawnY: entrance.spawnY,
+    });
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    const surface = sampleMinimap(
+      context.worldManager,
+      entrance.standTileX,
+      entrance.standTileY,
+      2,
+    );
+
+    interaction.facing = entrance.facing;
+    interaction.interactRequested = true;
+    context.world.update(0);
+
+    expect(context.worldManager.getLayer()).toBe(WorldLayer.UNDERGROUND);
+    const underground = sampleMinimap(
+      context.worldManager,
+      entrance.standTileX,
+      entrance.standTileY,
+      2,
+    );
+    expect(underground.tiles).not.toEqual(surface.tiles);
+    expect(
+      underground.tiles.every((tile) =>
+        [
+          TileType.CAVE_FLOOR,
+          TileType.CAVE_WALL,
+          TileType.ORE,
+          TileType.CAVE_ENTRANCE,
+        ].includes(tile),
+      ),
+    ).toBe(true);
+  });
+
+  it("should filter sprites and name-tag data down to the local player", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    context.world.addEntity(
+      createRemotePlayerEntity("remote", "Remote", DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y),
+    );
+    context.world.update(0);
+
+    const surface = filterRenderDataForLayer(
+      context.systems.render.renderData,
+      context.world,
+      WorldLayer.SURFACE,
+    );
+    const underground = filterRenderDataForLayer(
+      context.systems.render.renderData,
+      context.world,
+      WorldLayer.UNDERGROUND,
+    );
+
+    expect(surface.length).toBeGreaterThan(underground.length);
+    expect(underground.map((data) => data.entityId)).toEqual([LOCAL_PLAYER_ENTITY_ID]);
+  });
+
+  it("should accept repaint callbacks only for the active layer", () => {
+    expect(isActiveLayerChange(WorldLayer.SURFACE, WorldLayer.SURFACE)).toBe(true);
+    expect(isActiveLayerChange(WorldLayer.SURFACE, WorldLayer.UNDERGROUND)).toBe(false);
   });
 });
 

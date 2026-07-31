@@ -15,8 +15,8 @@ import { TILE_SIZE } from "@worldnest/shared";
  * imported by the suites, never collected as one itself.
  */
 
-/** Tile window searched, in tiles, on both axes. Four chunks square. */
-const SEARCH_SIZE = 64;
+/** Tile window searched, in tiles, on both axes. Six chunks square. */
+const SEARCH_SIZE = 96;
 
 export interface FacingPair {
   /** Tile the player stands on. */
@@ -40,6 +40,37 @@ function pairAt(standTileX: number, standTileY: number, facing: Facing): FacingP
     spawnX: standTileX * TILE_SIZE + TILE_SIZE / 2,
     spawnY: standTileY * TILE_SIZE + TILE_SIZE / 2,
   };
+}
+
+export interface FacingTarget extends FacingPair {
+  facing: Facing;
+}
+
+/** First walkable tile facing the requested target in any direction. */
+export function findAnyWalkableNeighbourOf(
+  worldManager: WorldManager,
+  targetType: TileType,
+): FacingTarget {
+  const facings = Object.keys(FACING_OFFSETS) as Facing[];
+
+  for (let tileY = 0; tileY < SEARCH_SIZE; tileY++) {
+    for (let tileX = 0; tileX < SEARCH_SIZE; tileX++) {
+      const standType = worldManager.getTileAt(tileX, tileY);
+      if (!TILE_PROPERTIES[standType].walkable) continue;
+
+      for (const facing of facings) {
+        const pair = pairAt(tileX, tileY, facing);
+        if (worldManager.getTileAt(pair.targetTileX, pair.targetTileY) === targetType) {
+          return { ...pair, facing };
+        }
+      }
+    }
+  }
+
+  throw new Error(
+    `no walkable tile facing ${TILE_PROPERTIES[targetType].name} within ` +
+      `${SEARCH_SIZE} tiles of the origin`,
+  );
 }
 
 /**
