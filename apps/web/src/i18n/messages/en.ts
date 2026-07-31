@@ -237,4 +237,33 @@ export const en = {
   "achievement.fish_master.description": "Catch 10 fish from any biome.",
   "achievement.full_gathering.title": "Nature Expert",
   "achievement.full_gathering.description": "Complete the entire gathering collection.",
+
+  "npc.bao.name": "Chef Bao",
+  "npc.activity.cooking": "Cooking",
+
+  "dialogue.bao.greeting":
+    "Welcome to my kitchen! I can turn fresh ingredients into delicious meals. Shall we cook something?",
+  "dialogue.bao.recipes":
+    "Bread needs wheat, fish pie needs a fish and wheat, carrot soup needs carrots and wheat, and fruit salad needs melons. Simple but filling!",
+  "dialogue.bao.option.cook": "Let us cook!",
+  "dialogue.bao.option.recipes": "What can I make?",
+
+  "cooking.title": "Cooking",
+  "cooking.start": "Start cooking",
+  "cooking.inProgress": "Cooking in progress...",
+  "cooking.done": "Cooking complete!",
+  "cooking.failed": "Could not cook: missing ingredients or inventory full.",
+  "cooking.consume": "Eat {item}",
+  "cooking.energyRestored": "Restored {amount} energy!",
+  "cooking.recipe.bread": "Bread",
+  "cooking.recipe.fish_pie": "Fish Pie",
+  "cooking.recipe.carrot_soup": "Carrot Soup",
+  "cooking.recipe.fruit_salad": "Fruit Salad",
+
+  "item.bread": "Bread",
+  "item.fish_pie": "Fish Pie",
+  "item.carrot_soup": "Carrot Soup",
+  "item.fruit_salad": "Fruit Salad",
+
+  "collection.category.cooking": "Cooking",
 } as const;

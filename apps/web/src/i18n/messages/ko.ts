@@ -232,4 +232,33 @@ export const ko: LocaleMessages = {
     "어떤 생물 군계에서든 물고기를 10마리 잡으세요.",
   "achievement.full_gathering.title": "자연 전문가",
   "achievement.full_gathering.description": "채집 컬렉션을 모두 완성하세요.",
+
+  "npc.bao.name": "요리사 바오",
+  "npc.activity.cooking": "요리 중",
+
+  "dialogue.bao.greeting":
+    "내 주방에 잘 오셨어요! 신선한 재료로 맛있는 요리를 만들어 드릴게요. 뭘 만들어 볼까요?",
+  "dialogue.bao.recipes":
+    "빵은 밀이 필요하고, 생선 파이는 생선과 밀, 당근 수프는 당근과 밀, 과일 샐러드는 멜론이 필요해요. 간단하지만 든든하답니다!",
+  "dialogue.bao.option.cook": "요리하자!",
+  "dialogue.bao.option.recipes": "뭘 만들 수 있어요?",
+
+  "cooking.title": "요리",
+  "cooking.start": "요리 시작",
+  "cooking.inProgress": "요리 중...",
+  "cooking.done": "요리 완성!",
+  "cooking.failed": "요리 실패: 재료가 부족하거나 인벤토리가 가득 찼어요.",
+  "cooking.consume": "{item} 먹기",
+  "cooking.energyRestored": "에너지 {amount} 회복!",
+  "cooking.recipe.bread": "빵",
+  "cooking.recipe.fish_pie": "생선 파이",
+  "cooking.recipe.carrot_soup": "당근 수프",
+  "cooking.recipe.fruit_salad": "과일 샐러드",
+
+  "item.bread": "빵",
+  "item.fish_pie": "생선 파이",
+  "item.carrot_soup": "당근 수프",
+  "item.fruit_salad": "과일 샐러드",
+
+  "collection.category.cooking": "요리",
 };

@@ -230,4 +230,33 @@ export const ja: LocaleMessages = {
   "achievement.fish_master.description": "どのバイオームからでも魚を10匹釣りましょう。",
   "achievement.full_gathering.title": "自然の専門家",
   "achievement.full_gathering.description": "採集コレクションを全て完成させましょう。",
+
+  "npc.bao.name": "料理人バオ",
+  "npc.activity.cooking": "料理中",
+
+  "dialogue.bao.greeting":
+    "私のキッチンへようこそ！新鮮な食材でおいしい料理を作りましょう。何を作りますか？",
+  "dialogue.bao.recipes":
+    "パンには小麦、フィッシュパイには魚と小麦、にんじんスープにはにんじんと小麦、フルーツサラダにはメロンが必要です。シンプルだけどお腹いっぱいになりますよ！",
+  "dialogue.bao.option.cook": "料理しよう！",
+  "dialogue.bao.option.recipes": "何が作れますか？",
+
+  "cooking.title": "料理",
+  "cooking.start": "料理を始める",
+  "cooking.inProgress": "調理中...",
+  "cooking.done": "料理完成！",
+  "cooking.failed": "料理失敗：材料不足またはインベントリがいっぱいです。",
+  "cooking.consume": "{item}を食べる",
+  "cooking.energyRestored": "エネルギーが{amount}回復しました！",
+  "cooking.recipe.bread": "パン",
+  "cooking.recipe.fish_pie": "フィッシュパイ",
+  "cooking.recipe.carrot_soup": "にんじんスープ",
+  "cooking.recipe.fruit_salad": "フルーツサラダ",
+
+  "item.bread": "パン",
+  "item.fish_pie": "フィッシュパイ",
+  "item.carrot_soup": "にんじんスープ",
+  "item.fruit_salad": "フルーツサラダ",
+
+  "collection.category.cooking": "料理",
 };

@@ -234,4 +234,34 @@ export const fr: LocaleMessages = {
   "achievement.full_gathering.title": "Expert de la nature",
   "achievement.full_gathering.description":
     "Complétez toute la collection de cueillette.",
+
+  "npc.bao.name": "Le Chef Bao",
+  "npc.activity.cooking": "En cuisine",
+
+  "dialogue.bao.greeting":
+    "Bienvenue dans ma cuisine ! Je peux transformer des ingredients frais en plats delicieux. On cuisine ensemble ?",
+  "dialogue.bao.recipes":
+    "Le pain necessite du ble, la tourte au poisson necessite un poisson et du ble, la soupe de carottes necessite des carottes et du ble, et la salade de fruits necessite des melons. Simple mais nourrissant !",
+  "dialogue.bao.option.cook": "Cuisinons !",
+  "dialogue.bao.option.recipes": "Que puis-je preparer ?",
+
+  "cooking.title": "Cuisine",
+  "cooking.start": "Commencer a cuisiner",
+  "cooking.inProgress": "Cuisson en cours...",
+  "cooking.done": "Cuisine terminee !",
+  "cooking.failed":
+    "Impossible de cuisiner : ingredients manquants ou inventaire plein.",
+  "cooking.consume": "Manger {item}",
+  "cooking.energyRestored": "{amount} points d'energie recuperes !",
+  "cooking.recipe.bread": "Pain",
+  "cooking.recipe.fish_pie": "Tourte au poisson",
+  "cooking.recipe.carrot_soup": "Soupe de carottes",
+  "cooking.recipe.fruit_salad": "Salade de fruits",
+
+  "item.bread": "Pain",
+  "item.fish_pie": "Tourte au poisson",
+  "item.carrot_soup": "Soupe de carottes",
+  "item.fruit_salad": "Salade de fruits",
+
+  "collection.category.cooking": "Cuisine",
 };

@@ -21,7 +21,11 @@ export type ItemId =
   | "fishing_rod"
   | "fish_common"
   | "fish_rare"
-  | "fish_tropical";
+  | "fish_tropical"
+  | "bread"
+  | "fish_pie"
+  | "carrot_soup"
+  | "fruit_salad";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -82,6 +86,14 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     id: "fish_tropical",
     displayName: "Tropical Fish",
     stackSize: 50,
+  },
+  bread: { id: "bread", displayName: "Bread", stackSize: 20 },
+  fish_pie: { id: "fish_pie", displayName: "Fish Pie", stackSize: 10 },
+  carrot_soup: { id: "carrot_soup", displayName: "Carrot Soup", stackSize: 10 },
+  fruit_salad: {
+    id: "fruit_salad",
+    displayName: "Fruit Salad",
+    stackSize: 10,
   },
 };
 

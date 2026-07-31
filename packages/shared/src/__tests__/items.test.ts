@@ -27,6 +27,10 @@ const EXPECTED_IDS: ItemId[] = [
   "fish_common",
   "fish_rare",
   "fish_tropical",
+  "bread",
+  "fish_pie",
+  "carrot_soup",
+  "fruit_salad",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

@@ -46,6 +46,12 @@ export const COLLECTION_CATEGORIES: readonly CollectionCategory[] = [
     entries: ["fence", "chest", "path_stone"],
     rewardCoins: 60,
   },
+  {
+    id: "cooking",
+    titleKey: "collection.category.cooking",
+    entries: ["bread", "fish_pie", "carrot_soup", "fruit_salad"],
+    rewardCoins: 90,
+  },
 ];
 
 /** Every category id, in catalogue order. */

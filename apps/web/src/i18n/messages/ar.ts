@@ -232,4 +232,33 @@ export const ar: LocaleMessages = {
   "achievement.fish_master.description": "اصطد 10 أسماك من أي منطقة حيوية.",
   "achievement.full_gathering.title": "خبير الطبيعة",
   "achievement.full_gathering.description": "أكمل مجموعة الجمع بالكامل.",
+
+  "npc.bao.name": "الشيف باو",
+  "npc.activity.cooking": "يطبخ",
+
+  "dialogue.bao.greeting":
+    "مرحبا في مطبخي! يمكنني تحويل المكونات الطازجة إلى وجبات لذيذة. هل نطبخ شيئا؟",
+  "dialogue.bao.recipes":
+    "الخبز يحتاج قمح، فطيرة السمك تحتاج سمكة وقمح، حساء الجزر يحتاج جزر وقمح، وسلطة الفواكه تحتاج بطيخ. بسيط لكن مشبع!",
+  "dialogue.bao.option.cook": "هيا نطبخ!",
+  "dialogue.bao.option.recipes": "ماذا يمكنني تحضيره؟",
+
+  "cooking.title": "الطبخ",
+  "cooking.start": "ابدأ الطبخ",
+  "cooking.inProgress": "جاري الطبخ...",
+  "cooking.done": "الطبخ جاهز!",
+  "cooking.failed": "فشل الطبخ: مكونات ناقصة أو المخزون ممتلئ.",
+  "cooking.consume": "أكل {item}",
+  "cooking.energyRestored": "تم استعادة {amount} طاقة!",
+  "cooking.recipe.bread": "خبز",
+  "cooking.recipe.fish_pie": "فطيرة سمك",
+  "cooking.recipe.carrot_soup": "حساء الجزر",
+  "cooking.recipe.fruit_salad": "سلطة فواكه",
+
+  "item.bread": "خبز",
+  "item.fish_pie": "فطيرة سمك",
+  "item.carrot_soup": "حساء الجزر",
+  "item.fruit_salad": "سلطة فواكه",
+
+  "collection.category.cooking": "الطبخ",
 };

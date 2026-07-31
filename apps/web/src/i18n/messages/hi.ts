@@ -230,4 +230,33 @@ export const hi: LocaleMessages = {
   "achievement.fish_master.description": "किसी भी बायोम से 10 मछलियाँ पकड़ें।",
   "achievement.full_gathering.title": "प्रकृति विशेषज्ञ",
   "achievement.full_gathering.description": "पूरा संग्रह संकलन पूरा करें।",
+
+  "npc.bao.name": "शेफ बाओ",
+  "npc.activity.cooking": "खाना बना रहे हैं",
+
+  "dialogue.bao.greeting":
+    "मेरी रसोई में आपका स्वागत है! मैं ताज़ी सामग्री से स्वादिष्ट व्यंजन बना सकता हूँ। कुछ पकाएं?",
+  "dialogue.bao.recipes":
+    "रोटी के लिए गेहूँ चाहिए, मछली पाई के लिए मछली और गेहूँ, गाजर सूप के लिए गाजर और गेहूँ, और फल सलाद के लिए तरबूज़। सादा लेकिन पेट भरने वाला!",
+  "dialogue.bao.option.cook": "चलो पकाते हैं!",
+  "dialogue.bao.option.recipes": "मैं क्या बना सकता हूँ?",
+
+  "cooking.title": "खाना पकाना",
+  "cooking.start": "पकाना शुरू करें",
+  "cooking.inProgress": "पक रहा है...",
+  "cooking.done": "खाना तैयार!",
+  "cooking.failed": "खाना नहीं बन सका: सामग्री कम है या इन्वेंटरी भरी है।",
+  "cooking.consume": "{item} खाएं",
+  "cooking.energyRestored": "{amount} ऊर्जा बहाल हुई!",
+  "cooking.recipe.bread": "रोटी",
+  "cooking.recipe.fish_pie": "मछली पाई",
+  "cooking.recipe.carrot_soup": "गाजर सूप",
+  "cooking.recipe.fruit_salad": "फल सलाद",
+
+  "item.bread": "रोटी",
+  "item.fish_pie": "मछली पाई",
+  "item.carrot_soup": "गाजर सूप",
+  "item.fruit_salad": "फल सलाद",
+
+  "collection.category.cooking": "खाना पकाना",
 };

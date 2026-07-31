@@ -233,4 +233,33 @@ export const de: LocaleMessages = {
   "achievement.full_gathering.title": "Naturexperte",
   "achievement.full_gathering.description":
     "Vervollständige die gesamte Sammelkollektion.",
+
+  "npc.bao.name": "Koch Bao",
+  "npc.activity.cooking": "Kocht gerade",
+
+  "dialogue.bao.greeting":
+    "Willkommen in meiner Kueche! Ich verwandle frische Zutaten in koestliche Gerichte. Wollen wir etwas kochen?",
+  "dialogue.bao.recipes":
+    "Brot braucht Weizen, Fischpastete braucht einen Fisch und Weizen, Karottensuppe braucht Karotten und Weizen, und Obstsalat braucht Melonen. Einfach aber saettigend!",
+  "dialogue.bao.option.cook": "Lass uns kochen!",
+  "dialogue.bao.option.recipes": "Was kann ich zubereiten?",
+
+  "cooking.title": "Kochen",
+  "cooking.start": "Kochen beginnen",
+  "cooking.inProgress": "Wird gekocht...",
+  "cooking.done": "Kochen abgeschlossen!",
+  "cooking.failed": "Kochen fehlgeschlagen: Zutaten fehlen oder Inventar ist voll.",
+  "cooking.consume": "{item} essen",
+  "cooking.energyRestored": "{amount} Energie wiederhergestellt!",
+  "cooking.recipe.bread": "Brot",
+  "cooking.recipe.fish_pie": "Fischpastete",
+  "cooking.recipe.carrot_soup": "Karottensuppe",
+  "cooking.recipe.fruit_salad": "Obstsalat",
+
+  "item.bread": "Brot",
+  "item.fish_pie": "Fischpastete",
+  "item.carrot_soup": "Karottensuppe",
+  "item.fruit_salad": "Obstsalat",
+
+  "collection.category.cooking": "Kochen",
 };

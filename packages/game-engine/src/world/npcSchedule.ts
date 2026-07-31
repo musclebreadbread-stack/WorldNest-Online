@@ -8,7 +8,7 @@
  */
 import type { ClockSnapshot } from "./WorldClock";
 
-export type NpcActivity = "home" | "work" | "market" | "rest" | "museum";
+export type NpcActivity = "home" | "work" | "market" | "rest" | "museum" | "cooking";
 
 export interface NpcScheduleEntry {
   fromHour: number;

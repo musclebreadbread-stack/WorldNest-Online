@@ -233,4 +233,33 @@ export const es: LocaleMessages = {
   "achievement.full_gathering.title": "Experto en naturaleza",
   "achievement.full_gathering.description":
     "Completa toda la colección de recolección.",
+
+  "npc.bao.name": "Chef Bao el cocinero",
+  "npc.activity.cooking": "Cocinando",
+
+  "dialogue.bao.greeting":
+    "Bienvenido a mi cocina. Puedo convertir ingredientes frescos en platos deliciosos. Quieres que cocinemos algo?",
+  "dialogue.bao.recipes":
+    "El pan necesita trigo, el pastel de pescado necesita un pez y trigo, la sopa de zanahoria necesita zanahorias y trigo, y la ensalada de frutas necesita melones. Sencillo pero nutritivo!",
+  "dialogue.bao.option.cook": "Vamos a cocinar!",
+  "dialogue.bao.option.recipes": "Que puedo preparar?",
+
+  "cooking.title": "Cocina",
+  "cooking.start": "Empezar a cocinar",
+  "cooking.inProgress": "Cocinando...",
+  "cooking.done": "Cocina lista!",
+  "cooking.failed": "No se pudo cocinar: faltan ingredientes o inventario lleno.",
+  "cooking.consume": "Comer {item}",
+  "cooking.energyRestored": "Recuperaste {amount} de energia!",
+  "cooking.recipe.bread": "Pan",
+  "cooking.recipe.fish_pie": "Pastel de pescado",
+  "cooking.recipe.carrot_soup": "Sopa de zanahoria",
+  "cooking.recipe.fruit_salad": "Ensalada de frutas",
+
+  "item.bread": "Pan",
+  "item.fish_pie": "Pastel de pescado",
+  "item.carrot_soup": "Sopa de zanahoria",
+  "item.fruit_salad": "Ensalada de frutas",
+
+  "collection.category.cooking": "Cocina",
 };

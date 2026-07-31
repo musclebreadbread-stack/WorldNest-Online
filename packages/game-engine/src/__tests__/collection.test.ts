@@ -50,12 +50,13 @@ function createCollector() {
 }
 
 describe("collectionDefinitions", () => {
-  it("should define four categories with valid entries", () => {
+  it("should define five categories with valid entries", () => {
     expect(COLLECTION_CATEGORY_IDS).toEqual([
       "gathering",
       "farming",
       "fishing",
       "crafted",
+      "cooking",
     ]);
     for (const category of COLLECTION_CATEGORIES) {
       expect(category.entries.length).toBeGreaterThan(0);

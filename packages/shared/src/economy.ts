@@ -64,6 +64,12 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   fish_common: { buy: 15, sell: 7 },
   fish_rare: { buy: 35, sell: 16 },
   fish_tropical: { buy: 45, sell: 21 },
+  // Cooked food: ingredients cost less than the finished product, so cooking
+  // is profitable if you grow or catch your own materials.
+  bread: { buy: 25, sell: 12 },
+  fish_pie: { buy: 50, sell: 24 },
+  carrot_soup: { buy: 40, sell: 18 },
+  fruit_salad: { buy: 35, sell: 16 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

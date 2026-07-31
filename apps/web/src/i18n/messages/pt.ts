@@ -231,4 +231,34 @@ export const pt: LocaleMessages = {
   "achievement.fish_master.description": "Pegue 10 peixes de qualquer bioma.",
   "achievement.full_gathering.title": "Especialista em natureza",
   "achievement.full_gathering.description": "Complete toda a coleção de coleta.",
+
+  "npc.bao.name": "Chefe Bao",
+  "npc.activity.cooking": "Cozinhando",
+
+  "dialogue.bao.greeting":
+    "Bem-vindo a minha cozinha! Posso transformar ingredientes frescos em refeicoes deliciosas. Vamos cozinhar algo?",
+  "dialogue.bao.recipes":
+    "Pao precisa de trigo, torta de peixe precisa de um peixe e trigo, sopa de cenoura precisa de cenouras e trigo, e salada de frutas precisa de meloes. Simples mas nutritivo!",
+  "dialogue.bao.option.cook": "Vamos cozinhar!",
+  "dialogue.bao.option.recipes": "O que posso preparar?",
+
+  "cooking.title": "Culinaria",
+  "cooking.start": "Comecar a cozinhar",
+  "cooking.inProgress": "Cozinhando...",
+  "cooking.done": "Prato pronto!",
+  "cooking.failed":
+    "Falha ao cozinhar: ingredientes insuficientes ou inventario cheio.",
+  "cooking.consume": "Comer {item}",
+  "cooking.energyRestored": "{amount} de energia restaurada!",
+  "cooking.recipe.bread": "Pao",
+  "cooking.recipe.fish_pie": "Torta de peixe",
+  "cooking.recipe.carrot_soup": "Sopa de cenoura",
+  "cooking.recipe.fruit_salad": "Salada de frutas",
+
+  "item.bread": "Pao",
+  "item.fish_pie": "Torta de peixe",
+  "item.carrot_soup": "Sopa de cenoura",
+  "item.fruit_salad": "Salada de frutas",
+
+  "collection.category.cooking": "Culinaria",
 };

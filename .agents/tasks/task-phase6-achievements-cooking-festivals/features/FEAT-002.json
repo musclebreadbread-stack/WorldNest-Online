@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Cooking mini-game with recipe system. Adds new cooked food items to the shared catalogue, a recipe definitions file, a CookingComponent, and a CookingSystem. The pattern follows FishingSystem: a state machine (idle -> selecting -> cooking -> done) driven by interaction requests. A new NPC 'Chef Bao' offers cooking access. Cooked items restore energy (extending StatsSystem or adding an energy restore on consume). Recipes combine existing items (wheat -> bread, fish_common + wheat -> fish_pie, carrot + wheat -> carrot_soup, melon -> fruit_salad). All 12 locales updated.",
+  "status": "in_progress",
+  "steps": [
+    "Add new items to packages/shared/src/items.ts ItemId union and ITEM_DEFINITIONS: bread (stackSize 20), fish_pie (stackSize 10), carrot_soup (stackSize 10), fruit_salad (stackSize 10). These are cooked foods that restore energy when consumed.",
+    "Add prices for new items in packages/shared/src/economy.ts ITEM_PRICES: bread {buy:25, sell:12}, fish_pie {buy:50, sell:24}, carrot_soup {buy:40, sell:18}, fruit_salad {buy:35, sell:16}.",
+    "Create packages/game-engine/src/cooking/cookingDefinitions.ts with RecipeDefinition interface (id, resultItemId, resultQuantity, ingredients: {itemId, quantity}[], cookTimeMs, titleKey). Define 4 recipes: bread (1 wheat -> 1 bread, 2000ms), fish_pie (1 fish_common + 1 wheat -> 1 fish_pie, 3000ms), carrot_soup (2 carrot + 1 wheat -> 1 carrot_soup, 2500ms), fruit_salad (2 melon -> 1 fruit_salad, 2000ms).",
+    "Create packages/game-engine/src/cooking/cookingOps.ts with pure functions: canCook(inventory, recipe) -> boolean (checks all ingredients present), startCooking(component, recipeId) -> boolean, tickCooking(state, timer, deltaMs, cookTime) -> {state, timer}, completeCooking(component, inventory) -> boolean (removes ingredients, adds result). Add consumeFood(stats, inventory, itemId) -> boolean that restores energy based on item (bread +15, fish_pie +30, carrot_soup +25, fruit_salad +20) and removes 1 from inventory.",
+    "Create packages/game-engine/src/cooking/index.ts re-exporting definitions and ops.",
+    "Create packages/game-engine/src/components/CookingComponent.ts extending Component with type 'cooking'. Fields: state ('idle'|'selecting'|'cooking'|'done'|'failed'), selectedRecipe string|null, timer number, requestedCook string|null, requestedConsume ItemId|null, version number.",
+    "Create packages/game-engine/src/systems/CookingSystem.ts that processes cooking state machine. Requires: ['cooking', 'inventory', 'stats']. On requestedCook: validates ingredients, starts timer. On timer completion: removes ingredients, adds result. On requestedConsume: applies energy restore via consumeFood.",
+    "Add Chef Bao NPC to packages/game-engine/src/world/NpcCatalogue.ts (id: 'chef_bao', role: 'chef' added to NpcRole, anchorTileX: 12, anchorTileY: 13, schedule with rest/work/market activities).",
+    "Register CookingComponent in packages/game-engine/src/components/index.ts and CookingSystem in packages/game-engine/src/systems/index.ts. Export from packages/game-engine/src/index.ts. Export cooking module.",
+    "Update collection categories in packages/game-engine/src/collection/collectionDefinitions.ts: add a new 'cooking' category with entries ['bread', 'fish_pie', 'carrot_soup', 'fruit_salad'] and rewardCoins 90.",
+    "Add i18n keys for cooking UI, recipes, Chef Bao NPC, food items, and collection category in apps/web/src/i18n/messages/en.ts. Update all 11 other locale files.",
+    "Create packages/game-engine/src/__tests__/cooking.test.ts with comprehensive tests: recipe validation, cooking state machine transitions, ingredient checking/removal, result item creation, energy restoration from food consumption, timer behavior, edge cases.",
+    "Run pnpm format && pnpm lint && pnpm build && pnpm test to verify everything passes."
+  ],
+  "acceptance_criteria": [
+    "4 new food items in the shared catalogue with prices",
+    "4 recipes defined with ingredient costs and cook times",
+    "CookingComponent and CookingSystem follow ECS patterns",
+    "consumeFood restores energy and removes item from inventory",
+    "Chef Bao NPC added with schedule",
+    "New 'cooking' collection category with the 4 cooked items",
+    "All i18n keys resolve in 12 locales (i18n parity test passes)",
+    "pnpm build and pnpm test pass",
+    "All files under 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

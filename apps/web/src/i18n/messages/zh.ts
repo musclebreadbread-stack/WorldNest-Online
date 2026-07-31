@@ -228,4 +228,33 @@ export const zh: LocaleMessages = {
   "achievement.fish_master.description": "在任何生物群落钓到10条鱼。",
   "achievement.full_gathering.title": "自然专家",
   "achievement.full_gathering.description": "完成整个采集收藏。",
+
+  "npc.bao.name": "厨师小包",
+  "npc.activity.cooking": "烹饪中",
+
+  "dialogue.bao.greeting":
+    "欢迎来到我的厨房！我能把新鲜食材变成美味佳肴。要一起做点什么吗？",
+  "dialogue.bao.recipes":
+    "面包需要小麦，鱼派需要鱼和小麦，胡萝卜汤需要胡萝卜和小麦，水果沙拉需要甜瓜。简单但很管饱！",
+  "dialogue.bao.option.cook": "一起做饭吧！",
+  "dialogue.bao.option.recipes": "我能做什么？",
+
+  "cooking.title": "烹饪",
+  "cooking.start": "开始烹饪",
+  "cooking.inProgress": "烹饪中...",
+  "cooking.done": "烹饪完成！",
+  "cooking.failed": "烹饪失败：缺少材料或背包已满。",
+  "cooking.consume": "吃{item}",
+  "cooking.energyRestored": "恢复了{amount}点精力！",
+  "cooking.recipe.bread": "面包",
+  "cooking.recipe.fish_pie": "鱼派",
+  "cooking.recipe.carrot_soup": "胡萝卜汤",
+  "cooking.recipe.fruit_salad": "水果沙拉",
+
+  "item.bread": "面包",
+  "item.fish_pie": "鱼派",
+  "item.carrot_soup": "胡萝卜汤",
+  "item.fruit_salad": "水果沙拉",
+
+  "collection.category.cooking": "烹饪",
 };

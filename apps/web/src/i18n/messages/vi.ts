@@ -229,4 +229,33 @@ export const vi: LocaleMessages = {
   "achievement.fish_master.description": "Bắt 10 con cá từ bất kỳ vùng sinh thái nào.",
   "achievement.full_gathering.title": "Chuyên gia thiên nhiên",
   "achievement.full_gathering.description": "Hoàn thành toàn bộ bộ sưu tập thu thập.",
+
+  "npc.bao.name": "Đầu bếp Bao",
+  "npc.activity.cooking": "Đang nấu ăn",
+
+  "dialogue.bao.greeting":
+    "Chào mừng đến bếp của tôi! Tôi biến nguyên liệu tươi thành món ăn ngon. Nấu gì nhé?",
+  "dialogue.bao.recipes":
+    "Bánh mì cần lúa mì, bánh cá cần cá và lúa mì, súp cà rốt cần cà rốt và lúa mì, salad trái cây cần dưa. Đơn giản nhưng no bụng!",
+  "dialogue.bao.option.cook": "Nấu ăn thôi!",
+  "dialogue.bao.option.recipes": "Tôi nấu được gì?",
+
+  "cooking.title": "Nấu ăn",
+  "cooking.start": "Bắt đầu nấu",
+  "cooking.inProgress": "Đang nấu...",
+  "cooking.done": "Nấu xong!",
+  "cooking.failed": "Không nấu được: thiếu nguyên liệu hoặc túi đồ đầy.",
+  "cooking.consume": "Ăn {item}",
+  "cooking.energyRestored": "Phục hồi {amount} năng lượng!",
+  "cooking.recipe.bread": "Bánh mì",
+  "cooking.recipe.fish_pie": "Bánh cá",
+  "cooking.recipe.carrot_soup": "Súp cà rốt",
+  "cooking.recipe.fruit_salad": "Salad trái cây",
+
+  "item.bread": "Bánh mì",
+  "item.fish_pie": "Bánh cá",
+  "item.carrot_soup": "Súp cà rốt",
+  "item.fruit_salad": "Salad trái cây",
+
+  "collection.category.cooking": "Nấu ăn",
 };

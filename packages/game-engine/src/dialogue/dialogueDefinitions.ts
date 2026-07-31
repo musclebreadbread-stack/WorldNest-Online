@@ -194,4 +194,26 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
       },
     },
   },
+
+  // Chef Bao: cooking. Explains recipes and opens the cooking interface.
+  bao_cooking: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.bao.greeting",
+        options: [
+          { labelKey: "dialogue.bao.option.cook", action: { kind: "close" } },
+          { labelKey: "dialogue.bao.option.recipes", next: "recipes" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      recipes: {
+        textKey: "dialogue.bao.recipes",
+        options: [
+          { labelKey: "dialogue.bao.option.cook", action: { kind: "close" } },
+          { labelKey: "dialogue.option.back", next: "greeting" },
+        ],
+      },
+    },
+  },
 };

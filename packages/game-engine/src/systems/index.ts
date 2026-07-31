@@ -33,3 +33,4 @@ export type { BiomeAtTile, RngFn } from "./FishingSystem";
 export { CollectionSystem } from "./CollectionSystem";
 export { AchievementSystem } from "./AchievementSystem";
 export type { AchievementStructureCounter } from "./AchievementSystem";
+export { CookingSystem } from "./CookingSystem";

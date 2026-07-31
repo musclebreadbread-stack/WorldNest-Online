@@ -35,6 +35,7 @@ export {
   FishingComponent,
   CollectionComponent,
   AchievementComponent,
+  CookingComponent,
 } from "./components";
 export type {
   KeyState,
@@ -71,6 +72,20 @@ export {
   tickFishing,
 } from "./fishing";
 export type { FishCatch, FishingState } from "./fishing";
+
+// Cooking (pure; recipe system and food consumption)
+export {
+  FOOD_ENERGY,
+  RECIPE_DEFINITIONS,
+  RECIPE_IDS,
+  canCook,
+  completeCooking,
+  consumeFood,
+  getRecipe,
+  startCooking,
+  tickCooking,
+} from "./cooking";
+export type { CookingState, RecipeDefinition, RecipeIngredient } from "./cooking";
 
 // Collection (pure; museum donation and category tracking)
 export {
@@ -196,6 +211,7 @@ export {
   FishingSystem,
   CollectionSystem,
   AchievementSystem,
+  CookingSystem,
 } from "./systems";
 export type {
   RenderData,

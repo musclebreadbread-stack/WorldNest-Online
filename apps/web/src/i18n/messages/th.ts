@@ -228,4 +228,33 @@ export const th: LocaleMessages = {
   "achievement.fish_master.description": "จับปลา 10 ตัวจากไบโอมใดก็ได้",
   "achievement.full_gathering.title": "ผู้เชี่ยวชาญธรรมชาติ",
   "achievement.full_gathering.description": "ทำคอลเลกชันเก็บเกี่ยวให้ครบ",
+
+  "npc.bao.name": "เชฟเปา",
+  "npc.activity.cooking": "กำลังทำอาหาร",
+
+  "dialogue.bao.greeting":
+    "ยินดีต้อมรับสู่ครัวของผม! ผมเปลี่ยนวัตถุดิบสดเป็นอาหารอร่อยได้ เราจะทำอะไรกันดี?",
+  "dialogue.bao.recipes":
+    "ขนมปังใช้ข้าวสาลี พายปลาใช้ปลากับข้าวสาลี ซุปแครอทใช้แครอทกับข้าวสาลี สลัดผลไม้ใช้เมลอน ง่ายแต่อิ่มท้อง!",
+  "dialogue.bao.option.cook": "มาทำอาหารกัน!",
+  "dialogue.bao.option.recipes": "ทำอะไรได้บ้าง?",
+
+  "cooking.title": "ทำอาหาร",
+  "cooking.start": "เริ่มทำอาหาร",
+  "cooking.inProgress": "กำลังปรุง...",
+  "cooking.done": "ทำอาหารเสร็จ!",
+  "cooking.failed": "ทำอาหารไม่ได้: วัตถุดิบไม่พอหรือกระเป๋าเต็ม",
+  "cooking.consume": "กิน{item}",
+  "cooking.energyRestored": "ฟื้นฟูพลังงาน {amount}!",
+  "cooking.recipe.bread": "ขนมปัง",
+  "cooking.recipe.fish_pie": "พายปลา",
+  "cooking.recipe.carrot_soup": "ซุปแครอท",
+  "cooking.recipe.fruit_salad": "สลัดผลไม้",
+
+  "item.bread": "ขนมปัง",
+  "item.fish_pie": "พายปลา",
+  "item.carrot_soup": "ซุปแครอท",
+  "item.fruit_salad": "สลัดผลไม้",
+
+  "collection.category.cooking": "ทำอาหาร",
 };
