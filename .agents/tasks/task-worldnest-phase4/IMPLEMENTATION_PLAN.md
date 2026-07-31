@@ -354,7 +354,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
 
 ## Phase A — Groundwork and headroom (items 1-2)
 
-- [ ] 1. Reconcile `.prettierrc` with the tree, as one mechanical `style:` commit, and turn it into a
+- [x] 1. Reconcile `.prettierrc` with the tree, as one mechanical `style:` commit, and turn it into a
       gate (decision D21). Set `printWidth: 88` in `.prettierrc`. Add `.prettierignore` covering
       `node_modules/`, `dist/`, `.next/`, `.turbo/`, `test-results/`, `playwright-report/`,
       `pnpm-lock.yaml` and **`.agents/`** (so the three historical plan files stay byte-exact). Add a
@@ -372,7 +372,7 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
       not change behaviour), and the Korean doc pair still matches at 62 headings because repadding a
       markdown table does not touch a heading.
 
-- [ ] 2. Give `createGameWorld.ts` room before three later items add to it. It is at **296** of the
+- [x] 2. Give `createGameWorld.ts` room before three later items add to it. It is at **296** of the
       ~300 cap and items 8, 10 and 16 all add to it. Extract the player entity into a new Phaser-free
       `apps/web/src/game/playerEntity.ts` exporting `PLAYER_COLLIDER_SIZE`, `STARTING_WHEAT_SEEDS` and
       `createPlayerEntity(bootstrap): Entity` — the component assembly plus the three "granted only
@@ -916,3 +916,82 @@ F item 19 depends on migration `005` from item 12. G is last and item 24 is the 
   `format:check` to the existing `ci` job instead, which is a real gate with none of that cost.
 - If any item's verification cannot be performed, complete what can be, commit, and record the gap
   rather than blocking the remaining items.
+
+---
+
+## Implementation notes for items 1-2 (deviations worth knowing for items 3-24)
+
+Phase A is complete. Commits, one per item, on `feat/mvp-foundation`:
+`87d8160` (plan tracked), `af4a57d` (1), `adaac44` (2).
+
+### Gate results after item 2
+
+| Command | Result |
+|---------|--------|
+| `pnpm format:check` | **exit 0, nothing listed** — the gate is now real for items 3-24 |
+| `pnpm lint` | 9 turbo tasks, 5 real lint tasks, no warnings or errors |
+| `pnpm build` | 5/5 packages |
+| `pnpm test` | shared 24, game-engine 263, web 290 = **577**, unchanged from the baseline |
+| `pnpm test:e2e` | 3/3 chromium specs, executed against `next start` |
+| `pnpm db:verify` | 18 assertions, exit 0 |
+| `pnpm docs:check` | 62 headings still match |
+| `docker build -t worldnest:phase4-a .` | image builds |
+| `createGameWorld.ts` | **201** lines (was 296; item 2 required < 220) |
+
+### Item 1 — the numbers, and the one number that changed
+
+Prettier rewrote **69 files** (62 of them non-markdown), not the 73 the plan predicted. The
+difference is the four markdown files under `.agents/` that `.prettierignore` now excludes — the plan
+measured 73 _before_ that ignore file existed, and 62 non-markdown matches its measurement exactly.
+`printWidth` is `88`; the diff in those 69 files is whitespace only: re-wrapped lines, repadded
+markdown tables, and Prettier's `*emphasis*` → `_emphasis_` normalisation. The 577 tests and
+`pnpm docs:check` were green before and after, which is what makes "whitespace only" a claim rather
+than a hope.
+
+- `.prettierignore` covers `node_modules/`, `dist/`, `.next/`, `.turbo/`, `test-results/`,
+  `playwright-report/`, `pnpm-lock.yaml` and `.agents/`. **The three plan files are byte-exact**, so
+  editing this file from item 3 onward will never be reformatted either.
+- `format:check` is wired into the `ci` job immediately after `Run lint`, so a drifted tree fails CI
+  before the longer build and test steps run.
+- The three documents that told contributors _not_ to run `pnpm format` now say the opposite:
+  `CONTRIBUTING.md` ("ESLint & Prettier"), `docs/DEVELOPMENT.md` (the scripts table gained a
+  `format:check` row and the caveat blockquote was rewritten), `README.md` (the `pnpm format` row plus
+  a new `format:check` row). No other document mentioned the trap.
+- **`.sql` is not in the format glob** (`**/*.{ts,tsx,js,jsx,json,md}`), so items 3 and 12 can format
+  their migrations by hand exactly as `001`-`003` are, and `format:check` will not object.
+
+### Item 2 — what moved, and the one deviation
+
+`apps/web/src/game/playerEntity.ts` (144 lines) is Phaser-free and now owns:
+
+- `GameBootstrap` — moved rather than left behind, because the alternative was `playerEntity.ts`
+  importing its own parameter type back out of `createGameWorld.ts`, which is an import cycle even if
+  a type-only one.
+- `LOCAL_PLAYER_ENTITY_ID`, `PLAYER_COLLIDER_SIZE`, `STARTING_WHEAT_SEEDS`.
+- `createPlayerEntity(bootstrap)` — the fifteen-component assembly plus the three seeding rules.
+- `remotePlayerEntityId` / `createRemotePlayerEntity`.
+
+**Deviation:** the plan named only `createPlayerEntity` and the two constants. Moving just those left
+`createGameWorld.ts` at **251** lines, which misses the item's own `< 220` gate, so the entity id, the
+bootstrap interface and the remote-player pair — all entity assembly, none of it system wiring — went
+with them. `createGameWorld.ts` re-exports **every** one of those names, so `loadSession.ts`,
+`SessionPersistence.ts`, `NetworkBridge.ts`, `PhaserGame.ts`, `GameScene.ts` and all four test files
+that import them are untouched, which is why the 290 web tests are unchanged and green. One row was
+added to the `apps/web/src/game/` table in `docs/ARCHITECTURE.md`, the same way `savedWorld.ts` has
+one.
+
+The purse rule is preserved verbatim for item 8 to delete: `bootstrap.coins ?? STARTING_COINS`, with
+`loadSession` still deciding `hasSaved` at row level. Nothing about it was "cleaned up" on the way
+past.
+
+### Notes for items 3-24
+
+- **`pnpm format` is now the normal workflow.** Run it before committing; it only touches what you
+  changed. Do not hand-wrap to fight it, and note that Prettier will collapse a short multi-line union
+  onto one line at 88 columns.
+- **New prose uses `_emphasis_`**, not `*emphasis*`, or `format:check` will rewrite it.
+- **`createGameWorld.ts` has 99 lines of headroom** under the ~300 cap for items 8, 10 and 16. If any
+  of them needs more, `playerEntity.ts` is the precedent: extract, re-export, touch no caller.
+- **Playwright's chromium binary was not present in the sandbox** and had to be installed with
+  `npx playwright install chromium` before `pnpm test:e2e` would run. That is an environment
+  characteristic, not a repository change — expect to do it again in a fresh sandbox.
