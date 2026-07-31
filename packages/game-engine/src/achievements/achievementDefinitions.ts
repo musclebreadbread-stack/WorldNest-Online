@@ -15,7 +15,8 @@ export type AchievementCondition =
   | { kind: "total_coins"; amount: number }
   | { kind: "category_complete"; categoryId: string; donateCount: number }
   | { kind: "tame"; count: number }
-  | { kind: "quiz_streak"; count: number };
+  | { kind: "quiz_streak"; count: number }
+  | { kind: "housing_happiness"; threshold: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -38,6 +39,7 @@ export interface AchievementSource {
   totalCoinsEarned: number;
   animalsTamedCount: number;
   quizStreak: number;
+  housingHappiness: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -118,6 +120,13 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.quiz_streak_3.description",
     rewardCoins: 30,
     condition: { kind: "quiz_streak", count: 3 },
+  },
+  {
+    id: "homeowner",
+    titleKey: "achievement.homeowner.title",
+    descriptionKey: "achievement.homeowner.description",
+    rewardCoins: 40,
+    condition: { kind: "housing_happiness", threshold: 50 },
   },
 ];
 

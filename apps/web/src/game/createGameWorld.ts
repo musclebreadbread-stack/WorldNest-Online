@@ -26,6 +26,7 @@ import {
   composeBlockers,
   layerGuardedBlockers,
   AccessibilitySystem,
+  HousingSystem,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
@@ -70,6 +71,7 @@ export interface GameWorldSystems {
   animation: AnimationSystem;
   render: RenderSystem;
   accessibility: AccessibilitySystem;
+  housing: HousingSystem;
 }
 
 export interface GameWorldContext {
@@ -199,6 +201,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     animation: new AnimationSystem(),
     render: new RenderSystem(),
     accessibility: new AccessibilitySystem(),
+    housing: new HousingSystem(),
   };
 
   world.addSystem(systems.time);
@@ -221,6 +224,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.animation);
   world.addSystem(systems.render);
   world.addSystem(systems.accessibility);
+  world.addSystem(systems.housing);
 
   // Saved terrain, structures and crops go in before the first chunk load so
   // the very first render pass already shows the restored world.

@@ -37,3 +37,5 @@ export { FestivalComponent } from "./FestivalComponent";
 export { AnimalComponent } from "./AnimalComponent";
 export { QuizComponent } from "./QuizComponent";
 export { AccessibilityComponent } from "./AccessibilityComponent";
+export { HousingComponent } from "./HousingComponent";
+export type { PlaceRequest, RemoveRequest } from "./HousingComponent";

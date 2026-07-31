@@ -32,6 +32,7 @@ function emptySource(): AchievementSource {
     totalCoinsEarned: 0,
     animalsTamedCount: 0,
     quizStreak: 0,
+    housingHappiness: 0,
     isCategoryComplete: () => false,
   };
 }
@@ -54,8 +55,8 @@ function createPlayer() {
 
 describe("achievementDefinitions", () => {
   it("should define 8 achievements with valid keys and unique ids", () => {
-    expect(ACHIEVEMENT_IDS).toHaveLength(11);
-    expect(new Set(ACHIEVEMENT_IDS).size).toBe(11);
+    expect(ACHIEVEMENT_IDS).toHaveLength(12);
+    expect(new Set(ACHIEVEMENT_IDS).size).toBe(12);
     for (const def of ACHIEVEMENT_DEFINITIONS) {
       expect(def.titleKey).toMatch(/^achievement\./);
       expect(def.descriptionKey).toMatch(/^achievement\./);

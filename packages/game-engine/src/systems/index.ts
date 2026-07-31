@@ -41,3 +41,4 @@ export type { TameListener } from "./AnimalSystem";
 export { QuizSystem } from "./QuizSystem";
 export type { QuizDayGetter, QuizStreakListener } from "./QuizSystem";
 export { AccessibilitySystem } from "./AccessibilitySystem";
+export { HousingSystem } from "./HousingSystem";

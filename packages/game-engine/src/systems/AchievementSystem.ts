@@ -3,6 +3,7 @@ import type { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import { AchievementComponent } from "../components/AchievementComponent";
 import { CollectionComponent } from "../components/CollectionComponent";
+import { HousingComponent } from "../components/HousingComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
@@ -116,7 +117,15 @@ export class AchievementSystem extends System {
       achievement.totalQuestsCompleted = completedCount;
 
       // Build the polled source
-      const source = this.buildSource(inventory, collection, wallet, achievement);
+      const housingComp = entity.getComponent<HousingComponent>("housing");
+      const housingHappiness = housingComp ? housingComp.state.happiness : 0;
+      const source = this.buildSource(
+        inventory,
+        collection,
+        wallet,
+        achievement,
+        housingHappiness,
+      );
 
       // Check each achievement that has not been unlocked yet
       for (const definition of ACHIEVEMENT_DEFINITIONS) {
@@ -139,6 +148,7 @@ export class AchievementSystem extends System {
     collection: CollectionComponent,
     _wallet: WalletComponent,
     achievement: AchievementComponent,
+    housingHappiness: number,
   ): AchievementSource {
     return {
       itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
@@ -149,6 +159,7 @@ export class AchievementSystem extends System {
       totalCoinsEarned: achievement.totalCoinsEarned,
       animalsTamedCount: achievement.totalAnimalsTamed,
       quizStreak: this.currentQuizStreak,
+      housingHappiness,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

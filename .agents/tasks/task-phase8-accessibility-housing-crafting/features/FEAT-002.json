@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Player housing interior system: room-based interior with furniture placement, interior decoration, and room types. Extends the existing BuildSystem and inventory with interior-specific items and a separate indoor space per player.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Add new housing/furniture items to packages/shared/src/items.ts ItemId union: 'house_deed', 'table', 'chair', 'bed', 'lamp', 'bookshelf', 'rug', 'painting', 'plant_pot', 'window_curtain'. Add corresponding ITEM_DEFINITIONS entries (stackSize, displayName). Mark furniture items with a new 'placeable_furniture: true' property.",
     "Add prices for new items in packages/shared/src/economy.ts ITEM_PRICES table. House deed costs 200 coins (one-time purchase). Furniture ranges from 15-80 coins with appropriate sell spread.",

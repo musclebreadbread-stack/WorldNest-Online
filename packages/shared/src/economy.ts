@@ -73,6 +73,17 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   // Animal items: feed for taming, treats for pet happiness
   animal_feed: { buy: 15, sell: 5 },
   pet_treat: { buy: 20, sell: 8 },
+  // Housing: a deed is a one-time purchase, furniture is affordable decoration
+  house_deed: { buy: 200, sell: 60 },
+  table: { buy: 40, sell: 13 },
+  chair: { buy: 25, sell: 8 },
+  bed: { buy: 60, sell: 20 },
+  lamp: { buy: 30, sell: 10 },
+  bookshelf: { buy: 50, sell: 16 },
+  rug: { buy: 20, sell: 7 },
+  painting: { buy: 45, sell: 15 },
+  plant_pot: { buy: 15, sell: 5 },
+  window_curtain: { buy: 35, sell: 12 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

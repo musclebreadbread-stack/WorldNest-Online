@@ -52,6 +52,8 @@ export function checkCondition(
       return source.animalsTamedCount >= condition.count;
     case "quiz_streak":
       return source.quizStreak >= condition.count;
+    case "housing_happiness":
+      return source.housingHappiness >= condition.threshold;
   }
 }
 

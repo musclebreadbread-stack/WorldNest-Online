@@ -33,6 +33,16 @@ const EXPECTED_IDS: ItemId[] = [
   "fruit_salad",
   "animal_feed",
   "pet_treat",
+  "house_deed",
+  "table",
+  "chair",
+  "bed",
+  "lamp",
+  "bookshelf",
+  "rug",
+  "painting",
+  "plant_pot",
+  "window_curtain",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

@@ -68,6 +68,8 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   // Accessibility: "Standard" is a loanword used identically in
   // French, German, and other European languages.
   "settings.contrast.standard",
+  // "Table" is a legitimate French word identical to English.
+  "item.table",
 ];
 
 describe("message catalogue", () => {

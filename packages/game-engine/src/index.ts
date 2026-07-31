@@ -40,6 +40,7 @@ export {
   AnimalComponent,
   QuizComponent,
   AccessibilityComponent,
+  HousingComponent,
 } from "./components";
 export type {
   KeyState,
@@ -49,6 +50,8 @@ export type {
   QuestState,
   ShopTrade,
   ShopTradeKind,
+  PlaceRequest,
+  RemoveRequest,
 } from "./components";
 
 // Inventory operations (pure functions; components stay pure data)
@@ -201,6 +204,33 @@ export type {
   Announcement,
 } from "./accessibility";
 
+// Housing (pure; interior rooms, furniture placement, happiness)
+export {
+  FURNITURE_DEFINITIONS,
+  ROOM_DEFINITIONS,
+  ROOM_TYPES,
+  canEnterHouse,
+  canPlaceFurniture,
+  canUnlockRoom,
+  createDefaultHousingState,
+  createRoom,
+  getAvailableFurniture,
+  getFurnitureDefinition,
+  getOverallHappiness,
+  getRoomHappiness,
+  placeFurniture,
+  removeFurniture,
+} from "./housing";
+export type {
+  FurnitureCategory,
+  FurnitureDefinition,
+  HousingState,
+  PlacedFurniture,
+  RoomDefinition,
+  RoomState,
+  RoomType,
+} from "./housing";
+
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
 export type { Wallet } from "./shop";
@@ -297,6 +327,7 @@ export {
   AnimalSystem,
   QuizSystem,
   AccessibilitySystem,
+  HousingSystem,
 } from "./systems";
 export type {
   RenderData,

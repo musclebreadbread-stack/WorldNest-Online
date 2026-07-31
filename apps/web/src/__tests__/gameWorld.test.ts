@@ -82,6 +82,7 @@ const DOCUMENTED_SYSTEM_ORDER = [
   "animation",
   "render",
   "accessibility",
+  "housing",
 ];
 
 describe("createGameWorld", () => {
