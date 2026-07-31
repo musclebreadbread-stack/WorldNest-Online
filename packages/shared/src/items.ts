@@ -37,7 +37,15 @@ export type ItemId =
   | "rug"
   | "painting"
   | "plant_pot"
-  | "window_curtain";
+  | "window_curtain"
+  | "iron_ingot"
+  | "plank"
+  | "cloth"
+  | "stone_axe"
+  | "iron_axe"
+  | "stone_pickaxe"
+  | "iron_pickaxe"
+  | "workbench";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -177,6 +185,29 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     displayName: "Window Curtain",
     stackSize: 10,
     placeable_furniture: true,
+  },
+  iron_ingot: { id: "iron_ingot", displayName: "Iron Ingot", stackSize: 99 },
+  plank: { id: "plank", displayName: "Plank", stackSize: 99 },
+  cloth: { id: "cloth", displayName: "Cloth", stackSize: 99 },
+  stone_axe: { id: "stone_axe", displayName: "Stone Axe", stackSize: 1 },
+  iron_axe: { id: "iron_axe", displayName: "Iron Axe", stackSize: 1 },
+  stone_pickaxe: {
+    id: "stone_pickaxe",
+    displayName: "Stone Pickaxe",
+    stackSize: 1,
+  },
+  iron_pickaxe: {
+    id: "iron_pickaxe",
+    displayName: "Iron Pickaxe",
+    stackSize: 1,
+  },
+  workbench: {
+    id: "workbench",
+    displayName: "Workbench",
+    stackSize: 5,
+    placeableStructure: true,
+    structureCollidable: false,
+    structureTextureKey: "structure_workbench",
   },
 };
 

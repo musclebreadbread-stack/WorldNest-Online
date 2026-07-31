@@ -39,3 +39,4 @@ export { QuizComponent } from "./QuizComponent";
 export { AccessibilityComponent } from "./AccessibilityComponent";
 export { HousingComponent } from "./HousingComponent";
 export type { PlaceRequest, RemoveRequest } from "./HousingComponent";
+export { CraftingComponent } from "./CraftingComponent";

@@ -41,6 +41,7 @@ export {
   QuizComponent,
   AccessibilityComponent,
   HousingComponent,
+  CraftingComponent,
 } from "./components";
 export type {
   KeyState,
@@ -93,6 +94,28 @@ export {
   tickCooking,
 } from "./cooking";
 export type { CookingState, RecipeDefinition, RecipeIngredient } from "./cooking";
+
+// Crafting (pure; workbench recipes, tool bonuses, resource refinement)
+export {
+  CRAFTING_RECIPES,
+  CRAFTING_RECIPE_IDS,
+  TOOL_TIER_BONUS,
+  canCraft,
+  completeCraft,
+  getAvailableRecipes,
+  getCraftingRecipe,
+  getToolBonus,
+  startCraft,
+  tickCraft,
+} from "./crafting";
+export type {
+  CraftingIngredient,
+  CraftingRecipe,
+  CraftingStation,
+  CraftingState as CraftingMachineState,
+  ToolBonus,
+  ToolTier,
+} from "./crafting";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -328,6 +351,7 @@ export {
   QuizSystem,
   AccessibilitySystem,
   HousingSystem,
+  CraftingSystem,
 } from "./systems";
 export type {
   RenderData,

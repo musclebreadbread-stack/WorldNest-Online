@@ -28,6 +28,8 @@ export class AchievementComponent extends Component {
   public lastKnownCoins: number;
   /** Lifetime animals tamed total. */
   public totalAnimalsTamed: number;
+  /** Lifetime crafts completed total. */
+  public totalCraftsCompleted: number;
 
   constructor() {
     super("achievement");
@@ -39,5 +41,6 @@ export class AchievementComponent extends Component {
     this.totalCoinsEarned = 0;
     this.lastKnownCoins = 0;
     this.totalAnimalsTamed = 0;
+    this.totalCraftsCompleted = 0;
   }
 }

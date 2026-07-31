@@ -42,3 +42,4 @@ export { QuizSystem } from "./QuizSystem";
 export type { QuizDayGetter, QuizStreakListener } from "./QuizSystem";
 export { AccessibilitySystem } from "./AccessibilitySystem";
 export { HousingSystem } from "./HousingSystem";
+export { CraftingSystem } from "./CraftingSystem";

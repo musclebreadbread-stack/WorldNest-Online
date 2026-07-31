@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Advanced crafting system: multi-step recipes, tool upgrading, and resource refinement. Extends the existing cooking/recipe system with workbench-based crafting that produces tools, building materials, and upgraded items.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Add new crafting items to packages/shared/src/items.ts ItemId union: 'iron_ingot', 'plank', 'cloth', 'stone_axe', 'iron_axe', 'stone_pickaxe', 'iron_pickaxe', 'workbench'. Add ITEM_DEFINITIONS entries. Mark workbench as placeableStructure with structureCollidable: false.",
     "Add prices for new items in packages/shared/src/economy.ts. Iron ingot/plank/cloth are intermediate materials (cheap buy, lower sell). Tools cost 50-100+ coins but crafting them from raw materials is cheaper.",

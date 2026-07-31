@@ -141,6 +141,14 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   painting: "item.painting",
   plant_pot: "item.plant_pot",
   window_curtain: "item.window_curtain",
+  iron_ingot: "item.iron_ingot",
+  plank: "item.plank",
+  cloth: "item.cloth",
+  stone_axe: "item.stone_axe",
+  iron_axe: "item.iron_axe",
+  stone_pickaxe: "item.stone_pickaxe",
+  iron_pickaxe: "item.iron_pickaxe",
+  workbench: "item.workbench",
 };
 
 /**

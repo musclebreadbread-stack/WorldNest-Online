@@ -9,6 +9,7 @@ import { BuildMenu } from "./BuildMenu";
 import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
 import { CoinCounter } from "./CoinCounter";
+import { CraftingPanel } from "./CraftingPanel";
 import { DialoguePanel } from "./DialoguePanel";
 import { HotBar } from "./HotBar";
 import { HousingPanel } from "./HousingPanel";
@@ -134,6 +135,7 @@ export function GameUI() {
         <ShopPanel />
         <SettingsPanel />
         <HousingPanel />
+        <CraftingPanel />
       </div>
 
       {/* Thumb-stick and action buttons, on touch devices only */}

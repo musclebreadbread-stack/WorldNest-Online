@@ -54,6 +54,8 @@ export function checkCondition(
       return source.quizStreak >= condition.count;
     case "housing_happiness":
       return source.housingHappiness >= condition.threshold;
+    case "craft":
+      return source.craftCount >= condition.count;
   }
 }
 

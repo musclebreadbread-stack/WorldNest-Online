@@ -6,6 +6,7 @@ import { InventoryComponent } from "../components/InventoryComponent";
 import { StatsComponent } from "../components/StatsComponent";
 import { CropComponent } from "../components/CropComponent";
 import { addItem, hasSpaceFor } from "../inventory/inventoryOps";
+import { getToolBonus } from "../crafting/craftingOps";
 import { getFacedTile } from "../interaction/facing";
 import { CROP_DEFINITIONS } from "../world/Crops";
 import { TILE_HARVEST_YIELD, TILE_PROPERTIES, TileType } from "../world/Tilemap";
@@ -73,9 +74,13 @@ export class HarvestSystem extends System {
     if (stats.energy < yieldEntry.energyCost) return;
 
     const inventory = entity.getComponent<InventoryComponent>("inventory")!;
-    if (!hasSpaceFor(inventory, yieldEntry.itemId, yieldEntry.quantity)) return;
 
-    addItem(inventory, yieldEntry.itemId, yieldEntry.quantity);
+    // Apply tool bonus: axes boost wood yield, pickaxes boost stone/ore yield
+    const bonusMultiplier = this.getToolMultiplier(inventory, yieldEntry.itemId);
+    const quantity = Math.floor(yieldEntry.quantity * bonusMultiplier);
+    if (!hasSpaceFor(inventory, yieldEntry.itemId, quantity)) return;
+
+    addItem(inventory, yieldEntry.itemId, quantity);
     stats.energy -= yieldEntry.energyCost;
     this.setTileOverride(tileX, tileY, yieldEntry.replacementTile ?? TileType.GRASS);
   }
@@ -103,5 +108,17 @@ export class HarvestSystem extends System {
     // The farmland stays, so the tile can be sown again straight away
     this.crops!.removeCrop(tileX, tileY);
     return true;
+  }
+
+  /**
+   * Returns the tool multiplier for a harvested item. Axes boost wood,
+   * pickaxes boost stone and ore.
+   */
+  private getToolMultiplier(inventory: InventoryComponent, itemId: string): number {
+    if (itemId === "wood") return getToolBonus(inventory, "axe");
+    if (itemId === "stone" || itemId === "ore") {
+      return getToolBonus(inventory, "pickaxe");
+    }
+    return 1.0;
   }
 }

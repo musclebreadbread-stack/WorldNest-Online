@@ -84,6 +84,17 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   painting: { buy: 45, sell: 15 },
   plant_pot: { buy: 15, sell: 5 },
   window_curtain: { buy: 35, sell: 12 },
+  // Crafting: intermediate materials refined from raw resources
+  iron_ingot: { buy: 40, sell: 18 },
+  plank: { buy: 12, sell: 5 },
+  cloth: { buy: 10, sell: 4 },
+  // Crafting: tools that boost harvesting efficiency
+  stone_axe: { buy: 50, sell: 15 },
+  iron_axe: { buy: 100, sell: 35 },
+  stone_pickaxe: { buy: 50, sell: 15 },
+  iron_pickaxe: { buy: 100, sell: 35 },
+  // Crafting: workbench unlocks advanced recipes
+  workbench: { buy: 80, sell: 25 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

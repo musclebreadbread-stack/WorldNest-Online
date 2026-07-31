@@ -42,6 +42,8 @@ export class AchievementSystem extends System {
   private pendingAnimalsTamed = 0;
   /** Current quiz streak, updated by QuizSystem via listener. */
   private currentQuizStreak = 0;
+  /** Crafts completed since last update, reported by CraftingSystem. */
+  private pendingCraftsCompleted = 0;
 
   constructor(structureCount: AchievementStructureCounter = () => 0) {
     super(["achievement", "inventory", "wallet", "collection", "quest"]);
@@ -67,6 +69,11 @@ export class AchievementSystem extends System {
   /** Update quiz streak from QuizSystem listener. */
   recordQuizStreak(streak: number): void {
     this.currentQuizStreak = streak;
+  }
+
+  /** Note that the player completed a craft. */
+  recordCraftCompleted(): void {
+    this.pendingCraftsCompleted++;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -110,6 +117,9 @@ export class AchievementSystem extends System {
       // totalAnimalsTamed: apply pending tames from the listener
       achievement.totalAnimalsTamed += this.pendingAnimalsTamed;
 
+      // totalCraftsCompleted: apply pending crafts from the listener
+      achievement.totalCraftsCompleted += this.pendingCraftsCompleted;
+
       // totalQuestsCompleted: poll from quest entries (monotonic counter)
       const completedCount = Object.values(quest.entries).filter(
         (e) => e.state === "completed",
@@ -141,6 +151,7 @@ export class AchievementSystem extends System {
     // rather than queued forever.
     this.pendingFishCaught = 0;
     this.pendingAnimalsTamed = 0;
+    this.pendingCraftsCompleted = 0;
   }
 
   private buildSource(
@@ -160,6 +171,7 @@ export class AchievementSystem extends System {
       animalsTamedCount: achievement.totalAnimalsTamed,
       quizStreak: this.currentQuizStreak,
       housingHappiness,
+      craftCount: achievement.totalCraftsCompleted,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

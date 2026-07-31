@@ -43,6 +43,14 @@ const EXPECTED_IDS: ItemId[] = [
   "painting",
   "plant_pot",
   "window_curtain",
+  "iron_ingot",
+  "plank",
+  "cloth",
+  "stone_axe",
+  "iron_axe",
+  "stone_pickaxe",
+  "iron_pickaxe",
+  "workbench",
 ];
 
 describe("ITEM_DEFINITIONS", () => {
@@ -86,7 +94,7 @@ describe("ITEM_DEFINITIONS", () => {
   });
 
   it("should give every placeable structure a texture key", () => {
-    expect(PLACEABLE_ITEM_IDS).toEqual(["fence", "chest"]);
+    expect(PLACEABLE_ITEM_IDS).toEqual(["fence", "chest", "workbench"]);
 
     for (const id of PLACEABLE_ITEM_IDS) {
       expect(isPlaceableStructure(id)).toBe(true);

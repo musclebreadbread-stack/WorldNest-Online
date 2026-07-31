@@ -3,6 +3,7 @@ import { MAX_DIALOGUE_OPTIONS } from "@worldnest/game-engine";
 import { HOTBAR_SLOTS } from "@worldnest/shared";
 import { closeTopmostPanel, isHudModal, isTyping } from "./panelStack";
 import { isDialogueOpen, useDialogueStore } from "../stores/dialogueStore";
+import { useCraftingStore } from "../stores/craftingStore";
 import { useUIStore } from "../stores/uiStore";
 
 /**
@@ -54,6 +55,10 @@ const ONE_SHOT_BINDINGS: OneShotBinding[] = [
   {
     keyCode: Phaser.Input.Keyboard.KeyCodes.P,
     handler: () => useUIStore.getState().toggleSettings(),
+  },
+  {
+    keyCode: Phaser.Input.Keyboard.KeyCodes.C,
+    handler: () => useCraftingStore.getState().togglePanel(),
   },
   // E and Space both act on the faced tile
   {
