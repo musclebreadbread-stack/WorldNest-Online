@@ -46,6 +46,7 @@ export const en = {
   "hud.signOut": "Sign out",
   "hud.signingOut": "Signing out...",
   "hud.coins": "{count} coins",
+  "hud.coinsAdjusted": "Balance updated by the server",
 
   "clock.format": "Day {day} · {time} · {phase}",
   "clock.phase.dawn": "dawn",

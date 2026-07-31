@@ -20,7 +20,11 @@ export interface SessionSnapshot {
   spawnX: number | null;
   spawnY: number | null;
   inventory: PersistedInventory | null;
-  /** `null` for a player who has never saved, so the starting purse is granted. */
+  /**
+   * The authoritative balance from `player_state.coins`, or `null` when there is
+   * no row at all — which is the only case left where the client grants the
+   * starting purse itself, and it is also the no-backend case.
+   */
   coins: number | null;
   quests: Record<string, QuestEntry> | null;
   savedWorld: SavedWorldState;
@@ -55,18 +59,17 @@ export async function loadSession(
     // the column default is treated the same as a missing row.
     const saved = playerState.data;
     const hasSpawn = saved !== null && (saved.x !== 0 || saved.y !== 0);
-    const inventory = parsePersistedInventory(saved?.inventory);
-    // Coins are judged from the row as a whole, not from the column: 0 is a
-    // balance a player can genuinely reach, so it only means "never saved" when
-    // the rest of the row is untouched too.
-    const hasSaved = hasSpawn || inventory !== null;
 
     return {
       worldId: world.id,
       spawnX: hasSpawn ? saved.x : null,
       spawnY: hasSpawn ? saved.y : null,
-      inventory,
-      coins: hasSaved ? saved!.coins : null,
+      inventory: parsePersistedInventory(saved?.inventory),
+      // The column is authoritative and its default is the starting purse
+      // (decision D5), so the row is simply trusted. The old "judge coins from
+      // the whole row, not the column" rule existed because the client granted
+      // itself the purse; it cannot any more, so the special case is gone.
+      coins: saved?.coins ?? null,
       quests: parsePersistedQuests(quests.data),
       savedWorld: {
         tileOverrides: modifications.data.map<[string, TileType]>((row) => [

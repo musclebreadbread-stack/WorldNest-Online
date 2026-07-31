@@ -39,6 +39,7 @@ export const pt: LocaleMessages = {
   "hud.signOut": "Sair",
   "hud.signingOut": "Saindo...",
   "hud.coins": "{count} moedas",
+  "hud.coinsAdjusted": "Saldo atualizado pelo servidor",
 
   "clock.format": "Dia {day} · {time} · {phase}",
   "clock.phase.dawn": "amanhecer",

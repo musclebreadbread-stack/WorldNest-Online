@@ -38,6 +38,7 @@ export const th: LocaleMessages = {
   "hud.signOut": "ออกจากระบบ",
   "hud.signingOut": "กำลังออกจากระบบ...",
   "hud.coins": "{count} เหรียญ",
+  "hud.coinsAdjusted": "เซิร์ฟเวอร์อัปเดตยอดเหรียญแล้ว",
 
   "clock.format": "วันที่ {day} · {time} · {phase}",
   "clock.phase.dawn": "รุ่งอรุณ",

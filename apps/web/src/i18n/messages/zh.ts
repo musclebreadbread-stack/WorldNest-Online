@@ -38,6 +38,7 @@ export const zh: LocaleMessages = {
   "hud.signOut": "退出登录",
   "hud.signingOut": "正在退出...",
   "hud.coins": "{count} 金币",
+  "hud.coinsAdjusted": "余额已由服务器更新",
 
   "clock.format": "第{day}天 · {time} · {phase}",
   "clock.phase.dawn": "黎明",

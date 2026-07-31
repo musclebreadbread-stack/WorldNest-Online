@@ -39,6 +39,7 @@ export const hi: LocaleMessages = {
   "hud.signOut": "साइन आउट",
   "hud.signingOut": "साइन आउट हो रहा है...",
   "hud.coins": "{count} सिक्के",
+  "hud.coinsAdjusted": "सर्वर ने बैलेंस अपडेट किया",
 
   "clock.format": "दिन {day} · {time} · {phase}",
   "clock.phase.dawn": "भोर",

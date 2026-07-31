@@ -27,6 +27,8 @@ interface GameState {
   selectedSlot: number;
   /** Mirror of the local player's WalletComponent. */
   coins: number;
+  /** How many times the server has corrected the balance this session. */
+  coinAdjustments: number;
   /** Mirror of the local player's StatsComponent, rounded for display. */
   health: number;
   maxHealth: number;
@@ -37,7 +39,7 @@ interface GameState {
   setConnectionStatus: (status: ConnectionStatus) => void;
   setInventory: (slots: Array<InventorySlot | null>, selectedSlot: number) => void;
   setSelectedSlot: (selectedSlot: number) => void;
-  setCoins: (coins: number) => void;
+  setCoins: (coins: number, adjustments?: number) => void;
   setStats: (stats: {
     health: number;
     maxHealth: number;
@@ -59,6 +61,7 @@ export const useGameStore = create<GameState>((set) => ({
   inventorySlots: new Array<InventorySlot | null>(INVENTORY_SLOTS).fill(null),
   selectedSlot: 0,
   coins: 0,
+  coinAdjustments: 0,
   health: DEFAULT_MAX_HEALTH,
   maxHealth: DEFAULT_MAX_HEALTH,
   energy: MAX_ENERGY,
@@ -79,7 +82,10 @@ export const useGameStore = create<GameState>((set) => ({
 
   setSelectedSlot: (selectedSlot) => set({ selectedSlot }),
 
-  setCoins: (coins) => set({ coins }),
+  // The adjustment count is optional so a caller that only knows the balance —
+  // the no-backend path — cannot accidentally claim the server said something.
+  setCoins: (coins, adjustments) =>
+    set((state) => ({ coins, coinAdjustments: adjustments ?? state.coinAdjustments })),
 
   setStats: ({ health, maxHealth, energy, maxEnergy }) =>
     set({ health, maxHealth, energy, maxEnergy }),

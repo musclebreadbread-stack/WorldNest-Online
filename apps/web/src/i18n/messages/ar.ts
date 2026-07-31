@@ -41,6 +41,7 @@ export const ar: LocaleMessages = {
   "hud.signOut": "تسجيل الخروج",
   "hud.signingOut": "جارٍ تسجيل الخروج...",
   "hud.coins": "{count} عملة",
+  "hud.coinsAdjusted": "تم تحديث الرصيد من الخادم",
 
   "clock.format": "اليوم {day} · {time} · {phase}",
   "clock.phase.dawn": "الفجر",

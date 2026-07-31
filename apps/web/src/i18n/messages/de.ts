@@ -38,6 +38,7 @@ export const de: LocaleMessages = {
   "hud.signOut": "Abmelden",
   "hud.signingOut": "Wird abgemeldet...",
   "hud.coins": "{count} Münzen",
+  "hud.coinsAdjusted": "Guthaben vom Server aktualisiert",
 
   "clock.format": "Tag {day} · {time} · {phase}",
   "clock.phase.dawn": "Morgengrauen",

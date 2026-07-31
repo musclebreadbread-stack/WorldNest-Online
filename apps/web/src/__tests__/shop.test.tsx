@@ -1,13 +1,21 @@
-import { describe, it, expect, afterEach, beforeEach } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import type {
   DialogueComponent,
   InventorySlot,
   ShopComponent,
   ShopTradeKind,
+  WalletComponent,
 } from "@worldnest/game-engine";
 import { ITEM_PRICES, STARTING_COINS, type ItemId } from "@worldnest/shared";
-import { CoinCounter } from "../components/CoinCounter";
+import { CoinCounter, COINS_ADJUSTED_NOTICE_MS } from "../components/CoinCounter";
 import { ShopPanel } from "../components/ShopPanel";
 import { wireDialogue } from "../game/DialogueBridge";
 import { wireShop } from "../game/ShopBridge";
@@ -221,7 +229,24 @@ describe("HudBridge economy events", () => {
     bridge.flush();
 
     expect(emitter.payloads<WalletChangedEvent>(WALLET_CHANGED_EVENT)).toEqual([
-      { coins: STARTING_COINS },
+      { coins: STARTING_COINS, adjustments: 0 },
+    ]);
+  });
+
+  it("should publish a reconciliation the server made, balance and count", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    const emitter = new RecordingEmitter();
+    const bridge = new HudBridge(emitter, context.playerEntity, context.clockEntity);
+    const wallet = context.playerEntity.getComponent<WalletComponent>("wallet")!;
+
+    bridge.flush();
+    wallet.requestedBalance = 7;
+    context.world.update(1 / 60);
+    bridge.flush();
+
+    expect(emitter.payloads<WalletChangedEvent>(WALLET_CHANGED_EVENT)).toEqual([
+      { coins: STARTING_COINS, adjustments: 0 },
+      { coins: 7, adjustments: 1 },
     ]);
   });
 
@@ -473,10 +498,47 @@ describe("CoinCounter", () => {
   afterEach(cleanup);
 
   it("should show the mirrored balance", () => {
-    useGameStore.setState({ coins: 123 });
+    useGameStore.setState({ coins: 123, coinAdjustments: 0 });
 
     render(<CoinCounter />);
 
     expect(screen.getByText("123 coins")).toBeDefined();
+    expect(screen.queryByText(en["hud.coinsAdjusted"])).toBeNull();
+  });
+
+  it("should say so once when the server corrects the balance", () => {
+    vi.useFakeTimers();
+    useGameStore.setState({ coins: 123, coinAdjustments: 0 });
+    render(<CoinCounter />);
+
+    act(() => {
+      useGameStore.getState().setCoins(90, 1);
+    });
+
+    expect(screen.getByText("90 coins")).toBeDefined();
+    expect(screen.getByText(en["hud.coinsAdjusted"])).toBeDefined();
+
+    act(() => {
+      vi.advanceTimersByTime(COINS_ADJUSTED_NOTICE_MS);
+    });
+
+    // The note is transient: an honest client's balance is corrected whenever it
+    // lags a trade, and a permanent badge would read as an error
+    expect(screen.queryByText(en["hud.coinsAdjusted"])).toBeNull();
+    vi.useRealTimers();
+  });
+
+  it("should not repeat the note for a balance the server did not correct", () => {
+    vi.useFakeTimers();
+    useGameStore.setState({ coins: 123, coinAdjustments: 4 });
+    render(<CoinCounter />);
+
+    act(() => {
+      useGameStore.getState().setCoins(50);
+    });
+
+    expect(screen.getByText("50 coins")).toBeDefined();
+    expect(screen.queryByText(en["hud.coinsAdjusted"])).toBeNull();
+    vi.useRealTimers();
   });
 });

@@ -38,6 +38,7 @@ export const ja: LocaleMessages = {
   "hud.signOut": "ログアウト",
   "hud.signingOut": "ログアウト中...",
   "hud.coins": "{count} コイン",
+  "hud.coinsAdjusted": "サーバーが残高を更新しました",
 
   "clock.format": "{day}日目 · {time} · {phase}",
   "clock.phase.dawn": "夜明け",

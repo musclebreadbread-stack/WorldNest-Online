@@ -27,6 +27,7 @@ import {
   createSessionPersistence,
   type SessionPersistence,
 } from "../SessionPersistence";
+import { createAuthorityBridge, type AuthorityBridge } from "../AuthorityBridge";
 import {
   createGameWorld,
   BOOTSTRAP_REGISTRY_KEY,
@@ -69,6 +70,8 @@ export class GameScene extends Phaser.Scene {
   private network!: NetworkBridge;
   /** Writes position, inventory and world changes back to Supabase. */
   private persistence: SessionPersistence | null = null;
+  /** Reports coin movements to the server and reconciles its answer. */
+  private authority: AuthorityBridge | null = null;
   /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
   private spriteSync!: SpriteSync;
 
@@ -105,6 +108,9 @@ export class GameScene extends Phaser.Scene {
     // Saved state was already restored by createGameWorld; from here on every
     // change is written back through this layer.
     this.persistence = createSessionPersistence(bootstrap, context);
+    // Coins are the one thing the client does not get the last word on: trades
+    // and quest rewards are reported here and the server's balance wins.
+    this.authority = createAuthorityBridge(bootstrap, context);
 
     // Chunk rendering
     this.chunkRenderer = new ChunkRenderer(this);
@@ -157,6 +163,7 @@ export class GameScene extends Phaser.Scene {
       this.spriteSync.destroy();
       this.persistence?.flush();
       this.persistence?.destroy();
+      this.authority?.destroy();
     });
 
     // Setup camera on the local player sprite created by the render pass
@@ -198,6 +205,9 @@ export class GameScene extends Phaser.Scene {
 
     // Autosave position/inventory and push new structures and crops
     this.persistence?.update();
+
+    // Report this frame's trade or quest completion to the coin authority
+    this.authority?.update();
 
     // Publish the state the React HUD consumes
     this.hudBridge.flush();

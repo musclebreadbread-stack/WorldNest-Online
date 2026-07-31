@@ -38,6 +38,7 @@ export const vi: LocaleMessages = {
   "hud.signOut": "Đăng xuất",
   "hud.signingOut": "Đang đăng xuất...",
   "hud.coins": "{count} xu",
+  "hud.coinsAdjusted": "Số dư đã được cập nhật từ máy chủ",
 
   "clock.format": "Ngày {day} · {time} · {phase}",
   "clock.phase.dawn": "bình minh",

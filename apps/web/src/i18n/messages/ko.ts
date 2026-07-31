@@ -39,6 +39,7 @@ export const ko: LocaleMessages = {
   "hud.signOut": "로그아웃",
   "hud.signingOut": "로그아웃 중...",
   "hud.coins": "{count} 코인",
+  "hud.coinsAdjusted": "서버에서 잔액을 업데이트했어요",
 
   "clock.format": "{day}일차 · {time} · {phase}",
   "clock.phase.dawn": "새벽",

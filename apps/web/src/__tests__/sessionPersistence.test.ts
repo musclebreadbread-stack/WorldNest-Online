@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QuestComponent } from "@worldnest/game-engine";
-import type { WalletComponent } from "@worldnest/game-engine";
+import type { InventoryComponent, WalletComponent } from "@worldnest/game-engine";
 import {
   createGameWorld,
   DEFAULT_SPAWN_X,
@@ -41,9 +41,10 @@ function startSession(bootstrap: GameBootstrap = BOOTSTRAP) {
   const context = createGameWorld(bootstrap);
   const persistence = createSessionPersistence(bootstrap, context)!;
   const wallet = context.playerEntity.getComponent<WalletComponent>("wallet")!;
+  const inventory = context.playerEntity.getComponent<InventoryComponent>("inventory")!;
   const quests = context.playerEntity.getComponent<QuestComponent>("quest")!;
 
-  return { context, persistence, wallet, quests };
+  return { context, persistence, wallet, inventory, quests };
 }
 
 describe("SessionPersistence", () => {
@@ -83,17 +84,32 @@ describe("SessionPersistence", () => {
     ]);
   });
 
-  it("should collapse a burst of coin changes into one save per flush", () => {
-    const { persistence, wallet } = startSession();
+  it("should collapse a burst of inventory changes into one save per flush", () => {
+    const { persistence, inventory } = startSession();
 
     for (let frame = 0; frame < 20; frame++) {
-      wallet.coins -= 1;
+      inventory.version += 1;
       persistence.update();
     }
     persistence.flush();
 
     // The autosave interval has not elapsed, so the 20 marks are one write
     expect(savePlayerState).toHaveBeenCalledTimes(1);
+  });
+
+  // Coins are written by the authority functions now, so a balance moving is
+  // news from the server rather than something to send back
+  it("should not mark the session dirty for a coin change alone", () => {
+    const { persistence, wallet } = startSession();
+
+    persistence.flush();
+    vi.mocked(savePlayerState).mockClear();
+
+    wallet.coins -= 10;
+    persistence.update();
+    persistence.flush();
+
+    expect(savePlayerState).not.toHaveBeenCalled();
   });
 
   it("should not rewrite the quest rows when only the position moved", () => {

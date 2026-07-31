@@ -111,7 +111,7 @@ export function GameCanvas() {
 
     // Mirror the coin purse and the open shop into their stores
     game.events.on(WALLET_CHANGED_EVENT, (event: WalletChangedEvent) => {
-      setCoins(event.coins);
+      setCoins(event.coins, event.adjustments);
     });
 
     game.events.on(SHOP_CHANGED_EVENT, (event: ShopChangedEvent) => {
