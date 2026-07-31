@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Accessibility improvements: keyboard-only navigation, high contrast mode, screen reader ARIA hints, reduced motion support, and color-blind friendly palettes. Critical for youth audience (ages 10-18) and inclusive design.",
+  "status": "in_progress",
+  "steps": [
+    "Create packages/game-engine/src/accessibility/accessibilityDefinitions.ts with definitions for accessibility modes: HighContrastMode (standard, high, colorblind_deuteranopia, colorblind_protanopia), ReducedMotionMode (none, reduce, eliminate), and a set of ARIA live region announcement types (item_pickup, quest_update, npc_dialogue, system_message).",
+    "Create packages/game-engine/src/accessibility/accessibilityOps.ts with pure functions: getHighContrastPalette(mode) returning CSS custom properties map, shouldReduceMotion(mode) boolean, getAnnouncementText(type, params) returning i18n key strings for screen reader.",
+    "Create packages/game-engine/src/accessibility/index.ts exporting all definitions and ops.",
+    "Create packages/game-engine/src/components/AccessibilityComponent.ts with fields: highContrastMode, reducedMotionMode, keyboardNavigationEnabled (boolean), focusedPanelId (string|null), announcements (queue of {type, key, params} to read aloud), version number. Component type: 'accessibility'.",
+    "Create packages/game-engine/src/systems/AccessibilitySystem.ts that processes entities with 'accessibility' component. The system: clears stale announcements older than 3 seconds, and can enqueue announcements when it detects new inventory items or quest state changes by comparing component versions.",
+    "Add accessibility-related i18n keys to all 12 locale files in apps/web/src/i18n/messages/: settings.accessibility, settings.highContrast, settings.reducedMotion, settings.keyboardNav, a11y.itemPickup, a11y.questUpdate, a11y.announce.*, etc.",
+    "Create apps/web/src/stores/accessibilityStore.ts (Zustand) with state: highContrastMode, reducedMotionMode, keyboardNavigationEnabled, announcements[]. Reads prefers-reduced-motion and prefers-contrast media queries as defaults on init. Persists choices to localStorage.",
+    "Create apps/web/src/components/AccessibilitySettings.tsx panel section within SettingsPanel showing toggle for keyboard navigation, dropdown for contrast mode (standard/high/deuteranopia/protanopia), dropdown for motion (full/reduced/minimal). Uses i18n keys.",
+    "Create apps/web/src/components/AriaAnnouncer.tsx - an aria-live='polite' region that reads out announcements from the store. Also adds aria-labels to key HUD elements (hotbar slots, inventory items, status bars, clock).",
+    "Add ARIA attributes throughout existing UI components: role, aria-label, aria-describedby, tabIndex for keyboard focus management. Update GameUI.tsx, InventoryPanel.tsx, ShopPanel.tsx, QuestLog.tsx, SettingsPanel.tsx, DialoguePanel.tsx.",
+    "Add CSS custom properties for high-contrast and color-blind palettes in apps/web global styles or a dedicated accessibility.css that toggles based on a data attribute on the root element.",
+    "Add keyboard trap management: when a panel is open, Tab/Shift+Tab cycle through its interactive elements only (focus trap). Esc always closes the topmost panel. This extends the existing panelStack.ts logic.",
+    "Export new components and system from packages/game-engine/src/index.ts. Register the system in apps/web/src/game/createGameWorld.ts.",
+    "Write tests in packages/game-engine/src/__tests__/accessibility.test.ts covering: palette generation for each mode, announcement queueing and expiry, reduced motion decisions. At least 20 test cases.",
+    "Write tests in apps/web/src/__tests__/accessibility.test.tsx for the store (localStorage persistence, media query defaults) and the AriaAnnouncer rendering."
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with new accessibility module compiled",
+    "pnpm test passes with at least 20 new accessibility-related test cases",
+    "pnpm lint passes with no new warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have the new accessibility i18n keys",
+    "AccessibilityComponent is exported from game-engine index",
+    "AccessibilitySystem is registered in createGameWorld.ts",
+    "No file exceeds 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -81,6 +81,7 @@ const DOCUMENTED_SYSTEM_ORDER = [
   "networkSync",
   "animation",
   "render",
+  "accessibility",
 ];
 
 describe("createGameWorld", () => {

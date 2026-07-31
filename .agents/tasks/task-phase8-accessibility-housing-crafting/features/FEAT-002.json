@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Player housing interior system: room-based interior with furniture placement, interior decoration, and room types. Extends the existing BuildSystem and inventory with interior-specific items and a separate indoor space per player.",
+  "status": "pending",
+  "steps": [
+    "Add new housing/furniture items to packages/shared/src/items.ts ItemId union: 'house_deed', 'table', 'chair', 'bed', 'lamp', 'bookshelf', 'rug', 'painting', 'plant_pot', 'window_curtain'. Add corresponding ITEM_DEFINITIONS entries (stackSize, displayName). Mark furniture items with a new 'placeable_furniture: true' property.",
+    "Add prices for new items in packages/shared/src/economy.ts ITEM_PRICES table. House deed costs 200 coins (one-time purchase). Furniture ranges from 15-80 coins with appropriate sell spread.",
+    "Create packages/game-engine/src/housing/housingDefinitions.ts defining: RoomType enum (living_room, bedroom, kitchen, study), RoomDefinition (id, size {width, height} in tiles, maxFurniture count, unlockCost coins), ROOM_DEFINITIONS record with 4 rooms, FurnitureDefinition (itemId, sizeInTiles, category).",
+    "Create packages/game-engine/src/housing/housingOps.ts with pure functions: canEnterHouse(inventory) checks for house_deed, createRoom(roomType) returns initial room state, placeFurniture(room, furnitureId, x, y) validates bounds/overlap and returns updated state, removeFurniture(room, slotIndex) returns item back, getRoomHappiness(room) calculates a happiness score (0-100) from furniture variety/count, canUnlockRoom(coins, roomType) checks unlock cost.",
+    "Create packages/game-engine/src/housing/housingState.ts with interfaces: HousingState (rooms: RoomState[], activeRoom: string|null, happiness: number), RoomState (type, furniture: PlacedFurniture[], unlocked: boolean), PlacedFurniture (itemId, x, y).",
+    "Create packages/game-engine/src/housing/index.ts exporting all.",
+    "Create packages/game-engine/src/components/HousingComponent.ts with type 'housing', fields: state (HousingState), enterRequested (boolean), exitRequested (boolean), placeRequested ({roomId, itemId, x, y}|null), removeRequested ({roomId, index}|null), unlockRequested (string|null), version number.",
+    "Create packages/game-engine/src/systems/HousingSystem.ts processing entities with ['housing', 'inventory', 'wallet']. Handles enter/exit transitions, furniture placement (consumes item from inventory), removal (returns item to inventory), room unlocking (deducts coins from wallet). Validates all ops through pure functions.",
+    "Add housing-related i18n keys to all 12 locale files: housing.title, housing.enter, housing.exit, housing.room.*, housing.place, housing.remove, housing.happiness, housing.unlock, housing.noDeep (for house_deed needed message), room type names, furniture item names.",
+    "Add a new achievement in packages/game-engine/src/achievements/achievementDefinitions.ts: 'homeowner' (condition: {kind: 'housing_happiness', threshold: 50}). Add the new condition kind to AchievementCondition union and AchievementSource interface.",
+    "Export new components, system, and housing module from packages/game-engine/src/index.ts.",
+    "Register HousingSystem in apps/web/src/game/createGameWorld.ts.",
+    "Write tests in packages/game-engine/src/__tests__/housing.test.ts covering: room creation, furniture placement (valid/invalid positions, bounds check, overlap check), furniture removal, happiness calculation, room unlocking with insufficient coins, enter/exit transitions, system integration with entity harness. At least 25 test cases.",
+    "Create apps/web/src/stores/housingStore.ts (Zustand) bridging HousingComponent state to React UI.",
+    "Create apps/web/src/components/HousingPanel.tsx showing room grid, placed furniture, furniture placement UI, room selector, happiness meter. Wire into GameUI.tsx with 'H' keybinding."
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with housing module compiled",
+    "pnpm test passes with at least 25 new housing tests",
+    "pnpm lint passes with no new warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have new housing i18n keys",
+    "10 new furniture/housing items in the item catalogue",
+    "HousingSystem registered in createGameWorld",
+    "No file exceeds 300 lines",
+    "Happiness score correctly computed from furniture variety"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

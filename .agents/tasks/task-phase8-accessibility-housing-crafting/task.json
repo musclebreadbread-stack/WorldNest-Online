@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase8-accessibility-housing-crafting",
+  "task_description": "Phase 8 implementation: accessibility improvements (keyboard navigation, high contrast, screen reader, reduced motion, color-blind palettes), player housing interior (rooms, furniture, decoration, happiness), and advanced crafting (multi-step recipes, tool upgrading, resource refinement, workbench station).",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

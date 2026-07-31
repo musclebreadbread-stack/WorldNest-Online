@@ -39,6 +39,7 @@ export {
   FestivalComponent,
   AnimalComponent,
   QuizComponent,
+  AccessibilityComponent,
 } from "./components";
 export type {
   KeyState,
@@ -180,6 +181,26 @@ export type {
   AchievementState,
 } from "./achievements";
 
+// Accessibility (pure; inclusive design modes, palettes, announcements)
+export {
+  HIGH_CONTRAST_MODES,
+  REDUCED_MOTION_MODES,
+  ANNOUNCEMENT_TYPES,
+  ANNOUNCEMENT_EXPIRY_MS,
+  getHighContrastPalette,
+  shouldReduceMotion,
+  shouldEliminateMotion,
+  getAnnouncementKey,
+  createAnnouncement,
+  pruneAnnouncements,
+} from "./accessibility";
+export type {
+  HighContrastMode,
+  ReducedMotionMode,
+  AnnouncementType,
+  Announcement,
+} from "./accessibility";
+
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
 export type { Wallet } from "./shop";
@@ -275,6 +296,7 @@ export {
   FestivalSystem,
   AnimalSystem,
   QuizSystem,
+  AccessibilitySystem,
 } from "./systems";
 export type {
   RenderData,

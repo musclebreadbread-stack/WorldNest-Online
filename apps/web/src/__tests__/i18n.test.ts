@@ -65,6 +65,9 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "quiz.answer.science_2_b",
   "quiz.answer.culture_4_c",
   "quiz.answer.culture_3_b",
+  // Accessibility: "Standard" is a loanword used identically in
+  // French, German, and other European languages.
+  "settings.contrast.standard",
 ];
 
 describe("message catalogue", () => {

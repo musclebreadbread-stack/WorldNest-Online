@@ -25,6 +25,7 @@ import {
   WorldManager,
   composeBlockers,
   layerGuardedBlockers,
+  AccessibilitySystem,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
@@ -68,6 +69,7 @@ export interface GameWorldSystems {
   networkSync: NetworkSyncSystem;
   animation: AnimationSystem;
   render: RenderSystem;
+  accessibility: AccessibilitySystem;
 }
 
 export interface GameWorldContext {
@@ -196,6 +198,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // player held against a wall reads as idle rather than walking on the spot.
     animation: new AnimationSystem(),
     render: new RenderSystem(),
+    accessibility: new AccessibilitySystem(),
   };
 
   world.addSystem(systems.time);
@@ -217,6 +220,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.networkSync);
   world.addSystem(systems.animation);
   world.addSystem(systems.render);
+  world.addSystem(systems.accessibility);
 
   // Saved terrain, structures and crops go in before the first chunk load so
   // the very first render pass already shows the restored world.

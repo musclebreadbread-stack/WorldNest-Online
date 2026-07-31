@@ -36,3 +36,4 @@ export { CookingComponent } from "./CookingComponent";
 export { FestivalComponent } from "./FestivalComponent";
 export { AnimalComponent } from "./AnimalComponent";
 export { QuizComponent } from "./QuizComponent";
+export { AccessibilityComponent } from "./AccessibilityComponent";
