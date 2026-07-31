@@ -1,4 +1,9 @@
-import type { DayPhase, NpcActivity, Season, WeatherKind } from "@worldnest/game-engine";
+import type {
+  DayPhase,
+  NpcActivity,
+  Season,
+  WeatherKind,
+} from "@worldnest/game-engine";
 import type { ItemId } from "@worldnest/shared";
 import { ar } from "./messages/ar";
 import { de } from "./messages/de";
@@ -115,6 +120,7 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   melon: "item.melon",
   fence: "item.fence",
   chest: "item.chest",
+  path_stone: "item.path_stone",
 };
 
 /**

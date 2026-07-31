@@ -149,6 +149,7 @@ export const hi: LocaleMessages = {
   "item.melon": "तरबूज",
   "item.fence": "बाड़",
   "item.chest": "संदूक",
+  "item.path_stone": "पथ पत्थर",
 
   "weather.clear": "साफ़",
   "weather.rain": "बारिश",

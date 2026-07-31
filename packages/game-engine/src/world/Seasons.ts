@@ -29,6 +29,6 @@ const CYCLE_LENGTH = DAYS_PER_SEASON * SEASON_COUNT;
 
 /** Which season a game day belongs to. Day 1 starts in spring. */
 export function seasonForDay(day: number): Season {
-  const dayIndex = ((day - 1) % CYCLE_LENGTH + CYCLE_LENGTH) % CYCLE_LENGTH;
+  const dayIndex = (((day - 1) % CYCLE_LENGTH) + CYCLE_LENGTH) % CYCLE_LENGTH;
   return Math.floor(dayIndex / DAYS_PER_SEASON) as Season;
 }

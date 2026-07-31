@@ -7,6 +7,12 @@ export type QuestState = "available" | "active" | "completed";
 export interface QuestEntry {
   state: QuestState;
   progress: number;
+  /**
+   * Structure count captured when a `build` objective is accepted.
+   * `objectiveProgress` subtracts it so only fences raised _after_ the quest
+   * was taken on count toward the objective. Always 0 for non-build objectives.
+   */
+  baseline: number;
 }
 
 /**

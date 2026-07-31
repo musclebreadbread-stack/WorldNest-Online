@@ -119,6 +119,7 @@ describe("offerQuest and activateQuest", () => {
     expect(getEntry(quest, "collect_wood")).toEqual({
       state: "available",
       progress: 0,
+      baseline: 0,
     });
     expect(quest.version).toBe(1);
 

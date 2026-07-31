@@ -147,6 +147,7 @@ export const th: LocaleMessages = {
   "item.melon": "แตงโม",
   "item.fence": "รั้ว",
   "item.chest": "หีบ",
+  "item.path_stone": "หินทางเดิน",
 
   "weather.clear": "อากาศแจ่มใส",
   "weather.rain": "ฝนตก",

@@ -150,6 +150,7 @@ export const pt: LocaleMessages = {
   "item.melon": "Melancia",
   "item.fence": "Cerca",
   "item.chest": "Baú",
+  "item.path_stone": "Pedra de Caminho",
 
   "weather.clear": "Limpo",
   "weather.rain": "Chuva",

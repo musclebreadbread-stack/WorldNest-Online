@@ -149,6 +149,7 @@ export const ja: LocaleMessages = {
   "item.melon": "スイカ",
   "item.fence": "フェンス",
   "item.chest": "チェスト",
+  "item.path_stone": "敷石",
 
   "weather.clear": "晴れ",
   "weather.rain": "雨",

@@ -148,6 +148,7 @@ export const vi: LocaleMessages = {
   "item.melon": "Dưa hấu",
   "item.fence": "Hàng rào",
   "item.chest": "Hòm",
+  "item.path_stone": "Viên Lát Lối",
 
   "weather.clear": "Trời quang",
   "weather.rain": "Mưa",

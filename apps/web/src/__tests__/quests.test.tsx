@@ -206,7 +206,7 @@ describe("HudBridge quest events", () => {
     bridge.flush();
 
     expect(emitter.questEvents()).toEqual([
-      { entries: { collect_wood: { state: "active", progress: 0 } } },
+      { entries: { collect_wood: { state: "active", progress: 0, baseline: 0 } } },
     ]);
 
     // The published snapshot is a copy, so the next frame cannot mutate React's

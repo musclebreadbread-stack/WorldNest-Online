@@ -55,14 +55,8 @@ describe("loadSession layered terrain", () => {
     const snapshot = await loadSession("user-1");
 
     expect(snapshot?.savedWorld.tileOverrides).toEqual([
-      [
-        getLayerTileKey(WorldLayer.SURFACE, 17, 23),
-        TileType.FARMLAND,
-      ],
-      [
-        getLayerTileKey(WorldLayer.UNDERGROUND, 17, 23),
-        TileType.CAVE_FLOOR,
-      ],
+      [getLayerTileKey(WorldLayer.SURFACE, 17, 23), TileType.FARMLAND],
+      [getLayerTileKey(WorldLayer.UNDERGROUND, 17, 23), TileType.CAVE_FLOOR],
     ]);
     expect(snapshot).not.toHaveProperty("layer");
   });

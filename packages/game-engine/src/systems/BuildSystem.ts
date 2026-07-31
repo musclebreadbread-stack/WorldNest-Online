@@ -10,7 +10,7 @@ import { InteractionComponent } from "../components/InteractionComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { getSelectedItem, removeItem } from "../inventory/inventoryOps";
 import { getFacedTile } from "../interaction/facing";
-import { TILE_PROPERTIES } from "../world/Tilemap";
+import { TILE_PROPERTIES, TileType } from "../world/Tilemap";
 import { getTileKey, type TileQuery } from "../world/TileQuery";
 import type { StructureQuery } from "../world/StructureQuery";
 
@@ -23,14 +23,16 @@ export function structureEntityId(tileX: number, tileY: number): string {
  * BuildSystem places the selected item on the tile the entity faces.
  *
  * A placement needs a buildable tile, a free tile and an item flagged
- * `placeableStructure`; otherwise the request is dropped without consuming
- * anything. The system owns the tile-keyed occupancy index and exposes it as a
- * `StructureQuery`, which is what lets `CollisionSystem` treat a fence as a wall.
+ * `placeableStructure` or `placeableTile`; otherwise the request is dropped
+ * without consuming anything. The system owns the tile-keyed occupancy index
+ * and exposes it as a `StructureQuery`, which is what lets `CollisionSystem`
+ * treat a fence as a wall.
  */
 export class BuildSystem extends System implements StructureQuery {
   private tileQuery: TileQuery;
   private addEntity: AddEntity;
   private occupancy?: StructureQuery;
+  private setTileOverride?: (tileX: number, tileY: number, tileType: TileType) => void;
   private structures: Map<string, Entity> = new Map();
 
   /**
@@ -39,11 +41,17 @@ export class BuildSystem extends System implements StructureQuery {
    * standing on: harmless, because the villager keeps blocking, but it looks like
    * a bug and the build ghost happily shows it as legal.
    */
-  constructor(tileQuery: TileQuery, addEntity: AddEntity, occupancy?: StructureQuery) {
+  constructor(
+    tileQuery: TileQuery,
+    addEntity: AddEntity,
+    occupancy?: StructureQuery,
+    setTileOverride?: (tileX: number, tileY: number, tileType: TileType) => void,
+  ) {
     super(["position", "interaction", "inventory"]);
     this.tileQuery = tileQuery;
     this.addEntity = addEntity;
     this.occupancy = occupancy;
+    this.setTileOverride = setTileOverride;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -99,11 +107,21 @@ export class BuildSystem extends System implements StructureQuery {
   canPlaceAt(inventory: InventoryComponent, tileX: number, tileY: number): boolean {
     const selected = getSelectedItem(inventory);
     if (!selected) return false;
-    if (ITEM_DEFINITIONS[selected.itemId].placeableStructure !== true) return false;
+
+    const definition = ITEM_DEFINITIONS[selected.itemId];
+    const isStructure = definition.placeableStructure === true;
+    const isTile = definition.placeableTile !== undefined;
+    if (!isStructure && !isTile) return false;
+
     const tileType = this.tileQuery.getTileAt(tileX, tileY);
     if (!TILE_PROPERTIES[tileType].buildable) return false;
-    if (this.occupancy?.hasStructureAt(tileX, tileY)) return false;
 
+    if (isTile) {
+      // Cannot place a path on a tile already of that type
+      return tileType !== definition.placeableTile;
+    }
+
+    if (this.occupancy?.hasStructureAt(tileX, tileY)) return false;
     return !this.hasStructureAt(tileX, tileY);
   }
 
@@ -148,8 +166,16 @@ export class BuildSystem extends System implements StructureQuery {
     if (!this.canPlaceAt(inventory, tileX, tileY)) return;
 
     const selected = getSelectedItem(inventory)!;
-    if (removeItem(inventory, selected.itemId, 1) !== 1) return;
+    const definition = ITEM_DEFINITIONS[selected.itemId];
 
+    // Tile-placing branch: override the tile instead of spawning a structure
+    if (definition.placeableTile !== undefined && this.setTileOverride) {
+      if (removeItem(inventory, selected.itemId, 1) !== 1) return;
+      this.setTileOverride(tileX, tileY, definition.placeableTile as TileType);
+      return;
+    }
+
+    if (removeItem(inventory, selected.itemId, 1) !== 1) return;
     this.spawnStructure(selected.itemId, tileX, tileY);
   }
 }

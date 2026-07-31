@@ -137,6 +137,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     worldManager,
     (entity) => world.addEntity(entity),
     layerGuardedBlockers(() => worldManager.getLayer(), npc),
+    setTileOverride,
   );
 
   // Quests poll the inventory themselves and the structure index through this

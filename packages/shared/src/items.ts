@@ -16,7 +16,8 @@ export type ItemId =
   | "melon_seed"
   | "melon"
   | "fence"
-  | "chest";
+  | "chest"
+  | "path_stone";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -63,6 +64,12 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     placeableStructure: true,
     structureCollidable: true,
     structureTextureKey: "structure_chest",
+  },
+  path_stone: {
+    id: "path_stone",
+    displayName: "Path Stone",
+    stackSize: 50,
+    placeableTile: 12,
   },
 };
 

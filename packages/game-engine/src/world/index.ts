@@ -33,11 +33,7 @@ export { WorldClock, PHASE_START_HOURS } from "./WorldClock";
 export type { ClockSnapshot, DayPhase } from "./WorldClock";
 export { Season, SEASON_DEFINITIONS, seasonForDay } from "./Seasons";
 export type { SeasonDefinition } from "./Seasons";
-export {
-  WEATHER_KINDS,
-  weatherPeriodIndex,
-  weatherAt,
-} from "./Weather";
+export { WEATHER_KINDS, weatherPeriodIndex, weatherAt } from "./Weather";
 export type { WeatherKind } from "./Weather";
 export { deriveEnvironment } from "./environmentOps";
 export type { EnvironmentState } from "./environmentOps";

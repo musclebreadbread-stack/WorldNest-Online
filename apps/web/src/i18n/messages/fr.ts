@@ -150,6 +150,7 @@ export const fr: LocaleMessages = {
   "item.melon": "Pastèque",
   "item.fence": "Clôture",
   "item.chest": "Coffre",
+  "item.path_stone": "Dalle de Chemin",
 
   "weather.clear": "Dégagé",
   "weather.rain": "Pluie",

@@ -11,14 +11,7 @@ import { Season } from "./Seasons";
 import type { DayPhase } from "./WorldClock";
 
 export type WeatherKind =
-  | "clear"
-  | "rain"
-  | "snow"
-  | "fog"
-  | "storm"
-  | "rainbow"
-  | "aurora"
-  | "wind";
+  "clear" | "rain" | "snow" | "fog" | "storm" | "rainbow" | "aurora" | "wind";
 
 /** All valid weather kinds as an array for iteration. */
 export const WEATHER_KINDS: readonly WeatherKind[] = [

@@ -151,6 +151,7 @@ export const ar: LocaleMessages = {
   "item.melon": "بطيخ",
   "item.fence": "سياج",
   "item.chest": "صندوق",
+  "item.path_stone": "حجر ممر",
 
   "weather.clear": "صافٍ",
   "weather.rain": "مطر",

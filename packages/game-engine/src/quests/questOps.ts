@@ -48,7 +48,7 @@ export function offerQuest(log: QuestLog, questId: string): boolean {
   if (!getQuest(questId)) return false;
   if (log.entries[questId]) return false;
 
-  log.entries[questId] = { state: "available", progress: 0 };
+  log.entries[questId] = { state: "available", progress: 0, baseline: 0 };
   log.version++;
   return true;
 }
@@ -57,14 +57,31 @@ export function offerQuest(log: QuestLog, questId: string): boolean {
  * Take a quest on. Accepts one that was merely offered and one that was never
  * seen before, because Ada's tree offers and accepts in a single option — there
  * is no separate "yes please" node to walk to.
+ *
+ * For a `build` objective the baseline is recorded from `source`, so only
+ * structures placed _after_ acceptance count toward the objective.
  */
-export function activateQuest(log: QuestLog, questId: string): boolean {
-  if (!getQuest(questId)) return false;
+export function activateQuest(
+  log: QuestLog,
+  questId: string,
+  source?: QuestProgressSource,
+): boolean {
+  const definition = getQuest(questId);
+  if (!definition) return false;
 
   const entry = log.entries[questId];
   if (entry && entry.state !== "available") return false;
 
-  log.entries[questId] = { state: "active", progress: entry?.progress ?? 0 };
+  const baseline =
+    definition.objective.kind === "build" && source
+      ? source.structureCount(definition.objective.itemId)
+      : 0;
+
+  log.entries[questId] = {
+    state: "active",
+    progress: entry?.progress ?? 0,
+    baseline,
+  };
   log.version++;
   return true;
 }
@@ -80,7 +97,7 @@ export function objectiveProgress(
     objective.kind === "collect"
       ? source.itemCount(objective.itemId)
       : objective.kind === "build"
-        ? source.structureCount(objective.itemId)
+        ? Math.max(0, source.structureCount(objective.itemId) - (entry.baseline || 0))
         : entry.progress;
 
   return Math.max(0, Math.min(target, raw));

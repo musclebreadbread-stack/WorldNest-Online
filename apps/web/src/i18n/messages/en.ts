@@ -156,6 +156,7 @@ export const en = {
   "item.melon": "Melon",
   "item.fence": "Fence",
   "item.chest": "Chest",
+  "item.path_stone": "Path Stone",
 
   "weather.clear": "Clear",
   "weather.rain": "Rain",

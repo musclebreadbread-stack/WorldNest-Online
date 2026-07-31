@@ -58,9 +58,7 @@ describe("deriveEnvironment", () => {
       makeSnapshot(1, 12, "day"), // spring day
       Biome.GRASSLAND,
     );
-    expect(coldNight.energyRegenMultiplier).toBeLessThan(
-      warmDay.energyRegenMultiplier,
-    );
+    expect(coldNight.energyRegenMultiplier).toBeLessThan(warmDay.energyRegenMultiplier);
   });
 
   it("should return a valid weather kind", () => {
@@ -76,9 +74,7 @@ describe("EnvironmentSystem", () => {
     const system = new EnvironmentSystem(() => biome);
     const time = new TimeComponent(makeSnapshot(1, 12, "day"));
     const env = new EnvironmentComponent();
-    const entity = new Entity("world-clock")
-      .addComponent(time)
-      .addComponent(env);
+    const entity = new Entity("world-clock").addComponent(time).addComponent(env);
     return { system, entity, time, env };
   }
 

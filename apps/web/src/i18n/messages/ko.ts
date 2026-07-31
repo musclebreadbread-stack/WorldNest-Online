@@ -150,6 +150,7 @@ export const ko: LocaleMessages = {
   "item.melon": "수박",
   "item.fence": "울타리",
   "item.chest": "상자",
+  "item.path_stone": "돌길",
 
   "weather.clear": "맑음",
   "weather.rain": "비",

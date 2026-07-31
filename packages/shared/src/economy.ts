@@ -57,6 +57,8 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   // Crafted goods the player cannot make yet, which is why they are worth buying
   fence: { buy: 20, sell: 6 },
   chest: { buy: 60, sell: 20 },
+  // Decorative path stones, cheap enough to place freely
+  path_stone: { buy: 5, sell: 2 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

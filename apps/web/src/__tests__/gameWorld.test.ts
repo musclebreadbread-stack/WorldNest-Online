@@ -636,7 +636,11 @@ describe("quest wiring", () => {
     // Taking the quest on is a request, exactly as the dialogue action raises it
     quest.requestedOffer = "collect_wood";
     context.world.update(1 / 60);
-    expect(quest.entries.collect_wood).toEqual({ state: "active", progress: 0 });
+    expect(quest.entries.collect_wood).toEqual({
+      state: "active",
+      progress: 0,
+      baseline: 0,
+    });
 
     // Progress is polled off the inventory, so gathering is all it takes
     addItem(inventory, "wood", 5);

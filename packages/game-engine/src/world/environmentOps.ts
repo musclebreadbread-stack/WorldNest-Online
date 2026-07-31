@@ -53,7 +53,9 @@ export function deriveEnvironment(
 
   const seasonDef = SEASON_DEFINITIONS[season];
   const temperature =
-    BIOME_BASE_TEMP[biome] + seasonDef.temperatureShift + PHASE_TEMP_SHIFT[snapshot.phase];
+    BIOME_BASE_TEMP[biome] +
+    seasonDef.temperatureShift +
+    PHASE_TEMP_SHIFT[snapshot.phase];
 
   const energyRegenMultiplier = computeEnergyMultiplier(temperature, weather);
 

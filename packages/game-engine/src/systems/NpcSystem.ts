@@ -264,9 +264,8 @@ export class NpcSystem extends System implements StructureQuery {
     // Set the interpolation target so the sprite eases toward the new tile
     const targetX = tile.tileX * TILE_SIZE + TILE_SIZE / 2;
     const targetY = tile.tileY * TILE_SIZE + TILE_SIZE / 2;
-    const interp = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    );
+    const interp =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation");
     if (interp) {
       interp.targetX = targetX;
       interp.targetY = targetY;

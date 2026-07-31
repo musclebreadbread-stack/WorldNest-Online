@@ -147,6 +147,7 @@ export const zh: LocaleMessages = {
   "item.melon": "西瓜",
   "item.fence": "栅栏",
   "item.chest": "箱子",
+  "item.path_stone": "路石",
 
   "weather.clear": "晴朗",
   "weather.rain": "下雨",

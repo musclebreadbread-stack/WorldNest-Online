@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  DEFAULT_USER_LOCALE,
-  isLocale,
-  resolveLocale,
-  type Locale,
-} from "../i18n";
+import { DEFAULT_USER_LOCALE, isLocale, resolveLocale, type Locale } from "../i18n";
 
 /** Where the chosen language is remembered between sessions. */
 export const LOCALE_STORAGE_KEY = "worldnest.locale";
