@@ -57,6 +57,11 @@ export const hi: LocaleMessages = {
   "chat.placeholder": "चैट के लिए Enter दबाएँ",
   "chat.unavailable": "चैट उपलब्ध नहीं है",
   "chat.ariaLabel": "चैट संदेश",
+  "chat.rateLimited": "धीरे! अगला संदेश भेजने से पहले कुछ देर रुकें।",
+  "chat.muted": "आपने {name} को म्यूट कर दिया है",
+  "chat.unmuted": "आपने {name} को अनम्यूट कर दिया है",
+  "chat.blocked": "संदेश नहीं भेजा जा सका",
+  "chat.filterNotice": "कुछ शब्द फ़िल्टर किए गए",
 
   "settings.title": "सेटिंग",
   "settings.open": "सेटिंग खोलें",

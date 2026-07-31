@@ -56,6 +56,11 @@ export const zh: LocaleMessages = {
   "chat.placeholder": "按 Enter 聊天",
   "chat.unavailable": "聊天暂不可用",
   "chat.ariaLabel": "聊天消息",
+  "chat.rateLimited": "发送过快！请稍后再试。",
+  "chat.muted": "已将 {name} 静音",
+  "chat.unmuted": "已取消 {name} 的静音",
+  "chat.blocked": "消息无法发送",
+  "chat.filterNotice": "部分内容已被过滤",
 
   "settings.title": "设置",
   "settings.open": "打开设置",

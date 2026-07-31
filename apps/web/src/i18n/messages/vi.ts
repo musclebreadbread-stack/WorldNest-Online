@@ -56,6 +56,11 @@ export const vi: LocaleMessages = {
   "chat.placeholder": "Nhấn Enter để trò chuyện",
   "chat.unavailable": "Không dùng được trò chuyện",
   "chat.ariaLabel": "Tin nhắn trò chuyện",
+  "chat.rateLimited": "Chậm lại! Hãy đợi một chút trước khi gửi tin tiếp.",
+  "chat.muted": "Bạn đã tắt tiếng {name}",
+  "chat.unmuted": "Bạn đã bật tiếng {name}",
+  "chat.blocked": "Không thể gửi tin nhắn",
+  "chat.filterNotice": "Một số từ đã bị lọc",
 
   "settings.title": "Cài đặt",
   "settings.open": "Mở cài đặt",

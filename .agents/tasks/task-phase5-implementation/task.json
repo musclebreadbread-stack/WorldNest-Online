@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase5-implementation",
+  "task_description": "Phase 5 implementation: Chat hardening (server RPC, rate limit, word filter, mute list), Fishing mini-game (timing-based mechanic, biome-specific catches, new items), and Collection/Museum system (item donation tracking, category rewards, new NPC Curator Milo). All features extend existing ECS/inventory/quest patterns and remain locally testable without Supabase credentials.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

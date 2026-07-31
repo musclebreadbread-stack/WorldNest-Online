@@ -57,6 +57,12 @@ export const fr: LocaleMessages = {
   "chat.placeholder": "Appuie sur Entrée pour discuter",
   "chat.unavailable": "Chat indisponible",
   "chat.ariaLabel": "Message de chat",
+  "chat.rateLimited":
+    "Doucement ! Attends un instant avant d'envoyer un autre message.",
+  "chat.muted": "Tu as rendu {name} muet",
+  "chat.unmuted": "Tu as retiré {name} de ta liste muette",
+  "chat.blocked": "Le message n'a pas pu être envoyé",
+  "chat.filterNotice": "Certains mots ont été filtrés",
 
   "settings.title": "Réglages",
   "settings.open": "Ouvrir les réglages",

@@ -64,6 +64,11 @@ export const en = {
   "chat.placeholder": "Press Enter to chat",
   "chat.unavailable": "Chat unavailable",
   "chat.ariaLabel": "Chat message",
+  "chat.rateLimited": "Slow down! Wait a moment before sending another message.",
+  "chat.muted": "You have muted {name}",
+  "chat.unmuted": "You have unmuted {name}",
+  "chat.blocked": "Message could not be sent",
+  "chat.filterNotice": "Some words were filtered",
 
   "settings.title": "Settings",
   "settings.open": "Open settings",

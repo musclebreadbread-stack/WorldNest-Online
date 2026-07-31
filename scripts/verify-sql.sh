@@ -32,6 +32,7 @@ EXPECTED_POLICIES_AFTER_002=23
 EXPECTED_POLICIES_AFTER_003=27
 EXPECTED_POLICIES_AFTER_004=30
 EXPECTED_POLICIES_AFTER_005=30
+EXPECTED_POLICIES_AFTER_006=35
 POLICY_COUNT="select count(*) from pg_policies where schemaname = 'public'"
 
 # The seeded test accounts, and the predicate that finds exactly them - the
@@ -502,6 +503,99 @@ expect "obsolete authority overloads" \
      where pronamespace = 'public'::regnamespace
        and ((proname = 'worldnest_shop_trade' and pronargs = 3)
          or (proname = 'worldnest_claim_quest_reward' and pronargs = 1));")" "0"
+
+# 006 is the chat hardening migration. It is applied twice to prove it is
+# re-runnable, and it adds the `worldnest_send_chat` RPC, the `chat_config`
+# and `blocked_words` tables, and the `mute_list` with player-scoped RLS.
+echo "== applying 006 and re-run =="
+apply "006" /sql/migrations/006_chat_hardening.sql
+apply "006 (re-run)" /sql/migrations/006_chat_hardening.sql
+
+echo "== asserting 006 =="
+expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_006"
+expect "worldnest_send_chat exists" \
+  "$(query "select count(*) from pg_proc
+     where pronamespace = 'public'::regnamespace
+       and proname = 'worldnest_send_chat';")" "1"
+expect "chat_config rate limit seeded" \
+  "$(query "select rate_limit_per_minute from public.chat_config where id = true;")" "10"
+expect "chat_config max length seeded" \
+  "$(query "select max_message_length from public.chat_config where id = true;")" "240"
+expect "blocked_words has entries" \
+  "$(query "select count(*) from public.blocked_words;")" "16"
+expect "mute_list rls enabled" \
+  "$(query "select relrowsecurity from pg_class
+     where oid = 'public.mute_list'::regclass;")" "t"
+
+# Assert RPC behavior: unauthenticated call is refused.
+expect "send_chat unauthenticated" \
+  "$(query "select (public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'hello'
+   ))->>'reason';")" "unauthenticated"
+
+# Assert the mute_list RLS: tester2 can only see their own mutes.
+TESTER2="11111111-2222-4333-8444-555555550002"
+TESTER3="11111111-2222-4333-8444-555555550003"
+
+# Insert a mute for tester2.
+psql_run -c "insert into public.mute_list (muter_id, muted_id)
+  values ('$TESTER2', '$TESTER3')
+  on conflict do nothing;" >/dev/null
+expect_allowed "mute_list select own" "$TESTER2" \
+  "select count(*) from public.mute_list where muter_id = '$TESTER2';"
+expect "mute_list invisible to other" \
+  "$(query_as_authenticated "$TESTER3" "select count(*) from public.mute_list;")" "0"
+
+# Assert the send function works for an authenticated user.
+SEND_RESULT="$(query_as_authenticated "$TESTER2" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'hello world'
+   );")"
+expect "send_chat ok" \
+  "$(echo "$SEND_RESULT" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d['ok'])" 2>/dev/null || echo "parse_error")" \
+  "True"
+
+# Assert the word filter replaces blocked words with asterisks.
+FILTER_RESULT="$(query_as_authenticated "$TESTER2" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'hello damn world'
+   );")"
+expect "send_chat filters word" \
+  "$(echo "$FILTER_RESULT" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('sanitized_body',''))" 2>/dev/null || echo "parse_error")" \
+  "hello **** world"
+
+# Assert rate limiting: send 10 messages, then the 11th should be refused.
+for i in $(seq 1 8); do
+  query_as_authenticated "$TESTER3" \
+    "select public.worldnest_send_chat(
+       (select id from public.worlds where name = 'Default World'),
+       'msg $i'
+     );" >/dev/null
+done
+# tester3 already sent 0 messages before this loop + the 8 above = 8 total.
+# The two sent earlier (filter test was tester2). Send 2 more to hit 10.
+query_as_authenticated "$TESTER3" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'msg 9'
+   );" >/dev/null
+query_as_authenticated "$TESTER3" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'msg 10'
+   );" >/dev/null
+
+RATE_RESULT="$(query_as_authenticated "$TESTER3" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'msg 11 should fail'
+   );")"
+expect "send_chat rate limited" \
+  "$(echo "$RATE_RESULT" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('reason',''))" 2>/dev/null || echo "parse_error")" \
+  "rate_limited"
 
 echo
 if [ "$failures" -ne 0 ]; then

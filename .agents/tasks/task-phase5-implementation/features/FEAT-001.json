@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Chat hardening: server-side RPC for message validation, rate limiting, mute/block list, and word filter. This is the highest safety priority for a 10-18 audience. Currently chat is client-side only with no server filtering (documented limitation). This feature adds a Postgres RPC function for sending messages that enforces rate limits and a configurable blocked-words filter, plus a mute_list table so players can mute others. All enforcement happens server-side so a modified client cannot bypass it.",
+  "status": "in_progress",
+  "steps": [
+    "Step 1 - Add migration 006_chat_hardening.sql in packages/database/supabase/migrations/ with: (a) a `chat_config` table holding rate_limit_per_minute (default 10) and max_message_length (default 240), (b) a `blocked_words` table seeded with a conservative list of slurs/profanity appropriate for a youth game (no false positives on common words), (c) a `mute_list` table (muter_id uuid, muted_id uuid, created_at) with RLS so each player manages their own mutes, (d) a `worldnest_send_chat(p_world_id uuid, p_body text)` security-definer function that: validates auth, enforces rate limit from chat_config, checks body against blocked_words (case-insensitive substring match, replaces matched words with asterisks rather than rejecting the whole message), truncates to max_message_length, inserts into chat_messages, returns jsonb {ok, message_id, sanitized_body} or {ok:false, reason}. Ensure re-runnable pattern like 004.",
+    "Step 2 - Add packages/database/src/chatModeration.ts exporting: (a) sendMessageViaRpc(worldId, body) that calls the RPC, (b) mutePlayer(mutedId), unmutePlayer(mutedId), getMuteList() functions using the mute_list table, (c) types for the RPC response.",
+    "Step 3 - Add packages/shared/src/chat.ts with shared chat constants: CHAT_RATE_LIMIT_PER_MINUTE = 10, CHAT_MAX_LENGTH = 240, CHAT_COOLDOWN_MS = 6000 (60000/10). Export from packages/shared/src/index.ts.",
+    "Step 4 - Update apps/web/src/i18n/messages/en.ts with new keys: 'chat.rateLimited' = 'Slow down! Wait a moment before sending another message.', 'chat.muted' = 'You have muted {name}', 'chat.unmuted' = 'You have unmuted {name}', 'chat.blocked' = 'Message could not be sent', 'chat.filterNotice' = 'Some words were filtered'. Add equivalent keys to all 11 other locale files (ko, ja, zh, es, fr, de, pt, ar, hi, th, vi).",
+    "Step 5 - Add comprehensive tests: (a) packages/database/src/__tests__/chatModeration.test.ts testing the TypeScript layer with mocked Supabase client, (b) update scripts/verify-sql.sh to apply 006 and assert: the RPC exists, rate_limit config is seeded, blocked_words has entries, mute_list RLS works, the send function refuses when rate limited. Add the new policy count expectations.",
+    "Step 6 - Export new modules from packages/database/src/index.ts. Ensure pnpm build, pnpm lint, pnpm test all pass."
+  ],
+  "acceptance_criteria": [
+    "Migration 006 applies cleanly on a fresh database (pnpm db:verify passes)",
+    "Migration 006 is re-runnable (applied twice without error in verify script)",
+    "RPC function returns {ok: true, sanitized_body} for a normal message",
+    "RPC function rate-limits at 10 messages per minute per player",
+    "RPC function filters blocked words with asterisks rather than rejecting",
+    "Mute list is player-scoped via RLS (users can only see/modify their own)",
+    "All 12 locale files contain the new chat keys",
+    "pnpm build passes",
+    "pnpm test passes",
+    "pnpm lint passes",
+    "pnpm format:check passes"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -57,6 +57,11 @@ export const ko: LocaleMessages = {
   "chat.placeholder": "Enter 를 눌러 채팅",
   "chat.unavailable": "채팅을 사용할 수 없습니다",
   "chat.ariaLabel": "채팅 메시지",
+  "chat.rateLimited": "천천히! 잠시 기다린 후 다시 보내 주세요.",
+  "chat.muted": "{name} 님을 음소거했습니다",
+  "chat.unmuted": "{name} 님의 음소거를 해제했습니다",
+  "chat.blocked": "메시지를 보낼 수 없습니다",
+  "chat.filterNotice": "일부 단어가 필터링되었습니다",
 
   "settings.title": "설정",
   "settings.open": "설정 열기",

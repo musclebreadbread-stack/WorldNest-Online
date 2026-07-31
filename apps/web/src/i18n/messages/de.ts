@@ -56,6 +56,12 @@ export const de: LocaleMessages = {
   "chat.placeholder": "Enter drücken, um zu chatten",
   "chat.unavailable": "Chat nicht verfügbar",
   "chat.ariaLabel": "Chatnachricht",
+  "chat.rateLimited":
+    "Langsamer! Warte einen Moment, bevor du eine weitere Nachricht sendest.",
+  "chat.muted": "Du hast {name} stummgeschaltet",
+  "chat.unmuted": "Du hast {name} nicht mehr stummgeschaltet",
+  "chat.blocked": "Nachricht konnte nicht gesendet werden",
+  "chat.filterNotice": "Einige Wörter wurden gefiltert",
 
   "settings.title": "Einstellungen",
   "settings.open": "Einstellungen öffnen",

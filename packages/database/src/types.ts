@@ -308,6 +308,54 @@ export interface Database {
         };
         Relationships: [];
       };
+      chat_config: {
+        Row: {
+          id: boolean;
+          rate_limit_per_minute: number;
+          max_message_length: number;
+        };
+        Insert: {
+          id?: boolean;
+          rate_limit_per_minute?: number;
+          max_message_length?: number;
+        };
+        Update: {
+          id?: boolean;
+          rate_limit_per_minute?: number;
+          max_message_length?: number;
+        };
+        Relationships: [];
+      };
+      blocked_words: {
+        Row: {
+          word: string;
+        };
+        Insert: {
+          word: string;
+        };
+        Update: {
+          word?: string;
+        };
+        Relationships: [];
+      };
+      mute_list: {
+        Row: {
+          muter_id: string;
+          muted_id: string;
+          created_at: string;
+        };
+        Insert: {
+          muter_id: string;
+          muted_id: string;
+          created_at?: string;
+        };
+        Update: {
+          muter_id?: string;
+          muted_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     /**
@@ -327,6 +375,10 @@ export interface Database {
       };
       worldnest_claim_quest_reward: {
         Args: { p_quest_id: string; p_progress: number };
+        Returns: unknown;
+      };
+      worldnest_send_chat: {
+        Args: { p_world_id: string; p_body: string };
         Returns: unknown;
       };
     };

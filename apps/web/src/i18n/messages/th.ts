@@ -56,6 +56,11 @@ export const th: LocaleMessages = {
   "chat.placeholder": "กด Enter เพื่อแชท",
   "chat.unavailable": "ใช้แชทไม่ได้",
   "chat.ariaLabel": "ข้อความแชท",
+  "chat.rateLimited": "ช้าลงหน่อย! รอสักครู่ก่อนส่งข้อความถัดไป",
+  "chat.muted": "คุณปิดเสียง {name} แล้ว",
+  "chat.unmuted": "คุณเปิดเสียง {name} แล้ว",
+  "chat.blocked": "ไม่สามารถส่งข้อความได้",
+  "chat.filterNotice": "บางคำถูกกรองออก",
 
   "settings.title": "ตั้งค่า",
   "settings.open": "เปิดการตั้งค่า",

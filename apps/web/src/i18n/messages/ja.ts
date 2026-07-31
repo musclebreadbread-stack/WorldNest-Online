@@ -56,6 +56,11 @@ export const ja: LocaleMessages = {
   "chat.placeholder": "Enter を押してチャット",
   "chat.unavailable": "チャットを利用できません",
   "chat.ariaLabel": "チャットメッセージ",
+  "chat.rateLimited": "少し待ってから送信してください。",
+  "chat.muted": "{name} をミュートしました",
+  "chat.unmuted": "{name} のミュートを解除しました",
+  "chat.blocked": "メッセージを送信できませんでした",
+  "chat.filterNotice": "一部の単語がフィルタリングされました",
 
   "settings.title": "設定",
   "settings.open": "設定を開く",

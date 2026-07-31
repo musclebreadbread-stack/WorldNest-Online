@@ -1,0 +1,38 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Fishing mini-game system. Extends the existing gathering/inventory/ECS patterns with a new interaction type. Players can fish from WATER tiles using a fishing rod item. The mini-game is a simple timing-based mechanic (cast, wait for a bite indicated by a timer, press E to reel in within a window). Yields fish items with biome-specific catches. Integrates with the shop (sell fish), energy system (costs energy to cast), and adds a new quest objective kind 'fish'. No violence, age-appropriate, educational (fish species names).",
+  "status": "pending",
+  "steps": [
+    "Step 1 - Add new item types to packages/shared/src/items.ts: 'fishing_rod' (stackSize 1, not consumable), 'fish_common' (stackSize 50), 'fish_rare' (stackSize 50), 'fish_tropical' (stackSize 50). Update the ItemId union type. Add shop prices to packages/shared/src/economy.ts: fishing_rod buy:40 sell:12, fish_common buy:15 sell:7, fish_rare buy:35 sell:16, fish_tropical buy:45 sell:21. Update ITEM_PRICES and ensure sell < buy invariant holds.",
+    "Step 2 - Add packages/game-engine/src/fishing/ directory with: (a) fishingDefinitions.ts defining FishingSpot interface (requires adjacent WATER tile, rod in hotbar), FishCatch interface (itemId, weight 0-100 for rarity roll), BIOME_FISH_TABLE mapping biomes to catch arrays with weights, FISHING_ENERGY_COST = 8, FISHING_BITE_MIN_MS = 2000, FISHING_BITE_MAX_MS = 5000, FISHING_WINDOW_MS = 1500. (b) fishingOps.ts with pure functions: canFish(inventory, stats, facedTileType) => boolean, rollCatch(biome, rng) => ItemId, startFishing() => FishingState, tickFishing(state, deltaMs) => FishingState, reelIn(state) => 'success'|'too_early'|'too_late'.",
+    "Step 3 - Add FishingComponent in packages/game-engine/src/components/FishingComponent.ts following the pattern of InteractionComponent. Fields: state ('idle'|'casting'|'waiting'|'biting'|'reeling'|'caught'|'missed'), timer (ms), biteTime (ms), catchItemId (ItemId|null), version (number).",
+    "Step 4 - Add FishingSystem in packages/game-engine/src/systems/FishingSystem.ts following the HarvestSystem pattern. Required components: ['position', 'interaction', 'inventory', 'stats', 'fishing']. The system: (a) on interact request when holding fishing_rod and facing water: starts casting, deducts energy, (b) advances timer through waiting->biting states, (c) on second interact during biting window: awards the fish item, (d) on timeout: marks as missed, resets. Uses the biome at the faced tile to determine the fish table.",
+    "Step 5 - Register FishingSystem and FishingComponent in packages/game-engine/src/systems/index.ts and packages/game-engine/src/components/index.ts. Export from packages/game-engine/src/index.ts.",
+    "Step 6 - Add comprehensive tests in packages/game-engine/src/__tests__/fishing.test.ts following the harvest.test.ts pattern. Test: canFish checks (no rod, no energy, not facing water), state machine transitions (idle->casting->waiting->biting->caught, idle->casting->waiting->biting->missed on timeout), catch distribution respects biome table, energy deduction on cast, item added to inventory on success, fishing while inventory full is refused.",
+    "Step 7 - Add i18n keys to all 12 locale files in apps/web/src/i18n/messages/: 'item.fishing_rod', 'item.fish_common', 'item.fish_rare', 'item.fish_tropical', 'fishing.cast' = 'Casting...', 'fishing.waiting' = 'Waiting for a bite...', 'fishing.bite' = 'Something is biting! Press E!', 'fishing.caught' = 'You caught a {item}!', 'fishing.missed' = 'The fish got away...', 'fishing.noRod' = 'You need a fishing rod', 'fishing.noEnergy' = 'Not enough energy to fish'.",
+    "Step 8 - Add fishing_rod to Juno's shop inventory by updating the 004 migration's shop_prices insert to include fishing_rod and the three fish items. Update the EXPECTED count if needed in verify-sql.sh. Ensure pnpm build, pnpm lint, pnpm test all pass."
+  ],
+  "acceptance_criteria": [
+    "New items (fishing_rod, fish_common, fish_rare, fish_tropical) are in the ItemId union and have ITEM_DEFINITIONS entries",
+    "Shop prices exist for all fishing items with sell < buy invariant",
+    "FishingSystem state machine correctly transitions through all fishing states",
+    "Energy is deducted on cast, not on reel-in",
+    "Fish variety depends on biome (tropical fish only from warm biomes)",
+    "Inventory full check prevents fishing",
+    "Timing window mechanic works (too early = fail, in window = success, too late = fail)",
+    "All 12 locale files contain the new fishing and item keys",
+    "pnpm build passes",
+    "pnpm test passes with new fishing tests",
+    "pnpm lint passes",
+    "pnpm format:check passes"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

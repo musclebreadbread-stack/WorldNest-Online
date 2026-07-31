@@ -39,6 +39,7 @@ export interface GameEvent {
 }
 
 // Re-exports
+export * from "./chat";
 export * from "./constants";
 export * from "./economy";
 export * from "./items";

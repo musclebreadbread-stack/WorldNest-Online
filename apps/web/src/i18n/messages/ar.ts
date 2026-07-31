@@ -59,6 +59,11 @@ export const ar: LocaleMessages = {
   "chat.placeholder": "اضغط Enter للدردشة",
   "chat.unavailable": "الدردشة غير متاحة",
   "chat.ariaLabel": "رسالة دردشة",
+  "chat.rateLimited": "ببطء! انتظر لحظة قبل إرسال رسالة أخرى.",
+  "chat.muted": "لقد كتمت {name}",
+  "chat.unmuted": "لقد ألغيت كتم {name}",
+  "chat.blocked": "تعذّر إرسال الرسالة",
+  "chat.filterNotice": "تمّت تصفية بعض الكلمات",
 
   "settings.title": "الإعدادات",
   "settings.open": "فتح الإعدادات",

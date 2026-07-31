@@ -19,6 +19,13 @@ export type {
 } from "./realtime";
 export { loadRecentMessages, sendMessage, CHAT_MESSAGE_MAX_LENGTH } from "./chat";
 export type { ChatMessage, ChatMessageRow } from "./chat";
+export {
+  sendMessageViaRpc,
+  mutePlayer,
+  unmutePlayer,
+  getMuteList,
+} from "./chatModeration";
+export type { SendChatResult, MuteEntry } from "./chatModeration";
 export { getProfile, upsertProfile } from "./profiles";
 export type { Profile } from "./profiles";
 export { loadPlayerState, savePlayerState } from "./playerState";
