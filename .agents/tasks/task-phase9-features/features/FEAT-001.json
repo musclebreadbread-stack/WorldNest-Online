@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Music/Rhythm mini-game system - play instruments, compose melodies, and complete rhythm timing challenges. Includes a new NPC (Melody the Musician) who hosts the rhythm game, new items (instruments), a rhythm state machine with timing windows, melody composition with note sequences, and integration with achievements.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Create packages/game-engine/src/music/ directory with index.ts, musicDefinitions.ts, musicOps.ts, and musicState.ts",
     "In musicDefinitions.ts: define InstrumentType union (drum, flute, harp, xylophone), RhythmNote interface (timing, lane), SongDefinition interface (id, name, bpm, notes array), NOTE_TIMING_WINDOW_MS constants (perfect/good/miss thresholds), INSTRUMENT_DEFINITIONS with buyable instruments, and 4 built-in songs of increasing difficulty",
@@ -41,5 +41,5 @@
     "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Added 'musician' role to NpcRole union which also required updating apps/web/src/game/scenes/npcTextures.ts NPC_COLORS record. Achievement test expected exact definition count (had to update from 14 to 16). NPC test expected exact NPC count (7 to 8). Economy test required new items in ITEM_PRICES and the SQL migration. i18n test enforces no untranslated strings (values identical to English fail), so locales that use 'Combo' as a loanword needed distinct translations."
 }
