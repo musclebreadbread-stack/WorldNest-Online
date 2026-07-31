@@ -179,4 +179,34 @@ export const th: LocaleMessages = {
   "fishing.missed": "ปลาหนีไปแล้ว...",
   "fishing.noRod": "คุณต้องมีเบ็ดตกปลา",
   "fishing.noEnergy": "พลังงานไม่พอสำหรับตกปลา",
+
+  "npc.milo.name": "ไมโล ภัณฑารักษ์",
+  "npc.activity.museum": "อยู่ที่พิพิธภัณฑ์",
+
+  "dialogue.milo.greeting":
+    "ยินดีต้อนรับสู่พิพิธภัณฑ์เล็กๆ ของเรา! ทุกสิ่งที่คุณพบมีเรื่องราว อยากเพิ่มลงในคอลเลกชันไหม?",
+  "dialogue.milo.donate":
+    "นำสิ่งที่พบมาให้ผมแล้วผมจะใส่ไว้ในตู้จัดแสดง การค้นพบใหม่ทุกชิ้นจะเติมหน้าหนึ่งในสมุดคอลเลกชัน!",
+  "dialogue.milo.categories":
+    "เรามีส่วนเก็บเกี่ยว เพาะปลูก ตกปลา และหัตถกรรม สะสมครบส่วนแล้วจะมีรางวัลให้!",
+  "dialogue.milo.option.donate": "อยากบริจาค",
+  "dialogue.milo.option.categories": "ดูหมวดหมู่",
+  "dialogue.milo.option.open": "เปิดสมุดคอลเลกชัน",
+
+  "dialogue.ada.option.donate": "ช่วยพิพิธภัณฑ์",
+
+  "collection.title": "สมุดคอลเลกชัน",
+  "collection.donate": "บริจาค",
+  "collection.donated": "บริจาคแล้ว",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "หมวดหมู่ครบ!",
+  "collection.claimReward": "รับรางวัล",
+  "collection.rewardClaimed": "รับรางวัลแล้ว",
+  "collection.category.gathering": "เก็บเกี่ยว",
+  "collection.category.farming": "เพาะปลูก",
+  "collection.category.fishing": "ตกปลา",
+  "collection.category.crafted": "หัตถกรรม",
+
+  "quest.donate_first.title": "การบริจาคครั้งแรก",
+  "quest.donate_first.description": "บริจาคสิ่งของใดก็ได้ให้ไมโลที่พิพิธภัณฑ์",
 };

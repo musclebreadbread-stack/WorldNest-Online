@@ -182,4 +182,34 @@ export const ko: LocaleMessages = {
   "fishing.missed": "물고기가 도망갔어요...",
   "fishing.noRod": "낚싯대가 필요해요",
   "fishing.noEnergy": "낚시할 에너지가 부족해요",
+
+  "npc.milo.name": "큐레이터 마일로",
+  "npc.activity.museum": "박물관에 있음",
+
+  "dialogue.milo.greeting":
+    "우리 작은 박물관에 잘 오셨어요! 찾은 아이템 하나하나가 이야기를 품고 있답니다. 컬렉션에 추가하시겠어요?",
+  "dialogue.milo.donate":
+    "찾은 아이템을 가져다 주시면 진열장에 넣어 둘게요. 새로운 발견이 컬렉션 북의 한 페이지를 채워요!",
+  "dialogue.milo.categories":
+    "채집, 농사, 낚시, 제작품 코너가 있어요. 한 코너를 다 모으면 보상을 드려요!",
+  "dialogue.milo.option.donate": "기증하고 싶어요",
+  "dialogue.milo.option.categories": "카테고리를 보여 주세요",
+  "dialogue.milo.option.open": "컬렉션 북 열기",
+
+  "dialogue.ada.option.donate": "박물관 돕기",
+
+  "collection.title": "컬렉션 북",
+  "collection.donate": "기증",
+  "collection.donated": "이미 기증함",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "카테고리 완성!",
+  "collection.claimReward": "보상 받기",
+  "collection.rewardClaimed": "보상 수령 완료",
+  "collection.category.gathering": "채집",
+  "collection.category.farming": "농사",
+  "collection.category.fishing": "낚시",
+  "collection.category.crafted": "제작",
+
+  "quest.donate_first.title": "첫 번째 기증",
+  "quest.donate_first.description": "박물관의 마일로에게 아이템을 기증하세요.",
 };

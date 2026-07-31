@@ -179,4 +179,34 @@ export const zh: LocaleMessages = {
   "fishing.missed": "鱼跑了...",
   "fishing.noRod": "你需要一根钓鱼竿",
   "fishing.noEnergy": "没有足够的精力钓鱼",
+
+  "npc.milo.name": "馆长米洛",
+  "npc.activity.museum": "在博物馆",
+
+  "dialogue.milo.greeting":
+    "欢迎来到我们的小博物馆！你找到的每件物品都有一段故事。想把它加入收藏吗？",
+  "dialogue.milo.donate":
+    "把你找到的物品带给我，我会把它放到展柜里。每个新发现都会填满收藏册的一页！",
+  "dialogue.milo.categories":
+    "我们有采集、农业、钓鱼和制作品区域。集齐一个区域就有奖励哦！",
+  "dialogue.milo.option.donate": "我想捐赠",
+  "dialogue.milo.option.categories": "查看分类",
+  "dialogue.milo.option.open": "打开收藏册",
+
+  "dialogue.ada.option.donate": "帮助博物馆",
+
+  "collection.title": "收藏册",
+  "collection.donate": "捐赠",
+  "collection.donated": "已捐赠",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "分类完成！",
+  "collection.claimReward": "领取奖励",
+  "collection.rewardClaimed": "已领取奖励",
+  "collection.category.gathering": "采集",
+  "collection.category.farming": "农业",
+  "collection.category.fishing": "钓鱼",
+  "collection.category.crafted": "制作",
+
+  "quest.donate_first.title": "第一次捐赠",
+  "quest.donate_first.description": "向博物馆的米洛捐赠任意物品。",
 };

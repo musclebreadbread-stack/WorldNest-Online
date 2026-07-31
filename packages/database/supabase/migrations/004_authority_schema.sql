@@ -75,7 +75,8 @@ create table if not exists public.quest_rewards (
 insert into public.quest_rewards (quest_id, target, reward_coins, reward_items) values
   ('collect_wood', 5, 30, '[{"itemId":"wheat_seed","quantity":3}]'::jsonb),
   ('build_fence', 2, 50, '[{"itemId":"wood","quantity":3}]'::jsonb),
-  ('greet_pip', 1, 15, '[{"itemId":"flower","quantity":2}]'::jsonb)
+  ('greet_pip', 1, 15, '[{"itemId":"flower","quantity":2}]'::jsonb),
+  ('donate_first', 1, 25, '[{"itemId":"flower","quantity":1}]'::jsonb)
 on conflict (quest_id) do update
   set target = excluded.target,
       reward_coins = excluded.reward_coins,

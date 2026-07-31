@@ -33,6 +33,7 @@ export {
   DEFAULT_FRAME_DURATION_MS,
   DEFAULT_FRAME_COUNT,
   FishingComponent,
+  CollectionComponent,
 } from "./components";
 export type {
   KeyState,
@@ -70,6 +71,22 @@ export {
 } from "./fishing";
 export type { FishCatch, FishingState } from "./fishing";
 
+// Collection (pure; museum donation and category tracking)
+export {
+  COLLECTION_CATEGORIES,
+  COLLECTION_CATEGORY_IDS,
+  canDonate,
+  claimCategoryReward,
+  donate,
+  getCategory,
+  getCategoryProgress,
+  isCollectable,
+  isCategoryComplete,
+  totalCollectable,
+  totalDonated,
+} from "./collection";
+export type { CollectionCategory, CollectionState } from "./collection";
+
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
 export type { Wallet } from "./shop";
@@ -87,6 +104,7 @@ export {
   objectiveTarget,
   offerQuest,
   pollProgress,
+  recordDonation,
   recordTalk,
 } from "./quests";
 export type {
@@ -157,6 +175,7 @@ export {
   QuestSystem,
   AnimationSystem,
   FishingSystem,
+  CollectionSystem,
 } from "./systems";
 export type {
   RenderData,

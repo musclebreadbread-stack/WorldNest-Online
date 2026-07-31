@@ -182,4 +182,35 @@ export const de: LocaleMessages = {
   "fishing.missed": "Der Fisch ist entkommen...",
   "fishing.noRod": "Du brauchst eine Angelrute",
   "fishing.noEnergy": "Nicht genug Energie zum Angeln",
+
+  "npc.milo.name": "Milo der Kurator",
+  "npc.activity.museum": "Im Museum",
+
+  "dialogue.milo.greeting":
+    "Willkommen in unserem kleinen Museum! Jeder Fund erzählt eine Geschichte. Möchtest du etwas zur Sammlung hinzufügen?",
+  "dialogue.milo.donate":
+    "Bring mir einen Fund und ich stelle ihn in die Vitrine. Jede neue Entdeckung füllt eine Seite im Sammlungsbuch!",
+  "dialogue.milo.categories":
+    "Wir haben Bereiche für Sammeln, Anbau, Angeln und Handwerk. Vervollständige einen Bereich und es gibt eine Belohnung!",
+  "dialogue.milo.option.donate": "Ich möchte spenden",
+  "dialogue.milo.option.categories": "Kategorien anzeigen",
+  "dialogue.milo.option.open": "Sammlungsbuch öffnen",
+
+  "dialogue.ada.option.donate": "Dem Museum helfen",
+
+  "collection.title": "Sammlungsbuch",
+  "collection.donate": "Spenden",
+  "collection.donated": "Bereits gespendet",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "Kategorie vollständig!",
+  "collection.claimReward": "Belohnung einfordern",
+  "collection.rewardClaimed": "Belohnung erhalten",
+  "collection.category.gathering": "Sammeln",
+  "collection.category.farming": "Anbau",
+  "collection.category.fishing": "Angeln",
+  "collection.category.crafted": "Handwerk",
+
+  "quest.donate_first.title": "Erste Spende",
+  "quest.donate_first.description":
+    "Spende einen beliebigen Gegenstand an Milo im Museum.",
 };

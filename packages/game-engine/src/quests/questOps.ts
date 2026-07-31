@@ -156,6 +156,31 @@ export function recordTalk(log: QuestLog, npcId: string): boolean {
 }
 
 /**
+ * Note that the entity donated an item to the museum. Increments progress on
+ * any active `donate` objective. Called from `CollectionSystem`.
+ */
+export function recordDonation(log: QuestLog, donationCount: number): boolean {
+  let changed = false;
+
+  for (const [questId, entry] of Object.entries(log.entries)) {
+    if (entry.state !== "active") continue;
+
+    const definition = getQuest(questId);
+    if (definition?.objective.kind !== "donate") continue;
+
+    const target = objectiveTarget(definition.objective);
+    const newProgress = Math.min(target, donationCount);
+    if (newProgress === entry.progress) continue;
+
+    entry.progress = newProgress;
+    changed = true;
+  }
+
+  if (changed) log.version++;
+  return changed;
+}
+
+/**
  * Hand a quest in: check it, pay it out, and mark it done.
  *
  * Refused — changing nothing at all — when the quest is not active, the objective

@@ -180,4 +180,34 @@ export const vi: LocaleMessages = {
   "fishing.missed": "Cá đã thoát...",
   "fishing.noRod": "Bạn cần một cần câu",
   "fishing.noEnergy": "Không đủ năng lượng để câu cá",
+
+  "npc.milo.name": "Milo Quản thủ",
+  "npc.activity.museum": "Ở bảo tàng",
+
+  "dialogue.milo.greeting":
+    "Chào mừng đến bảo tàng nhỏ của chúng tôi! Mỗi vật phẩm bạn tìm thấy đều kể một câu chuyện. Bạn muốn thêm vào bộ sưu tập không?",
+  "dialogue.milo.donate":
+    "Mang cho tôi vật phẩm bạn tìm được và tôi sẽ đặt vào tủ trưng bày. Mỗi khám phá mới sẽ lấp đầy một trang trong sách sưu tập!",
+  "dialogue.milo.categories":
+    "Chúng tôi có mục thu thập, canh tác, câu cá và thủ công. Hoàn thành một mục sẽ có phần thưởng!",
+  "dialogue.milo.option.donate": "Tôi muốn quyên góp",
+  "dialogue.milo.option.categories": "Xem danh mục",
+  "dialogue.milo.option.open": "Mở sách sưu tập",
+
+  "dialogue.ada.option.donate": "Giúp bảo tàng",
+
+  "collection.title": "Sách sưu tập",
+  "collection.donate": "Quyên góp",
+  "collection.donated": "Đã quyên góp",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "Hoàn thành danh mục!",
+  "collection.claimReward": "Nhận thưởng",
+  "collection.rewardClaimed": "Đã nhận thưởng",
+  "collection.category.gathering": "Thu thập",
+  "collection.category.farming": "Canh tác",
+  "collection.category.fishing": "Câu cá",
+  "collection.category.crafted": "Thủ công",
+
+  "quest.donate_first.title": "Quyên góp đầu tiên",
+  "quest.donate_first.description": "Quyên góp vật phẩm bất kỳ cho Milo tại bảo tàng.",
 };

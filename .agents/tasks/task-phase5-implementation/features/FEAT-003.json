@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Collection/Museum system for tracking item discoveries. Adds a CollectionComponent that records which items a player has found at least once (donated to the museum). A new NPC 'Curator Milo' runs the museum. Players donate items to unlock entries in a collection book. Completing category sets (e.g., all fish, all crops) awards badge items. This is horizontal progression that incentivizes exploration without adding power creep. Integrates with the existing inventory, NPC, and dialogue patterns.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Step 1 - Define collection categories in packages/game-engine/src/collection/collectionDefinitions.ts: interface CollectionEntry { itemId: ItemId, categoryId: string }, interface CollectionCategory { id: string, titleKey: string, entries: ItemId[], rewardItemId?: ItemId, rewardCoins: number }. Define categories: 'gathering' (wood, stone, ore, fiber, flower), 'farming' (wheat, carrot, melon), 'fishing' (fish_common, fish_rare, fish_tropical), 'crafted' (fence, chest, path_stone). Each category has a completion reward in coins.",
     "Step 2 - Add packages/game-engine/src/collection/collectionOps.ts with pure functions: canDonate(inventory, itemId) => boolean, donate(collection, inventory, itemId) => boolean (removes 1 from inventory, marks discovered), getCategoryProgress(collection, categoryId) => {discovered: number, total: number}, isCategoryComplete(collection, categoryId) => boolean, claimCategoryReward(collection, wallet, categoryId) => boolean. Follow the questOps.ts pattern of pure functions over plain data.",

@@ -30,3 +30,4 @@ export type { StructureCounter } from "./QuestSystem";
 export { AnimationSystem } from "./AnimationSystem";
 export { FishingSystem } from "./FishingSystem";
 export type { BiomeAtTile, RngFn } from "./FishingSystem";
+export { CollectionSystem } from "./CollectionSystem";

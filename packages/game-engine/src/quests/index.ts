@@ -18,6 +18,7 @@ export {
   objectiveProgress,
   offerQuest,
   pollProgress,
+  recordDonation,
   recordTalk,
 } from "./questOps";
 export type { QuestLog, QuestProgressSource } from "./questOps";

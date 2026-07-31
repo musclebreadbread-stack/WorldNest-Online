@@ -182,4 +182,34 @@ export const pt: LocaleMessages = {
   "fishing.missed": "O peixe escapou...",
   "fishing.noRod": "Você precisa de uma vara de pesca",
   "fishing.noEnergy": "Energia insuficiente para pescar",
+
+  "npc.milo.name": "Milo o Curador",
+  "npc.activity.museum": "No museu",
+
+  "dialogue.milo.greeting":
+    "Bem-vindo ao nosso pequeno museu! Cada item que você encontra conta uma história. Quer adicionar à coleção?",
+  "dialogue.milo.donate":
+    "Traga qualquer item que encontrou e eu colocarei nas vitrines. Cada nova descoberta preenche uma página do livro de coleção!",
+  "dialogue.milo.categories":
+    "Temos seções de coleta, cultivo, pesca e artesanato. Complete uma seção e terei uma recompensa para você!",
+  "dialogue.milo.option.donate": "Quero doar",
+  "dialogue.milo.option.categories": "Mostrar categorias",
+  "dialogue.milo.option.open": "Abrir livro de coleção",
+
+  "dialogue.ada.option.donate": "Ajudar o museu",
+
+  "collection.title": "Livro de coleção",
+  "collection.donate": "Doar",
+  "collection.donated": "Já doado",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "Categoria completa!",
+  "collection.claimReward": "Resgatar recompensa",
+  "collection.rewardClaimed": "Recompensa resgatada",
+  "collection.category.gathering": "Coleta",
+  "collection.category.farming": "Cultivo",
+  "collection.category.fishing": "Pesca",
+  "collection.category.crafted": "Artesanato",
+
+  "quest.donate_first.title": "Primeira doação",
+  "quest.donate_first.description": "Doe qualquer item para Milo no museu.",
 };

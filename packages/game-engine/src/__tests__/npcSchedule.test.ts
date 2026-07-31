@@ -38,7 +38,7 @@ describe("scheduledEntry", () => {
       for (let hour = 0; hour < 24; hour++) {
         const entry = scheduledEntry(definition.schedule, makeSnapshot(hour));
         expect(entry, `${definition.id} at hour ${hour}`).toBeDefined();
-        expect(entry.activity).toMatch(/^(home|work|market|rest)$/);
+        expect(entry.activity).toMatch(/^(home|work|market|rest|museum)$/);
       }
     }
   });
@@ -80,7 +80,7 @@ describe("scheduledEntry", () => {
   });
 
   it("should use only valid activities", () => {
-    const validActivities = new Set(["home", "work", "market", "rest"]);
+    const validActivities = new Set(["home", "work", "market", "rest", "museum"]);
     for (const definition of NPC_DEFINITIONS) {
       if (!definition.schedule) continue;
       for (const entry of definition.schedule) {

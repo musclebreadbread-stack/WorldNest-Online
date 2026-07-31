@@ -90,7 +90,7 @@ describe("QUEST_DEFINITIONS", () => {
     }
 
     const kinds = QUEST_IDS.map((id) => QUEST_DEFINITIONS[id].objective.kind);
-    expect(new Set(kinds)).toEqual(new Set(["collect", "build", "talk"]));
+    expect(new Set(kinds)).toEqual(new Set(["collect", "build", "talk", "donate"]));
   });
 
   it("should aim every talk objective at an NPC that exists", () => {

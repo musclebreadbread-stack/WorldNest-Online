@@ -183,4 +183,34 @@ export const ar: LocaleMessages = {
   "fishing.missed": "هربت السمكة...",
   "fishing.noRod": "تحتاج إلى صنارة صيد",
   "fishing.noEnergy": "لا توجد طاقة كافية للصيد",
+
+  "npc.milo.name": "مايلو أمين المتحف",
+  "npc.activity.museum": "في المتحف",
+
+  "dialogue.milo.greeting":
+    "مرحباً في متحفنا الصغير! كل عنصر تجده يحكي قصة. هل تريد إضافة شيء إلى المجموعة؟",
+  "dialogue.milo.donate":
+    "أحضر لي أي عنصر وجدته وسأضعه في خزانة العرض. كل اكتشاف جديد يملأ صفحة في كتاب المجموعة!",
+  "dialogue.milo.categories":
+    "لدينا أقسام للجمع والزراعة والصيد والحرف. أكمل قسماً واحصل على مكافأة!",
+  "dialogue.milo.option.donate": "أريد التبرع",
+  "dialogue.milo.option.categories": "أرني الفئات",
+  "dialogue.milo.option.open": "فتح كتاب المجموعة",
+
+  "dialogue.ada.option.donate": "مساعدة المتحف",
+
+  "collection.title": "كتاب المجموعة",
+  "collection.donate": "تبرع",
+  "collection.donated": "تم التبرع",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "الفئة مكتملة!",
+  "collection.claimReward": "استلام المكافأة",
+  "collection.rewardClaimed": "تم استلام المكافأة",
+  "collection.category.gathering": "الجمع",
+  "collection.category.farming": "الزراعة",
+  "collection.category.fishing": "الصيد",
+  "collection.category.crafted": "الحرف",
+
+  "quest.donate_first.title": "أول تبرع",
+  "quest.donate_first.description": "تبرع بأي عنصر لمايلو في المتحف.",
 };

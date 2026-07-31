@@ -183,4 +183,34 @@ export const fr: LocaleMessages = {
   "fishing.missed": "Le poisson s'est échappé...",
   "fishing.noRod": "Il vous faut une canne à pêche",
   "fishing.noEnergy": "Pas assez d'énergie pour pêcher",
+
+  "npc.milo.name": "Milo le Conservateur",
+  "npc.activity.museum": "Au musée",
+
+  "dialogue.milo.greeting":
+    "Bienvenue dans notre petit musée ! Chaque objet trouvé raconte une histoire. Voulez-vous enrichir la collection ?",
+  "dialogue.milo.donate":
+    "Apportez-moi un objet trouvé et je le placerai dans les vitrines. Chaque découverte remplit une page du livre de collection !",
+  "dialogue.milo.categories":
+    "Nous avons des sections cueillette, culture, pêche et artisanat. Complétez une section pour recevoir une récompense !",
+  "dialogue.milo.option.donate": "Je veux donner",
+  "dialogue.milo.option.categories": "Montrer les catégories",
+  "dialogue.milo.option.open": "Ouvrir le livre de collection",
+
+  "dialogue.ada.option.donate": "Aider le musée",
+
+  "collection.title": "Livre de collection",
+  "collection.donate": "Donner",
+  "collection.donated": "Déjà donné",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "Catégorie complète !",
+  "collection.claimReward": "Réclamer la récompense",
+  "collection.rewardClaimed": "Récompense réclamée",
+  "collection.category.gathering": "Cueillette",
+  "collection.category.farming": "Culture",
+  "collection.category.fishing": "Pêche",
+  "collection.category.crafted": "Artisanat",
+
+  "quest.donate_first.title": "Première donation",
+  "quest.donate_first.description": "Donnez un objet à Milo au musée.",
 };

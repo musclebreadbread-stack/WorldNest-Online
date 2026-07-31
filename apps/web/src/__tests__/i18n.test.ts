@@ -41,6 +41,7 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "auth.emailPlaceholder",
   "hud.coordinates",
   "quest.progress",
+  "collection.progress",
 ];
 
 describe("message catalogue", () => {

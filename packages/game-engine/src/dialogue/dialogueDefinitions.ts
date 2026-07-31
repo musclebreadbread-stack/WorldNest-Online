@@ -14,6 +14,7 @@
 export type DialogueAction =
   | { kind: "close" }
   | { kind: "openShop" }
+  | { kind: "openCollection" }
   | { kind: "offerQuest"; questId: string }
   | { kind: "turnInQuest"; questId: string };
 
@@ -124,7 +125,11 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
             labelKey: "dialogue.ada.option.greet",
             action: { kind: "offerQuest", questId: "greet_pip" },
           },
-          { labelKey: "dialogue.option.back", next: "greeting" },
+          {
+            labelKey: "dialogue.ada.option.donate",
+            action: { kind: "offerQuest", questId: "donate_first" },
+            next: "greeting",
+          },
         ],
       },
       report: {
@@ -141,6 +146,48 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
           {
             labelKey: "dialogue.ada.option.greet",
             action: { kind: "turnInQuest", questId: "greet_pip" },
+          },
+          {
+            labelKey: "dialogue.ada.option.donate",
+            action: { kind: "turnInQuest", questId: "donate_first" },
+            next: "greeting",
+          },
+        ],
+      },
+    },
+  },
+
+  // Milo the curator: the museum. Opens the collection panel.
+  milo_museum: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.milo.greeting",
+        options: [
+          { labelKey: "dialogue.milo.option.donate", next: "donate" },
+          {
+            labelKey: "dialogue.milo.option.categories",
+            next: "categories",
+          },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      donate: {
+        textKey: "dialogue.milo.donate",
+        options: [
+          {
+            labelKey: "dialogue.milo.option.open",
+            action: { kind: "openCollection" },
+          },
+          { labelKey: "dialogue.option.back", next: "greeting" },
+        ],
+      },
+      categories: {
+        textKey: "dialogue.milo.categories",
+        options: [
+          {
+            labelKey: "dialogue.milo.option.open",
+            action: { kind: "openCollection" },
           },
           { labelKey: "dialogue.option.back", next: "greeting" },
         ],

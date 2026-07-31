@@ -181,4 +181,34 @@ export const hi: LocaleMessages = {
   "fishing.missed": "मछली भाग गई...",
   "fishing.noRod": "आपको मछली पकड़ने की छड़ी चाहिए",
   "fishing.noEnergy": "मछली पकड़ने के लिए पर्याप्त ऊर्जा नहीं",
+
+  "npc.milo.name": "क्यूरेटर माइलो",
+  "npc.activity.museum": "संग्रहालय में",
+
+  "dialogue.milo.greeting":
+    "हमारे छोटे संग्रहालय में स्वागत है! आपको मिलने वाली हर चीज़ एक कहानी बताती है। क्या आप संग्रह में कुछ जोड़ना चाहेंगे?",
+  "dialogue.milo.donate":
+    "कोई भी पाई हुई चीज़ लाइए और मैं उसे प्रदर्शनी में रख दूंगा। हर नई खोज संग्रह पुस्तक का एक पन्ना भरती है!",
+  "dialogue.milo.categories":
+    "हमारे पास संग्रह, कृषि, मछली पकड़ना और शिल्प के भाग हैं। एक भाग पूरा करके इनाम पाइए!",
+  "dialogue.milo.option.donate": "मैं दान करना चाहता हूं",
+  "dialogue.milo.option.categories": "श्रेणियां दिखाइए",
+  "dialogue.milo.option.open": "संग्रह पुस्तक खोलें",
+
+  "dialogue.ada.option.donate": "संग्रहालय की मदद करें",
+
+  "collection.title": "संग्रह पुस्तक",
+  "collection.donate": "दान करें",
+  "collection.donated": "पहले से दान किया",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "श्रेणी पूर्ण!",
+  "collection.claimReward": "इनाम लें",
+  "collection.rewardClaimed": "इनाम मिल चुका",
+  "collection.category.gathering": "संग्रह",
+  "collection.category.farming": "कृषि",
+  "collection.category.fishing": "मछली पकड़ना",
+  "collection.category.crafted": "शिल्प",
+
+  "quest.donate_first.title": "पहला दान",
+  "quest.donate_first.description": "संग्रहालय में माइलो को कोई भी वस्तु दान करें।",
 };

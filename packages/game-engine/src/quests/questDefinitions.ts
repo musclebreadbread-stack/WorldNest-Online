@@ -16,7 +16,8 @@ import type { ItemId } from "@worldnest/shared";
 export type QuestObjective =
   | { kind: "collect"; itemId: ItemId; count: number }
   | { kind: "build"; itemId: ItemId; count: number }
-  | { kind: "talk"; npcId: string };
+  | { kind: "talk"; npcId: string }
+  | { kind: "donate"; count: number };
 
 /** One reward stack. */
 export interface QuestRewardItem {
@@ -77,6 +78,16 @@ export const QUEST_DEFINITIONS: Record<string, QuestDefinition> = {
     objective: { kind: "talk", npcId: "villager_pip" },
     rewards: { items: [{ itemId: "flower", quantity: 2 }], coins: 15 },
   },
+
+  // Donate: teaches the museum mechanic, given by Ada
+  donate_first: {
+    id: "donate_first",
+    titleKey: "quest.donate_first.title",
+    descriptionKey: "quest.donate_first.description",
+    giverNpcId: "questgiver_ada",
+    objective: { kind: "donate", count: 1 },
+    rewards: { items: [{ itemId: "flower", quantity: 1 }], coins: 25 },
+  },
 };
 
 /** Every quest id, in catalogue order, so the quest log is stable. */
@@ -92,5 +103,12 @@ export function getQuest(questId: string): QuestDefinition | undefined {
  * is why it has no count of its own.
  */
 export function objectiveTarget(objective: QuestObjective): number {
-  return objective.kind === "talk" ? 1 : objective.count;
+  switch (objective.kind) {
+    case "talk":
+      return 1;
+    case "collect":
+    case "build":
+    case "donate":
+      return objective.count;
+  }
 }

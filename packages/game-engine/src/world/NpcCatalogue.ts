@@ -11,7 +11,7 @@
  */
 import type { NpcScheduleEntry } from "./npcSchedule";
 
-export type NpcRole = "villager" | "shopkeeper" | "questgiver";
+export type NpcRole = "villager" | "shopkeeper" | "questgiver" | "curator";
 
 export interface NpcDefinition {
   id: string;
@@ -80,6 +80,21 @@ export const NPC_DEFINITIONS: readonly NpcDefinition[] = [
       { fromHour: 7, activity: "work", tileX: 15, tileY: 13 },
       { fromHour: 14, activity: "market", tileX: 17, tileY: 12 },
       { fromHour: 21, activity: "rest", tileX: 16, tileY: 13 },
+    ],
+  },
+  {
+    id: "curator_milo",
+    nameKey: "npc.milo.name",
+    dialogueId: "milo_museum",
+    anchorTileX: 20,
+    anchorTileY: 13,
+    textureKey: "npc_curator",
+    role: "curator",
+    schedule: [
+      { fromHour: 0, activity: "rest", tileX: 21, tileY: 14 },
+      { fromHour: 8, activity: "museum", tileX: 20, tileY: 13 },
+      { fromHour: 18, activity: "home", tileX: 21, tileY: 14 },
+      { fromHour: 22, activity: "rest", tileX: 21, tileY: 14 },
     ],
   },
 ];

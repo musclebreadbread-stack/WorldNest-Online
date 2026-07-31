@@ -147,6 +147,7 @@ export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
   work: "npc.activity.work",
   market: "npc.activity.market",
   rest: "npc.activity.rest",
+  museum: "npc.activity.museum",
 };
 
 /**

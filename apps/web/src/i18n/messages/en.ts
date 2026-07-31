@@ -188,4 +188,34 @@ export const en = {
   "fishing.missed": "The fish got away...",
   "fishing.noRod": "You need a fishing rod",
   "fishing.noEnergy": "Not enough energy to fish",
+
+  "npc.milo.name": "Milo the Curator",
+  "npc.activity.museum": "At the museum",
+
+  "dialogue.milo.greeting":
+    "Welcome to our little museum! Every item you find tells a story. Would you like to add to the collection?",
+  "dialogue.milo.donate":
+    "Bring me any item you have found and I will add it to the display cases. Each new discovery fills a page in the collection book!",
+  "dialogue.milo.categories":
+    "We have sections for gathering, farming, fishing and crafted items. Complete a section and I will have a reward for you!",
+  "dialogue.milo.option.donate": "I want to donate",
+  "dialogue.milo.option.categories": "Show me the categories",
+  "dialogue.milo.option.open": "Open collection book",
+
+  "dialogue.ada.option.donate": "Help the museum",
+
+  "collection.title": "Collection Book",
+  "collection.donate": "Donate",
+  "collection.donated": "Already donated",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "Category complete!",
+  "collection.claimReward": "Claim reward",
+  "collection.rewardClaimed": "Reward claimed",
+  "collection.category.gathering": "Gathering",
+  "collection.category.farming": "Farming",
+  "collection.category.fishing": "Fishing",
+  "collection.category.crafted": "Crafted",
+
+  "quest.donate_first.title": "First Donation",
+  "quest.donate_first.description": "Donate any item to Milo at the museum.",
 } as const;

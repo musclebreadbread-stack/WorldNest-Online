@@ -10,6 +10,7 @@ const NPC_COLORS: Record<NpcRole, { tunic: number; accent: number }> = {
   villager: { tunic: 0x66bb6a, accent: 0xf8bbd0 },
   shopkeeper: { tunic: 0xab47bc, accent: 0xffd54f },
   questgiver: { tunic: 0xff8a65, accent: 0xfff8e1 },
+  curator: { tunic: 0x42a5f5, accent: 0xffe0b2 },
 };
 
 /**

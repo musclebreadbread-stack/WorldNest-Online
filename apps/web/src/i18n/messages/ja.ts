@@ -181,4 +181,34 @@ export const ja: LocaleMessages = {
   "fishing.missed": "魚に逃げられた...",
   "fishing.noRod": "釣り竿が必要です",
   "fishing.noEnergy": "釣りをするエネルギーが足りません",
+
+  "npc.milo.name": "学芸員マイロ",
+  "npc.activity.museum": "博物館にいます",
+
+  "dialogue.milo.greeting":
+    "私たちの小さな博物館へようこそ！見つけたアイテムはどれも物語を持っています。コレクションに加えませんか？",
+  "dialogue.milo.donate":
+    "見つけたアイテムを持ってきてくれたら展示ケースに入れますよ。新しい発見がコレクションブックのページを埋めます！",
+  "dialogue.milo.categories":
+    "採集、農業、釣り、制作品のコーナーがあります。コーナーを全部集めたらご褒美がありますよ！",
+  "dialogue.milo.option.donate": "寄贈したいです",
+  "dialogue.milo.option.categories": "カテゴリーを見せて",
+  "dialogue.milo.option.open": "コレクションブックを開く",
+
+  "dialogue.ada.option.donate": "博物館を手伝う",
+
+  "collection.title": "コレクションブック",
+  "collection.donate": "寄贈",
+  "collection.donated": "寄贈済み",
+  "collection.progress": "{current} / {total}",
+  "collection.categoryComplete": "カテゴリー完成！",
+  "collection.claimReward": "報酬を受け取る",
+  "collection.rewardClaimed": "報酬受取済み",
+  "collection.category.gathering": "採集",
+  "collection.category.farming": "農業",
+  "collection.category.fishing": "釣り",
+  "collection.category.crafted": "制作品",
+
+  "quest.donate_first.title": "初めての寄贈",
+  "quest.donate_first.description": "博物館のマイロにアイテムを寄贈しましょう。",
 };

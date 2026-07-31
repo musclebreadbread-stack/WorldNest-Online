@@ -30,3 +30,4 @@ export {
 } from "./AnimationComponent";
 export type { AnimationState } from "./AnimationComponent";
 export { FishingComponent } from "./FishingComponent";
+export { CollectionComponent } from "./CollectionComponent";
