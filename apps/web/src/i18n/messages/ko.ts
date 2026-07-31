@@ -278,6 +278,7 @@ export const ko: LocaleMessages = {
     "야생 동물을 찾아서 사료를 주세요. 계속 먹이를 주면 결국 따라올 만큼 친해질 거예요!",
   "dialogue.hana.option.taming": "동물은 어떻게 길들여요?",
   "dialogue.hana.option.quest": "할 일이 있어요?",
+  "dialogue.hana.option.report": "동물을 길들였어요!",
   "animal.rabbit": "토끼",
   "animal.deer": "사슴",
   "animal.fox": "여우",

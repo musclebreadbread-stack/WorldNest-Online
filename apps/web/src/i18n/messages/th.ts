@@ -278,6 +278,7 @@ export const th: LocaleMessages = {
     "หาสัตว์ป่าแล้วให้อาหารมัน ให้อาหารเรื่อยๆ แล้วมันจะไว้ใจและตามคุณไป!",
   "dialogue.hana.option.taming": "เลี้ยงสัตว์ยังไง?",
   "dialogue.hana.option.quest": "มีงานให้ทำไหม?",
+  "dialogue.hana.option.report": "ฉันเลี้ยงสัตว์สำเร็จแล้ว!",
   "animal.rabbit": "กระต่าย",
   "animal.deer": "กวาง",
   "animal.fox": "จิ้งจอก",

@@ -277,6 +277,7 @@ export const es: LocaleMessages = {
     "Encuentra un animal salvaje y dale alimento. Sigue alimentandolo y al final confiara en ti y te seguira!",
   "dialogue.hana.option.taming": "Como domestico un animal?",
   "dialogue.hana.option.quest": "Tienes algun trabajo para mi?",
+  "dialogue.hana.option.report": "He domesticado un animal!",
   "animal.rabbit": "Conejo",
   "animal.deer": "Ciervo",
   "animal.fox": "Zorro",

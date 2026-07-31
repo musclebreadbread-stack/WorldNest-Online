@@ -80,6 +80,22 @@ describe("getDailyQuiz", () => {
       expect(allIds.has(question.id)).toBe(true);
     }
   });
+
+  it("should remain deterministic at high day numbers (> 3500)", () => {
+    const a = getDailyQuiz(5000).map((q) => q.id);
+    const b = getDailyQuiz(5000).map((q) => q.id);
+    expect(a).toEqual(b);
+  });
+
+  it("should produce different results for high day numbers", () => {
+    const a = getDailyQuiz(5000)
+      .map((q) => q.id)
+      .join(",");
+    const b = getDailyQuiz(5001)
+      .map((q) => q.id)
+      .join(",");
+    expect(a).not.toBe(b);
+  });
 });
 
 describe("answerQuestion", () => {

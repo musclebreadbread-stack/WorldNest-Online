@@ -14,6 +14,9 @@ import {
 } from "../animals/animalOps";
 import { TILE_SIZE } from "@worldnest/shared";
 
+/** Maximum flee duration in milliseconds before animal gives up and returns to idle. */
+const MAX_FLEE_DURATION_MS = 5000;
+
 export type TameListener = () => void;
 
 /**
@@ -93,6 +96,16 @@ export class AnimalSystem extends System {
       vel.vx = flee.vx * def.speed;
       vel.vy = flee.vy * def.speed;
       animal.fleeTimer += deltaMs;
+
+      // Cap flee duration: if the animal has been fleeing too long, give up
+      if (animal.fleeTimer >= MAX_FLEE_DURATION_MS) {
+        animal.behavior = "idle";
+        animal.wanderTimer = 0;
+        animal.fleeTimer = 0;
+        vel.vx = 0;
+        vel.vy = 0;
+      }
+
       animal.version++;
       return;
     }
@@ -100,6 +113,7 @@ export class AnimalSystem extends System {
     if (animal.behavior === "flee") {
       animal.behavior = "idle";
       animal.wanderTimer = 0;
+      animal.fleeTimer = 0;
       vel.vx = 0;
       vel.vy = 0;
       animal.version++;

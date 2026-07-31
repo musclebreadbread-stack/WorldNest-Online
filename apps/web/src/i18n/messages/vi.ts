@@ -277,6 +277,7 @@ export const vi: LocaleMessages = {
     "Tim dong vat hoang da va cho chung an. Cho an nhieu lan va chung se tin tuong va di theo ban!",
   "dialogue.hana.option.taming": "Lam sao de thuan hoa dong vat?",
   "dialogue.hana.option.quest": "Co viec gi cho minh khong?",
+  "dialogue.hana.option.report": "Minh da thuan hoa mot con vat!",
   "animal.rabbit": "Tho",
   "animal.deer": "Huou",
   "animal.fox": "Cao",

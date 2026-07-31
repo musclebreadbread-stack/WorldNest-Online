@@ -278,6 +278,7 @@ export const ar: LocaleMessages = {
   "dialogue.hana.taming": "ابحث عن حيوان بري وأطعمه. استمر في إطعامه وسيثق بك ويتبعك!",
   "dialogue.hana.option.taming": "كيف أروض حيوانا؟",
   "dialogue.hana.option.quest": "هل لديك عمل لي؟",
+  "dialogue.hana.option.report": "لقد روضت حيوانا!",
   "animal.rabbit": "أرنب",
   "animal.deer": "غزال",
   "animal.fox": "ثعلب",

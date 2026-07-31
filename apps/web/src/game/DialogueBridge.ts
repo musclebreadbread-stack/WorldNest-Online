@@ -3,6 +3,9 @@ import { useDialogueStore } from "../stores/dialogueStore";
 import { useQuestStore } from "../stores/questStore";
 import { useShopStore } from "../stores/shopStore";
 
+/** Optional listener invoked when the quiz dialogue action fires. */
+export type QuizStartListener = () => void;
+
 /**
  * Give `dialogueStore` the two callbacks that reach the engine.
  *
@@ -19,7 +22,10 @@ import { useShopStore } from "../stores/shopStore";
  *
  * Returns a teardown function for whoever wired it.
  */
-export function wireDialogue(playerEntity: Entity): () => void {
+export function wireDialogue(
+  playerEntity: Entity,
+  onQuizStart?: QuizStartListener,
+): () => void {
   const dialogue = playerEntity.getComponent<DialogueComponent>("dialogue");
   if (!dialogue) return () => undefined;
 
@@ -28,7 +34,7 @@ export function wireDialogue(playerEntity: Entity): () => void {
       const state = useDialogueStore.getState();
       const action = state.options[optionIndex]?.action;
 
-      if (routeAction(action, state.npcId)) {
+      if (routeAction(action, state.npcId, onQuizStart)) {
         // The action replaces the conversation rather than continuing it
         dialogue.closeRequested = true;
         return;
@@ -54,6 +60,7 @@ export function wireDialogue(playerEntity: Entity): () => void {
 function routeAction(
   action: DialogueAction | undefined,
   npcId: string | null,
+  onQuizStart?: QuizStartListener,
 ): boolean {
   if (!action || npcId === null) return false;
 
@@ -69,6 +76,11 @@ function routeAction(
 
   if (action.kind === "turnInQuest") {
     useQuestStore.getState().turnIn(action.questId);
+    return true;
+  }
+
+  if (action.kind === "startQuiz") {
+    onQuizStart?.();
     return true;
   }
 

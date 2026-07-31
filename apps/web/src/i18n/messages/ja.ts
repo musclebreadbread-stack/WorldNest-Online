@@ -278,6 +278,7 @@ export const ja: LocaleMessages = {
     "野生の動物を見つけてエサをあげてね。何度もあげれば、ついて来てくれるようになるよ！",
   "dialogue.hana.option.taming": "動物のなつかせ方は？",
   "dialogue.hana.option.quest": "何かお手伝いできる？",
+  "dialogue.hana.option.report": "動物をなつかせたよ！",
   "animal.rabbit": "ウサギ",
   "animal.deer": "シカ",
   "animal.fox": "キツネ",

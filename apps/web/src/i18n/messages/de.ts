@@ -277,6 +277,7 @@ export const de: LocaleMessages = {
     "Finde ein wildes Tier und gib ihm Futter. Fuettere es weiter und es wird dir vertrauen und dir folgen!",
   "dialogue.hana.option.taming": "Wie zaehme ich ein Tier?",
   "dialogue.hana.option.quest": "Hast du Arbeit fuer mich?",
+  "dialogue.hana.option.report": "Ich habe ein Tier gezaehmt!",
   "animal.rabbit": "Kaninchen",
   "animal.deer": "Hirsch",
   "animal.fox": "Fuchs",

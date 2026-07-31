@@ -37,6 +37,8 @@ export class AchievementSystem extends System {
   private structureCount: AchievementStructureCounter;
   /** Fish caught since last update, reported by FishingSystem. */
   private pendingFishCaught = 0;
+  /** Animals tamed since last update, reported by AnimalSystem. */
+  private pendingAnimalsTamed = 0;
   /** Current quiz streak, updated by QuizSystem via listener. */
   private currentQuizStreak = 0;
 
@@ -51,6 +53,14 @@ export class AchievementSystem extends System {
    */
   recordFishCaught(): void {
     this.pendingFishCaught++;
+  }
+
+  /**
+   * Note that the player tamed an animal. Injected into `AnimalSystem` as
+   * a listener, matching the `recordFishCaught` pattern.
+   */
+  recordAnimalTamed(): void {
+    this.pendingAnimalsTamed++;
   }
 
   /** Update quiz streak from QuizSystem listener. */
@@ -96,6 +106,9 @@ export class AchievementSystem extends System {
       // totalFishCaught: apply pending fish from the listener
       achievement.totalFishCaught += this.pendingFishCaught;
 
+      // totalAnimalsTamed: apply pending tames from the listener
+      achievement.totalAnimalsTamed += this.pendingAnimalsTamed;
+
       // totalQuestsCompleted: poll from quest entries (monotonic counter)
       const completedCount = Object.values(quest.entries).filter(
         (e) => e.state === "completed",
@@ -118,6 +131,7 @@ export class AchievementSystem extends System {
     // Cleared unconditionally: a catch nobody was there to hear is dropped
     // rather than queued forever.
     this.pendingFishCaught = 0;
+    this.pendingAnimalsTamed = 0;
   }
 
   private buildSource(

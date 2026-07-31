@@ -16,7 +16,8 @@ export type DialogueAction =
   | { kind: "openShop" }
   | { kind: "openCollection" }
   | { kind: "offerQuest"; questId: string }
-  | { kind: "turnInQuest"; questId: string };
+  | { kind: "turnInQuest"; questId: string }
+  | { kind: "startQuiz" };
 
 /**
  * One choice on a node. `next` moves to another node in the same tree; `action`
@@ -229,6 +230,10 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
             labelKey: "dialogue.hana.option.quest",
             action: { kind: "offerQuest", questId: "tame_animal" },
           },
+          {
+            labelKey: "dialogue.hana.option.report",
+            action: { kind: "turnInQuest", questId: "tame_animal" },
+          },
           { labelKey: "dialogue.option.bye", action: { kind: "close" } },
         ],
       },
@@ -249,22 +254,21 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
       greeting: {
         textKey: "dialogue.owl.greeting",
         options: [
-          { labelKey: "dialogue.owl.option.start", next: "start" },
+          {
+            labelKey: "dialogue.owl.option.start",
+            action: { kind: "startQuiz" },
+          },
           { labelKey: "dialogue.owl.option.explain", next: "explain" },
-          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
-        ],
-      },
-      start: {
-        textKey: "dialogue.owl.start",
-        options: [
-          { labelKey: "dialogue.option.back", next: "greeting" },
           { labelKey: "dialogue.option.bye", action: { kind: "close" } },
         ],
       },
       explain: {
         textKey: "dialogue.owl.explain",
         options: [
-          { labelKey: "dialogue.owl.option.start", next: "start" },
+          {
+            labelKey: "dialogue.owl.option.start",
+            action: { kind: "startQuiz" },
+          },
           { labelKey: "dialogue.option.back", next: "greeting" },
         ],
       },

@@ -278,6 +278,7 @@ export const zh: LocaleMessages = {
   "dialogue.hana.taming": "找到野生动物后喂它饲料。多喂几次，它就会信任你并跟着你走！",
   "dialogue.hana.option.taming": "怎么驯服动物？",
   "dialogue.hana.option.quest": "有什么任务吗？",
+  "dialogue.hana.option.report": "我驯服了一只动物！",
   "animal.rabbit": "兔子",
   "animal.deer": "鹿",
   "animal.fox": "狐狸",

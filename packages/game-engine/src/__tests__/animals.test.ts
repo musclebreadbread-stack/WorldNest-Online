@@ -287,4 +287,39 @@ describe("AnimalSystem", () => {
     const result = system.feedEntity(entity, "player2");
     expect(result).toBe(false);
   });
+  it("should return fleeing animal to idle after max flee duration", () => {
+    const system = new AnimalSystem();
+    const entity = createAnimalEntity("rabbit", 5 * TILE_SIZE, 5 * TILE_SIZE);
+    const animal = entity.getComponent("animal") as AnimalComponent;
+    const vel = entity.getComponent("velocity") as VelocityComponent;
+
+    // Place player within flee distance and flee for 5+ seconds
+    system.setPlayerPosition(6 * TILE_SIZE, 5 * TILE_SIZE);
+    system.update([entity], 0.1);
+    expect(animal.behavior).toBe("flee");
+
+    // Accumulate enough flee time to exceed the 5000ms cap
+    system.update([entity], 5.0);
+    expect(animal.behavior).toBe("idle");
+    expect(animal.fleeTimer).toBe(0);
+    expect(vel.vx).toBe(0);
+    expect(vel.vy).toBe(0);
+  });
+  it("should reset fleeTimer when player leaves flee range", () => {
+    const system = new AnimalSystem();
+    const entity = createAnimalEntity("rabbit", 5 * TILE_SIZE, 5 * TILE_SIZE);
+    const animal = entity.getComponent("animal") as AnimalComponent;
+
+    // Start fleeing
+    system.setPlayerPosition(6 * TILE_SIZE, 5 * TILE_SIZE);
+    system.update([entity], 0.1);
+    expect(animal.behavior).toBe("flee");
+    expect(animal.fleeTimer).toBeGreaterThan(0);
+
+    // Player moves away
+    system.setPlayerPosition(1000, 1000);
+    system.update([entity], 0.1);
+    expect(animal.behavior).toBe("idle");
+    expect(animal.fleeTimer).toBe(0);
+  });
 });

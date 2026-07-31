@@ -21,12 +21,14 @@ import {
  */
 export function getDailyQuiz(dayNumber: number): QuizQuestion[] {
   const shuffled = [...QUIZ_QUESTIONS];
-  // Simple deterministic shuffle using day number as seed
-  let seed = dayNumber * 2654435761;
+  // Simple deterministic shuffle using day number as seed.
+  // Uses >>> 0 after multiplications to stay in unsigned 32-bit space,
+  // preventing precision loss at high day numbers.
+  let seed = (dayNumber * 2654435761) >>> 0;
   for (let i = shuffled.length - 1; i > 0; i--) {
-    seed = (seed ^ (seed >>> 13)) * 1597334677;
-    seed = seed ^ (seed >>> 16);
-    const j = Math.abs(seed) % (i + 1);
+    seed = ((seed ^ (seed >>> 13)) * 1597334677) >>> 0;
+    seed = (seed ^ (seed >>> 16)) >>> 0;
+    const j = seed % (i + 1);
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled.slice(0, DAILY_QUIZ_COUNT);

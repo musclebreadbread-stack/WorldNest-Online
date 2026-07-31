@@ -277,6 +277,7 @@ export const en = {
     "Find a wild animal and offer it some animal feed. Keep feeding it and eventually it will trust you enough to follow you home!",
   "dialogue.hana.option.taming": "How do I tame an animal?",
   "dialogue.hana.option.quest": "Any jobs for me?",
+  "dialogue.hana.option.report": "I tamed an animal!",
   "animal.rabbit": "Rabbit",
   "animal.deer": "Deer",
   "animal.fox": "Fox",

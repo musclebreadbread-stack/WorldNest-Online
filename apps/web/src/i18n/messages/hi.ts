@@ -278,6 +278,7 @@ export const hi: LocaleMessages = {
     "जंगली जानवर ढूँढो और उसे चारा दो। खिलाते रहो और वो तुम पर भरोसा करके साथ चलने लगेगा!",
   "dialogue.hana.option.taming": "जानवर कैसे पालें?",
   "dialogue.hana.option.quest": "मेरे लिए कोई काम है?",
+  "dialogue.hana.option.report": "मैंने एक जानवर पाला!",
   "animal.rabbit": "खरगोश",
   "animal.deer": "हिरण",
   "animal.fox": "लोमड़ी",

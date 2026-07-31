@@ -360,4 +360,27 @@ describe("AchievementSystem", () => {
     system.update([entity], 1 / 60);
     expect(achievement.totalFishCaught).toBe(1);
   });
+
+  it("should increment totalAnimalsTamed via recordAnimalTamed listener", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordAnimalTamed();
+    system.update([entity], 1 / 60);
+    expect(achievement.totalAnimalsTamed).toBe(1);
+  });
+
+  it("should unlock first_tame when recordAnimalTamed is called", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordAnimalTamed();
+    system.update([entity], 1 / 60);
+    expect(achievement.unlocked.has("first_tame")).toBe(true);
+  });
+
+  it("should clear pending tames after update", () => {
+    const { entity, achievement } = createPlayer();
+    system.recordAnimalTamed();
+    system.update([entity], 1 / 60);
+    // Second update with no new tames
+    system.update([entity], 1 / 60);
+    expect(achievement.totalAnimalsTamed).toBe(1);
+  });
 });

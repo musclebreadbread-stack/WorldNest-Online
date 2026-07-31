@@ -277,6 +277,7 @@ export const fr: LocaleMessages = {
     "Trouve un animal sauvage et donne-lui de la nourriture. Continue et il finira par te faire confiance et te suivre !",
   "dialogue.hana.option.taming": "Comment apprivoiser un animal ?",
   "dialogue.hana.option.quest": "Tu as du travail pour moi ?",
+  "dialogue.hana.option.report": "J'ai apprivoise un animal !",
   "animal.rabbit": "Lapin",
   "animal.deer": "Cerf",
   "animal.fox": "Renard",
