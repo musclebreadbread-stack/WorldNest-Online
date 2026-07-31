@@ -28,3 +28,5 @@ export { ShopSystem } from "./ShopSystem";
 export { QuestSystem } from "./QuestSystem";
 export type { StructureCounter } from "./QuestSystem";
 export { AnimationSystem } from "./AnimationSystem";
+export { FishingSystem } from "./FishingSystem";
+export type { BiomeAtTile, RngFn } from "./FishingSystem";

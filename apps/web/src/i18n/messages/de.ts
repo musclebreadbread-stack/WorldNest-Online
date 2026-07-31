@@ -156,6 +156,10 @@ export const de: LocaleMessages = {
   "item.fence": "Zaun",
   "item.chest": "Kiste",
   "item.path_stone": "Wegstein",
+  "item.fishing_rod": "Angelrute",
+  "item.fish_common": "Gewöhnlicher Fisch",
+  "item.fish_rare": "Seltener Fisch",
+  "item.fish_tropical": "Tropenfisch",
 
   "weather.clear": "Klar",
   "weather.rain": "Regen",
@@ -170,4 +174,12 @@ export const de: LocaleMessages = {
   "season.summer": "Sommer",
   "season.autumn": "Herbst",
   "season.winter": "Winterzeit",
+
+  "fishing.cast": "Auswerfen...",
+  "fishing.waiting": "Warten auf einen Biss...",
+  "fishing.bite": "Etwas beißt an! Drücke E!",
+  "fishing.caught": "Du hast einen {item} gefangen!",
+  "fishing.missed": "Der Fisch ist entkommen...",
+  "fishing.noRod": "Du brauchst eine Angelrute",
+  "fishing.noEnergy": "Nicht genug Energie zum Angeln",
 };

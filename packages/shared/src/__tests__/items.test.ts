@@ -23,6 +23,10 @@ const EXPECTED_IDS: ItemId[] = [
   "fence",
   "chest",
   "path_stone",
+  "fishing_rod",
+  "fish_common",
+  "fish_rare",
+  "fish_tropical",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

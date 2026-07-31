@@ -32,6 +32,7 @@ export {
   AnimationComponent,
   DEFAULT_FRAME_DURATION_MS,
   DEFAULT_FRAME_COUNT,
+  FishingComponent,
 } from "./components";
 export type {
   KeyState,
@@ -53,6 +54,21 @@ export {
   selectSlot,
   moveSlot,
 } from "./inventory";
+
+// Fishing (pure; definitions and state-machine ops)
+export {
+  BIOME_FISH_TABLE,
+  FISHING_BITE_MAX_MS,
+  FISHING_BITE_MIN_MS,
+  FISHING_ENERGY_COST,
+  FISHING_WINDOW_MS,
+  canFish,
+  randomBiteTime,
+  reelIn,
+  rollCatch,
+  tickFishing,
+} from "./fishing";
+export type { FishCatch, FishingState } from "./fishing";
 
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
@@ -140,6 +156,7 @@ export {
   ShopSystem,
   QuestSystem,
   AnimationSystem,
+  FishingSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -155,6 +172,8 @@ export type {
   StructureCounter,
   TalkListener,
   ClockSnapshotGetter,
+  BiomeAtTile,
+  RngFn,
 } from "./systems";
 
 // World Generation

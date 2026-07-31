@@ -29,3 +29,4 @@ export {
   DEFAULT_FRAME_COUNT,
 } from "./AnimationComponent";
 export type { AnimationState } from "./AnimationComponent";
+export { FishingComponent } from "./FishingComponent";

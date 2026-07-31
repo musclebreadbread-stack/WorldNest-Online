@@ -50,7 +50,11 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('melon', 28, 13),
   ('fence', 20, 6),
   ('chest', 60, 20),
-  ('path_stone', 5, 2)
+  ('path_stone', 5, 2),
+  ('fishing_rod', 40, 12),
+  ('fish_common', 15, 7),
+  ('fish_rare', 35, 16),
+  ('fish_tropical', 45, 21)
 on conflict (item_id) do update
   set buy = excluded.buy,
       sell = excluded.sell;

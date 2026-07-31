@@ -155,6 +155,10 @@ export const ja: LocaleMessages = {
   "item.fence": "フェンス",
   "item.chest": "チェスト",
   "item.path_stone": "敷石",
+  "item.fishing_rod": "釣り竿",
+  "item.fish_common": "普通の魚",
+  "item.fish_rare": "珍しい魚",
+  "item.fish_tropical": "熱帯魚",
 
   "weather.clear": "晴れ",
   "weather.rain": "雨",
@@ -169,4 +173,12 @@ export const ja: LocaleMessages = {
   "season.summer": "夏",
   "season.autumn": "秋",
   "season.winter": "冬",
+
+  "fishing.cast": "投げています...",
+  "fishing.waiting": "当たりを待っています...",
+  "fishing.bite": "何かが食いついた！Eを押して！",
+  "fishing.caught": "{item}を釣り上げた！",
+  "fishing.missed": "魚に逃げられた...",
+  "fishing.noRod": "釣り竿が必要です",
+  "fishing.noEnergy": "釣りをするエネルギーが足りません",
 };

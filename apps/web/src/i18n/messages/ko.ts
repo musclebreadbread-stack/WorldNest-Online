@@ -156,6 +156,10 @@ export const ko: LocaleMessages = {
   "item.fence": "울타리",
   "item.chest": "상자",
   "item.path_stone": "돌길",
+  "item.fishing_rod": "낚싯대",
+  "item.fish_common": "일반 물고기",
+  "item.fish_rare": "희귀 물고기",
+  "item.fish_tropical": "열대어",
 
   "weather.clear": "맑음",
   "weather.rain": "비",
@@ -170,4 +174,12 @@ export const ko: LocaleMessages = {
   "season.summer": "여름",
   "season.autumn": "가을",
   "season.winter": "겨울",
+
+  "fishing.cast": "던지는 중...",
+  "fishing.waiting": "입질을 기다리는 중...",
+  "fishing.bite": "물고기가 물었어요! E를 누르세요!",
+  "fishing.caught": "{item}을(를) 잡았어요!",
+  "fishing.missed": "물고기가 도망갔어요...",
+  "fishing.noRod": "낚싯대가 필요해요",
+  "fishing.noEnergy": "낚시할 에너지가 부족해요",
 };

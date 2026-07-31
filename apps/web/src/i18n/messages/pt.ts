@@ -156,6 +156,10 @@ export const pt: LocaleMessages = {
   "item.fence": "Cerca",
   "item.chest": "Baú",
   "item.path_stone": "Pedra de Caminho",
+  "item.fishing_rod": "Vara de Pesca",
+  "item.fish_common": "Peixe Comum",
+  "item.fish_rare": "Peixe Raro",
+  "item.fish_tropical": "Peixe Tropical",
 
   "weather.clear": "Limpo",
   "weather.rain": "Chuva",
@@ -170,4 +174,12 @@ export const pt: LocaleMessages = {
   "season.summer": "Verão",
   "season.autumn": "Outono",
   "season.winter": "Inverno",
+
+  "fishing.cast": "Lançando...",
+  "fishing.waiting": "Esperando uma fisgada...",
+  "fishing.bite": "Algo mordeu! Pressione E!",
+  "fishing.caught": "Você pescou um {item}!",
+  "fishing.missed": "O peixe escapou...",
+  "fishing.noRod": "Você precisa de uma vara de pesca",
+  "fishing.noEnergy": "Energia insuficiente para pescar",
 };

@@ -17,7 +17,11 @@ export type ItemId =
   | "melon"
   | "fence"
   | "chest"
-  | "path_stone";
+  | "path_stone"
+  | "fishing_rod"
+  | "fish_common"
+  | "fish_rare"
+  | "fish_tropical";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -70,6 +74,14 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     displayName: "Path Stone",
     stackSize: 50,
     placeableTile: 12,
+  },
+  fishing_rod: { id: "fishing_rod", displayName: "Fishing Rod", stackSize: 1 },
+  fish_common: { id: "fish_common", displayName: "Common Fish", stackSize: 50 },
+  fish_rare: { id: "fish_rare", displayName: "Rare Fish", stackSize: 50 },
+  fish_tropical: {
+    id: "fish_tropical",
+    displayName: "Tropical Fish",
+    stackSize: 50,
   },
 };
 

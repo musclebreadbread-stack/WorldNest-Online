@@ -121,6 +121,10 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   fence: "item.fence",
   chest: "item.chest",
   path_stone: "item.path_stone",
+  fishing_rod: "item.fishing_rod",
+  fish_common: "item.fish_common",
+  fish_rare: "item.fish_rare",
+  fish_tropical: "item.fish_tropical",
 };
 
 /**

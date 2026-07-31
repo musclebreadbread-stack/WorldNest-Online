@@ -154,6 +154,10 @@ export const vi: LocaleMessages = {
   "item.fence": "Hàng rào",
   "item.chest": "Hòm",
   "item.path_stone": "Viên Lát Lối",
+  "item.fishing_rod": "Cần Câu",
+  "item.fish_common": "Cá Thường",
+  "item.fish_rare": "Cá Hiếm",
+  "item.fish_tropical": "Cá Nhiệt Đới",
 
   "weather.clear": "Trời quang",
   "weather.rain": "Mưa",
@@ -168,4 +172,12 @@ export const vi: LocaleMessages = {
   "season.summer": "Hạ",
   "season.autumn": "Thu",
   "season.winter": "Đông",
+
+  "fishing.cast": "Đang thả câu...",
+  "fishing.waiting": "Đợi cá cắn...",
+  "fishing.bite": "Có cá cắn! Nhấn E!",
+  "fishing.caught": "Bạn đã câu được {item}!",
+  "fishing.missed": "Cá đã thoát...",
+  "fishing.noRod": "Bạn cần một cần câu",
+  "fishing.noEnergy": "Không đủ năng lượng để câu cá",
 };

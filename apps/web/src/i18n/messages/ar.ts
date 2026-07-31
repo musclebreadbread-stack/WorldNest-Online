@@ -157,6 +157,10 @@ export const ar: LocaleMessages = {
   "item.fence": "سياج",
   "item.chest": "صندوق",
   "item.path_stone": "حجر ممر",
+  "item.fishing_rod": "صنارة صيد",
+  "item.fish_common": "سمكة عادية",
+  "item.fish_rare": "سمكة نادرة",
+  "item.fish_tropical": "سمكة استوائية",
 
   "weather.clear": "صافٍ",
   "weather.rain": "مطر",
@@ -171,4 +175,12 @@ export const ar: LocaleMessages = {
   "season.summer": "صيف",
   "season.autumn": "خريف",
   "season.winter": "شتاء",
+
+  "fishing.cast": "جاري الرمي...",
+  "fishing.waiting": "بانتظار سمكة...",
+  "fishing.bite": "شيء يعض! اضغط E!",
+  "fishing.caught": "لقد اصطدت {item}!",
+  "fishing.missed": "هربت السمكة...",
+  "fishing.noRod": "تحتاج إلى صنارة صيد",
+  "fishing.noEnergy": "لا توجد طاقة كافية للصيد",
 };

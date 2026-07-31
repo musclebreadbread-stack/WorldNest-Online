@@ -188,7 +188,7 @@ apply "004 (re-run)" /sql/migrations/004_authority_schema.sql
 echo "== asserting 004 =="
 expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_004"
 expect "shop_prices seeded" \
-  "$(query "select count(*) from public.shop_prices;")" "14"
+  "$(query "select count(*) from public.shop_prices;")" "18"
 expect "quest_rewards seeded" \
   "$(query "select count(*) from public.quest_rewards;")" "3"
 expect "coin_ledger has no write policy" \

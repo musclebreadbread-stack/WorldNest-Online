@@ -59,6 +59,11 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   chest: { buy: 60, sell: 20 },
   // Decorative path stones, cheap enough to place freely
   path_stone: { buy: 5, sell: 2 },
+  // Fishing: rod is a one-time purchase, fish are biome-specific catches
+  fishing_rod: { buy: 40, sell: 12 },
+  fish_common: { buy: 15, sell: 7 },
+  fish_rare: { buy: 35, sell: 16 },
+  fish_tropical: { buy: 45, sell: 21 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

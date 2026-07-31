@@ -155,6 +155,10 @@ export const hi: LocaleMessages = {
   "item.fence": "बाड़",
   "item.chest": "संदूक",
   "item.path_stone": "पथ पत्थर",
+  "item.fishing_rod": "मछली पकड़ने की छड़ी",
+  "item.fish_common": "सामान्य मछली",
+  "item.fish_rare": "दुर्लभ मछली",
+  "item.fish_tropical": "उष्णकटिबंधीय मछली",
 
   "weather.clear": "साफ़",
   "weather.rain": "बारिश",
@@ -169,4 +173,12 @@ export const hi: LocaleMessages = {
   "season.summer": "ग्रीष्म",
   "season.autumn": "शरद",
   "season.winter": "शीत",
+
+  "fishing.cast": "डाल रहे हैं...",
+  "fishing.waiting": "मछली का इंतज़ार...",
+  "fishing.bite": "कुछ काट रहा है! E दबाएं!",
+  "fishing.caught": "आपने {item} पकड़ी!",
+  "fishing.missed": "मछली भाग गई...",
+  "fishing.noRod": "आपको मछली पकड़ने की छड़ी चाहिए",
+  "fishing.noEnergy": "मछली पकड़ने के लिए पर्याप्त ऊर्जा नहीं",
 };

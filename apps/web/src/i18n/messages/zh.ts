@@ -153,6 +153,10 @@ export const zh: LocaleMessages = {
   "item.fence": "栅栏",
   "item.chest": "箱子",
   "item.path_stone": "路石",
+  "item.fishing_rod": "钓鱼竿",
+  "item.fish_common": "普通鱼",
+  "item.fish_rare": "稀有鱼",
+  "item.fish_tropical": "热带鱼",
 
   "weather.clear": "晴朗",
   "weather.rain": "下雨",
@@ -167,4 +171,12 @@ export const zh: LocaleMessages = {
   "season.summer": "夏天",
   "season.autumn": "秋天",
   "season.winter": "冬天",
+
+  "fishing.cast": "正在抛竿...",
+  "fishing.waiting": "等待鱼上钩...",
+  "fishing.bite": "有鱼咬钩了！按E！",
+  "fishing.caught": "你钓到了{item}！",
+  "fishing.missed": "鱼跑了...",
+  "fishing.noRod": "你需要一根钓鱼竿",
+  "fishing.noEnergy": "没有足够的精力钓鱼",
 };

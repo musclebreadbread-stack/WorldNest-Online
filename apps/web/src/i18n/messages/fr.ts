@@ -157,6 +157,10 @@ export const fr: LocaleMessages = {
   "item.fence": "Clôture",
   "item.chest": "Coffre",
   "item.path_stone": "Dalle de Chemin",
+  "item.fishing_rod": "Canne à Pêche",
+  "item.fish_common": "Poisson Commun",
+  "item.fish_rare": "Poisson Rare",
+  "item.fish_tropical": "Poisson Tropical",
 
   "weather.clear": "Dégagé",
   "weather.rain": "Pluie",
@@ -171,4 +175,12 @@ export const fr: LocaleMessages = {
   "season.summer": "Été",
   "season.autumn": "Automne",
   "season.winter": "Hiver",
+
+  "fishing.cast": "Lancement...",
+  "fishing.waiting": "En attente d'une touche...",
+  "fishing.bite": "Quelque chose mord ! Appuyez sur E !",
+  "fishing.caught": "Vous avez attrapé un {item} !",
+  "fishing.missed": "Le poisson s'est échappé...",
+  "fishing.noRod": "Il vous faut une canne à pêche",
+  "fishing.noEnergy": "Pas assez d'énergie pour pêcher",
 };

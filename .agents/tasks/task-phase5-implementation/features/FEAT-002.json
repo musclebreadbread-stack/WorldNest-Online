@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Fishing mini-game system. Extends the existing gathering/inventory/ECS patterns with a new interaction type. Players can fish from WATER tiles using a fishing rod item. The mini-game is a simple timing-based mechanic (cast, wait for a bite indicated by a timer, press E to reel in within a window). Yields fish items with biome-specific catches. Integrates with the shop (sell fish), energy system (costs energy to cast), and adds a new quest objective kind 'fish'. No violence, age-appropriate, educational (fish species names).",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Step 1 - Add new item types to packages/shared/src/items.ts: 'fishing_rod' (stackSize 1, not consumable), 'fish_common' (stackSize 50), 'fish_rare' (stackSize 50), 'fish_tropical' (stackSize 50). Update the ItemId union type. Add shop prices to packages/shared/src/economy.ts: fishing_rod buy:40 sell:12, fish_common buy:15 sell:7, fish_rare buy:35 sell:16, fish_tropical buy:45 sell:21. Update ITEM_PRICES and ensure sell < buy invariant holds.",
     "Step 2 - Add packages/game-engine/src/fishing/ directory with: (a) fishingDefinitions.ts defining FishingSpot interface (requires adjacent WATER tile, rod in hotbar), FishCatch interface (itemId, weight 0-100 for rarity roll), BIOME_FISH_TABLE mapping biomes to catch arrays with weights, FISHING_ENERGY_COST = 8, FISHING_BITE_MIN_MS = 2000, FISHING_BITE_MAX_MS = 5000, FISHING_WINDOW_MS = 1500. (b) fishingOps.ts with pure functions: canFish(inventory, stats, facedTileType) => boolean, rollCatch(biome, rng) => ItemId, startFishing() => FishingState, tickFishing(state, deltaMs) => FishingState, reelIn(state) => 'success'|'too_early'|'too_late'.",

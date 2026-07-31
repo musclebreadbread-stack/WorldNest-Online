@@ -153,6 +153,10 @@ export const th: LocaleMessages = {
   "item.fence": "รั้ว",
   "item.chest": "หีบ",
   "item.path_stone": "หินทางเดิน",
+  "item.fishing_rod": "เบ็ดตกปลา",
+  "item.fish_common": "ปลาธรรมดา",
+  "item.fish_rare": "ปลาหายาก",
+  "item.fish_tropical": "ปลาเขตร้อน",
 
   "weather.clear": "อากาศแจ่มใส",
   "weather.rain": "ฝนตก",
@@ -167,4 +171,12 @@ export const th: LocaleMessages = {
   "season.summer": "ฤดูร้อน",
   "season.autumn": "ฤดูใบไม้ร่วง",
   "season.winter": "ฤดูหนาว",
+
+  "fishing.cast": "กำลังเหวี่ยง...",
+  "fishing.waiting": "รอปลากิน...",
+  "fishing.bite": "มีอะไรกัด! กด E!",
+  "fishing.caught": "คุณจับ{item}ได้!",
+  "fishing.missed": "ปลาหนีไปแล้ว...",
+  "fishing.noRod": "คุณต้องมีเบ็ดตกปลา",
+  "fishing.noEnergy": "พลังงานไม่พอสำหรับตกปลา",
 };

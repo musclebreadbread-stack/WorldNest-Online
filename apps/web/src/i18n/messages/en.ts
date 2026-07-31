@@ -162,6 +162,10 @@ export const en = {
   "item.fence": "Fence",
   "item.chest": "Chest",
   "item.path_stone": "Path Stone",
+  "item.fishing_rod": "Fishing Rod",
+  "item.fish_common": "Common Fish",
+  "item.fish_rare": "Rare Fish",
+  "item.fish_tropical": "Tropical Fish",
 
   "weather.clear": "Clear",
   "weather.rain": "Rain",
@@ -176,4 +180,12 @@ export const en = {
   "season.summer": "Summer",
   "season.autumn": "Autumn",
   "season.winter": "Winter",
+
+  "fishing.cast": "Casting...",
+  "fishing.waiting": "Waiting for a bite...",
+  "fishing.bite": "Something is biting! Press E!",
+  "fishing.caught": "You caught a {item}!",
+  "fishing.missed": "The fish got away...",
+  "fishing.noRod": "You need a fishing rod",
+  "fishing.noEnergy": "Not enough energy to fish",
 } as const;
