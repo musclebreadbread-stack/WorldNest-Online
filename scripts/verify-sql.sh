@@ -10,6 +10,11 @@
 # the provisioning trigger really does create a `profiles` and a `player_state`
 # row, and the policy count is what the migrations wrote.
 #
+# Since 004 it also proves the server authority, which is the only way to prove
+# it at all: the last section re-runs the client's own statements as the
+# `authenticated` role, so a missing revoke or a missing column grant shows up
+# as a write that was allowed rather than as a comment nobody checked.
+#
 # Usage: pnpm db:verify
 # Requires: Docker. No local psql needed - psql runs inside the container.
 
@@ -49,6 +54,56 @@ psql_run() {
 # One scalar, unaligned and untitled, so it can be compared directly.
 query() {
   docker exec -i "$CONTAINER" psql -tAX -v ON_ERROR_STOP=1 -U postgres -d "$DB" -c "$1"
+}
+
+# One scalar, but as the `authenticated` role with a JWT subject - which is what
+# makes auth.uid() resolve, RLS apply and the column grants from 004 bite. A
+# single `-c` is a single session and a single implicit transaction, so a plain
+# `set` suffices (no `set local`, no explicit `begin`) and a refused statement
+# rolls the whole thing back.
+query_as_authenticated() {
+  local uid="$1" sql="$2"
+  docker exec -i "$CONTAINER" psql -q -tAX -v ON_ERROR_STOP=1 -U postgres -d "$DB" \
+    -c "set role authenticated; set \"request.jwt.claim.sub\" = '$uid'; $sql"
+}
+
+# The jsonb answer from an authority function, flattened to `true:<coins>` or
+# `false:<reason>` so a single `expect` line reads it.
+authority_result() {
+  local uid="$1" call="$2"
+  query_as_authenticated "$uid" "with r as (select $call as j)
+    select case when (j->>'ok')::boolean
+      then 'true:' || (j->>'coins')
+      else 'false:' || (j->>'reason') end from r;"
+}
+
+# A statement the client must not be allowed to run. The refusal *is* the
+# assertion, so being allowed is the failure; the reason is printed so an `ok`
+# line still says which wall stopped it.
+expect_denied() {
+  local label="$1" uid="$2" sql="$3" out reason
+  if out="$(query_as_authenticated "$uid" "$sql" 2>&1)"; then
+    echo "  FAIL $label was ALLOWED"
+    failures=$((failures + 1))
+  else
+    reason="$(printf '%s' "$out" | grep -o -m1 \
+      -e 'permission denied for [a-z]* [a-z_]*' \
+      -e 'violates row-level security policy' || true)"
+    echo "  ok   $label denied: ${reason:-refused}"
+  fi
+}
+
+# The complement: a statement the client must still be allowed to run, because a
+# lockdown that also breaks the game is not a fix.
+expect_allowed() {
+  local label="$1" uid="$2" sql="$3" out
+  if out="$(query_as_authenticated "$uid" "$sql" 2>&1)"; then
+    echo "  ok   $label allowed"
+  else
+    echo "  FAIL $label was DENIED"
+    printf '%s\n' "$out" | sed 's/^/       /'
+    failures=$((failures + 1))
+  fi
 }
 
 apply() {
@@ -229,6 +284,125 @@ if psql_run -c "insert into public.player_quests (player_id, quest_id, state)
 else
   expect "quest state constraint rejects nonsense" "rejected" "rejected"
 fi
+
+# Everything above runs as `postgres`, which owns the tables and is therefore
+# exempt from both RLS and 004's revokes. This is the part that actually proves
+# the authority: the same statements as the role a browser gets.
+echo "== asserting authority as the authenticated role =="
+TESTER2="11111111-2222-4333-8444-555555550002"
+
+# Decision D5: the starting purse is a column default now, so the trigger hands
+# it out and the client cannot.
+expect "trigger provisioned coins" \
+  "$(query "select coins from public.player_state
+     where player_id = '11111111-1111-1111-1111-111111111111';")" "50"
+expect "seeded account coins" \
+  "$(query "select coins from public.player_state where player_id = '$TESTER2';")" "50"
+
+# player_state: coins are no longer the client's to write, everything else is.
+expect_denied "player_state coins update" "$TESTER2" \
+  "update public.player_state set coins = 99999 where player_id = '$TESTER2';"
+expect_allowed "player_state position update" "$TESTER2" \
+  "update public.player_state set x = 42, last_online = now()
+   where player_id = '$TESTER2';"
+expect "position update landed" \
+  "$(query "select x from public.player_state where player_id = '$TESTER2';")" "42"
+
+# The client's real write path is an upsert, so exercise it both ways: the shape
+# savePlayerState sends today is refused outright, which is why item 6 must drop
+# `coins` from it.
+expect_denied "player_state upsert mentioning coins" "$TESTER2" \
+  "insert into public.player_state
+     (player_id, x, y, chunk, last_online, inventory, coins)
+   values ('$TESTER2', 7, 9, '0,0', now(), '{}'::jsonb, 12345)
+   on conflict (player_id) do update
+     set x = excluded.x, y = excluded.y, chunk = excluded.chunk,
+         last_online = excluded.last_online, inventory = excluded.inventory,
+         coins = excluded.coins;"
+expect_allowed "player_state upsert without coins" "$TESTER2" \
+  "insert into public.player_state
+     (player_id, x, y, chunk, last_online, inventory)
+   values ('$TESTER2', 7, 9, '0,0', now(), '{\"slots\": []}'::jsonb)
+   on conflict (player_id) do update
+     set x = excluded.x, y = excluded.y, chunk = excluded.chunk,
+         last_online = excluded.last_online, inventory = excluded.inventory;"
+expect "upsert left coins alone" \
+  "$(query "select coins from public.player_state where player_id = '$TESTER2';")" "50"
+
+# player_quests: `state` is the one column with no grant, and its new default is
+# what lets a client still take a quest on.
+expect_denied "player_quests insert naming state" "$TESTER2" \
+  "insert into public.player_quests (player_id, quest_id, progress, state)
+   values ('$TESTER2', 'collect_wood', 0, 'completed');"
+expect_allowed "player_quests insert without state" "$TESTER2" \
+  "insert into public.player_quests (player_id, quest_id, progress, updated_at)
+   values ('$TESTER2', 'collect_wood', 0, now());"
+expect "quest default state" \
+  "$(query "select state from public.player_quests
+     where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "active"
+expect_denied "player_quests state update" "$TESTER2" \
+  "update public.player_quests set state = 'completed'
+   where player_id = '$TESTER2' and quest_id = 'collect_wood';"
+expect_allowed "player_quests progress update" "$TESTER2" \
+  "update public.player_quests set progress = 2, updated_at = now()
+   where player_id = '$TESTER2' and quest_id = 'collect_wood';"
+
+# The ledger is the audit trail, so nothing but the functions may write it.
+expect_denied "coin_ledger insert" "$TESTER2" \
+  "insert into public.coin_ledger (player_id, delta, reason, balance_after)
+   values ('$TESTER2', 100000, 'shop_sell', 100000);"
+
+# The shop function: the price comes from shop_prices, never from the caller.
+expect "buy fence" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('buy', 'fence', 1)")" "true:30"
+expect "buy wrote one ledger row" \
+  "$(query "select count(*) from public.coin_ledger where player_id = '$TESTER2';")" "1"
+expect "ledger records the balance" \
+  "$(query "select delta || '@' || balance_after from public.coin_ledger
+     where player_id = '$TESTER2';")" "-20@30"
+expect "owner can read their ledger" \
+  "$(query_as_authenticated "$TESTER2" "select count(*) from public.coin_ledger;")" "1"
+
+# A sell is deliberately not checked against the persisted inventory (decision
+# D9), and tester2 owns no wood - so this succeeding is the decision, asserted.
+expect "sell wood the row does not hold" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('sell', 'wood', 2)")" "true:36"
+
+expect "buy beyond the balance" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('buy', 'fence', 99)")" "false:insufficient_coins"
+expect "buy an unknown item" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('buy', 'not_an_item', 1)")" "false:unknown_item"
+expect "trade in an unknown direction" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('sideways', 'fence', 1)")" "false:bad_kind"
+expect "trade zero" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('buy', 'fence', 0)")" "false:bad_quantity"
+expect "trade a thousand" "$(authority_result "$TESTER2" \
+  "public.worldnest_shop_trade('buy', 'fence', 1000)")" "false:bad_quantity"
+expect "refusals moved nothing" \
+  "$(query "select coins || '/' || (select count(*) from public.coin_ledger
+     where player_id = '$TESTER2') from public.player_state
+     where player_id = '$TESTER2';")" "36/2"
+
+# The quest function: paid at the catalogued amount, at most once, and the only
+# thing in the system that can write 'completed'.
+expect "claim an unmet objective" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('collect_wood')")" "false:objective_unmet"
+expect "claim an unknown quest" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('not_a_quest')")" "false:unknown_quest"
+expect_allowed "progress reaches the target" "$TESTER2" \
+  "update public.player_quests set progress = 5, updated_at = now()
+   where player_id = '$TESTER2' and quest_id = 'collect_wood';"
+expect "claim a met objective" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('collect_wood')")" "true:66"
+expect "claim it a second time" "$(authority_result "$TESTER2" \
+  "public.worldnest_claim_quest_reward('collect_wood')")" "false:already_completed"
+expect "the reward completed the quest" \
+  "$(query "select state from public.player_quests
+     where player_id = '$TESTER2' and quest_id = 'collect_wood';")" "completed"
+expect "the reward was paid once" \
+  "$(query "select coins || '/' || (select count(*) from public.coin_ledger
+     where player_id = '$TESTER2' and reason = 'quest_reward')
+     from public.player_state where player_id = '$TESTER2';")" "66/1"
 
 echo
 if [ "$failures" -ne 0 ]; then
