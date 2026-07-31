@@ -208,8 +208,10 @@ export class ChunkGenerator {
 
   /** Underground cave channel, with a guaranteed landing around every mouth. */
   private getUndergroundTile(worldX: number, worldY: number): TileType {
+    if (this.isSurfaceEntrance(worldX, worldY)) {
+      return TileType.CAVE_ENTRANCE;
+    }
     if (
-      this.isSurfaceEntrance(worldX, worldY) ||
       NEIGHBOUR_OFFSETS.some(({ dx, dy }) =>
         this.isSurfaceEntrance(worldX + dx, worldY + dy),
       )
@@ -241,7 +243,9 @@ export class ChunkGenerator {
     // Caves are carved out of the rock, so they are checked before it
     const caveTile = this.getCaveTile(worldX, worldY, detail);
     if (caveTile !== null) {
-      return caveTile;
+      return caveTile === TileType.CAVE_FLOOR && this.isSurfaceEntrance(worldX, worldY)
+        ? TileType.CAVE_ENTRANCE
+        : caveTile;
     }
 
     // Stone at high elevation

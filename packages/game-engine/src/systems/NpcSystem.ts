@@ -13,6 +13,7 @@ import { NPC_DEFINITIONS, type NpcDefinition } from "../world/NpcCatalogue";
 import { resolveNpcTile } from "../world/npcPlacement";
 import type { StructureQuery } from "../world/StructureQuery";
 import { getTileKey, type TileQuery } from "../world/TileQuery";
+import { WorldLayer } from "../world/WorldLayer";
 
 /** Entity id of a placed NPC. Stable, because placement is deterministic. */
 export function npcEntityId(npcId: string): string {
@@ -47,6 +48,7 @@ export class NpcSystem extends System implements StructureQuery {
   private addEntity: AddEntity;
   private definitions: readonly NpcDefinition[];
   private onTalk?: TalkListener;
+  private getLayer: () => WorldLayer;
   /** Placed NPCs keyed by `"tileX,tileY"`. */
   private npcs: Map<string, Entity> = new Map();
   private spawned = false;
@@ -56,12 +58,14 @@ export class NpcSystem extends System implements StructureQuery {
     addEntity: AddEntity,
     definitions: readonly NpcDefinition[] = NPC_DEFINITIONS,
     onTalk?: TalkListener,
+    getLayer: () => WorldLayer = () => WorldLayer.SURFACE,
   ) {
     super(["position", "interaction", "dialogue"]);
     this.tileQuery = tileQuery;
     this.addEntity = addEntity;
     this.definitions = definitions;
     this.onTalk = onTalk;
+    this.getLayer = getLayer;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -181,6 +185,8 @@ export class NpcSystem extends System implements StructureQuery {
     interaction: InteractionComponent,
     dialogue: DialogueComponent,
   ): boolean {
+    if (this.getLayer() !== WorldLayer.SURFACE) return false;
+
     const position = entity.getComponent<PositionComponent>("position")!;
     const { tileX, tileY } = getFacedTile(position.x, position.y, interaction.facing);
     const npcEntity = this.getNpcAt(tileX, tileY);

@@ -122,13 +122,15 @@ describe("BuildSystem", () => {
   });
 
   it("should not place on a non-buildable tile", () => {
-    const harness = createHarness(TileType.WATER);
-    harness.interaction.buildRequested = true;
+    for (const tileType of [TileType.WATER, TileType.CAVE_FLOOR]) {
+      const harness = createHarness(tileType);
+      harness.interaction.buildRequested = true;
 
-    harness.system.update([harness.entity], 1 / 60);
+      harness.system.update([harness.entity], 1 / 60);
 
-    expect(harness.spawned).toHaveLength(0);
-    expect(countItem(harness.inventory, "fence")).toBe(3);
+      expect(harness.spawned).toHaveLength(0);
+      expect(countItem(harness.inventory, "fence")).toBe(3);
+    }
   });
 
   it("should not place on an already occupied tile", () => {

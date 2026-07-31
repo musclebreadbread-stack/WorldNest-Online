@@ -24,6 +24,7 @@ export enum TileType {
   CAVE_FLOOR = 8,
   CAVE_WALL = 9,
   ORE = 10,
+  CAVE_ENTRANCE = 11,
 }
 
 export interface TileProperties {
@@ -108,7 +109,7 @@ export const TILE_PROPERTIES: Record<TileType, TileProperties> = {
   [TileType.CAVE_FLOOR]: {
     walkable: true,
     collidable: false,
-    buildable: true,
+    buildable: false,
     harvestable: false,
     name: "cave floor",
     color: 0x4e342e,
@@ -128,6 +129,14 @@ export const TILE_PROPERTIES: Record<TileType, TileProperties> = {
     harvestable: true,
     name: "ore",
     color: 0x9575cd,
+  },
+  [TileType.CAVE_ENTRANCE]: {
+    walkable: true,
+    collidable: false,
+    buildable: false,
+    harvestable: false,
+    name: "cave entrance",
+    color: 0x6d4c41,
   },
 };
 

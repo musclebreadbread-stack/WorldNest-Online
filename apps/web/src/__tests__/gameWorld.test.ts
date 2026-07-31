@@ -65,6 +65,7 @@ const DOCUMENTED_SYSTEM_ORDER = [
   "npc",
   "shop",
   "quest",
+  "layer",
   "plant",
   "cropGrowth",
   "build",
@@ -167,7 +168,7 @@ describe("harvest wiring", () => {
       context.playerEntity.getComponent<InventoryComponent>("inventory")!;
     const stats = context.playerEntity.getComponent<StatsComponent>("stats")!;
     const repainted: Array<[number, number, TileType]> = [];
-    context.worldManager.setTileChangeCallback((tileX, tileY, tileType) =>
+    context.worldManager.setTileChangeCallback((_layer, tileX, tileY, tileType) =>
       repainted.push([tileX, tileY, tileType]),
     );
 

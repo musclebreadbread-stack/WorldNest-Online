@@ -7,7 +7,12 @@ import { WorldLayer } from "../world/WorldLayer";
 /** Tiles surveyed on each axis. Six chunks square, enough to hit a mountain. */
 const SURVEY_TILES = 96;
 
-const CAVE_TILES: TileType[] = [TileType.CAVE_FLOOR, TileType.CAVE_WALL, TileType.ORE];
+const CAVE_TILES: TileType[] = [
+  TileType.CAVE_FLOOR,
+  TileType.CAVE_WALL,
+  TileType.ORE,
+  TileType.CAVE_ENTRANCE,
+];
 
 /** Row-major tile survey of the region `(0, 0)` to `(size - 1, size - 1)`. */
 function surveyTiles(
@@ -96,10 +101,13 @@ describe("cave generation", () => {
     }
   });
 
-  it("should make cave floors and ore walkable but cave walls solid", () => {
+  it("should make cave floors, ore and entrances walkable but cave walls solid", () => {
     expect(TILE_PROPERTIES[TileType.CAVE_FLOOR].walkable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_FLOOR].buildable).toBe(false);
     expect(TILE_PROPERTIES[TileType.ORE].walkable).toBe(true);
     expect(TILE_PROPERTIES[TileType.ORE].harvestable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_ENTRANCE].walkable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_ENTRANCE].buildable).toBe(false);
     expect(TILE_PROPERTIES[TileType.CAVE_WALL].walkable).toBe(false);
   });
 
@@ -109,7 +117,7 @@ describe("cave generation", () => {
 
     for (let tileY = 0; tileY < SURVEY_TILES; tileY++) {
       for (let tileX = 0; tileX < SURVEY_TILES; tileX++) {
-        if (grid[tileY][tileX] !== TileType.CAVE_FLOOR) continue;
+        if (grid[tileY][tileX] !== TileType.CAVE_ENTRANCE) continue;
 
         const walkableOutside = neighboursOf(tileX, tileY).some(
           (tile) => !CAVE_TILES.includes(tile) && TILE_PROPERTIES[tile].walkable,
@@ -158,7 +166,7 @@ describe("underground generation", () => {
     let entrances = 0;
     for (let tileY = 1; tileY < SURVEY_TILES - 1; tileY++) {
       for (let tileX = 1; tileX < SURVEY_TILES - 1; tileX++) {
-        if (grid[tileY][tileX] !== TileType.CAVE_FLOOR) continue;
+        if (grid[tileY][tileX] !== TileType.CAVE_ENTRANCE) continue;
         const outside = [
           grid[tileY][tileX + 1],
           grid[tileY][tileX - 1],

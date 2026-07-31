@@ -12,6 +12,7 @@ import {
   NpcSystem,
   ShopSystem,
   QuestSystem,
+  LayerSystem,
   PlantSystem,
   CropGrowthSystem,
   BuildSystem,
@@ -21,6 +22,7 @@ import {
   RenderSystem,
   WorldManager,
   composeBlockers,
+  layerGuardedBlockers,
 } from "@worldnest/game-engine";
 import type { TileType } from "@worldnest/game-engine";
 import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
@@ -55,6 +57,7 @@ export interface GameWorldSystems {
   npc: NpcSystem;
   shop: ShopSystem;
   quest: QuestSystem;
+  layer: LayerSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
   build: BuildSystem;
@@ -125,15 +128,25 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     (entity) => world.addEntity(entity),
     undefined,
     (npcId) => quest.recordTalk(npcId),
+    () => worldManager.getLayer(),
   );
 
   // Building owns the structure occupancy index, which collision reads as walls.
   // It takes the NPC index as well, so a fence cannot be dropped on a villager.
-  const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity), npc);
+  const build = new BuildSystem(
+    worldManager,
+    (entity) => world.addEntity(entity),
+    layerGuardedBlockers(() => worldManager.getLayer(), npc),
+  );
 
   // Quests poll the inventory themselves and the structure index through this
   // getter, so no system has to announce anything.
   const quest = new QuestSystem((itemId) => build.countStructures(itemId));
+  const layer = new LayerSystem(
+    worldManager,
+    () => worldManager.getLayer(),
+    (nextLayer) => worldManager.setLayer(nextLayer),
+  );
 
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
@@ -141,7 +154,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
-    collision: new CollisionSystem(worldManager, composeBlockers(build, npc)),
+    collision: new CollisionSystem(
+      worldManager,
+      layerGuardedBlockers(() => worldManager.getLayer(), composeBlockers(build, npc)),
+    ),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
@@ -155,6 +171,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // Quests run after both, so a quest taken on in a conversation and a
     // greeting that finishes one both land in the frame they happened
     quest,
+    layer,
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
     build,
@@ -178,6 +195,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.npc);
   world.addSystem(systems.shop);
   world.addSystem(systems.quest);
+  world.addSystem(systems.layer);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
   world.addSystem(systems.build);
