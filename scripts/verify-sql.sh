@@ -25,6 +25,7 @@ SQL_SRC="$REPO_ROOT/packages/database/supabase"
 # security regression otherwise.
 EXPECTED_POLICIES_AFTER_002=23
 EXPECTED_POLICIES_AFTER_003=27
+EXPECTED_POLICIES_AFTER_004=30
 POLICY_COUNT="select count(*) from pg_policies where schemaname = 'public'"
 
 # The seeded test accounts, and the predicate that finds exactly them - the
@@ -119,6 +120,32 @@ expect "player_state.coins" \
 expect "player_quests rls" \
   "$(query "select relrowsecurity from pg_class
      where oid = 'public.player_quests'::regclass;")" "t"
+
+# 004 is the authority migration, and unlike 001-003 it claims to be
+# re-runnable - so it is applied twice, the way the seed already is. Re-running
+# it is also how a maintainer refreshes the price list after a catalogue change.
+echo "== applying 004 =="
+apply "004" /sql/migrations/004_authority_schema.sql
+apply "004 (re-run)" /sql/migrations/004_authority_schema.sql
+
+echo "== asserting 004 =="
+expect "policies" "$(query "$POLICY_COUNT")" "$EXPECTED_POLICIES_AFTER_004"
+expect "shop_prices seeded" \
+  "$(query "select count(*) from public.shop_prices;")" "9"
+expect "quest_rewards seeded" \
+  "$(query "select count(*) from public.quest_rewards;")" "3"
+expect "coin_ledger has no write policy" \
+  "$(query "select count(*) from pg_policies
+     where schemaname = 'public' and tablename = 'coin_ledger'
+       and cmd <> 'SELECT';")" "0"
+expect "player_state coins default" \
+  "$(query "select column_default from information_schema.columns
+     where table_schema = 'public' and table_name = 'player_state'
+       and column_name = 'coins';")" "50"
+expect "player_quests state default" \
+  "$(query "select column_default from information_schema.columns
+     where table_schema = 'public' and table_name = 'player_quests'
+       and column_name = 'state';")" "'active'::text"
 
 # The whole point of 002: inserting into auth.users must provision the two
 # public rows a session needs, taking the username from the GoTrue metadata.
