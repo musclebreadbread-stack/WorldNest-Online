@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Player housing interior system: room-based interior with furniture placement, interior decoration, and room types. Extends the existing BuildSystem and inventory with interior-specific items and a separate indoor space per player.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add new housing/furniture items to packages/shared/src/items.ts ItemId union: 'house_deed', 'table', 'chair', 'bed', 'lamp', 'bookshelf', 'rug', 'painting', 'plant_pot', 'window_curtain'. Add corresponding ITEM_DEFINITIONS entries (stackSize, displayName). Mark furniture items with a new 'placeable_furniture: true' property.",
     "Add prices for new items in packages/shared/src/economy.ts ITEM_PRICES table. House deed costs 200 coins (one-time purchase). Furniture ranges from 15-80 coins with appropriate sell spread.",
@@ -38,5 +38,5 @@
     "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "1. The ITEM_NAME_KEYS record in apps/web/src/i18n/index.ts must be updated for every new item. 2. The SQL migration 004_authority_schema.sql must match ITEM_PRICES exactly. 3. French 'Table' is identical to English so item.table was added to LOCALE_AGNOSTIC_KEYS in i18n.test.ts. 4. The AchievementSystem now optionally reads HousingComponent for housingHappiness. 5. The packages/game-engine/src/index.ts barrel file was already over 300 lines before this change (382) - this is pre-existing."
 }
