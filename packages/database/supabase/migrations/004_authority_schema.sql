@@ -78,7 +78,11 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('iron_axe', 100, 35),
   ('stone_pickaxe', 50, 15),
   ('iron_pickaxe', 100, 35),
-  ('workbench', 80, 25)
+  ('workbench', 80, 25),
+  ('rhythm_drum', 30, 10),
+  ('rhythm_flute', 40, 13),
+  ('rhythm_harp', 50, 16),
+  ('rhythm_xylophone', 60, 20)
 on conflict (item_id) do update
   set buy = excluded.buy,
       sell = excluded.sell;

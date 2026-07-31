@@ -95,6 +95,11 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   iron_pickaxe: { buy: 100, sell: 35 },
   // Crafting: workbench unlocks advanced recipes
   workbench: { buy: 80, sell: 25 },
+  // Music: instruments for the rhythm mini-game
+  rhythm_drum: { buy: 30, sell: 10 },
+  rhythm_flute: { buy: 40, sell: 13 },
+  rhythm_harp: { buy: 50, sell: 16 },
+  rhythm_xylophone: { buy: 60, sell: 20 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

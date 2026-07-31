@@ -172,6 +172,8 @@ export class AchievementSystem extends System {
       quizStreak: this.currentQuizStreak,
       housingHappiness,
       craftCount: achievement.totalCraftsCompleted,
+      rhythmPerfectCount: achievement.totalRhythmPerfects,
+      rhythmScore: achievement.bestRhythmScore,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

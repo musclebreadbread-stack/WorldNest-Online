@@ -17,7 +17,9 @@ export type AchievementCondition =
   | { kind: "tame"; count: number }
   | { kind: "quiz_streak"; count: number }
   | { kind: "housing_happiness"; threshold: number }
-  | { kind: "craft"; count: number };
+  | { kind: "craft"; count: number }
+  | { kind: "rhythm_perfect"; count: number }
+  | { kind: "rhythm_score"; score: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -42,6 +44,8 @@ export interface AchievementSource {
   quizStreak: number;
   housingHappiness: number;
   craftCount: number;
+  rhythmPerfectCount: number;
+  rhythmScore: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -143,6 +147,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.tool_master.description",
     rewardCoins: 50,
     condition: { kind: "craft", count: 5 },
+  },
+  {
+    id: "first_rhythm",
+    titleKey: "achievement.first_rhythm.title",
+    descriptionKey: "achievement.first_rhythm.description",
+    rewardCoins: 15,
+    condition: { kind: "rhythm_perfect", count: 1 },
+  },
+  {
+    id: "rhythm_master",
+    titleKey: "achievement.rhythm_master.title",
+    descriptionKey: "achievement.rhythm_master.description",
+    rewardCoins: 50,
+    condition: { kind: "rhythm_score", score: 500 },
   },
 ];
 

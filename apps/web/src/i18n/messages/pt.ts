@@ -452,4 +452,37 @@ export const pt: LocaleMessages = {
     "Fabrique seu primeiro item em qualquer estacao.",
   "achievement.tool_master.title": "Mestre ferreiro",
   "achievement.tool_master.description": "Fabrique 5 itens para provar sua habilidade.",
+
+  "npc.melody.name": "Melody a Musicista",
+  "dialogue.melody.greeting":
+    "Ola, amante da musica! Tenho cancoes e instrumentos. Quer jogar o jogo de ritmo ou ver os instrumentos?",
+  "dialogue.melody.buy":
+    "Tenho tambores, flautas, harpas e xilofones. Escolha o seu favorito e vamos tocar juntos!",
+  "dialogue.melody.explain":
+    "As notas descem pela tela. Pressione a tecla certa quando chegarem na linha. Quanto melhor o ritmo, maior a pontuacao!",
+  "dialogue.melody.option.play": "Tocar uma musica!",
+  "dialogue.melody.option.buy": "Ver instrumentos",
+  "dialogue.melody.option.explain": "Como funciona?",
+  "music.title": "Jogo de ritmo",
+  "music.start": "Comecar musica",
+  "music.perfect": "Perfeito!",
+  "music.good": "Bom!",
+  "music.miss": "Errou!",
+  "music.combo": "Seguida x{count}",
+  "music.score": "Pontuacao: {score}",
+  "music.complete": "Musica completa! Pontuacao final: {score}",
+  "music.compose": "Compor uma melodia",
+  "music.song.sunny_stroll": "Passeio ensolarado",
+  "music.song.forest_jig": "Jiga da floresta",
+  "music.song.ocean_breeze": "Brisa do mar",
+  "music.song.starlight_dance": "Danca estelar",
+  "item.rhythm_drum": "Tambor ritmico",
+  "item.rhythm_flute": "Flauta ritmica",
+  "item.rhythm_harp": "Harpa ritmica",
+  "item.rhythm_xylophone": "Xilofone ritmico",
+  "achievement.first_rhythm.title": "Primeiro ritmo",
+  "achievement.first_rhythm.description": "Toque sua primeira musica de ritmo.",
+  "achievement.rhythm_master.title": "Mestre do ritmo",
+  "achievement.rhythm_master.description":
+    "Consiga 500 pontos ou mais em uma unica musica.",
 };

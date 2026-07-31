@@ -30,6 +30,10 @@ export class AchievementComponent extends Component {
   public totalAnimalsTamed: number;
   /** Lifetime crafts completed total. */
   public totalCraftsCompleted: number;
+  /** Lifetime rhythm perfect hit count. */
+  public totalRhythmPerfects: number;
+  /** Highest single-song score achieved. */
+  public bestRhythmScore: number;
 
   constructor() {
     super("achievement");
@@ -42,5 +46,7 @@ export class AchievementComponent extends Component {
     this.lastKnownCoins = 0;
     this.totalAnimalsTamed = 0;
     this.totalCraftsCompleted = 0;
+    this.totalRhythmPerfects = 0;
+    this.bestRhythmScore = 0;
   }
 }

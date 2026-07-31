@@ -42,6 +42,7 @@ export {
   AccessibilityComponent,
   HousingComponent,
   CraftingComponent,
+  MusicComponent,
 } from "./components";
 export type {
   KeyState,
@@ -116,6 +117,38 @@ export type {
   ToolBonus,
   ToolTier,
 } from "./crafting";
+
+// Music (pure; rhythm mini-game, timing windows, composition)
+export {
+  NOTE_TIMING_GOOD_MS,
+  NOTE_TIMING_PERFECT_MS,
+  SCORE_GOOD,
+  SCORE_PERFECT,
+  SONG_COMPLETE_COINS,
+  INSTRUMENT_DEFINITIONS,
+  SONG_DEFINITIONS,
+  getSong,
+  canStartRhythm,
+  startSong,
+  tickRhythm,
+  hitNote,
+  completeSong,
+  composeMelody,
+  getComboMultiplier,
+  COMPOSE_MIN_NOTES,
+  COMPOSE_MAX_NOTES,
+} from "./music";
+export type {
+  InstrumentType,
+  RhythmNote,
+  SongDefinition,
+  InstrumentDefinition,
+  MusicState,
+  RhythmResult,
+  PerformanceScore,
+  StartSongResult,
+  TickRhythmResult,
+} from "./music";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -352,6 +385,7 @@ export {
   AccessibilitySystem,
   HousingSystem,
   CraftingSystem,
+  MusicSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -374,6 +408,7 @@ export type {
   TameListener,
   QuizDayGetter,
   QuizStreakListener,
+  MusicCompleteListener,
 } from "./systems";
 
 // World Generation

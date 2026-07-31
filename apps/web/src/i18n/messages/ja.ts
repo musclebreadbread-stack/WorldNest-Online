@@ -452,4 +452,36 @@ export const ja: LocaleMessages = {
   "achievement.tool_master.title": "道具職人",
   "achievement.tool_master.description":
     "アイテムを5つクラフトして腕前を証明しましょう。",
+
+  "npc.melody.name": "音楽家メロディ",
+  "dialogue.melody.greeting":
+    "こんにちは、音楽好きさん！曲と楽器を用意してるよ。リズムゲームをする？楽器を見る？",
+  "dialogue.melody.buy":
+    "ドラム、フルート、ハープ、シロフォンがあるよ。好きなのを選んで一緒に演奏しよう！",
+  "dialogue.melody.explain":
+    "音符が画面を流れてくるよ。ラインに来たら正しいキーを押してね。タイミングが良いほどスコアが高いよ！",
+  "dialogue.melody.option.play": "曲を演奏する！",
+  "dialogue.melody.option.buy": "楽器を見る",
+  "dialogue.melody.option.explain": "どうやるの？",
+  "music.title": "リズムゲーム",
+  "music.start": "曲を始める",
+  "music.perfect": "パーフェクト！",
+  "music.good": "グッド！",
+  "music.miss": "ミス！",
+  "music.combo": "コンボ x{count}",
+  "music.score": "スコア: {score}",
+  "music.complete": "曲完了！最終スコア: {score}",
+  "music.compose": "メロディを作曲する",
+  "music.song.sunny_stroll": "ひなたの散歩",
+  "music.song.forest_jig": "森のジグ",
+  "music.song.ocean_breeze": "海風",
+  "music.song.starlight_dance": "星明かりのダンス",
+  "item.rhythm_drum": "リズムドラム",
+  "item.rhythm_flute": "リズムフルート",
+  "item.rhythm_harp": "リズムハープ",
+  "item.rhythm_xylophone": "リズムシロフォン",
+  "achievement.first_rhythm.title": "はじめてのビート",
+  "achievement.first_rhythm.description": "最初のリズム曲を演奏しよう。",
+  "achievement.rhythm_master.title": "リズムマスター",
+  "achievement.rhythm_master.description": "1曲で500点以上を獲得しよう。",
 };

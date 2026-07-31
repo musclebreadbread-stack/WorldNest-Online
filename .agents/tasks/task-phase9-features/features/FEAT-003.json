@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "NPC Friendship/Relationship system - gift giving, friendship levels, unique dialogue unlocks, and special rewards at high friendship. Each of the 7 existing NPCs gets a friendship track with 5 levels, preferred/disliked gifts, daily gift limit, and unique rewards at max friendship.",
+  "status": "pending",
+  "steps": [
+    "Create packages/game-engine/src/friendship/ directory with index.ts, friendshipDefinitions.ts, friendshipOps.ts, and friendshipState.ts",
+    "In friendshipDefinitions.ts: define FriendshipLevel type (0-4 corresponding to stranger/acquaintance/friend/close_friend/best_friend), FRIENDSHIP_THRESHOLDS array [0, 20, 50, 100, 200], GiftPreference interface (lovedItems, likedItems, dislikedItems with point multipliers: loved 3x, liked 1.5x, neutral 1x, disliked 0.25x), GIFT_BASE_POINTS (5), MAX_DAILY_GIFTS (1 per NPC), NPC_GIFT_PREFERENCES record keyed by npcId (each NPC has 2-3 loved items matching their role: Pip loves flowers/seeds, Juno loves rare items, Ada loves ore/stone, Milo loves collection items, Bao loves food ingredients, Hana loves animal_feed/pet_treat, Owl loves books/plank)",
+    "In friendshipState.ts: define FriendshipEntry interface (npcId, points, level, lastGiftDay, giftsGivenToday), FriendshipReward interface (npcId, level, rewardType: 'item'|'coins'|'recipe'|'discount', value)",
+    "In friendshipOps.ts: pure functions - canGiveGift (check daily limit, check item in inventory, check NPC proximity), giveGift (calculate points with preference multiplier, advance level if threshold crossed, return new state + whether level changed), getFriendshipLevel (points to level lookup), getGiftReaction (loved/liked/neutral/disliked reaction key for i18n), getLevelReward (unlock reward at each level milestone), resetDailyGifts (called at day change), getAllFriendships (aggregate function)",
+    "Create packages/game-engine/src/components/FriendshipComponent.ts extending Component with type 'friendship': fields for entries (Record<string, FriendshipEntry>), requestGift (npcId + itemId | null), lastResetDay, version",
+    "Create packages/game-engine/src/systems/FriendshipSystem.ts: requires ['position','interaction','inventory','friendship'], on gift request: validate proximity to NPC + item ownership, consume item from inventory, calculate friendship points, advance level, emit level-up reward (coins to wallet), reset daily gifts on day change; expose a GiftListener callback for achievements",
+    "Add 'gift_box' item to packages/shared/src/items.ts (stackSize: 10, wraps any item for bonus friendship points)",
+    "Add ITEM_NAME_KEYS entry for gift_box in apps/web/src/i18n/index.ts",
+    "Add achievement conditions: { kind: 'friendship_level', level: number } and { kind: 'total_gifts', count: number } to AchievementCondition + AchievementSource",
+    "Add 2 achievements: 'first_gift' (give your first gift to any NPC) with 10 coins and 'best_friends' (reach max friendship with any NPC) with 75 coins",
+    "Add NPC_GIFT_PREFERENCES for all 7 NPCs referencing existing ItemIds that match their roles",
+    "Add i18n keys to all 12 locale files: friendship.title, friendship.level.0-4 (stranger/acquaintance/friend/close_friend/best_friend), friendship.give, friendship.reaction.loved/liked/neutral/disliked, friendship.levelUp, friendship.maxLevel, friendship.dailyLimit, friendship.reward, item.gift_box, achievement.first_gift.*, achievement.best_friends.*",
+    "Export all friendship module types and functions from packages/game-engine/src/index.ts",
+    "Register FriendshipComponent and FriendshipSystem in components/index.ts and systems/index.ts",
+    "Create packages/game-engine/src/__tests__/friendship.test.ts: gift giving with preference multipliers, daily limit enforcement, level advancement at thresholds, level reward distribution, day reset logic, all NPC preferences reference valid ItemIds, system integration with entities and inventory consumption"
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with no errors",
+    "pnpm test passes with all new friendship tests green",
+    "pnpm lint passes with zero warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have matching keys for friendship strings",
+    "No file exceeds 300 lines",
+    "Gift giving correctly calculates points with preference multipliers",
+    "Friendship levels advance at correct thresholds",
+    "Daily gift limit of 1 per NPC per day is enforced",
+    "Day reset clears daily gift counter for all NPCs"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

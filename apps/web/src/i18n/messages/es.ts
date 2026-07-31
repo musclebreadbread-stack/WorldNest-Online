@@ -454,4 +454,37 @@ export const es: LocaleMessages = {
   "achievement.tool_master.title": "Maestro herrero",
   "achievement.tool_master.description":
     "Fabrica 5 objetos para demostrar tu habilidad.",
+
+  "npc.melody.name": "Melody la Musica",
+  "dialogue.melody.greeting":
+    "Hola, amante de la musica! Tengo canciones e instrumentos. Quieres jugar al ritmo o ver los instrumentos?",
+  "dialogue.melody.buy":
+    "Tengo tambores, flautas, arpas y xilofonos. Elige tu favorito y toquemos juntos!",
+  "dialogue.melody.explain":
+    "Las notas bajan por la pantalla. Pulsa la tecla correcta cuando lleguen a la linea. Cuanto mejor sea tu ritmo, mayor sera tu puntuacion!",
+  "dialogue.melody.option.play": "Tocar una cancion!",
+  "dialogue.melody.option.buy": "Ver instrumentos",
+  "dialogue.melody.option.explain": "Como funciona?",
+  "music.title": "Juego de ritmo",
+  "music.start": "Empezar cancion",
+  "music.perfect": "Perfecto!",
+  "music.good": "Bien!",
+  "music.miss": "Fallo!",
+  "music.combo": "Racha x{count}",
+  "music.score": "Puntuacion: {score}",
+  "music.complete": "Cancion completa! Puntuacion final: {score}",
+  "music.compose": "Componer una melodia",
+  "music.song.sunny_stroll": "Paseo soleado",
+  "music.song.forest_jig": "Jiga del bosque",
+  "music.song.ocean_breeze": "Brisa marina",
+  "music.song.starlight_dance": "Baile estelar",
+  "item.rhythm_drum": "Tambor ritmico",
+  "item.rhythm_flute": "Flauta ritmica",
+  "item.rhythm_harp": "Arpa ritmica",
+  "item.rhythm_xylophone": "Xilofono ritmico",
+  "achievement.first_rhythm.title": "Primer ritmo",
+  "achievement.first_rhythm.description": "Toca tu primera cancion de ritmo.",
+  "achievement.rhythm_master.title": "Maestro del ritmo",
+  "achievement.rhythm_master.description":
+    "Consigue 500 puntos o mas en una sola cancion.",
 };

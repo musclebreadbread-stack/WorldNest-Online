@@ -43,3 +43,5 @@ export type { QuizDayGetter, QuizStreakListener } from "./QuizSystem";
 export { AccessibilitySystem } from "./AccessibilitySystem";
 export { HousingSystem } from "./HousingSystem";
 export { CraftingSystem } from "./CraftingSystem";
+export { MusicSystem } from "./MusicSystem";
+export type { MusicCompleteListener } from "./MusicSystem";

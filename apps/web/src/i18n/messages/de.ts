@@ -455,4 +455,37 @@ export const de: LocaleMessages = {
   "achievement.tool_master.title": "Werkzeugmeister",
   "achievement.tool_master.description":
     "Stelle 5 Gegenstaende her um dein Koennen zu beweisen.",
+
+  "npc.melody.name": "Melody die Musikerin",
+  "dialogue.melody.greeting":
+    "Hallo, Musikfan! Ich habe Lieder und Instrumente. Moechtest du ein Rhythmusspiel spielen oder meine Instrumente ansehen?",
+  "dialogue.melody.buy":
+    "Ich habe Trommeln, Floeten, Harfen und Xylophone. Waehle dein Lieblingsinstrument und lass uns zusammen spielen!",
+  "dialogue.melody.explain":
+    "Noten fliegen ueber den Bildschirm. Druecke die richtige Taste, wenn sie die Linie erreichen. Je genauer dein Timing, desto hoeher dein Punktestand!",
+  "dialogue.melody.option.play": "Ein Lied spielen!",
+  "dialogue.melody.option.buy": "Instrumente ansehen",
+  "dialogue.melody.option.explain": "Wie funktioniert es?",
+  "music.title": "Rhythmusspiel",
+  "music.start": "Lied starten",
+  "music.perfect": "Perfekt!",
+  "music.good": "Gut!",
+  "music.miss": "Daneben!",
+  "music.combo": "Kombo x{count}",
+  "music.score": "Punkte: {score}",
+  "music.complete": "Lied abgeschlossen! Endpunktzahl: {score}",
+  "music.compose": "Eine Melodie komponieren",
+  "music.song.sunny_stroll": "Sonniger Spaziergang",
+  "music.song.forest_jig": "Waldtanz",
+  "music.song.ocean_breeze": "Meeresbrise",
+  "music.song.starlight_dance": "Sternentanz",
+  "item.rhythm_drum": "Rhythmustrommel",
+  "item.rhythm_flute": "Rhythmusfloete",
+  "item.rhythm_harp": "Rhythmusharfe",
+  "item.rhythm_xylophone": "Rhythmusxylophon",
+  "achievement.first_rhythm.title": "Erster Takt",
+  "achievement.first_rhythm.description": "Spiele dein erstes Rhythmuslied.",
+  "achievement.rhythm_master.title": "Rhythmusmeister",
+  "achievement.rhythm_master.description":
+    "Erreiche 500 Punkte oder mehr in einem Lied.",
 };

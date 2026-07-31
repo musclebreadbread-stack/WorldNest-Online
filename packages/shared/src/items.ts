@@ -45,7 +45,11 @@ export type ItemId =
   | "iron_axe"
   | "stone_pickaxe"
   | "iron_pickaxe"
-  | "workbench";
+  | "workbench"
+  | "rhythm_drum"
+  | "rhythm_flute"
+  | "rhythm_harp"
+  | "rhythm_xylophone";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -208,6 +212,18 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     placeableStructure: true,
     structureCollidable: false,
     structureTextureKey: "structure_workbench",
+  },
+  rhythm_drum: { id: "rhythm_drum", displayName: "Rhythm Drum", stackSize: 1 },
+  rhythm_flute: {
+    id: "rhythm_flute",
+    displayName: "Rhythm Flute",
+    stackSize: 1,
+  },
+  rhythm_harp: { id: "rhythm_harp", displayName: "Rhythm Harp", stackSize: 1 },
+  rhythm_xylophone: {
+    id: "rhythm_xylophone",
+    displayName: "Rhythm Xylophone",
+    stackSize: 1,
   },
 };
 

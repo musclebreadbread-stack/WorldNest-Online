@@ -1,13 +1,6 @@
 /**
- * Dialogue trees, one per NPC.
- *
- * Every player-visible string here is an **i18n key**, never a literal
- * (decision D8): the React panel resolves `textKey` and `labelKey` through the
- * message catalogue, which is what lets twelve languages share one graph. The
- * engine therefore never holds a sentence, and a missing translation is caught
- * by the web suite's "every engine key resolves in `en`" test.
- *
- * Tone is deliberately warm and low-stakes: the audience is 10-18 worldwide.
+ * Dialogue trees, one per NPC. Every player-visible string is an i18n key
+ * (decision D8). Tone is warm and low-stakes: audience is 10-18 worldwide.
  */
 
 /** What choosing an option does beyond moving to another node. */
@@ -17,13 +10,10 @@ export type DialogueAction =
   | { kind: "openCollection" }
   | { kind: "offerQuest"; questId: string }
   | { kind: "turnInQuest"; questId: string }
-  | { kind: "startQuiz" };
+  | { kind: "startQuiz" }
+  | { kind: "startMusic" };
 
-/**
- * One choice on a node. `next` moves to another node in the same tree; `action`
- * is handled by whoever consumed the option. An option may carry both, and an
- * option with neither is a dead end, which `dialogue.test.ts` forbids.
- */
+/** One choice on a node. An option may carry both `next` and `action`. */
 export interface DialogueOption {
   labelKey: string;
   next?: string;
@@ -41,17 +31,12 @@ export interface DialogueDefinition {
 }
 
 /**
- * Options a node may carry. The dialogue UI binds number keys `1`-`4` to the
- * options, so a fifth would be unreachable from the keyboard.
+ * Options a node may carry. The dialogue UI binds keys `1`-`4` to them.
  */
 export const MAX_DIALOGUE_OPTIONS = 4;
 
 /**
  * Every dialogue tree, keyed by the `dialogueId` an NPC definition points at.
- *
- * `openShop`, `offerQuest` and `turnInQuest` are consumed by the shop and quest
- * layers (items 19-23); until those exist the actions are inert data, which is
- * why they are safe to author now.
  */
 export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
   // Pip the gardener: pure flavour and a nudge towards the farming loop.
@@ -268,6 +253,42 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
           {
             labelKey: "dialogue.owl.option.start",
             action: { kind: "startQuiz" },
+          },
+          { labelKey: "dialogue.option.back", next: "greeting" },
+        ],
+      },
+    },
+  },
+
+  // Melody the Musician: rhythm mini-game host.
+  melody_music: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.melody.greeting",
+        options: [
+          {
+            labelKey: "dialogue.melody.option.play",
+            action: { kind: "startMusic" },
+          },
+          { labelKey: "dialogue.melody.option.buy", next: "buy" },
+          { labelKey: "dialogue.melody.option.explain", next: "explain" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      buy: {
+        textKey: "dialogue.melody.buy",
+        options: [
+          { labelKey: "dialogue.juno.option.shop", action: { kind: "openShop" } },
+          { labelKey: "dialogue.option.back", next: "greeting" },
+        ],
+      },
+      explain: {
+        textKey: "dialogue.melody.explain",
+        options: [
+          {
+            labelKey: "dialogue.melody.option.play",
+            action: { kind: "startMusic" },
           },
           { labelKey: "dialogue.option.back", next: "greeting" },
         ],

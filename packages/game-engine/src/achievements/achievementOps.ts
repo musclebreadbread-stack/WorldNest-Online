@@ -56,6 +56,10 @@ export function checkCondition(
       return source.housingHappiness >= condition.threshold;
     case "craft":
       return source.craftCount >= condition.count;
+    case "rhythm_perfect":
+      return source.rhythmPerfectCount >= condition.count;
+    case "rhythm_score":
+      return source.rhythmScore >= condition.score;
   }
 }
 

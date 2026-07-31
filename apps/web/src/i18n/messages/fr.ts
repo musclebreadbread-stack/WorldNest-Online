@@ -455,4 +455,37 @@ export const fr: LocaleMessages = {
   "achievement.tool_master.title": "Maitre artisan",
   "achievement.tool_master.description":
     "Fabriquez 5 objets pour prouver votre talent.",
+
+  "npc.melody.name": "Melody la Musicienne",
+  "dialogue.melody.greeting":
+    "Bonjour, melomane! J'ai des chansons et des instruments. Tu veux jouer au rythme ou voir mes instruments?",
+  "dialogue.melody.buy":
+    "J'ai des tambours, des flutes, des harpes et des xylophones. Choisis ton prefere et jouons ensemble!",
+  "dialogue.melody.explain":
+    "Les notes descendent sur l'ecran. Appuie sur la bonne touche quand elles atteignent la ligne. Plus tu es precis, plus ton score est eleve!",
+  "dialogue.melody.option.play": "Jouer une chanson!",
+  "dialogue.melody.option.buy": "Voir les instruments",
+  "dialogue.melody.option.explain": "Comment ca marche?",
+  "music.title": "Jeu de rythme",
+  "music.start": "Commencer la chanson",
+  "music.perfect": "Parfait!",
+  "music.good": "Bien!",
+  "music.miss": "Rate!",
+  "music.combo": "Serie x{count}!",
+  "music.score": "Points: {score}",
+  "music.complete": "Chanson terminee! Score final: {score}",
+  "music.compose": "Composer une melodie",
+  "music.song.sunny_stroll": "Promenade ensoleillee",
+  "music.song.forest_jig": "Gigue forestiere",
+  "music.song.ocean_breeze": "Brise oceane",
+  "music.song.starlight_dance": "Danse stellaire",
+  "item.rhythm_drum": "Tambour rythmique",
+  "item.rhythm_flute": "Flute rythmique",
+  "item.rhythm_harp": "Harpe rythmique",
+  "item.rhythm_xylophone": "Xylophone rythmique",
+  "achievement.first_rhythm.title": "Premier rythme",
+  "achievement.first_rhythm.description": "Joue ta premiere chanson de rythme.",
+  "achievement.rhythm_master.title": "Maitre du rythme",
+  "achievement.rhythm_master.description":
+    "Obtiens 500 points ou plus dans une chanson.",
 };

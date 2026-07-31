@@ -149,6 +149,10 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   stone_pickaxe: "item.stone_pickaxe",
   iron_pickaxe: "item.iron_pickaxe",
   workbench: "item.workbench",
+  rhythm_drum: "item.rhythm_drum",
+  rhythm_flute: "item.rhythm_flute",
+  rhythm_harp: "item.rhythm_harp",
+  rhythm_xylophone: "item.rhythm_xylophone",
 };
 
 /**

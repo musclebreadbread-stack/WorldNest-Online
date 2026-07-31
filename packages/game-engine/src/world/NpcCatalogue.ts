@@ -12,7 +12,14 @@
 import type { NpcScheduleEntry } from "./npcSchedule";
 
 export type NpcRole =
-  "villager" | "shopkeeper" | "questgiver" | "curator" | "chef" | "rancher" | "teacher";
+  | "villager"
+  | "shopkeeper"
+  | "questgiver"
+  | "curator"
+  | "chef"
+  | "rancher"
+  | "teacher"
+  | "musician";
 
 export interface NpcDefinition {
   id: string;
@@ -141,6 +148,21 @@ export const NPC_DEFINITIONS: readonly NpcDefinition[] = [
       { fromHour: 8, activity: "teaching", tileX: 16, tileY: 15 },
       { fromHour: 14, activity: "market", tileX: 17, tileY: 10 },
       { fromHour: 20, activity: "rest", tileX: 16, tileY: 16 },
+    ],
+  },
+  {
+    id: "musician_melody",
+    nameKey: "npc.melody.name",
+    dialogueId: "melody_music",
+    anchorTileX: 10,
+    anchorTileY: 10,
+    textureKey: "npc_musician",
+    role: "musician",
+    schedule: [
+      { fromHour: 0, activity: "rest", tileX: 10, tileY: 11 },
+      { fromHour: 7, activity: "work", tileX: 10, tileY: 10 },
+      { fromHour: 13, activity: "market", tileX: 17, tileY: 11 },
+      { fromHour: 20, activity: "rest", tileX: 10, tileY: 11 },
     ],
   },
 ];
