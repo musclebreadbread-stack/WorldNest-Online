@@ -3,5 +3,26 @@
   "task_description": "Phase 5 implementation: Chat hardening (server RPC, rate limit, word filter, mute list), Fishing mini-game (timing-based mechanic, biome-specific catches, new items), and Collection/Museum system (item donation tracking, category rewards, new NPC Curator Milo). All features extend existing ECS/inventory/quest patterns and remain locally testable without Supabase credentials.",
   "status": "in_progress",
   "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
-  "blocked_reason": null
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "719 tests passing (29 shared + 12 database + 365 game-engine + 313 web). pnpm build, lint, and format:check all green. Review fixes applied: word-boundary anchors in migration 006, CollectionSystem quest integration, FishingSystem reel-time catch roll with overflow handling, rate-limit index added."
+  },
+  "review_fixes": {
+    "applied": "2025-01-15-104500-review.md",
+    "issues_fixed": [
+      "Word filter uses \\m/\\M word-boundary anchors to prevent compound-word false positives",
+      "CollectionSystem now requires quest component and calls recordDonation on successful donate",
+      "FishingSystem rolls catch at reel-time and checks hasSpaceFor before awarding",
+      "Added idx_chat_messages_sender_recent index for rate-limit query performance"
+    ],
+    "tests_added": [
+      "CollectionSystem -> quest integration path (2 new tests)",
+      "FishingSystem overflow handling when rolled catch has no space (1 new test)",
+      "Word filter compound-word assertion in verify-sql.sh (scrapyard/grasshopper)"
+    ]
+  }
 }

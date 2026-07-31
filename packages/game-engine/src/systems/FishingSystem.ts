@@ -5,7 +5,7 @@ import { InteractionComponent } from "../components/InteractionComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { StatsComponent } from "../components/StatsComponent";
 import { FishingComponent } from "../components/FishingComponent";
-import { addItem } from "../inventory/inventoryOps";
+import { addItem, hasSpaceFor } from "../inventory/inventoryOps";
 import { getFacedTile } from "../interaction/facing";
 import {
   canFish,
@@ -31,10 +31,13 @@ export type RngFn = () => number;
  * On an interact request while holding a fishing rod and facing water:
  * - Deducts energy and starts casting
  * - Advances timer through waiting -> biting states
- * - On a second interact during the biting window: awards the rolled fish item
+ * - On a second interact during the biting window: rolls the catch, checks
+ *   inventory space, and awards the fish item
  * - On timeout: marks as missed and resets
  *
- * Uses the biome at the faced tile to determine the catch table.
+ * The catch is rolled at reel-time (not cast-time) so the specific item is
+ * determined only when the player successfully acts, and the inventory space
+ * check is precise for the actual catch type.
  */
 export class FishingSystem extends System {
   private tileQuery: TileQuery;
@@ -112,15 +115,27 @@ export class FishingSystem extends System {
       fishing.state = "waiting";
       fishing.timer = 0;
       fishing.biteTime = randomBiteTime(this.rng());
-      fishing.catchItemId = rollCatch(biome, this.rng());
+      // Store biome for catch roll at reel-time
+      fishing.catchBiome = biome;
+      fishing.catchItemId = null;
       fishing.version++;
     } else if (fishing.state === "waiting" || fishing.state === "biting") {
       // Attempt to reel in
       const result = reelIn(fishing.state, fishing.timer);
 
-      if (result === "success" && fishing.catchItemId) {
-        addItem(inventory, fishing.catchItemId, 1);
-        fishing.state = "caught";
+      if (result === "success" && fishing.catchBiome !== null) {
+        // Roll the catch at reel-time so the outcome is determined only when
+        // the player acts and the space check is precise for the actual item.
+        const catchItemId = rollCatch(fishing.catchBiome, this.rng());
+
+        if (hasSpaceFor(inventory, catchItemId, 1)) {
+          addItem(inventory, catchItemId, 1);
+          fishing.catchItemId = catchItemId;
+          fishing.state = "caught";
+        } else {
+          // Inventory is full for this specific catch type
+          fishing.state = "missed";
+        }
       } else {
         fishing.state = "missed";
       }

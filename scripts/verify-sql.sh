@@ -567,6 +567,16 @@ expect "send_chat filters word" \
   "$(echo "$FILTER_RESULT" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('sanitized_body',''))" 2>/dev/null || echo "parse_error")" \
   "hello **** world"
 
+# Assert the word filter does NOT match inside compound words (word boundaries).
+COMPOUND_RESULT="$(query_as_authenticated "$TESTER2" \
+  "select public.worldnest_send_chat(
+     (select id from public.worlds where name = 'Default World'),
+     'scrapyard grasshopper'
+   );")"
+expect "send_chat no false positive in compound words" \
+  "$(echo "$COMPOUND_RESULT" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('sanitized_body',''))" 2>/dev/null || echo "parse_error")" \
+  "scrapyard grasshopper"
+
 # Assert rate limiting: send 10 messages, then the 11th should be refused.
 for i in $(seq 1 8); do
   query_as_authenticated "$TESTER3" \

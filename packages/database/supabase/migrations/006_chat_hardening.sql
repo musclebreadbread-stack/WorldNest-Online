@@ -174,11 +174,13 @@ begin
   -- Truncate to max length.
   v_sanitized := left(trim(p_body), v_config.max_message_length);
 
-  -- Filter blocked words: case-insensitive replacement with asterisks.
+  -- Filter blocked words: case-insensitive whole-word replacement with asterisks.
+  -- Uses \m and \M (Postgres regex word-boundary anchors) to avoid matching
+  -- inside compound words (e.g., "crap" must not match inside "scrapyard").
   for v_word in select word from public.blocked_words loop
     v_sanitized := regexp_replace(
       v_sanitized,
-      v_word,
+      '\m' || v_word || '\M',
       repeat('*', length(v_word)),
       'gi'
     );
@@ -207,3 +209,12 @@ revoke execute on function public.worldnest_send_chat(uuid, text)
   from public, anon, authenticated;
 grant execute on function public.worldnest_send_chat(uuid, text)
   to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Index for rate-limit query performance
+-- ---------------------------------------------------------------------------
+-- The RPC counts messages per player per minute on every send. Without an
+-- index the COUNT scans the entire chat_messages table. This composite index
+-- allows Postgres to range-scan only the sender's recent rows.
+create index if not exists idx_chat_messages_sender_recent
+  on public.chat_messages (sender_id, created_at desc);

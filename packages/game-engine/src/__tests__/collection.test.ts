@@ -238,8 +238,13 @@ describe("CollectionSystem", () => {
     system = new CollectionSystem();
   });
 
-  it("should require collection, inventory and wallet components", () => {
-    expect(system.requiredComponents).toEqual(["collection", "inventory", "wallet"]);
+  it("should require collection, inventory, wallet and quest components", () => {
+    expect(system.requiredComponents).toEqual([
+      "collection",
+      "inventory",
+      "wallet",
+      "quest",
+    ]);
   });
 
   it("should process a donation request", () => {
@@ -283,6 +288,29 @@ describe("CollectionSystem", () => {
 
     expect(collection.discovered.has("wood")).toBe(false);
     expect(collection.requestedDonation).toBeNull();
+  });
+
+  it("should progress donate quest objectives on successful donation", () => {
+    const { entity, collection, inventory, quest } = createCollector();
+    activateQuest(quest, "donate_first");
+    addItem(inventory, "wood", 1);
+
+    collection.requestedDonation = "wood";
+    system.update([entity], 1 / 60);
+
+    expect(collection.discovered.has("wood")).toBe(true);
+    expect(getEntry(quest, "donate_first")!.progress).toBe(1);
+  });
+
+  it("should not progress quest when donation fails", () => {
+    const { entity, collection, quest } = createCollector();
+    activateQuest(quest, "donate_first");
+
+    // No item in inventory, donation will fail
+    collection.requestedDonation = "wood";
+    system.update([entity], 1 / 60);
+
+    expect(getEntry(quest, "donate_first")!.progress).toBe(0);
   });
 });
 

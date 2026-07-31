@@ -336,4 +336,70 @@ describe("FishingSystem", () => {
 
     expect(countItem(harness.inventory, "fish_tropical")).toBe(1);
   });
+
+  it("should mark as missed when inventory is full for the rolled catch type", () => {
+    // Use grassland with rng=0.0 which rolls fish_common
+    const harness = createHarness(TileType.WATER, Biome.GRASSLAND, [0.5, 0.0]);
+
+    // Fill inventory so fish_common has no space, but leave a fishing rod slot
+    // First clear the inventory
+    harness.inventory.slots.fill(null);
+    // Put the fishing rod back
+    addItem(harness.inventory, "fishing_rod", 1);
+    // Fill all remaining slots with fish_common at max stack
+    for (let i = 0; i < harness.inventory.slots.length; i++) {
+      if (harness.inventory.slots[i] === null) {
+        addItem(
+          harness.inventory,
+          "fish_common",
+          ITEM_DEFINITIONS.fish_common.stackSize,
+        );
+      }
+    }
+
+    // Ensure canFish still passes (there is space for rare or tropical)
+    // Actually, all slots are full of fish_common at max stack, so no space
+    // for any fish. canFish should fail. Let's adjust: leave one slot with
+    // space for fish_rare but not fish_common.
+    harness.inventory.slots.fill(null);
+    addItem(harness.inventory, "fishing_rod", 1);
+    // Fill remaining slots with fish_common at max stack size
+    for (let i = 0; i < harness.inventory.slots.length; i++) {
+      if (harness.inventory.slots[i] === null) {
+        addItem(
+          harness.inventory,
+          "fish_common",
+          ITEM_DEFINITIONS.fish_common.stackSize,
+        );
+      }
+    }
+    // Replace the last fish_common slot with fish_rare at 1 (has space for rare)
+    const lastFishSlot = harness.inventory.slots.findIndex(
+      (s) => s !== null && s.itemId === "fish_common",
+    );
+    harness.inventory.slots[lastFishSlot] = { itemId: "fish_rare", quantity: 1 };
+
+    // Now canFish passes (there is space for fish_rare), but if the roll
+    // produces fish_common there is no space for it.
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    expect(harness.fishing.state).toBe("waiting");
+
+    // Advance to biting
+    harness.system.update([harness.entity], 4);
+    expect(harness.fishing.state).toBe("biting");
+
+    // Reel in - catch is rolled at reel-time, rng=0.0 => fish_common => no space
+    harness.interaction.interactRequested = true;
+    harness.system.update([harness.entity], 1 / 60);
+
+    // Should be missed (no space for the rolled fish_common), not caught
+    // Terminal states reset to idle in the same frame
+    expect(harness.fishing.state).toBe("idle");
+    // No fish_common was added (count should remain the same)
+    const expectedCommonCount =
+      (harness.inventory.slots.length - 2) * ITEM_DEFINITIONS.fish_common.stackSize;
+    expect(countItem(harness.inventory, "fish_common")).toBe(expectedCommonCount);
+  });
 });
