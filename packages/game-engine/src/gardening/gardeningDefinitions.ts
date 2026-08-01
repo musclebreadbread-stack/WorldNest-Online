@@ -64,3 +64,9 @@ export const WATER_PER_ACTION = 25;
 
 /** Flowers required for an arrangement. */
 export const ARRANGEMENT_FLOWER_COUNT = 3;
+
+/** Minimum arrangement score required to enter a competition. */
+export const COMPETITION_MIN_SCORE = 20;
+
+/** Cooldown in milliseconds between competition entries. */
+export const COMPETITION_COOLDOWN_MS = 60_000;

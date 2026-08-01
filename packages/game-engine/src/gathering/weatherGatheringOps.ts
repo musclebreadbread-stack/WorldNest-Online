@@ -8,6 +8,7 @@
 import type { ItemId } from "@worldnest/shared";
 import type { WeatherKind } from "../world/Weather";
 import {
+  MAX_WEATHER_NOTIFICATIONS,
   WEATHER_EXCLUSIVE_ITEM_IDS,
   WEATHER_GATHER_CHANCE,
   WEATHER_GATHER_COOLDOWN_MS,
@@ -49,6 +50,9 @@ export function canGatherWeatherItem(
 /**
  * Deterministic gather roll based on a provided random value (0-1).
  * Returns the gathered item or null if the roll fails.
+ *
+ * Uses cumulative probability: each item occupies a slice of [0, 1).
+ * This avoids bias when multiple items share the same weather type.
  */
 export function rollWeatherGather(
   weather: WeatherKind,
@@ -57,9 +61,11 @@ export function rollWeatherGather(
   const available = WEATHER_GATHER_TABLE[weather];
   if (available.length === 0) return null;
 
+  let cumulative = 0;
   for (const item of available) {
     const chance = WEATHER_GATHER_CHANCE[item.rarity] ?? 0.1;
-    if (roll < chance) return item;
+    cumulative += chance;
+    if (roll < cumulative) return item;
   }
   return null;
 }
@@ -104,6 +110,7 @@ export function recordWeatherGather(
 /**
  * Push a weather notification when weather changes to a gatherable type.
  * Returns true if a notification was pushed.
+ * Trims oldest entries when the notification queue exceeds the cap.
  */
 export function pushWeatherNotification(
   state: WeatherGatheringState,
@@ -117,6 +124,12 @@ export function pushWeatherNotification(
     availableItems: available.map((i) => i.itemId),
     timestamp: now,
   });
+  if (state.weatherNotifications.length > MAX_WEATHER_NOTIFICATIONS) {
+    state.weatherNotifications.splice(
+      0,
+      state.weatherNotifications.length - MAX_WEATHER_NOTIFICATIONS,
+    );
+  }
   state.version++;
   return true;
 }

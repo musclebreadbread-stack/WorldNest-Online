@@ -10,9 +10,11 @@ import { InventoryComponent } from "../components/InventoryComponent";
 import { MissionComponent } from "../components/MissionComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
+import { GardeningComponent } from "../components/GardeningComponent";
 import { ReputationComponent } from "../components/ReputationComponent";
 import { ShopComponent } from "../components/ShopComponent";
 import { TransportComponent } from "../components/TransportComponent";
+import { WeatherGatheringComponent } from "../components/WeatherGatheringComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
 import { isCategoryComplete } from "../collection/collectionOps";
@@ -21,6 +23,10 @@ import {
   getTotalGiftsGiven,
 } from "../friendship/friendshipOps";
 import { getMapCompletion } from "../exploration/explorationOps";
+import {
+  getTotalWeatherItemsGathered,
+  getDistinctWeatherTypesGathered,
+} from "../gathering/weatherGatheringOps";
 import {
   ACHIEVEMENT_DEFINITIONS,
   type AchievementSource,
@@ -162,80 +168,7 @@ export class AchievementSystem extends System {
       ).length;
       achievement.totalQuestsCompleted = completedCount;
 
-      // Build the polled source
-      const housingComp = entity.getComponent<HousingComponent>("housing");
-      const housingHappiness = housingComp ? housingComp.state.happiness : 0;
-      const transportComp = entity.getComponent<TransportComponent>("transport");
-      // Update mount bond tracking from transport component
-      if (transportComp?.mountState) {
-        if (transportComp.mountState.bondLevel > achievement.highestMountBondLevel) {
-          achievement.highestMountBondLevel = transportComp.mountState.bondLevel;
-        }
-      }
-      // Apply pending mount rides
-      if (this.pendingMountRides > 0 && achievement.highestMountBondLevel < 0) {
-        achievement.highestMountBondLevel = 0;
-      }
-      // Track water tiles traversed from transport component
-      if (
-        transportComp &&
-        transportComp.waterTilesTraversed > achievement.totalWaterTilesTraversed
-      ) {
-        achievement.totalWaterTilesTraversed = transportComp.waterTilesTraversed;
-      }
-      // Track friendship progress
-      const friendshipComp = entity.getComponent<FriendshipComponent>("friendship");
-      if (friendshipComp) {
-        const fLevel = getHighestFriendshipLevel(friendshipComp.entries);
-        if (fLevel > achievement.highestFriendshipLevel) {
-          achievement.highestFriendshipLevel = fLevel;
-        }
-        const fGifts = getTotalGiftsGiven(friendshipComp.entries);
-        if (fGifts > achievement.totalGiftsGiven) {
-          achievement.totalGiftsGiven = fGifts;
-        }
-      }
-      // Track exploration progress
-      const explorationComp = entity.getComponent<ExplorationComponent>("exploration");
-      const biomesDiscovered = explorationComp
-        ? explorationComp.discoveredBiomes.size
-        : 0;
-      const landmarksDiscovered = explorationComp
-        ? explorationComp.discoveredLandmarks.size
-        : 0;
-      const mapCompletionPercent = explorationComp
-        ? getMapCompletion(explorationComp)
-        : 0;
-      // Track mission progress
-      const missionComp = entity.getComponent<MissionComponent>("mission");
-      const missionsCompleted = missionComp ? missionComp.totalMissionsCompleted : 0;
-      const missionStreak = missionComp ? missionComp.dailyStreak : 0;
-      // Track shop expansion progress
-      const shopComp = entity.getComponent<ShopComponent>("shop");
-      const rareItemsBought = shopComp ? shopComp.rareItemsPurchased : 0;
-      const shopsVisited = shopComp ? shopComp.shopsVisited.size : 0;
-      // Track reputation progress
-      const reputationComp = entity.getComponent<ReputationComponent>("reputation");
-      const villageTier = reputationComp ? reputationComp.currentTier : 0;
-      const contributionCount = reputationComp
-        ? reputationComp.contributionHistory.length
-        : 0;
-      const source = this.buildSource(
-        inventory,
-        collection,
-        wallet,
-        achievement,
-        housingHappiness,
-        biomesDiscovered,
-        landmarksDiscovered,
-        mapCompletionPercent,
-        missionsCompleted,
-        missionStreak,
-        rareItemsBought,
-        shopsVisited,
-        villageTier,
-        contributionCount,
-      );
+      const source = this.buildSource(entity, inventory, collection, achievement);
 
       // Check each achievement that has not been unlocked yet
       for (const definition of ACHIEVEMENT_DEFINITIONS) {
@@ -258,23 +191,47 @@ export class AchievementSystem extends System {
   }
 
   private buildSource(
+    entity: Entity,
     inventory: InventoryComponent,
     collection: CollectionComponent,
-    _wallet: WalletComponent,
     achievement: AchievementComponent,
-    housingHappiness: number,
-    biomesDiscovered: number,
-    landmarksDiscovered: number,
-    mapCompletionPercent: number,
-    missionsCompleted: number,
-    missionStreak: number,
-    rareItemsBought: number,
-    shopsVisited: number,
-    villageTier: number,
-    contributionCount: number,
   ): AchievementSource {
+    const housingComp = entity.getComponent<HousingComponent>("housing");
+    const transportComp = entity.getComponent<TransportComponent>("transport");
+    if (transportComp?.mountState) {
+      if (transportComp.mountState.bondLevel > achievement.highestMountBondLevel) {
+        achievement.highestMountBondLevel = transportComp.mountState.bondLevel;
+      }
+    }
+    if (this.pendingMountRides > 0 && achievement.highestMountBondLevel < 0) {
+      achievement.highestMountBondLevel = 0;
+    }
+    if (
+      transportComp &&
+      transportComp.waterTilesTraversed > achievement.totalWaterTilesTraversed
+    ) {
+      achievement.totalWaterTilesTraversed = transportComp.waterTilesTraversed;
+    }
+    const friendshipComp = entity.getComponent<FriendshipComponent>("friendship");
+    if (friendshipComp) {
+      const fLevel = getHighestFriendshipLevel(friendshipComp.entries);
+      if (fLevel > achievement.highestFriendshipLevel) {
+        achievement.highestFriendshipLevel = fLevel;
+      }
+      const fGifts = getTotalGiftsGiven(friendshipComp.entries);
+      if (fGifts > achievement.totalGiftsGiven) {
+        achievement.totalGiftsGiven = fGifts;
+      }
+    }
+    const explorationComp = entity.getComponent<ExplorationComponent>("exploration");
+    const missionComp = entity.getComponent<MissionComponent>("mission");
+    const shopComp = entity.getComponent<ShopComponent>("shop");
+    const gardeningComp = entity.getComponent<GardeningComponent>("gardening");
+    const weatherComp =
+      entity.getComponent<WeatherGatheringComponent>("weatherGathering");
+    const reputationComp = entity.getComponent<ReputationComponent>("reputation");
     return {
-      itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
+      itemCount: (id: string) => countItem(inventory, id as ItemId),
       donationCount: collection.discovered.size,
       structureCount: this.totalStructures(),
       questCompletionCount: achievement.totalQuestsCompleted,
@@ -282,7 +239,7 @@ export class AchievementSystem extends System {
       totalCoinsEarned: achievement.totalCoinsEarned,
       animalsTamedCount: achievement.totalAnimalsTamed,
       quizStreak: this.currentQuizStreak,
-      housingHappiness,
+      housingHappiness: housingComp ? housingComp.state.happiness : 0,
       craftCount: achievement.totalCraftsCompleted,
       rhythmPerfectCount: achievement.totalRhythmPerfects,
       rhythmScore: achievement.bestRhythmScore,
@@ -290,19 +247,25 @@ export class AchievementSystem extends System {
       waterTilesTraversed: achievement.totalWaterTilesTraversed,
       highestFriendshipLevel: achievement.highestFriendshipLevel,
       totalGiftsGiven: achievement.totalGiftsGiven,
-      biomesDiscovered,
-      landmarksDiscovered,
-      mapCompletionPercent,
-      missionsCompleted,
-      missionStreak,
-      rareItemsBought,
-      shopsVisited,
-      gardenArrangements: 0,
-      gardenCompetitionWins: 0,
-      weatherItemsGathered: 0,
-      weatherTypesGathered: 0,
-      villageTier,
-      contributionCount,
+      biomesDiscovered: explorationComp ? explorationComp.discoveredBiomes.size : 0,
+      landmarksDiscovered: explorationComp
+        ? explorationComp.discoveredLandmarks.size
+        : 0,
+      mapCompletionPercent: explorationComp ? getMapCompletion(explorationComp) : 0,
+      missionsCompleted: missionComp ? missionComp.totalMissionsCompleted : 0,
+      missionStreak: missionComp ? missionComp.dailyStreak : 0,
+      rareItemsBought: shopComp ? shopComp.rareItemsPurchased : 0,
+      shopsVisited: shopComp ? shopComp.shopsVisited.size : 0,
+      gardenArrangements: gardeningComp ? gardeningComp.arrangements.length : 0,
+      gardenCompetitionWins: gardeningComp
+        ? gardeningComp.competitionHistory.length
+        : 0,
+      weatherItemsGathered: weatherComp ? getTotalWeatherItemsGathered(weatherComp) : 0,
+      weatherTypesGathered: weatherComp
+        ? getDistinctWeatherTypesGathered(weatherComp)
+        : 0,
+      villageTier: reputationComp ? reputationComp.currentTier : 0,
+      contributionCount: reputationComp ? reputationComp.contributionHistory.length : 0,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

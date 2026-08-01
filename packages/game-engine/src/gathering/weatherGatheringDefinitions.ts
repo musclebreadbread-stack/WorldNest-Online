@@ -82,6 +82,9 @@ export const WEATHER_GATHER_CHANCE: Readonly<Record<number, number>> = {
 /** Cooldown in milliseconds between gather attempts. */
 export const WEATHER_GATHER_COOLDOWN_MS = 30_000;
 
+/** Maximum number of weather notifications retained. */
+export const MAX_WEATHER_NOTIFICATIONS = 20;
+
 /** All 5 weather-exclusive item ids for achievement tracking. */
 export const WEATHER_EXCLUSIVE_ITEM_IDS: readonly ItemId[] = WEATHER_GATHER_ITEMS.map(
   (i) => i.itemId,

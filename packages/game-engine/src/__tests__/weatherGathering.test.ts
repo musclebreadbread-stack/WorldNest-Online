@@ -18,6 +18,7 @@ import {
 import {
   WEATHER_GATHER_COOLDOWN_MS,
   WEATHER_GATHER_TABLE,
+  MAX_WEATHER_NOTIFICATIONS,
 } from "../gathering/weatherGatheringDefinitions";
 import { checkCondition } from "../achievements/achievementOps";
 import { countItem } from "../inventory";
@@ -111,6 +112,17 @@ describe("weatherGatheringOps", () => {
       expect(result).not.toBeNull();
       expect(result!.itemId).toBe("aurora_gem");
     });
+
+    it("uses cumulative probability avoiding bias for multi-item weather", () => {
+      // rain has one item with rarity 1 (chance 0.40)
+      // A roll of 0.39 should still hit the item (within first slice)
+      const result = rollWeatherGather("rain", 0.39);
+      expect(result).not.toBeNull();
+      expect(result!.itemId).toBe("rain_mushroom");
+      // A roll at 0.40 should miss (at boundary)
+      const miss = rollWeatherGather("rain", 0.4);
+      expect(miss).toBeNull();
+    });
   });
 
   describe("getAvailableWeatherItems", () => {
@@ -190,6 +202,17 @@ describe("weatherGatheringOps", () => {
       const result = pushWeatherNotification(state, "clear", 1000);
       expect(result).toBe(false);
       expect(state.weatherNotifications).toHaveLength(0);
+    });
+
+    it("caps notifications at MAX_WEATHER_NOTIFICATIONS", () => {
+      const state = createWeatherGatheringState();
+      for (let i = 0; i < MAX_WEATHER_NOTIFICATIONS + 10; i++) {
+        pushWeatherNotification(state, "rain", i * 1000);
+      }
+      expect(state.weatherNotifications).toHaveLength(MAX_WEATHER_NOTIFICATIONS);
+      // Should keep the most recent notifications
+      const last = state.weatherNotifications[MAX_WEATHER_NOTIFICATIONS - 1];
+      expect(last.timestamp).toBe((MAX_WEATHER_NOTIFICATIONS + 9) * 1000);
     });
   });
 

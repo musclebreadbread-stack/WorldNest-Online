@@ -199,6 +199,41 @@ describe("gardeningOps", () => {
       const state = createGardeningState();
       expect(enterCompetition(state, 99, 1000)).toBeNull();
     });
+
+    it("rejects arrangement below minimum score", () => {
+      const state = createGardeningState();
+      // Manually create a low-score arrangement
+      state.arrangements.push({
+        flowers: [FlowerVariety.TULIP, FlowerVariety.TULIP, FlowerVariety.TULIP],
+        score: 15,
+        createdAt: 0,
+      });
+      const entry = enterCompetition(state, 0, 2000);
+      expect(entry).toBeNull();
+      expect(state.competitionHistory).toHaveLength(0);
+    });
+
+    it("enforces cooldown between competition entries", () => {
+      const state = createGardeningState();
+      createArrangement(
+        state,
+        [FlowerVariety.SUNFLOWER, FlowerVariety.ROSE, FlowerVariety.LILY],
+        1000,
+      );
+      createArrangement(
+        state,
+        [FlowerVariety.SUNFLOWER, FlowerVariety.ROSE, FlowerVariety.LILY],
+        1000,
+      );
+      const first = enterCompetition(state, 0, 2000);
+      expect(first).not.toBeNull();
+      // Second entry within cooldown
+      const second = enterCompetition(state, 1, 3000);
+      expect(second).toBeNull();
+      // After cooldown expires
+      const third = enterCompetition(state, 1, 2000 + 60_001);
+      expect(third).not.toBeNull();
+    });
   });
 });
 

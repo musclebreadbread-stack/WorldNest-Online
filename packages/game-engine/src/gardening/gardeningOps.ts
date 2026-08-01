@@ -8,6 +8,8 @@
 
 import {
   ARRANGEMENT_FLOWER_COUNT,
+  COMPETITION_COOLDOWN_MS,
+  COMPETITION_MIN_SCORE,
   COMPETITION_REWARDS,
   COMPETITION_THRESHOLDS,
   CompetitionTier,
@@ -142,6 +144,7 @@ export function scoreArrangement(
 
 /**
  * Enter a competition with an arrangement. Returns the entry or null.
+ * Rejects arrangements below the minimum score and enforces a cooldown.
  */
 export function enterCompetition(
   state: GardeningState,
@@ -150,6 +153,9 @@ export function enterCompetition(
 ): CompetitionEntry | null {
   const arrangement = state.arrangements[arrangementIndex];
   if (!arrangement) return null;
+  if (arrangement.score < COMPETITION_MIN_SCORE) return null;
+  const lastEntry = state.competitionHistory[state.competitionHistory.length - 1];
+  if (lastEntry && now - lastEntry.timestamp < COMPETITION_COOLDOWN_MS) return null;
   const result = judgeCompetition(arrangement.score);
   const entry: CompetitionEntry = { ...result, timestamp: now };
   state.competitionHistory.push(entry);
