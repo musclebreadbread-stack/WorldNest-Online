@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Gardening/Flower Arrangement system - decorative garden plots, flower varieties (rose, lily, tulip, sunflower), arrangement beauty scoring, garden competitions (NPC judged), new NPC gardener judge Flora",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add new flower/gardening items to packages/shared/src/items.ts: rose, lily, tulip, sunflower, garden_plot, flower_arrangement. Add to ItemId union type and ITEM_DEFINITIONS with appropriate stackSizes.",
     "Add prices for the new items in packages/shared/src/economy.ts ITEM_PRICES.",
@@ -38,5 +38,5 @@
     "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "1. AchievementSource interface requires new fields in ALL existing test files that construct inline source objects (achievements.test.ts, shopExpansion.test.ts, exploration.test.ts). 2. NPC_DEFINITIONS count test (npc.test.ts) and ACHIEVEMENT_DEFINITIONS count test (achievements.test.ts) must be updated when adding NPCs/achievements. 3. The npcSchedule.test.ts has both a regex and a Set checking valid activities. 4. SQL migration 004_authority_schema.sql must be updated for new item prices. 5. French 'Rose' == English 'Rose' triggers the i18n parity test - added to LOCALE_AGNOSTIC_KEYS. 6. ITEM_NAME_KEYS and NPC_ACTIVITY_KEYS in i18n/index.ts are typed Records requiring all ItemIds/NpcActivities. 7. npcTextures.ts in web app has NPC_COLORS Record<NpcRole> that must include all roles. 8. dialogueDefinitions.ts must have a matching tree for every NPC's dialogueId."
 }
