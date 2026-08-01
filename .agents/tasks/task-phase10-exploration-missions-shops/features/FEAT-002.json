@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Daily/Weekly Missions system: rotating objectives with streak bonuses and tiered rewards. Creates MissionComponent, missionOps, missionDefinitions, MissionSystem, and tests. Missions reset on a day cycle and offer escalating rewards for consecutive completions.",
+  "status": "in_progress",
+  "steps": [
+    "Create packages/game-engine/src/missions/missionDefinitions.ts: Define MissionObjective type (tagged union: { kind: 'collect', itemId: ItemId, count: number } | { kind: 'fish', count: number } | { kind: 'donate', count: number } | { kind: 'cook', count: number } | { kind: 'explore_tiles', count: number } | { kind: 'talk_npc', count: number }). Define MissionTier enum (DAILY, WEEKLY). Define MissionDefinition interface (id, titleKey, descriptionKey, tier, objective, baseRewardCoins). Define DAILY_MISSIONS array (~8 definitions that rotate), WEEKLY_MISSIONS array (~4 definitions). Define STREAK_BONUS_MULTIPLIERS [1.0, 1.25, 1.5, 2.0] (for streaks of 0, 1, 2, 3+ days). Export getMission, getDailyMissionForDay (deterministic rotation based on day number), getWeeklyMissionForWeek.",
+    "Create packages/game-engine/src/missions/missionOps.ts: Define MissionState interface (activeMissions: Record<string, MissionEntry>, dailyStreak: number, lastCompletedDay: number, weeklyProgress: number, version: number). MissionEntry: { missionId: string, progress: number, completed: boolean, claimed: boolean }. Pure functions: refreshDailyMissions(state, currentDay) -> boolean (replaces daily slots with rotation for that day, resets progress, bumps streak if yesterday was completed else resets it), refreshWeeklyMissions(state, currentWeek) -> boolean, recordMissionProgress(state, missionId, progressDelta) -> boolean, completeMission(state, missionId) -> boolean, claimMissionReward(state, missionId, wallet) -> boolean (pays baseRewardCoins * streak multiplier), getStreakMultiplier(streak) -> number, getActiveMissions(state, tier) -> MissionEntry[].",
+    "Create packages/game-engine/src/missions/index.ts: Barrel export all from missionDefinitions and missionOps.",
+    "Create packages/game-engine/src/components/MissionComponent.ts: Extend Component with type 'mission'. Fields: activeMissions (Record<string, MissionEntry>), dailyStreak (number=0), lastCompletedDay (number=-1), lastRefreshDay (number=-1), lastRefreshWeek (number=-1), version (number=0). Request fields: requestedClaim (string|null).",
+    "Create packages/game-engine/src/systems/MissionSystem.ts: Extend System with requiredComponents ['mission', 'inventory', 'wallet']. Injected DayGetter (returns current game day). On update: if day changed from lastRefreshDay, call refreshDailyMissions. If week changed, call refreshWeeklyMissions. Poll inventory counts for collect missions. Consume claim requests. Uses a ProgressSource similar to QuestSystem for tracking objective completion.",
+    "Register MissionComponent in packages/game-engine/src/components/index.ts barrel export.",
+    "Register MissionSystem in packages/game-engine/src/systems/index.ts barrel export with MissionDayGetter type.",
+    "Add exports to packages/game-engine/src/index.ts for mission module.",
+    "Add 2 achievement conditions to packages/game-engine/src/achievements/achievementDefinitions.ts: { kind: 'missions_completed', count: number }, { kind: 'mission_streak', days: number }. Add 2 achievements: 'first_mission' (complete 1 mission, 20 coins), 'dedicated_worker' (reach 3-day streak, 50 coins).",
+    "Wire new achievement conditions in achievementOps.ts. Add missionsCompleted and missionStreak to AchievementSource interface. Update AchievementSystem to read MissionComponent and supply the new source fields.",
+    "Create packages/game-engine/src/__tests__/missions.test.ts: Test daily rotation determinism, streak bonus calculation, mission refresh logic, progress tracking, reward claiming with multiplier, weekly mission rotation, MissionSystem day-change detection, achievement integration.",
+    "Add i18n keys to apps/web/src/i18n/messages/en.ts: mission.title, mission.daily, mission.weekly, mission.streak, mission.streakBonus, mission.complete, mission.claim, mission.refresh, mission.progress, plus titleKey/descriptionKey for each of the ~12 mission definitions, achievement.first_mission.title, achievement.first_mission.description, achievement.dedicated_worker.title, achievement.dedicated_worker.description.",
+    "Add corresponding translations to all 11 other locale files with properly translated, distinct strings.",
+    "Run pnpm format && pnpm lint && pnpm build && pnpm test to verify everything passes."
+  ],
+  "acceptance_criteria": [
+    "MissionComponent, missionOps, missionDefinitions, and MissionSystem exist and compile",
+    "8 daily missions and 4 weekly missions defined with deterministic rotation",
+    "Streak system increments on consecutive daily completions and resets on gaps",
+    "Reward multiplier applies correctly (1.0x, 1.25x, 1.5x, 2.0x)",
+    "MissionSystem refreshes missions on day/week boundaries",
+    "2 new achievements for missions work with AchievementSystem",
+    "All i18n keys present in all 12 locales with unique translations",
+    "All existing + new tests pass via pnpm test",
+    "pnpm build succeeds, pnpm format:check passes, files under 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && npx turbo run test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -74,6 +74,10 @@ export function checkCondition(
       return source.landmarksDiscovered >= condition.count;
     case "map_completion":
       return source.mapCompletionPercent >= condition.percent;
+    case "missions_completed":
+      return source.missionsCompleted >= condition.count;
+    case "mission_streak":
+      return source.missionStreak >= condition.days;
   }
 }
 

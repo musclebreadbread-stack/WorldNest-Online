@@ -41,6 +41,7 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "auth.emailPlaceholder",
   "hud.coordinates",
   "quest.progress",
+  "mission.progress",
   "collection.progress",
   // Quiz answers: proper nouns, numbers, and universal terms that are
   // legitimately identical across many languages.

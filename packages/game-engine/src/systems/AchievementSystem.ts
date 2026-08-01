@@ -7,6 +7,7 @@ import { ExplorationComponent } from "../components/ExplorationComponent";
 import { FriendshipComponent } from "../components/FriendshipComponent";
 import { HousingComponent } from "../components/HousingComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
+import { MissionComponent } from "../components/MissionComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
 import { TransportComponent } from "../components/TransportComponent";
@@ -203,6 +204,12 @@ export class AchievementSystem extends System {
       const mapCompletionPercent = explorationComp
         ? getMapCompletion(explorationComp)
         : 0;
+      // Track mission progress
+      const missionComp = entity.getComponent<MissionComponent>("mission");
+      const missionsCompleted = missionComp
+        ? Object.values(missionComp.activeMissions).filter((e) => e.completed).length
+        : 0;
+      const missionStreak = missionComp ? missionComp.dailyStreak : 0;
       const source = this.buildSource(
         inventory,
         collection,
@@ -212,6 +219,8 @@ export class AchievementSystem extends System {
         biomesDiscovered,
         landmarksDiscovered,
         mapCompletionPercent,
+        missionsCompleted,
+        missionStreak,
       );
 
       // Check each achievement that has not been unlocked yet
@@ -243,6 +252,8 @@ export class AchievementSystem extends System {
     biomesDiscovered: number,
     landmarksDiscovered: number,
     mapCompletionPercent: number,
+    missionsCompleted: number,
+    missionStreak: number,
   ): AchievementSource {
     return {
       itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
@@ -264,6 +275,8 @@ export class AchievementSystem extends System {
       biomesDiscovered,
       landmarksDiscovered,
       mapCompletionPercent,
+      missionsCompleted,
+      missionStreak,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

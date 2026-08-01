@@ -26,7 +26,9 @@ export type AchievementCondition =
   | { kind: "total_gifts"; count: number }
   | { kind: "biomes_discovered"; count: number }
   | { kind: "landmarks_discovered"; count: number }
-  | { kind: "map_completion"; percent: number };
+  | { kind: "map_completion"; percent: number }
+  | { kind: "missions_completed"; count: number }
+  | { kind: "mission_streak"; days: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -60,6 +62,8 @@ export interface AchievementSource {
   biomesDiscovered: number;
   landmarksDiscovered: number;
   mapCompletionPercent: number;
+  missionsCompleted: number;
+  missionStreak: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -224,6 +228,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.landmark_hunter.description",
     rewardCoins: 45,
     condition: { kind: "landmarks_discovered", count: 3 },
+  },
+  {
+    id: "first_mission",
+    titleKey: "achievement.first_mission.title",
+    descriptionKey: "achievement.first_mission.description",
+    rewardCoins: 20,
+    condition: { kind: "missions_completed", count: 1 },
+  },
+  {
+    id: "dedicated_worker",
+    titleKey: "achievement.dedicated_worker.title",
+    descriptionKey: "achievement.dedicated_worker.description",
+    rewardCoins: 50,
+    condition: { kind: "mission_streak", days: 3 },
   },
 ];
 

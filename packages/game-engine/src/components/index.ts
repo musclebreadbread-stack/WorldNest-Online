@@ -44,3 +44,4 @@ export { MusicComponent } from "./MusicComponent";
 export { TransportComponent } from "./TransportComponent";
 export { FriendshipComponent } from "./FriendshipComponent";
 export { ExplorationComponent } from "./ExplorationComponent";
+export { MissionComponent } from "./MissionComponent";

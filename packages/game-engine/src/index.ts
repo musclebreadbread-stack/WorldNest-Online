@@ -46,6 +46,7 @@ export {
   TransportComponent,
   FriendshipComponent,
   ExplorationComponent,
+  MissionComponent,
 } from "./components";
 export type {
   KeyState,
@@ -217,6 +218,30 @@ export {
   recordTilesExplored,
 } from "./exploration";
 export type { ExplorationState, LandmarkDefinition } from "./exploration";
+
+// Missions (pure; daily/weekly rotating objectives with streak bonuses)
+export {
+  DAILY_MISSIONS,
+  WEEKLY_MISSIONS,
+  STREAK_BONUS_MULTIPLIERS,
+  getDailyMissionForDay,
+  getMission,
+  getWeeklyMissionForWeek,
+  claimMissionReward,
+  completeMission,
+  getActiveMissions,
+  getStreakMultiplier,
+  recordMissionProgress,
+  refreshDailyMissions,
+  refreshWeeklyMissions,
+} from "./missions";
+export type {
+  MissionDefinition,
+  MissionEntry,
+  MissionObjective,
+  MissionState,
+  MissionTier,
+} from "./missions";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -457,6 +482,7 @@ export {
   TransportSystem,
   FriendshipSystem,
   ExplorationSystem,
+  MissionSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -483,6 +509,8 @@ export type {
   MountRideListener,
   GiftGivenListener,
   FriendshipMaxListener,
+  MissionDayGetter,
+  MissionWeekGetter,
 } from "./systems";
 
 // World Generation

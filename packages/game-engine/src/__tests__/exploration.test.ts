@@ -258,6 +258,8 @@ describe("Exploration achievements integration", () => {
       biomesDiscovered: 3,
       landmarksDiscovered: 1,
       mapCompletionPercent: 50,
+      missionsCompleted: 0,
+      missionStreak: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "biomes_discovered", count: 1 }, source)).toBe(true);
