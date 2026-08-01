@@ -3,11 +3,17 @@ import { System } from "../ecs/System";
 import type { MusicComponent } from "../components/MusicComponent";
 import type { InventoryComponent } from "../components/InventoryComponent";
 import type { WalletComponent } from "../components/WalletComponent";
-import { canStartRhythm, completeSong, hitNote, tickRhythm } from "../music";
-import { getSong } from "../music/musicDefinitions";
+import {
+  canStartRhythm,
+  completeSong,
+  hitNote,
+  tickRhythm,
+  getComboMultiplier,
+} from "../music";
+import { getSong, SCORE_PERFECT, SCORE_GOOD } from "../music/musicDefinitions";
 
 /** Called when a song performance is completed. */
-export type MusicCompleteListener = () => void;
+export type MusicCompleteListener = (perfects: number, score: number) => void;
 
 /**
  * MusicSystem processes the rhythm mini-game state machine.
@@ -47,6 +53,7 @@ export class MusicSystem extends System {
         music.perfectCount = 0;
         music.goodCount = 0;
         music.missCount = 0;
+        music.hitScore = 0;
         music.version++;
       }
     }
@@ -117,9 +124,11 @@ export class MusicSystem extends System {
     if (result === "perfect") {
       music.perfectCount++;
       music.combo++;
+      music.hitScore += Math.floor(SCORE_PERFECT * getComboMultiplier(music.combo));
     } else if (result === "good") {
       music.goodCount++;
       music.combo++;
+      music.hitScore += Math.floor(SCORE_GOOD * getComboMultiplier(music.combo));
     } else {
       music.missCount++;
       music.combo = 0;
@@ -160,10 +169,12 @@ export class MusicSystem extends System {
       music.missCount,
       music.maxCombo,
     );
+    // Override totalScore with combo-multiplied hit score
+    score.totalScore = music.hitScore;
     music.lastScore = score;
     wallet.coins += coins;
     music.state = "complete";
     music.version++;
-    this.onComplete?.();
+    this.onComplete?.(music.perfectCount, score.totalScore);
   }
 }

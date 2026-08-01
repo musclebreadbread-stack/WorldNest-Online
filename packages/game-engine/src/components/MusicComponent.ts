@@ -30,6 +30,8 @@ export class MusicComponent extends Component {
   public instrument: InstrumentType | null;
   /** Player-composed melody (composition mode). */
   public composedMelody: RhythmNote[];
+  /** Running score accumulated with combo multipliers during gameplay. */
+  public hitScore: number;
   /** Cached final score after completion. */
   public lastScore: PerformanceScore | null;
   /** Set to true by the UI to signal a hit attempt. */
@@ -52,6 +54,7 @@ export class MusicComponent extends Component {
     this.missCount = 0;
     this.instrument = null;
     this.composedMelody = [];
+    this.hitScore = 0;
     this.lastScore = null;
     this.requestHit = false;
     this.requestHitLane = 0;

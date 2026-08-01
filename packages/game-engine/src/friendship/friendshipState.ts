@@ -16,4 +16,6 @@ export interface FriendshipEntry {
   lastGiftDay: number;
   /** Number of gifts given today (resets on day change). */
   giftsGivenToday: number;
+  /** Total number of gifts given to this NPC (lifetime counter). */
+  totalGiftsGiven: number;
 }

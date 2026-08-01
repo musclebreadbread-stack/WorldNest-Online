@@ -52,6 +52,10 @@ export class AchievementSystem extends System {
   private pendingCraftsCompleted = 0;
   /** Mount rides since last update, reported by TransportSystem. */
   private pendingMountRides = 0;
+  /** Rhythm perfects since last update, reported by MusicSystem. */
+  private pendingRhythmPerfects = 0;
+  /** Best rhythm score since last update, reported by MusicSystem. */
+  private pendingBestRhythmScore = 0;
 
   constructor(structureCount: AchievementStructureCounter = () => 0) {
     super(["achievement", "inventory", "wallet", "collection", "quest"]);
@@ -87,6 +91,14 @@ export class AchievementSystem extends System {
   /** Note that the player mounted a ride. */
   recordMountRide(): void {
     this.pendingMountRides++;
+  }
+
+  /** Record rhythm performance data from a completed song. */
+  recordRhythmComplete(perfects: number, score: number): void {
+    this.pendingRhythmPerfects += perfects;
+    if (score > this.pendingBestRhythmScore) {
+      this.pendingBestRhythmScore = score;
+    }
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -132,6 +144,12 @@ export class AchievementSystem extends System {
 
       // totalCraftsCompleted: apply pending crafts from the listener
       achievement.totalCraftsCompleted += this.pendingCraftsCompleted;
+
+      // totalRhythmPerfects: apply pending rhythm data from the listener
+      achievement.totalRhythmPerfects += this.pendingRhythmPerfects;
+      if (this.pendingBestRhythmScore > achievement.bestRhythmScore) {
+        achievement.bestRhythmScore = this.pendingBestRhythmScore;
+      }
 
       // totalQuestsCompleted: poll from quest entries (monotonic counter)
       const completedCount = Object.values(quest.entries).filter(
@@ -196,6 +214,8 @@ export class AchievementSystem extends System {
     this.pendingAnimalsTamed = 0;
     this.pendingCraftsCompleted = 0;
     this.pendingMountRides = 0;
+    this.pendingRhythmPerfects = 0;
+    this.pendingBestRhythmScore = 0;
   }
 
   private buildSource(

@@ -2,7 +2,7 @@ import { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import type { TransportComponent } from "../components/TransportComponent";
 import type { InventoryComponent } from "../components/InventoryComponent";
-import { countItem } from "../inventory/inventoryOps";
+import { countItem, removeItem } from "../inventory/inventoryOps";
 import type { ItemId } from "@worldnest/shared";
 import {
   canBoard,
@@ -110,8 +110,15 @@ export class TransportSystem extends System {
   requestFeed(transport: TransportComponent, inventory: InventoryComponent): boolean {
     if (transport.mode !== "mounted" || !transport.mountState) return false;
     if (countItem(inventory, "animal_feed" as ItemId) < 1) return false;
+    if (!removeItem(inventory, "animal_feed" as ItemId, 1)) return false;
     transport.mountState = feedMount(transport.mountState);
     transport.version++;
     return true;
+  }
+
+  /** Record a water tile traversed while boating (called by movement system). */
+  recordWaterTile(transport: TransportComponent): void {
+    if (transport.mode !== "boating") return;
+    transport.waterTilesTraversed++;
   }
 }

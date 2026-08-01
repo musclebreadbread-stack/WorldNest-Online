@@ -20,7 +20,7 @@ import {
   COMPOSE_MAX_NOTES,
 } from "../music";
 
-function createHarness(onComplete?: () => void) {
+function createHarness(onComplete?: (perfects: number, score: number) => void) {
   const inventory = new InventoryComponent();
   const wallet = new WalletComponent();
   const music = new MusicComponent();

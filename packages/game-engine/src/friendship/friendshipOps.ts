@@ -88,6 +88,7 @@ export function giveGift(
     level: 0,
     lastGiftDay: currentDay,
     giftsGivenToday: 0,
+    totalGiftsGiven: 0,
   };
 
   const isNewDay = existing.lastGiftDay !== currentDay;
@@ -102,6 +103,7 @@ export function giveGift(
     level: newLevel,
     lastGiftDay: currentDay,
     giftsGivenToday: isNewDay ? 1 : existing.giftsGivenToday + 1,
+    totalGiftsGiven: existing.totalGiftsGiven + 1,
   };
 
   return { entry: newEntry, reaction, pointsEarned, leveledUp, reward };
@@ -139,11 +141,7 @@ export function resetDailyGifts(
 export function getTotalGiftsGiven(entries: Record<string, FriendshipEntry>): number {
   let total = 0;
   for (const entry of Object.values(entries)) {
-    // Each entry's total gifts is roughly (points / average points per gift).
-    // Instead we count from a cumulative basis: points > 0 means at least one.
-    // Simplification: count entries with points > 0 as having gifted at least 1.
-    // Actually track by summing level transitions + remaining points.
-    total += Math.ceil(entry.points / GIFT_BASE_POINTS);
+    total += entry.totalGiftsGiven;
   }
   return total;
 }

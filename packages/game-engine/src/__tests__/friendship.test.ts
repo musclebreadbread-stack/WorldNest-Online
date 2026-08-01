@@ -93,6 +93,7 @@ describe("canGiveGift", () => {
       level: 0,
       lastGiftDay: 1,
       giftsGivenToday: MAX_DAILY_GIFTS,
+      totalGiftsGiven: 1,
     };
     expect(canGiveGift(inv, "flower" as ItemId, entry, 1)).toBe(false);
   });
@@ -106,6 +107,7 @@ describe("canGiveGift", () => {
       level: 0,
       lastGiftDay: 1,
       giftsGivenToday: MAX_DAILY_GIFTS,
+      totalGiftsGiven: 1,
     };
     expect(canGiveGift(inv, "flower" as ItemId, entry, 2)).toBe(true);
   });
@@ -163,6 +165,7 @@ describe("giveGift", () => {
       level: 0,
       lastGiftDay: 1,
       giftsGivenToday: 0,
+      totalGiftsGiven: 2,
     };
     // Loved gives 15 pts, so 18+15=33 which passes threshold 20
     const result = giveGift("villager_pip", "flower" as ItemId, entry, 1);
@@ -178,6 +181,7 @@ describe("giveGift", () => {
       level: 0,
       lastGiftDay: 1,
       giftsGivenToday: 0,
+      totalGiftsGiven: 0,
     };
     const result = giveGift("villager_pip", "stone" as ItemId, entry, 1);
     expect(result.entry.level).toBe(0);
@@ -198,6 +202,7 @@ describe("giveGift", () => {
       level: 0,
       lastGiftDay: 1,
       giftsGivenToday: 1,
+      totalGiftsGiven: 1,
     };
     const result = giveGift("villager_pip", "flower" as ItemId, entry, 2);
     expect(result.entry.giftsGivenToday).toBe(1);
@@ -250,6 +255,7 @@ describe("resetDailyGifts", () => {
         level: 1,
         lastGiftDay: 1,
         giftsGivenToday: 1,
+        totalGiftsGiven: 4,
       },
       juno: {
         npcId: "shopkeeper_juno",
@@ -257,6 +263,7 @@ describe("resetDailyGifts", () => {
         level: 0,
         lastGiftDay: 1,
         giftsGivenToday: 1,
+        totalGiftsGiven: 2,
       },
     };
     const result = resetDailyGifts(entries, 2);
@@ -274,6 +281,7 @@ describe("resetDailyGifts", () => {
         level: 2,
         lastGiftDay: 5,
         giftsGivenToday: 1,
+        totalGiftsGiven: 8,
       },
     };
     const result = resetDailyGifts(entries, 6);
@@ -288,8 +296,22 @@ describe("getHighestFriendshipLevel", () => {
   });
   it("returns the highest level among entries", () => {
     const entries = {
-      a: { npcId: "a", points: 25, level: 1, lastGiftDay: 1, giftsGivenToday: 0 },
-      b: { npcId: "b", points: 110, level: 3, lastGiftDay: 1, giftsGivenToday: 0 },
+      a: {
+        npcId: "a",
+        points: 25,
+        level: 1,
+        lastGiftDay: 1,
+        giftsGivenToday: 0,
+        totalGiftsGiven: 3,
+      },
+      b: {
+        npcId: "b",
+        points: 110,
+        level: 3,
+        lastGiftDay: 1,
+        giftsGivenToday: 0,
+        totalGiftsGiven: 10,
+      },
     };
     expect(getHighestFriendshipLevel(entries)).toBe(3);
   });
@@ -299,7 +321,7 @@ describe("getTotalGiftsGiven", () => {
   it("returns 0 for empty entries", () => {
     expect(getTotalGiftsGiven({})).toBe(0);
   });
-  it("estimates from points", () => {
+  it("sums totalGiftsGiven counters across entries", () => {
     const entries = {
       a: {
         npcId: "a",
@@ -307,9 +329,18 @@ describe("getTotalGiftsGiven", () => {
         level: 0,
         lastGiftDay: 1,
         giftsGivenToday: 0,
+        totalGiftsGiven: 3,
+      },
+      b: {
+        npcId: "b",
+        points: 30,
+        level: 1,
+        lastGiftDay: 1,
+        giftsGivenToday: 0,
+        totalGiftsGiven: 5,
       },
     };
-    expect(getTotalGiftsGiven(entries)).toBeGreaterThan(0);
+    expect(getTotalGiftsGiven(entries)).toBe(8);
   });
 });
 
@@ -368,6 +399,7 @@ describe("FriendshipSystem", () => {
       level: 0,
       lastGiftDay: 0,
       giftsGivenToday: 0,
+      totalGiftsGiven: 2,
     };
     friendship.requestGift = { npcId: "villager_pip", itemId: "flower" as ItemId };
     const coinsBefore = wallet.coins;

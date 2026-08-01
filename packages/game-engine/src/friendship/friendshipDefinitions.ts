@@ -22,6 +22,9 @@ export const GIFT_BASE_POINTS = 5;
 /** Maximum number of gifts that can be given to a single NPC per day. */
 export const MAX_DAILY_GIFTS = 1;
 
+/** Bonus friendship multiplier when gift is wrapped in a gift_box. */
+export const GIFT_BOX_BONUS = 1.5;
+
 /** Reaction multiplier for each gift preference type. */
 export const GIFT_MULTIPLIERS: Record<GiftReaction, number> = {
   loved: 3,

@@ -4,8 +4,9 @@ import { System } from "../ecs/System";
 import type { FriendshipComponent } from "../components/FriendshipComponent";
 import type { InventoryComponent } from "../components/InventoryComponent";
 import type { WalletComponent } from "../components/WalletComponent";
-import { removeItem } from "../inventory/inventoryOps";
+import { removeItem, countItem } from "../inventory/inventoryOps";
 import { canGiveGift, giveGift, resetDailyGifts } from "../friendship";
+import { GIFT_BOX_BONUS } from "../friendship/friendshipDefinitions";
 
 /** Called when a gift is successfully given (for achievements). */
 export type GiftGivenListener = () => void;
@@ -74,6 +75,15 @@ export class FriendshipSystem extends System {
 
     // Calculate points and update state
     const result = giveGift(npcId, itemId, entry, currentDay);
+
+    // Apply gift_box bonus: consume one gift_box and multiply points
+    if (countItem(inventory, "gift_box" as ItemId) >= 1) {
+      removeItem(inventory, "gift_box" as ItemId, 1);
+      const bonus = Math.floor(result.pointsEarned * (GIFT_BOX_BONUS - 1));
+      result.entry.points += bonus;
+      result.pointsEarned += bonus;
+    }
+
     friendship.entries[npcId] = result.entry;
     friendship.version++;
 
