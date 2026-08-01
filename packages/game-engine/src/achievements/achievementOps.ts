@@ -64,6 +64,10 @@ export function checkCondition(
       return source.mountBondLevel >= condition.level;
     case "water_travel":
       return source.waterTilesTraversed >= condition.tiles;
+    case "friendship_level":
+      return source.highestFriendshipLevel >= condition.level;
+    case "total_gifts":
+      return source.totalGiftsGiven >= condition.count;
   }
 }
 

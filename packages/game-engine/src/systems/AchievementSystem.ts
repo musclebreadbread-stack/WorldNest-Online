@@ -3,6 +3,7 @@ import type { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import { AchievementComponent } from "../components/AchievementComponent";
 import { CollectionComponent } from "../components/CollectionComponent";
+import { FriendshipComponent } from "../components/FriendshipComponent";
 import { HousingComponent } from "../components/HousingComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { QuestComponent } from "../components/QuestComponent";
@@ -11,6 +12,10 @@ import { TransportComponent } from "../components/TransportComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
 import { isCategoryComplete } from "../collection/collectionOps";
+import {
+  getHighestFriendshipLevel,
+  getTotalGiftsGiven,
+} from "../friendship/friendshipOps";
 import {
   ACHIEVEMENT_DEFINITIONS,
   type AchievementSource,
@@ -155,6 +160,18 @@ export class AchievementSystem extends System {
       ) {
         achievement.totalWaterTilesTraversed = transportComp.waterTilesTraversed;
       }
+      // Track friendship progress
+      const friendshipComp = entity.getComponent<FriendshipComponent>("friendship");
+      if (friendshipComp) {
+        const fLevel = getHighestFriendshipLevel(friendshipComp.entries);
+        if (fLevel > achievement.highestFriendshipLevel) {
+          achievement.highestFriendshipLevel = fLevel;
+        }
+        const fGifts = getTotalGiftsGiven(friendshipComp.entries);
+        if (fGifts > achievement.totalGiftsGiven) {
+          achievement.totalGiftsGiven = fGifts;
+        }
+      }
       const source = this.buildSource(
         inventory,
         collection,
@@ -203,6 +220,8 @@ export class AchievementSystem extends System {
       rhythmScore: achievement.bestRhythmScore,
       mountBondLevel: achievement.highestMountBondLevel,
       waterTilesTraversed: achievement.totalWaterTilesTraversed,
+      highestFriendshipLevel: achievement.highestFriendshipLevel,
+      totalGiftsGiven: achievement.totalGiftsGiven,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

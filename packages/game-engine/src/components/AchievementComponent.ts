@@ -38,6 +38,10 @@ export class AchievementComponent extends Component {
   public highestMountBondLevel: number;
   /** Total water tiles traversed by boat. */
   public totalWaterTilesTraversed: number;
+  /** Highest friendship level achieved (0-4). */
+  public highestFriendshipLevel: number;
+  /** Total gifts given to NPCs. */
+  public totalGiftsGiven: number;
 
   constructor() {
     super("achievement");
@@ -54,5 +58,7 @@ export class AchievementComponent extends Component {
     this.bestRhythmScore = 0;
     this.highestMountBondLevel = -1;
     this.totalWaterTilesTraversed = 0;
+    this.highestFriendshipLevel = 0;
+    this.totalGiftsGiven = 0;
   }
 }

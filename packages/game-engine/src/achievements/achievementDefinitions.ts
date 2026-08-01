@@ -21,7 +21,9 @@ export type AchievementCondition =
   | { kind: "rhythm_perfect"; count: number }
   | { kind: "rhythm_score"; score: number }
   | { kind: "mount_bond"; level: number }
-  | { kind: "water_travel"; tiles: number };
+  | { kind: "water_travel"; tiles: number }
+  | { kind: "friendship_level"; level: number }
+  | { kind: "total_gifts"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -50,6 +52,8 @@ export interface AchievementSource {
   rhythmScore: number;
   mountBondLevel: number;
   waterTilesTraversed: number;
+  highestFriendshipLevel: number;
+  totalGiftsGiven: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -179,6 +183,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.sea_explorer.description",
     rewardCoins: 40,
     condition: { kind: "water_travel", tiles: 100 },
+  },
+  {
+    id: "first_gift",
+    titleKey: "achievement.first_gift.title",
+    descriptionKey: "achievement.first_gift.description",
+    rewardCoins: 10,
+    condition: { kind: "total_gifts", count: 1 },
+  },
+  {
+    id: "best_friends",
+    titleKey: "achievement.best_friends.title",
+    descriptionKey: "achievement.best_friends.description",
+    rewardCoins: 75,
+    condition: { kind: "friendship_level", level: 4 },
   },
 ];
 

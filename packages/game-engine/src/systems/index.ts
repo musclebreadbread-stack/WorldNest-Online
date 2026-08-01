@@ -47,3 +47,5 @@ export { MusicSystem } from "./MusicSystem";
 export type { MusicCompleteListener } from "./MusicSystem";
 export { TransportSystem } from "./TransportSystem";
 export type { MountRideListener } from "./TransportSystem";
+export { FriendshipSystem } from "./FriendshipSystem";
+export type { GiftGivenListener, FriendshipMaxListener } from "./FriendshipSystem";

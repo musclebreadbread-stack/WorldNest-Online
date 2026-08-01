@@ -60,6 +60,7 @@ const EXPECTED_IDS: ItemId[] = [
   "horse_whistle",
   "donkey_whistle",
   "camel_whistle",
+  "gift_box",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

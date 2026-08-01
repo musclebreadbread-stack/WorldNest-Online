@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "NPC Friendship/Relationship system - gift giving, friendship levels, unique dialogue unlocks, and special rewards at high friendship. Each of the 7 existing NPCs gets a friendship track with 5 levels, preferred/disliked gifts, daily gift limit, and unique rewards at max friendship.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create packages/game-engine/src/friendship/ directory with index.ts, friendshipDefinitions.ts, friendshipOps.ts, and friendshipState.ts",
     "In friendshipDefinitions.ts: define FriendshipLevel type (0-4 corresponding to stranger/acquaintance/friend/close_friend/best_friend), FRIENDSHIP_THRESHOLDS array [0, 20, 50, 100, 200], GiftPreference interface (lovedItems, likedItems, dislikedItems with point multipliers: loved 3x, liked 1.5x, neutral 1x, disliked 0.25x), GIFT_BASE_POINTS (5), MAX_DAILY_GIFTS (1 per NPC), NPC_GIFT_PREFERENCES record keyed by npcId (each NPC has 2-3 loved items matching their role: Pip loves flowers/seeds, Juno loves rare items, Ada loves ore/stone, Milo loves collection items, Bao loves food ingredients, Hana loves animal_feed/pet_treat, Owl loves books/plank)",

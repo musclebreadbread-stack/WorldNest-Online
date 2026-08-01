@@ -158,6 +158,7 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   horse_whistle: "item.horse_whistle",
   donkey_whistle: "item.donkey_whistle",
   camel_whistle: "item.camel_whistle",
+  gift_box: "item.gift_box",
 };
 
 /**

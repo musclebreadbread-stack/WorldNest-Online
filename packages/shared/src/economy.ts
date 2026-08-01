@@ -106,6 +106,8 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   horse_whistle: { buy: 100, sell: 30 },
   donkey_whistle: { buy: 70, sell: 22 },
   camel_whistle: { buy: 90, sell: 28 },
+  // Friendship: gift wrapping for bonus friendship points
+  gift_box: { buy: 25, sell: 8 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

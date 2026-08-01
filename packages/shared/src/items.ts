@@ -54,7 +54,8 @@ export type ItemId =
   | "boat"
   | "horse_whistle"
   | "donkey_whistle"
-  | "camel_whistle";
+  | "camel_whistle"
+  | "gift_box";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -251,6 +252,7 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     displayName: "Camel Whistle",
     stackSize: 1,
   },
+  gift_box: { id: "gift_box", displayName: "Gift Box", stackSize: 10 },
 };
 
 export const ITEM_IDS = Object.keys(ITEM_DEFINITIONS) as ItemId[];

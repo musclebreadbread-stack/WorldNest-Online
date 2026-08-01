@@ -44,6 +44,7 @@ export {
   CraftingComponent,
   MusicComponent,
   TransportComponent,
+  FriendshipComponent,
 } from "./components";
 export type {
   KeyState,
@@ -175,6 +176,31 @@ export type {
   MountState,
   TransportMode,
 } from "./transport";
+
+// Friendship (pure; NPC gift giving, levels, daily limits)
+export {
+  FRIENDSHIP_THRESHOLDS,
+  GIFT_BASE_POINTS,
+  GIFT_MULTIPLIERS,
+  LEVEL_REWARDS,
+  MAX_DAILY_GIFTS,
+  NPC_GIFT_PREFERENCES,
+  canGiveGift,
+  getGiftReaction,
+  getFriendshipLevel,
+  getHighestFriendshipLevel,
+  getLevelReward,
+  getTotalGiftsGiven,
+  giveGift,
+  resetDailyGifts,
+} from "./friendship";
+export type {
+  FriendshipEntry,
+  FriendshipLevel,
+  GiftPreference,
+  GiftReaction,
+  GiftResult,
+} from "./friendship";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -413,6 +439,7 @@ export {
   CraftingSystem,
   MusicSystem,
   TransportSystem,
+  FriendshipSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -437,6 +464,8 @@ export type {
   QuizStreakListener,
   MusicCompleteListener,
   MountRideListener,
+  GiftGivenListener,
+  FriendshipMaxListener,
 } from "./systems";
 
 // World Generation
