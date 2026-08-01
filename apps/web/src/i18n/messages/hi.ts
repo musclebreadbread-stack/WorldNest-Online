@@ -663,4 +663,49 @@ export const hi: LocaleMessages = {
   "achievement.storm_chaser.title": "तूफान शिकारी",
   "achievement.storm_chaser.description":
     "सभी 5 प्रकार की मौसम विशेष वस्तुएं एकत्र करें।",
+
+  "reputation.title": "गांव की प्रतिष्ठा",
+  "reputation.points": "{points} प्रतिष्ठा अंक",
+  "reputation.tier.hamlet": "बस्ती",
+  "reputation.tier.village": "गांव",
+  "reputation.tier.town": "कस्बा",
+  "reputation.tier.city": "शहर",
+  "reputation.tier.metropolis": "महानगर",
+  "reputation.progress": "अगले स्तर तक प्रगति: {percent}%",
+  "reputation.tierUp": "आपका गांव {tier} बन गया!",
+  "reputation.contribute": "गांव में योगदान करें",
+  "reputation.project.village_well.name": "गांव का कुआं",
+  "reputation.project.village_well.description":
+    "सभी ग्रामीणों को स्वच्छ जल उपलब्ध कराने के लिए एक केंद्रीय कुआं बनाएं।",
+  "reputation.project.village_well.unlock": "जल उद्यान क्षेत्र अनलॉक होता है।",
+  "reputation.project.town_market.name": "कस्बा बाजार",
+  "reputation.project.town_market.description":
+    "व्यापार के लिए एक व्यस्त बाजार का निर्माण करें।",
+  "reputation.project.town_market.unlock": "विस्तारित दुकान सूची अनलॉक होती है।",
+  "reputation.project.city_library.name": "शहर का पुस्तकालय",
+  "reputation.project.city_library.description":
+    "ज्ञान को संरक्षित करने के लिए एक भव्य पुस्तकालय स्थापित करें।",
+  "reputation.project.city_library.unlock": "उन्नत प्रश्नोत्तरी विषय अनलॉक होते हैं।",
+  "reputation.project.metropolis_plaza.name": "महानगर चौक",
+  "reputation.project.metropolis_plaza.description":
+    "सभाओं के लिए एक भव्य केंद्रीय चौक बनाएं।",
+  "reputation.project.metropolis_plaza.unlock": "महा उत्सव मैदान अनलॉक होता है।",
+  "reputation.project.grand_monument.name": "महा स्मारक",
+  "reputation.project.grand_monument.description":
+    "समुदाय की उपलब्धियों का जश्न मनाने के लिए एक स्मारक बनाएं।",
+  "reputation.project.grand_monument.unlock": "स्मारक पार्क क्षेत्र अनलॉक होता है।",
+  "reputation.reward": "स्तर पुरस्कार: {coins} सिक्के!",
+  "reputation.milestone": "आपने एक नया मील का पत्थर हासिल किया!",
+  "reputation.benefits.hamlet": "आपकी बस्ती की विनम्र शुरुआत।",
+  "reputation.benefits.village": "बुनियादी गांव सेवाएं और सामुदायिक कुआं।",
+  "reputation.benefits.town": "बाजार और व्यापार मार्गों वाला समृद्ध कस्बा।",
+  "reputation.benefits.city": "पुस्तकालय और सांस्कृतिक कार्यक्रमों वाला विकसित शहर।",
+  "reputation.benefits.metropolis": "चौक, स्मारक और उत्सवों वाला भव्य महानगर।",
+  "achievement.first_contributor.title": "पहला योगदानकर्ता",
+  "achievement.first_contributor.description": "गांव में अपना पहला योगदान करें।",
+  "achievement.village_builder.title": "गांव निर्माता",
+  "achievement.village_builder.description":
+    "अपनी बस्ती को गांव स्तर तक बढ़ने में मदद करें।",
+  "achievement.community_leader.title": "समुदाय नेता",
+  "achievement.community_leader.description": "अपने समुदाय को कस्बा स्तर तक ले जाएं।",
 };

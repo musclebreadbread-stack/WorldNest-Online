@@ -56,3 +56,4 @@ export type { MissionDayGetter, MissionWeekGetter } from "./MissionSystem";
 export { GardeningSystem } from "./GardeningSystem";
 export { WeatherGatheringSystem } from "./WeatherGatheringSystem";
 export type { WeatherRngFn } from "./WeatherGatheringSystem";
+export { ReputationSystem } from "./ReputationSystem";

@@ -283,6 +283,8 @@ describe("Exploration achievements integration", () => {
       gardenCompetitionWins: 0,
       weatherItemsGathered: 0,
       weatherTypesGathered: 0,
+      villageTier: 0,
+      contributionCount: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "biomes_discovered", count: 1 }, source)).toBe(true);

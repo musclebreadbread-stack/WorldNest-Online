@@ -663,4 +663,50 @@ export const vi: LocaleMessages = {
   "achievement.storm_chaser.title": "Nguoi san bao",
   "achievement.storm_chaser.description":
     "Thu thap du 5 loai vat pham dac biet theo thoi tiet.",
+
+  "reputation.title": "Danh tieng Lang",
+  "reputation.points": "{points} diem danh tieng",
+  "reputation.tier.hamlet": "Xom nho",
+  "reputation.tier.village": "Lang",
+  "reputation.tier.town": "Thi tran",
+  "reputation.tier.city": "Thanh pho",
+  "reputation.tier.metropolis": "Dai do thi",
+  "reputation.progress": "Tien do den cap tiep theo: {percent}%",
+  "reputation.tierUp": "Lang cua ban da phat trien thanh {tier}!",
+  "reputation.contribute": "Dong gop cho lang",
+  "reputation.project.village_well.name": "Gieng Lang",
+  "reputation.project.village_well.description":
+    "Xay mot gieng nuoc trung tam cung cap nuoc sach cho moi nguoi.",
+  "reputation.project.village_well.unlock": "Mo khoa khu vuon nuoc.",
+  "reputation.project.town_market.name": "Cho Thi Tran",
+  "reputation.project.town_market.description":
+    "Xay mot khu cho sam uat de giao thuong.",
+  "reputation.project.town_market.unlock": "Mo khoa hang hoa cua hang mo rong.",
+  "reputation.project.city_library.name": "Thu Vien Thanh Pho",
+  "reputation.project.city_library.description":
+    "Thanh lap mot thu vien lon de bao ton tri thuc.",
+  "reputation.project.city_library.unlock": "Mo khoa chu de cau do nang cao.",
+  "reputation.project.metropolis_plaza.name": "Quang Truong Dai Do Thi",
+  "reputation.project.metropolis_plaza.description":
+    "Tao mot quang truong trung tam tuyet dep cho cac su kien.",
+  "reputation.project.metropolis_plaza.unlock": "Mo khoa khu le hoi lon.",
+  "reputation.project.grand_monument.name": "Dai Ky Niem",
+  "reputation.project.grand_monument.description":
+    "Dung mot dai ky niem ton vinh thanh tuu cua cong dong.",
+  "reputation.project.grand_monument.unlock": "Mo khoa khu cong vien dai ky niem.",
+  "reputation.reward": "Phan thuong cap bac: {coins} xu!",
+  "reputation.milestone": "Ban da dat moc moi!",
+  "reputation.benefits.hamlet": "Khoi dau khiem ton cho khu dinh cu.",
+  "reputation.benefits.village": "Dich vu lang co ban va gieng nuoc chung.",
+  "reputation.benefits.town": "Thi tran thinh vuong voi cho va tuyen thuong mai.",
+  "reputation.benefits.city": "Thanh pho phat trien voi thu vien va su kien van hoa.",
+  "reputation.benefits.metropolis":
+    "Dai do thi huy hoang voi quang truong, dai ky niem va le hoi.",
+  "achievement.first_contributor.title": "Nguoi Dong Gop Dau Tien",
+  "achievement.first_contributor.description": "Thuc hien dong gop dau tien cho lang.",
+  "achievement.village_builder.title": "Nguoi Xay Dung Lang",
+  "achievement.village_builder.description":
+    "Giup khu dinh cu phat trien len cap Lang.",
+  "achievement.community_leader.title": "Lanh Dao Cong Dong",
+  "achievement.community_leader.description": "Dan dat cong dong len cap Thi Tran.",
 };

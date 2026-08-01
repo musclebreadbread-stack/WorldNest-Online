@@ -357,6 +357,8 @@ describe("Weather gathering achievement integration", () => {
       gardenCompetitionWins: 0,
       weatherItemsGathered: 6,
       weatherTypesGathered: 3,
+      villageTier: 0,
+      contributionCount: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "weather_items_gathered", count: 5 }, source)).toBe(

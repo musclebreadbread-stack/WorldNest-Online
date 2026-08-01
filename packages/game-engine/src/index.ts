@@ -49,6 +49,7 @@ export {
   MissionComponent,
   GardeningComponent,
   WeatherGatheringComponent,
+  ReputationComponent,
 } from "./components";
 export type {
   KeyState,
@@ -271,6 +272,34 @@ export type {
   WeatherGatheringState,
   WeatherNotification,
 } from "./gathering";
+
+// Reputation (pure; village development tiers, community projects)
+export {
+  VillageTier,
+  TIER_THRESHOLDS,
+  CONTRIBUTION_POINTS,
+  TIER_NAME_KEYS,
+  TIER_MILESTONE_REWARDS,
+  COMMUNITY_PROJECTS,
+  COMMUNITY_PROJECT_IDS,
+  getCommunityProject,
+  addContribution,
+  getCurrentTier,
+  getProgressToNextTier,
+  checkTierUp,
+  startCommunityProject,
+  contributeToCommunityProject,
+  completeCommunityProject,
+  claimTierReward,
+  getTierBenefits,
+} from "./reputation";
+export type {
+  ContributionAction,
+  CommunityProject,
+  ContributionEntry,
+  ActiveProject,
+  ReputationState,
+} from "./reputation";
 
 // Missions (pure; daily/weekly rotating objectives with streak bonuses)
 export {
@@ -550,6 +579,7 @@ export {
   MissionSystem,
   GardeningSystem,
   WeatherGatheringSystem,
+  ReputationSystem,
 } from "./systems";
 export type {
   RenderData,

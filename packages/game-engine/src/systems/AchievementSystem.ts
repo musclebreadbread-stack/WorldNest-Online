@@ -10,6 +10,7 @@ import { InventoryComponent } from "../components/InventoryComponent";
 import { MissionComponent } from "../components/MissionComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
+import { ReputationComponent } from "../components/ReputationComponent";
 import { ShopComponent } from "../components/ShopComponent";
 import { TransportComponent } from "../components/TransportComponent";
 import { WalletComponent } from "../components/WalletComponent";
@@ -213,6 +214,12 @@ export class AchievementSystem extends System {
       const shopComp = entity.getComponent<ShopComponent>("shop");
       const rareItemsBought = shopComp ? shopComp.rareItemsPurchased : 0;
       const shopsVisited = shopComp ? shopComp.shopsVisited.size : 0;
+      // Track reputation progress
+      const reputationComp = entity.getComponent<ReputationComponent>("reputation");
+      const villageTier = reputationComp ? reputationComp.currentTier : 0;
+      const contributionCount = reputationComp
+        ? reputationComp.contributionHistory.length
+        : 0;
       const source = this.buildSource(
         inventory,
         collection,
@@ -226,6 +233,8 @@ export class AchievementSystem extends System {
         missionStreak,
         rareItemsBought,
         shopsVisited,
+        villageTier,
+        contributionCount,
       );
 
       // Check each achievement that has not been unlocked yet
@@ -261,6 +270,8 @@ export class AchievementSystem extends System {
     missionStreak: number,
     rareItemsBought: number,
     shopsVisited: number,
+    villageTier: number,
+    contributionCount: number,
   ): AchievementSource {
     return {
       itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
@@ -290,6 +301,8 @@ export class AchievementSystem extends System {
       gardenCompetitionWins: 0,
       weatherItemsGathered: 0,
       weatherTypesGathered: 0,
+      villageTier,
+      contributionCount,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

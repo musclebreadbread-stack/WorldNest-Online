@@ -47,3 +47,4 @@ export { ExplorationComponent } from "./ExplorationComponent";
 export { MissionComponent } from "./MissionComponent";
 export { GardeningComponent } from "./GardeningComponent";
 export { WeatherGatheringComponent } from "./WeatherGatheringComponent";
+export { ReputationComponent } from "./ReputationComponent";

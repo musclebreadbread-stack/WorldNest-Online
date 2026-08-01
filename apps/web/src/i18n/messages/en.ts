@@ -664,4 +664,51 @@ export const en = {
   "achievement.storm_chaser.title": "Storm Chaser",
   "achievement.storm_chaser.description":
     "Gather all 5 types of weather-exclusive items.",
+
+  "reputation.title": "Village Reputation",
+  "reputation.points": "{points} reputation points",
+  "reputation.tier.hamlet": "Hamlet",
+  "reputation.tier.village": "Village",
+  "reputation.tier.town": "Town",
+  "reputation.tier.city": "City",
+  "reputation.tier.metropolis": "Metropolis",
+  "reputation.progress": "Progress to next tier: {percent}%",
+  "reputation.tierUp": "Your village grew to {tier}!",
+  "reputation.contribute": "Contribute to the village",
+  "reputation.project.village_well.name": "Village Well",
+  "reputation.project.village_well.description":
+    "Build a central well to provide fresh water for all villagers.",
+  "reputation.project.village_well.unlock": "Unlocks the water garden area.",
+  "reputation.project.town_market.name": "Town Market",
+  "reputation.project.town_market.description":
+    "Construct a bustling marketplace for trade and barter.",
+  "reputation.project.town_market.unlock": "Unlocks expanded shop inventory.",
+  "reputation.project.city_library.name": "City Library",
+  "reputation.project.city_library.description":
+    "Establish a grand library to preserve knowledge.",
+  "reputation.project.city_library.unlock": "Unlocks advanced quiz topics.",
+  "reputation.project.metropolis_plaza.name": "Metropolis Plaza",
+  "reputation.project.metropolis_plaza.description":
+    "Create a magnificent central plaza for gatherings.",
+  "reputation.project.metropolis_plaza.unlock": "Unlocks the grand festival grounds.",
+  "reputation.project.grand_monument.name": "Grand Monument",
+  "reputation.project.grand_monument.description":
+    "Erect a monument celebrating the community's achievements.",
+  "reputation.project.grand_monument.unlock": "Unlocks the monument park area.",
+  "reputation.reward": "Milestone reward: {coins} coins!",
+  "reputation.milestone": "You reached a new milestone!",
+  "reputation.benefits.hamlet": "A humble beginning for your settlement.",
+  "reputation.benefits.village": "Basic village services and the community well.",
+  "reputation.benefits.town": "A thriving town with a marketplace and trade routes.",
+  "reputation.benefits.city": "A flourishing city with a library and cultural events.",
+  "reputation.benefits.metropolis":
+    "A grand metropolis with plazas, monuments, and festivals.",
+  "achievement.first_contributor.title": "First Contributor",
+  "achievement.first_contributor.description":
+    "Make your first contribution to the village.",
+  "achievement.village_builder.title": "Village Builder",
+  "achievement.village_builder.description":
+    "Help your settlement grow to Village status.",
+  "achievement.community_leader.title": "Community Leader",
+  "achievement.community_leader.description": "Lead your community to Town status.",
 } as const;

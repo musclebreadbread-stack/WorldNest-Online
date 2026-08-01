@@ -90,6 +90,10 @@ export function checkCondition(
       return source.weatherItemsGathered >= condition.count;
     case "weather_types_gathered":
       return source.weatherTypesGathered >= condition.count;
+    case "village_tier":
+      return source.villageTier >= condition.tier;
+    case "contributions":
+      return source.contributionCount >= condition.count;
   }
 }
 

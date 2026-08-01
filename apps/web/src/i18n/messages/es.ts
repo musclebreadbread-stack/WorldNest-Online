@@ -672,4 +672,55 @@ export const es: LocaleMessages = {
   "achievement.storm_chaser.title": "Cazador de Tormentas",
   "achievement.storm_chaser.description":
     "Recolecta los 5 tipos de objetos exclusivos del clima.",
+
+  "reputation.title": "Reputacion del Pueblo",
+  "reputation.points": "{points} puntos de reputacion",
+  "reputation.tier.hamlet": "Aldea",
+  "reputation.tier.village": "Pueblo",
+  "reputation.tier.town": "Villa",
+  "reputation.tier.city": "Ciudad",
+  "reputation.tier.metropolis": "Gran Ciudad",
+  "reputation.progress": "Progreso al siguiente rango: {percent}%",
+  "reputation.tierUp": "Tu pueblo crecio a {tier}!",
+  "reputation.contribute": "Contribuir al pueblo",
+  "reputation.project.village_well.name": "Pozo del Pueblo",
+  "reputation.project.village_well.description":
+    "Construye un pozo central para proveer agua fresca a todos.",
+  "reputation.project.village_well.unlock": "Desbloquea el area del jardin acuatico.",
+  "reputation.project.town_market.name": "Mercado de la Villa",
+  "reputation.project.town_market.description":
+    "Construye un mercado animado para el comercio.",
+  "reputation.project.town_market.unlock":
+    "Desbloquea el inventario ampliado de la tienda.",
+  "reputation.project.city_library.name": "Biblioteca de la Ciudad",
+  "reputation.project.city_library.description":
+    "Establece una gran biblioteca para preservar el conocimiento.",
+  "reputation.project.city_library.unlock":
+    "Desbloquea temas avanzados del cuestionario.",
+  "reputation.project.metropolis_plaza.name": "Plaza de la Metropolis",
+  "reputation.project.metropolis_plaza.description":
+    "Crea una magnifica plaza central para reuniones.",
+  "reputation.project.metropolis_plaza.unlock":
+    "Desbloquea el recinto del gran festival.",
+  "reputation.project.grand_monument.name": "Gran Monumento",
+  "reputation.project.grand_monument.description":
+    "Erige un monumento celebrando los logros de la comunidad.",
+  "reputation.project.grand_monument.unlock":
+    "Desbloquea el area del parque monumental.",
+  "reputation.reward": "Recompensa de rango: {coins} monedas!",
+  "reputation.milestone": "Alcanzaste un nuevo hito!",
+  "reputation.benefits.hamlet": "Un humilde comienzo para tu asentamiento.",
+  "reputation.benefits.village": "Servicios basicos del pueblo y el pozo comunitario.",
+  "reputation.benefits.town": "Una villa prospera con mercado y rutas comerciales.",
+  "reputation.benefits.city":
+    "Una ciudad floreciente con biblioteca y eventos culturales.",
+  "reputation.benefits.metropolis":
+    "Una gran metropolis con plazas, monumentos y festivales.",
+  "achievement.first_contributor.title": "Primer Contribuyente",
+  "achievement.first_contributor.description": "Haz tu primera contribucion al pueblo.",
+  "achievement.village_builder.title": "Constructor del Pueblo",
+  "achievement.village_builder.description":
+    "Ayuda a tu asentamiento a crecer al rango de Pueblo.",
+  "achievement.community_leader.title": "Lider Comunitario",
+  "achievement.community_leader.description": "Lleva a tu comunidad al rango de Villa.",
 };

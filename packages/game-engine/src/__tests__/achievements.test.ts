@@ -51,6 +51,8 @@ function emptySource(): AchievementSource {
     gardenCompetitionWins: 0,
     weatherItemsGathered: 0,
     weatherTypesGathered: 0,
+    villageTier: 0,
+    contributionCount: 0,
     isCategoryComplete: () => false,
   };
 }
@@ -73,8 +75,8 @@ function createPlayer() {
 
 describe("achievementDefinitions", () => {
   it("should define 8 achievements with valid keys and unique ids", () => {
-    expect(ACHIEVEMENT_IDS).toHaveLength(32);
-    expect(new Set(ACHIEVEMENT_IDS).size).toBe(32);
+    expect(ACHIEVEMENT_IDS).toHaveLength(35);
+    expect(new Set(ACHIEVEMENT_IDS).size).toBe(35);
     for (const def of ACHIEVEMENT_DEFINITIONS) {
       expect(def.titleKey).toMatch(/^achievement\./);
       expect(def.descriptionKey).toMatch(/^achievement\./);

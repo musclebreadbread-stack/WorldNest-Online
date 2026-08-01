@@ -34,7 +34,9 @@ export type AchievementCondition =
   | { kind: "garden_arrangements"; count: number }
   | { kind: "garden_competition_wins"; count: number }
   | { kind: "weather_items_gathered"; count: number }
-  | { kind: "weather_types_gathered"; count: number };
+  | { kind: "weather_types_gathered"; count: number }
+  | { kind: "village_tier"; tier: number }
+  | { kind: "contributions"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -76,6 +78,8 @@ export interface AchievementSource {
   gardenCompetitionWins: number;
   weatherItemsGathered: number;
   weatherTypesGathered: number;
+  villageTier: number;
+  contributionCount: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -303,6 +307,27 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.storm_chaser.description",
     rewardCoins: 100,
     condition: { kind: "weather_types_gathered", count: 5 },
+  },
+  {
+    id: "first_contributor",
+    titleKey: "achievement.first_contributor.title",
+    descriptionKey: "achievement.first_contributor.description",
+    rewardCoins: 15,
+    condition: { kind: "contributions", count: 1 },
+  },
+  {
+    id: "village_builder",
+    titleKey: "achievement.village_builder.title",
+    descriptionKey: "achievement.village_builder.description",
+    rewardCoins: 40,
+    condition: { kind: "village_tier", tier: 1 },
+  },
+  {
+    id: "community_leader",
+    titleKey: "achievement.community_leader.title",
+    descriptionKey: "achievement.community_leader.description",
+    rewardCoins: 75,
+    condition: { kind: "village_tier", tier: 2 },
   },
 ];
 

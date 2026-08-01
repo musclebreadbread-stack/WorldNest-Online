@@ -672,4 +672,54 @@ export const de: LocaleMessages = {
   "achievement.storm_chaser.title": "Sturmjager",
   "achievement.storm_chaser.description":
     "Sammle alle 5 Arten wetterexklusiver Gegenstande.",
+
+  "reputation.title": "Dorfansehen",
+  "reputation.points": "{points} Ansehenspunkte",
+  "reputation.tier.hamlet": "Weiler",
+  "reputation.tier.village": "Dorf",
+  "reputation.tier.town": "Kleinstadt",
+  "reputation.tier.city": "Stadt",
+  "reputation.tier.metropolis": "Metropole",
+  "reputation.progress": "Fortschritt zur nachsten Stufe: {percent}%",
+  "reputation.tierUp": "Dein Dorf ist zu einer {tier} gewachsen!",
+  "reputation.contribute": "Zum Dorf beitragen",
+  "reputation.project.village_well.name": "Dorfbrunnen",
+  "reputation.project.village_well.description":
+    "Baue einen zentralen Brunnen fur frisches Wasser.",
+  "reputation.project.village_well.unlock": "Schaltet den Wassergartenbereich frei.",
+  "reputation.project.town_market.name": "Kleinstadtmarkt",
+  "reputation.project.town_market.description":
+    "Errichte einen belebten Marktplatz fur den Handel.",
+  "reputation.project.town_market.unlock": "Schaltet erweitertes Ladeninventar frei.",
+  "reputation.project.city_library.name": "Stadtbibliothek",
+  "reputation.project.city_library.description":
+    "Errichte eine grosse Bibliothek zur Bewahrung des Wissens.",
+  "reputation.project.city_library.unlock":
+    "Schaltet fortgeschrittene Quizthemen frei.",
+  "reputation.project.metropolis_plaza.name": "Metropolenplatz",
+  "reputation.project.metropolis_plaza.description":
+    "Erschaffe einen prachtigen zentralen Platz fur Versammlungen.",
+  "reputation.project.metropolis_plaza.unlock":
+    "Schaltet das grosse Festivalgelande frei.",
+  "reputation.project.grand_monument.name": "Grosses Monument",
+  "reputation.project.grand_monument.description":
+    "Errichte ein Monument zur Feier der Errungenschaften.",
+  "reputation.project.grand_monument.unlock": "Schaltet den Monumentparkbereich frei.",
+  "reputation.reward": "Stufenbelohnung: {coins} Munzen!",
+  "reputation.milestone": "Du hast einen neuen Meilenstein erreicht!",
+  "reputation.benefits.hamlet": "Ein bescheidener Anfang fur deine Siedlung.",
+  "reputation.benefits.village": "Grundlegende Dorfdienste und der Gemeindebrunnen.",
+  "reputation.benefits.town": "Eine bluhende Kleinstadt mit Markt und Handelsrouten.",
+  "reputation.benefits.city":
+    "Eine florierende Stadt mit Bibliothek und Kulturveranstaltungen.",
+  "reputation.benefits.metropolis":
+    "Eine grossartige Metropole mit Platzen, Monumenten und Festen.",
+  "achievement.first_contributor.title": "Erster Beitrag",
+  "achievement.first_contributor.description": "Leiste deinen ersten Beitrag zum Dorf.",
+  "achievement.village_builder.title": "Dorferbauer",
+  "achievement.village_builder.description":
+    "Hilf deiner Siedlung auf Dorfstufe zu wachsen.",
+  "achievement.community_leader.title": "Gemeindeleiter",
+  "achievement.community_leader.description":
+    "Fuhre deine Gemeinschaft zur Kleinstadtstufe.",
 };

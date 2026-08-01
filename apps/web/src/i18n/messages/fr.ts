@@ -674,4 +674,56 @@ export const fr: LocaleMessages = {
   "achievement.storm_chaser.title": "Chasseur de Tempetes",
   "achievement.storm_chaser.description":
     "Recoltez les 5 types d'objets exclusifs meteorologiques.",
+
+  "reputation.title": "Reputation du Village",
+  "reputation.points": "{points} points de reputation",
+  "reputation.tier.hamlet": "Hameau",
+  "reputation.tier.village": "Bourgade",
+  "reputation.tier.town": "Bourg",
+  "reputation.tier.city": "Cite",
+  "reputation.tier.metropolis": "Metropole",
+  "reputation.progress": "Progres vers le rang suivant: {percent}%",
+  "reputation.tierUp": "Votre village est devenu un(e) {tier} !",
+  "reputation.contribute": "Contribuer au village",
+  "reputation.project.village_well.name": "Puits du Village",
+  "reputation.project.village_well.description":
+    "Construisez un puits central pour fournir de l'eau a tous.",
+  "reputation.project.village_well.unlock": "Debloque la zone du jardin aquatique.",
+  "reputation.project.town_market.name": "Marche du Bourg",
+  "reputation.project.town_market.description":
+    "Construisez un marche anime pour le commerce.",
+  "reputation.project.town_market.unlock":
+    "Debloque l'inventaire elargi de la boutique.",
+  "reputation.project.city_library.name": "Bibliotheque de la Cite",
+  "reputation.project.city_library.description":
+    "Etablissez une grande bibliotheque pour preserver le savoir.",
+  "reputation.project.city_library.unlock": "Debloque les sujets avances du quiz.",
+  "reputation.project.metropolis_plaza.name": "Place de la Metropole",
+  "reputation.project.metropolis_plaza.description":
+    "Creez une magnifique place centrale pour les rassemblements.",
+  "reputation.project.metropolis_plaza.unlock":
+    "Debloque le terrain du grand festival.",
+  "reputation.project.grand_monument.name": "Monument Grandiose",
+  "reputation.project.grand_monument.description":
+    "Erigez un monument celebrant les realisations de la communaute.",
+  "reputation.project.grand_monument.unlock": "Debloque la zone du parc monumental.",
+  "reputation.reward": "Recompense de rang : {coins} pieces !",
+  "reputation.milestone": "Vous avez atteint un nouveau jalon !",
+  "reputation.benefits.hamlet": "Un humble debut pour votre etablissement.",
+  "reputation.benefits.village": "Services de base du village et puits communautaire.",
+  "reputation.benefits.town":
+    "Un bourg prospere avec un marche et des routes commerciales.",
+  "reputation.benefits.city":
+    "Une cite florissante avec bibliotheque et evenements culturels.",
+  "reputation.benefits.metropolis":
+    "Une grande metropole avec places, monuments et festivals.",
+  "achievement.first_contributor.title": "Premier Contributeur",
+  "achievement.first_contributor.description":
+    "Faites votre premiere contribution au village.",
+  "achievement.village_builder.title": "Batisseur du Village",
+  "achievement.village_builder.description":
+    "Aidez votre etablissement a atteindre le rang de Village.",
+  "achievement.community_leader.title": "Leader Communautaire",
+  "achievement.community_leader.description":
+    "Menez votre communaute au rang de Bourg.",
 };
