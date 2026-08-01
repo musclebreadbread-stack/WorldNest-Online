@@ -597,4 +597,23 @@ export const de: LocaleMessages = {
   "achievement.dedicated_worker.title": "Fleissiger Arbeiter",
   "achievement.dedicated_worker.description":
     "Erreiche eine 3-Tage-Serie bei Aufgaben.",
+
+  "shop.specialty": "Spezialware: reduziert!",
+  "shop.seasonalSale": "Saisonaler Ausverkauf aktiv!",
+  "shop.rareItem": "Seltenes Item des Tages!",
+  "shop.npcShop.juno": "Junos Gemischtwarenladen",
+  "shop.npcShop.bao": "Chefkoch Baos Lebensmittelmarkt",
+  "shop.npcShop.hana": "Hanas Ranchbedarf",
+  "shop.npcShop.melody": "Melodys Musikladen",
+  "item.explorer_compass": "Entdecker-Kompass",
+  "item.treasure_map": "Schatzkarte",
+  "item.lucky_charm": "Gluecksbringer",
+  "item.season_ticket": "Saisonkarte",
+  "item.rare_seed_pack": "Seltenes Saatpaket",
+  "item.golden_fishing_rod": "Goldene Angelrute",
+  "achievement.rare_collector.title": "Raritaetensammler",
+  "achievement.rare_collector.description":
+    "Kaufe 3 seltene Gegenstaende in NPC-Laeden.",
+  "achievement.window_shopper.title": "Schaufensterbummler",
+  "achievement.window_shopper.description": "Besuche alle 4 NPC-Fachgeschaefte.",
 };

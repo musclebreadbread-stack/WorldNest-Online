@@ -177,7 +177,7 @@ describe("ShopSystem", () => {
     system.update([entity], 1 / 60);
 
     expect(countItem(inventory, "wood")).toBe(1);
-    expect(wallet.coins).toBe(STARTING_COINS - WOOD.buy);
+    expect(wallet.coins).toBe(STARTING_COINS - Math.floor(WOOD.buy * 0.9));
     expect(shop.requestedTrade).toBeNull();
     // One bump for opening, one for the trade
     expect(shop.version).toBe(2);
@@ -307,7 +307,7 @@ describe("ShopSystem balance reconciliation", () => {
     shop.requestedTrade = { kind: "buy", itemId: "wood", quantity: 1 };
     system.update([entity], 1 / 60);
 
-    expect(wallet.coins).toBe(100 - WOOD.buy);
+    expect(wallet.coins).toBe(100 - Math.floor(WOOD.buy * 0.9));
   });
 
   it("should not touch the shop's version, which is not its business", () => {

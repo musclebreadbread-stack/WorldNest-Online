@@ -159,6 +159,12 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   donkey_whistle: "item.donkey_whistle",
   camel_whistle: "item.camel_whistle",
   gift_box: "item.gift_box",
+  explorer_compass: "item.explorer_compass",
+  treasure_map: "item.treasure_map",
+  lucky_charm: "item.lucky_charm",
+  season_ticket: "item.season_ticket",
+  rare_seed_pack: "item.rare_seed_pack",
+  golden_fishing_rod: "item.golden_fishing_rod",
 };
 
 /**

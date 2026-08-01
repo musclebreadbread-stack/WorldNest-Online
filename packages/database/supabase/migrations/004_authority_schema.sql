@@ -88,7 +88,13 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('horse_whistle', 100, 30),
   ('donkey_whistle', 70, 22),
   ('camel_whistle', 90, 28),
-  ('gift_box', 25, 8)
+  ('gift_box', 25, 8),
+  ('explorer_compass', 200, 65),
+  ('treasure_map', 180, 60),
+  ('lucky_charm', 150, 50),
+  ('season_ticket', 250, 80),
+  ('rare_seed_pack', 220, 70),
+  ('golden_fishing_rod', 300, 100)
 on conflict (item_id) do update
   set buy = excluded.buy,
       sell = excluded.sell;

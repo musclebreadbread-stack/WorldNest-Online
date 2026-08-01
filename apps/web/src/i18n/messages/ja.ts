@@ -585,4 +585,23 @@ export const ja: LocaleMessages = {
   "achievement.first_mission.description": "最初のミッションを完了しよう。",
   "achievement.dedicated_worker.title": "勤勉な働き者",
   "achievement.dedicated_worker.description": "ミッション連続3日を達成しよう。",
+
+  "shop.specialty": "専門品: 割引中!",
+  "shop.seasonalSale": "季節セール開催中!",
+  "shop.rareItem": "本日のレアアイテム!",
+  "shop.npcShop.juno": "ジュノの雑貨店",
+  "shop.npcShop.bao": "シェフ・バオの食材市場",
+  "shop.npcShop.hana": "ハナの牧場用品店",
+  "shop.npcShop.melody": "メロディの楽器店",
+  "item.explorer_compass": "探検家のコンパス",
+  "item.treasure_map": "宝の地図",
+  "item.lucky_charm": "幸運のお守り",
+  "item.season_ticket": "シーズンチケット",
+  "item.rare_seed_pack": "レア種パック",
+  "item.golden_fishing_rod": "黄金の釣り竿",
+  "achievement.rare_collector.title": "レアコレクター",
+  "achievement.rare_collector.description":
+    "NPCショップでレアアイテムを3個購入しよう。",
+  "achievement.window_shopper.title": "ウィンドウショッパー",
+  "achievement.window_shopper.description": "4つのNPC専門店すべてを訪問しよう。",
 };

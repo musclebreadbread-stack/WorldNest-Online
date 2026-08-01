@@ -55,7 +55,13 @@ export type ItemId =
   | "horse_whistle"
   | "donkey_whistle"
   | "camel_whistle"
-  | "gift_box";
+  | "gift_box"
+  | "explorer_compass"
+  | "treasure_map"
+  | "lucky_charm"
+  | "season_ticket"
+  | "rare_seed_pack"
+  | "golden_fishing_rod";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -253,6 +259,36 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     stackSize: 1,
   },
   gift_box: { id: "gift_box", displayName: "Gift Box", stackSize: 10 },
+  explorer_compass: {
+    id: "explorer_compass",
+    displayName: "Explorer Compass",
+    stackSize: 1,
+  },
+  treasure_map: {
+    id: "treasure_map",
+    displayName: "Treasure Map",
+    stackSize: 3,
+  },
+  lucky_charm: {
+    id: "lucky_charm",
+    displayName: "Lucky Charm",
+    stackSize: 5,
+  },
+  season_ticket: {
+    id: "season_ticket",
+    displayName: "Season Ticket",
+    stackSize: 1,
+  },
+  rare_seed_pack: {
+    id: "rare_seed_pack",
+    displayName: "Rare Seed Pack",
+    stackSize: 3,
+  },
+  golden_fishing_rod: {
+    id: "golden_fishing_rod",
+    displayName: "Golden Fishing Rod",
+    stackSize: 1,
+  },
 };
 
 export const ITEM_IDS = Object.keys(ITEM_DEFINITIONS) as ItemId[];

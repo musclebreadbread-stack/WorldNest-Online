@@ -593,4 +593,23 @@ export const pt: LocaleMessages = {
   "achievement.dedicated_worker.title": "Trabalhador dedicado",
   "achievement.dedicated_worker.description":
     "Alcance uma sequencia de 3 dias em missoes.",
+
+  "shop.specialty": "Item especial: com desconto!",
+  "shop.seasonalSale": "Promocao sazonal ativa!",
+  "shop.rareItem": "Item raro do dia!",
+  "shop.npcShop.juno": "Loja da Juno",
+  "shop.npcShop.bao": "Mercado do Chef Bao",
+  "shop.npcShop.hana": "Suprimentos do Rancho da Hana",
+  "shop.npcShop.melody": "Loja de Musica da Melody",
+  "item.explorer_compass": "Bussola de Explorador",
+  "item.treasure_map": "Mapa do Tesouro",
+  "item.lucky_charm": "Amuleto da Sorte",
+  "item.season_ticket": "Ingresso Sazonal",
+  "item.rare_seed_pack": "Pacote de Sementes Raras",
+  "item.golden_fishing_rod": "Vara de Pesca Dourada",
+  "achievement.rare_collector.title": "Colecionador de Raridades",
+  "achievement.rare_collector.description": "Compre 3 itens raros em lojas de NPC.",
+  "achievement.window_shopper.title": "Vitrinista",
+  "achievement.window_shopper.description":
+    "Visite todas as 4 lojas especializadas de NPC.",
 };

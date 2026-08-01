@@ -210,7 +210,9 @@ describe("shop round trip", () => {
     useShopStore.getState().trade("buy", "wood", 2);
     frame();
 
-    expect(useGameStore.getState().coins).toBe(STARTING_COINS - WOOD.buy * 2);
+    expect(useGameStore.getState().coins).toBe(
+      STARTING_COINS - Math.floor(WOOD.buy * 0.9) * 2,
+    );
 
     useShopStore.getState().close();
     frame();
@@ -429,7 +431,9 @@ describe("ShopPanel", () => {
 
     expect(screen.getByText(en["npc.juno.name"])).toBeDefined();
     expect(screen.getByText(en["item.wood"], { exact: false })).toBeDefined();
-    expect(screen.getByText(en["item.ore"], { exact: false })).toBeDefined();
+    expect(
+      screen.getByText((content) => content.startsWith("Ore"), { exact: false }),
+    ).toBeDefined();
     expect(screen.getAllByText(`${STARTING_COINS} coins`).length).toBeGreaterThan(0);
   });
 

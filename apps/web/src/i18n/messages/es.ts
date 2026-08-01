@@ -596,4 +596,24 @@ export const es: LocaleMessages = {
   "achievement.dedicated_worker.title": "Trabajador dedicado",
   "achievement.dedicated_worker.description":
     "Alcanza una racha de 3 dias en misiones.",
+
+  "shop.specialty": "Articulo especial: con descuento!",
+  "shop.seasonalSale": "Oferta de temporada activa!",
+  "shop.rareItem": "Articulo raro del dia!",
+  "shop.npcShop.juno": "Tienda de Juno",
+  "shop.npcShop.bao": "Mercado del Chef Bao",
+  "shop.npcShop.hana": "Suministros del Rancho de Hana",
+  "shop.npcShop.melody": "Tienda de Musica de Melody",
+  "item.explorer_compass": "Brujula de Explorador",
+  "item.treasure_map": "Mapa del Tesoro",
+  "item.lucky_charm": "Amuleto de la Suerte",
+  "item.season_ticket": "Boleto de Temporada",
+  "item.rare_seed_pack": "Paquete de Semillas Raras",
+  "item.golden_fishing_rod": "Cana de Pescar Dorada",
+  "achievement.rare_collector.title": "Coleccionista Raro",
+  "achievement.rare_collector.description":
+    "Compra 3 articulos raros en tiendas de NPC.",
+  "achievement.window_shopper.title": "Mirador de Tiendas",
+  "achievement.window_shopper.description":
+    "Visita las 4 tiendas especializadas de NPC.",
 };

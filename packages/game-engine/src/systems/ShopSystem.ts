@@ -3,7 +3,21 @@ import { System } from "../ecs/System";
 import { InventoryComponent } from "../components/InventoryComponent";
 import { ShopComponent, type ShopTrade } from "../components/ShopComponent";
 import { WalletComponent } from "../components/WalletComponent";
+import { addItem, countItem, hasSpaceFor, removeItem } from "../inventory/inventoryOps";
 import { applyTrade } from "../shop/shopOps";
+import { NPC_SHOP_CATALOGUES } from "../shop/shopCatalogue";
+import {
+  getEffectivePrice,
+  getNpcShopItems,
+  isRareItem,
+} from "../shop/shopExpansionOps";
+import type { Season } from "../world/Seasons";
+
+/** Injected getter for the current season. */
+export type SeasonGetter = () => Season;
+
+/** Injected getter for the current day number. */
+export type ShopDayGetter = () => number;
 
 /**
  * ShopSystem is the only writer of shop state and of the coin purse.
@@ -22,8 +36,16 @@ import { applyTrade } from "../shop/shopOps";
  * conversation asks for and the conversation is resolved one system earlier.
  */
 export class ShopSystem extends System {
-  constructor() {
+  private getSeason: SeasonGetter;
+  private getDay: ShopDayGetter;
+
+  constructor(
+    getSeason: SeasonGetter = () => 0 as Season,
+    getDay: ShopDayGetter = () => 1,
+  ) {
     super(["inventory", "wallet", "shop"]);
+    this.getSeason = getSeason;
+    this.getDay = getDay;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
@@ -56,14 +78,36 @@ export class ShopSystem extends System {
   /**
    * Make a trade, or record that it was turned down.
    *
-   * A trade with no shop open is refused before the maths runs, so a click that
-   * lands the frame after the panel closed cannot spend anything.
+   * When an NPC shop is open and the NPC is in our catalogue, use the
+   * expansion pricing. Otherwise fall back to the flat-price applyTrade.
    */
   private tryTrade(entity: Entity, shop: ShopComponent, trade: ShopTrade): void {
     const inventory = entity.getComponent<InventoryComponent>("inventory")!;
     const wallet = entity.getComponent<WalletComponent>("wallet")!;
 
-    if (shop.openNpcId !== null && applyTrade(inventory, wallet, trade)) {
+    if (shop.openNpcId === null) {
+      shop.refusals++;
+      return;
+    }
+
+    const npcId = shop.openNpcId;
+    const catalogue = NPC_SHOP_CATALOGUES[npcId];
+
+    // If the NPC is in our catalogue, use expansion pricing
+    if (catalogue) {
+      const success = this.applyNpcTrade(inventory, wallet, shop, trade, npcId);
+      if (success) {
+        shop.lastTrade = { ...trade };
+        shop.tradeSeq++;
+        shop.version++;
+        return;
+      }
+      shop.refusals++;
+      return;
+    }
+
+    // Fallback to generic trade for non-catalogue NPCs
+    if (applyTrade(inventory, wallet, trade)) {
       shop.lastTrade = { ...trade };
       shop.tradeSeq++;
       shop.version++;
@@ -74,12 +118,49 @@ export class ShopSystem extends System {
   }
 
   /**
+   * Apply a trade using NPC expansion pricing. Returns true on success.
+   */
+  private applyNpcTrade(
+    inventory: InventoryComponent,
+    wallet: WalletComponent,
+    shop: ShopComponent,
+    trade: ShopTrade,
+    npcId: string,
+  ): boolean {
+    const season = this.getSeason();
+    const day = this.getDay();
+    const effectivePrice = getEffectivePrice(
+      trade.kind,
+      trade.itemId,
+      npcId,
+      season,
+      day,
+    );
+    if (effectivePrice === null) return false;
+
+    const total = effectivePrice * trade.quantity;
+
+    if (trade.kind === "buy") {
+      if (wallet.coins < total) return false;
+      if (!hasSpaceFor(inventory, trade.itemId, trade.quantity)) return false;
+      wallet.coins -= total;
+      addItem(inventory, trade.itemId, trade.quantity);
+      // Track rare item purchases
+      if (isRareItem(trade.itemId, day)) {
+        shop.rareItemsPurchased += trade.quantity;
+      }
+      return true;
+    }
+
+    // Sell
+    if (countItem(inventory, trade.itemId) < trade.quantity) return false;
+    removeItem(inventory, trade.itemId, trade.quantity);
+    wallet.coins += total;
+    return true;
+  }
+
+  /**
    * Snap the purse to the balance the server reported.
-   *
-   * The server wins, because it is the only party that cannot be edited by the
-   * player. A negative number clamps at zero — a purse cannot owe coins, and a
-   * malformed answer must not be able to make one. A balance that already agrees
-   * is not a disagreement: nothing is counted, and nothing is published.
    */
   private reconcile(wallet: WalletComponent, balance: number): void {
     const settled = Math.max(0, Math.floor(balance));
@@ -94,6 +175,19 @@ export class ShopSystem extends System {
     if (shop.openNpcId === npcId) return;
 
     shop.openNpcId = npcId;
+    shop.shopsVisited.add(npcId);
+
+    // Populate NPC shop items if the NPC is in our catalogue
+    const catalogue = NPC_SHOP_CATALOGUES[npcId];
+    if (catalogue) {
+      const day = this.getDay();
+      shop.currentNpcShopItems = getNpcShopItems(npcId, day);
+      shop.seasonalDiscountActive = true;
+    } else {
+      shop.currentNpcShopItems = null;
+      shop.seasonalDiscountActive = false;
+    }
+
     shop.version++;
   }
 
@@ -101,6 +195,8 @@ export class ShopSystem extends System {
     if (shop.openNpcId === null) return;
 
     shop.openNpcId = null;
+    shop.currentNpcShopItems = null;
+    shop.seasonalDiscountActive = false;
     shop.version++;
   }
 }

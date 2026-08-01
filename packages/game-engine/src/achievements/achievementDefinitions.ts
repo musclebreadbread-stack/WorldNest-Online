@@ -28,7 +28,9 @@ export type AchievementCondition =
   | { kind: "landmarks_discovered"; count: number }
   | { kind: "map_completion"; percent: number }
   | { kind: "missions_completed"; count: number }
-  | { kind: "mission_streak"; days: number };
+  | { kind: "mission_streak"; days: number }
+  | { kind: "rare_items_bought"; count: number }
+  | { kind: "shops_visited"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -64,6 +66,8 @@ export interface AchievementSource {
   mapCompletionPercent: number;
   missionsCompleted: number;
   missionStreak: number;
+  rareItemsBought: number;
+  shopsVisited: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -242,6 +246,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.dedicated_worker.description",
     rewardCoins: 50,
     condition: { kind: "mission_streak", days: 3 },
+  },
+  {
+    id: "rare_collector",
+    titleKey: "achievement.rare_collector.title",
+    descriptionKey: "achievement.rare_collector.description",
+    rewardCoins: 40,
+    condition: { kind: "rare_items_bought", count: 3 },
+  },
+  {
+    id: "window_shopper",
+    titleKey: "achievement.window_shopper.title",
+    descriptionKey: "achievement.window_shopper.description",
+    rewardCoins: 30,
+    condition: { kind: "shops_visited", count: 4 },
   },
 ];
 

@@ -586,4 +586,23 @@ export const ko: LocaleMessages = {
   "achievement.first_mission.description": "첫 번째 임무를 완료하세요.",
   "achievement.dedicated_worker.title": "성실한 일꾼",
   "achievement.dedicated_worker.description": "임무 연속 3일을 달성하세요.",
+
+  "shop.specialty": "전문 품목: 할인 중!",
+  "shop.seasonalSale": "계절 할인 진행 중!",
+  "shop.rareItem": "오늘의 희귀 아이템!",
+  "shop.npcShop.juno": "주노의 잡화점",
+  "shop.npcShop.bao": "셰프 바오의 식재료 가게",
+  "shop.npcShop.hana": "하나의 목장 용품점",
+  "shop.npcShop.melody": "멜로디의 악기 상점",
+  "item.explorer_compass": "탐험가의 나침반",
+  "item.treasure_map": "보물 지도",
+  "item.lucky_charm": "행운의 부적",
+  "item.season_ticket": "시즌 티켓",
+  "item.rare_seed_pack": "희귀 씨앗 팩",
+  "item.golden_fishing_rod": "황금 낚싯대",
+  "achievement.rare_collector.title": "희귀품 수집가",
+  "achievement.rare_collector.description":
+    "NPC 상점에서 희귀 아이템 3개를 구매하세요.",
+  "achievement.window_shopper.title": "구경꾼",
+  "achievement.window_shopper.description": "4개의 NPC 전문 상점을 모두 방문하세요.",
 };

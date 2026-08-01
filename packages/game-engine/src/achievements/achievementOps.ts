@@ -78,6 +78,10 @@ export function checkCondition(
       return source.missionsCompleted >= condition.count;
     case "mission_streak":
       return source.missionStreak >= condition.days;
+    case "rare_items_bought":
+      return source.rareItemsBought >= condition.count;
+    case "shops_visited":
+      return source.shopsVisited >= condition.count;
   }
 }
 

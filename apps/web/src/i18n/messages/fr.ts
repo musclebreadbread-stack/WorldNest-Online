@@ -596,4 +596,24 @@ export const fr: LocaleMessages = {
   "achievement.dedicated_worker.title": "Travailleur assidu",
   "achievement.dedicated_worker.description":
     "Atteignez une serie de 3 jours de missions.",
+
+  "shop.specialty": "Article specialise : en promotion !",
+  "shop.seasonalSale": "Soldes de saison en cours !",
+  "shop.rareItem": "Objet rare du jour !",
+  "shop.npcShop.juno": "Epicerie de Juno",
+  "shop.npcShop.bao": "Marche du Chef Bao",
+  "shop.npcShop.hana": "Fournitures du Ranch de Hana",
+  "shop.npcShop.melody": "Boutique de Musique de Melody",
+  "item.explorer_compass": "Boussole d'Explorateur",
+  "item.treasure_map": "Carte au Tresor",
+  "item.lucky_charm": "Porte-Bonheur",
+  "item.season_ticket": "Billet Saisonnier",
+  "item.rare_seed_pack": "Lot de Graines Rares",
+  "item.golden_fishing_rod": "Canne a Peche Doree",
+  "achievement.rare_collector.title": "Collectionneur de Raretes",
+  "achievement.rare_collector.description":
+    "Achetez 3 objets rares dans les boutiques PNJ.",
+  "achievement.window_shopper.title": "Leche-Vitrines",
+  "achievement.window_shopper.description":
+    "Visitez les 4 boutiques specialisees de PNJ.",
 };

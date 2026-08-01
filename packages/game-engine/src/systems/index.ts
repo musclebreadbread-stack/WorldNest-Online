@@ -25,6 +25,7 @@ export { BuildSystem, structureEntityId } from "./BuildSystem";
 export { NpcSystem, npcEntityId } from "./NpcSystem";
 export type { TalkListener, ClockSnapshotGetter } from "./NpcSystem";
 export { ShopSystem } from "./ShopSystem";
+export type { SeasonGetter, ShopDayGetter } from "./ShopSystem";
 export { QuestSystem } from "./QuestSystem";
 export type { StructureCounter } from "./QuestSystem";
 export { AnimationSystem } from "./AnimationSystem";

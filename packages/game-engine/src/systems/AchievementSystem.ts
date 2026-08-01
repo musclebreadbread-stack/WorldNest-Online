@@ -10,6 +10,7 @@ import { InventoryComponent } from "../components/InventoryComponent";
 import { MissionComponent } from "../components/MissionComponent";
 import { QuestComponent } from "../components/QuestComponent";
 import { QuizComponent } from "../components/QuizComponent";
+import { ShopComponent } from "../components/ShopComponent";
 import { TransportComponent } from "../components/TransportComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { countItem } from "../inventory/inventoryOps";
@@ -210,6 +211,10 @@ export class AchievementSystem extends System {
         ? Object.values(missionComp.activeMissions).filter((e) => e.completed).length
         : 0;
       const missionStreak = missionComp ? missionComp.dailyStreak : 0;
+      // Track shop expansion progress
+      const shopComp = entity.getComponent<ShopComponent>("shop");
+      const rareItemsBought = shopComp ? shopComp.rareItemsPurchased : 0;
+      const shopsVisited = shopComp ? shopComp.shopsVisited.size : 0;
       const source = this.buildSource(
         inventory,
         collection,
@@ -221,6 +226,8 @@ export class AchievementSystem extends System {
         mapCompletionPercent,
         missionsCompleted,
         missionStreak,
+        rareItemsBought,
+        shopsVisited,
       );
 
       // Check each achievement that has not been unlocked yet
@@ -254,6 +261,8 @@ export class AchievementSystem extends System {
     mapCompletionPercent: number,
     missionsCompleted: number,
     missionStreak: number,
+    rareItemsBought: number,
+    shopsVisited: number,
   ): AchievementSource {
     return {
       itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
@@ -277,6 +286,8 @@ export class AchievementSystem extends System {
       mapCompletionPercent,
       missionsCompleted,
       missionStreak,
+      rareItemsBought,
+      shopsVisited,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

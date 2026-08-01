@@ -382,7 +382,19 @@ export type {
 
 // Shop maths (pure; the price table itself lives in `@worldnest/shared`)
 export { applyTrade, buy, canTrade, sell, tradeQuote } from "./shop";
-export type { Wallet } from "./shop";
+export {
+  NPC_SHOP_CATALOGUES,
+  RARE_ITEM_MARKUP,
+  RARE_ITEM_ROTATION,
+  SEASONAL_DISCOUNT_RATE,
+  canBuyFromNpc,
+  getEffectivePrice,
+  getNpcShopItems,
+  getRareItemForDay,
+  getSeasonalDiscount,
+  isRareItem,
+} from "./shop";
+export type { NpcShopCatalogue, Wallet } from "./shop";
 
 // Quests (pure; titles and descriptions are i18n keys — decision D8)
 export {
@@ -511,6 +523,8 @@ export type {
   FriendshipMaxListener,
   MissionDayGetter,
   MissionWeekGetter,
+  SeasonGetter,
+  ShopDayGetter,
 } from "./systems";
 
 // World Generation

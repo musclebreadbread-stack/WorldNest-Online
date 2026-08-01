@@ -61,6 +61,12 @@ const EXPECTED_IDS: ItemId[] = [
   "donkey_whistle",
   "camel_whistle",
   "gift_box",
+  "explorer_compass",
+  "treasure_map",
+  "lucky_charm",
+  "season_ticket",
+  "rare_seed_pack",
+  "golden_fishing_rod",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

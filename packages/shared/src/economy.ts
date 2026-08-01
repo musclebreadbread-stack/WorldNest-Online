@@ -108,6 +108,13 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   camel_whistle: { buy: 90, sell: 28 },
   // Friendship: gift wrapping for bonus friendship points
   gift_box: { buy: 25, sell: 8 },
+  // Rare/premium items: exclusive shop rotation
+  explorer_compass: { buy: 200, sell: 65 },
+  treasure_map: { buy: 180, sell: 60 },
+  lucky_charm: { buy: 150, sell: 50 },
+  season_ticket: { buy: 250, sell: 80 },
+  rare_seed_pack: { buy: 220, sell: 70 },
+  golden_fishing_rod: { buy: 300, sell: 100 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */
