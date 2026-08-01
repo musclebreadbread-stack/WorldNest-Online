@@ -639,4 +639,21 @@ export const th: LocaleMessages = {
   "achievement.garden_master.description": "สร้างการจัดดอกไม้ 5 ชิ้น",
   "achievement.competition_winner.title": "ผู้ชนะการแข่งขัน",
   "achievement.competition_winner.description": "ชนะการแข่งขันสวนครั้งแรกของคุณ",
+
+  "item.rain_mushroom": "เห็ดสายฝน",
+  "item.snow_crystal": "ผลึกหิมะ",
+  "item.storm_fossil": "ฟอสซิลพายุ",
+  "item.wind_feather": "ขนนกแห่งลม",
+  "item.aurora_gem": "อัญมณีแสงเหนือ",
+
+  "weatherGathering.title": "เก็บสะสมตามสภาพอากาศ",
+  "weatherGathering.available": "มีไอเทมพิเศษให้เก็บในสภาพอากาศนี้!",
+  "weatherGathering.gathered": "เก็บ {item} ได้แล้ว!",
+  "weatherGathering.notification": "สภาพอากาศเปลี่ยนเป็น {weather} มีไอเทมหายากให้หา!",
+  "weatherGathering.none": "ตอนนี้ไม่มีไอเทมพิเศษ",
+
+  "achievement.weather_collector.title": "นักสะสมสภาพอากาศ",
+  "achievement.weather_collector.description": "เก็บไอเทมพิเศษตามสภาพอากาศ 5 ชิ้น",
+  "achievement.storm_chaser.title": "นักล่าพายุ",
+  "achievement.storm_chaser.description": "เก็บไอเทมพิเศษตามสภาพอากาศครบทั้ง 5 ชนิด",
 };

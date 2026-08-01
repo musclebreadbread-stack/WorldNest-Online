@@ -649,4 +649,23 @@ export const pt: LocaleMessages = {
   "achievement.competition_winner.title": "Vencedor do Concurso",
   "achievement.competition_winner.description":
     "Venca seu primeiro concurso de jardim.",
+
+  "item.rain_mushroom": "Cogumelo da Chuva",
+  "item.snow_crystal": "Cristal de Neve",
+  "item.storm_fossil": "Fossil da Tempestade",
+  "item.wind_feather": "Pena do Vento",
+  "item.aurora_gem": "Gema da Aurora",
+
+  "weatherGathering.title": "Coleta Climatica",
+  "weatherGathering.available": "Itens especiais disponiveis neste clima!",
+  "weatherGathering.gathered": "Coletou {item}!",
+  "weatherGathering.notification":
+    "O clima mudou para {weather}. Itens raros podem ser encontrados!",
+  "weatherGathering.none": "Nenhum item especial disponivel agora.",
+
+  "achievement.weather_collector.title": "Colecionador Climatico",
+  "achievement.weather_collector.description": "Colete 5 itens exclusivos do clima.",
+  "achievement.storm_chaser.title": "Cacador de Tempestades",
+  "achievement.storm_chaser.description":
+    "Colete todos os 5 tipos de itens exclusivos do clima.",
 };

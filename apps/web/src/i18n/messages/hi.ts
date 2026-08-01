@@ -644,4 +644,23 @@ export const hi: LocaleMessages = {
   "achievement.garden_master.description": "5 फूल सजावट बनाएं।",
   "achievement.competition_winner.title": "प्रतियोगिता विजेता",
   "achievement.competition_winner.description": "अपनी पहली बगीचा प्रतियोगिता जीतें।",
+
+  "item.rain_mushroom": "वर्षा मशरूम",
+  "item.snow_crystal": "हिम क्रिस्टल",
+  "item.storm_fossil": "तूफान जीवाश्म",
+  "item.wind_feather": "पवन पंख",
+  "item.aurora_gem": "उत्तरी प्रकाश रत्न",
+
+  "weatherGathering.title": "मौसमी संग्रह",
+  "weatherGathering.available": "इस मौसम में विशेष वस्तुएं उपलब्ध हैं!",
+  "weatherGathering.gathered": "{item} एकत्र किया!",
+  "weatherGathering.notification":
+    "मौसम {weather} में बदल गया। दुर्लभ वस्तुएं मिल सकती हैं!",
+  "weatherGathering.none": "अभी कोई विशेष वस्तु उपलब्ध नहीं है।",
+
+  "achievement.weather_collector.title": "मौसम संग्राहक",
+  "achievement.weather_collector.description": "5 मौसम विशेष वस्तुएं एकत्र करें।",
+  "achievement.storm_chaser.title": "तूफान शिकारी",
+  "achievement.storm_chaser.description":
+    "सभी 5 प्रकार की मौसम विशेष वस्तुएं एकत्र करें।",
 };

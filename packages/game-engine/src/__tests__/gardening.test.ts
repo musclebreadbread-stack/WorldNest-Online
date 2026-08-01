@@ -309,6 +309,8 @@ describe("Gardening achievements integration", () => {
       shopsVisited: 0,
       gardenArrangements: 3,
       gardenCompetitionWins: 1,
+      weatherItemsGathered: 0,
+      weatherTypesGathered: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "garden_arrangements", count: 1 }, source)).toBe(

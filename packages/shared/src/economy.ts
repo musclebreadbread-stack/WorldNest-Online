@@ -122,6 +122,12 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   sunflower: { buy: 25, sell: 12 },
   garden_plot: { buy: 60, sell: 20 },
   flower_arrangement: { buy: 80, sell: 35 },
+  // Weather-exclusive: rare collectibles only found during specific weather
+  rain_mushroom: { buy: 75, sell: 35 },
+  snow_crystal: { buy: 90, sell: 42 },
+  storm_fossil: { buy: 120, sell: 55 },
+  wind_feather: { buy: 85, sell: 40 },
+  aurora_gem: { buy: 200, sell: 90 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

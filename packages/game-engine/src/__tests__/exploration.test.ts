@@ -281,6 +281,8 @@ describe("Exploration achievements integration", () => {
       shopsVisited: 0,
       gardenArrangements: 0,
       gardenCompetitionWins: 0,
+      weatherItemsGathered: 0,
+      weatherTypesGathered: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "biomes_discovered", count: 1 }, source)).toBe(true);

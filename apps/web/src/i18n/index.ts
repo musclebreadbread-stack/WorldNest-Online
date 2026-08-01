@@ -171,6 +171,11 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   sunflower: "item.sunflower",
   garden_plot: "item.garden_plot",
   flower_arrangement: "item.flower_arrangement",
+  rain_mushroom: "item.rain_mushroom",
+  snow_crystal: "item.snow_crystal",
+  storm_fossil: "item.storm_fossil",
+  wind_feather: "item.wind_feather",
+  aurora_gem: "item.aurora_gem",
 };
 
 /**

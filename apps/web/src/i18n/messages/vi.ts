@@ -643,4 +643,24 @@ export const vi: LocaleMessages = {
   "achievement.garden_master.description": "Tao 5 tac pham cam hoa.",
   "achievement.competition_winner.title": "Nguoi thang cuoc thi",
   "achievement.competition_winner.description": "Thang cuoc thi vuon dau tien cua ban.",
+
+  "item.rain_mushroom": "Nam Mua",
+  "item.snow_crystal": "Tinh the Tuyet",
+  "item.storm_fossil": "Hoa thach Bao",
+  "item.wind_feather": "Long vu Gio",
+  "item.aurora_gem": "Ngoc Cuc quang",
+
+  "weatherGathering.title": "Thu thap thoi tiet",
+  "weatherGathering.available": "Co vat pham dac biet trong thoi tiet nay!",
+  "weatherGathering.gathered": "Da thu thap {item}!",
+  "weatherGathering.notification":
+    "Thoi tiet da chuyen sang {weather}. Co the tim thay vat pham hiem!",
+  "weatherGathering.none": "Hien tai khong co vat pham dac biet nao.",
+
+  "achievement.weather_collector.title": "Nha suu tap thoi tiet",
+  "achievement.weather_collector.description":
+    "Thu thap 5 vat pham dac biet theo thoi tiet.",
+  "achievement.storm_chaser.title": "Nguoi san bao",
+  "achievement.storm_chaser.description":
+    "Thu thap du 5 loai vat pham dac biet theo thoi tiet.",
 };

@@ -645,4 +645,23 @@ export const en = {
   "achievement.garden_master.description": "Create 5 flower arrangements.",
   "achievement.competition_winner.title": "Competition Winner",
   "achievement.competition_winner.description": "Win your first garden competition.",
+
+  "item.rain_mushroom": "Rain Mushroom",
+  "item.snow_crystal": "Snow Crystal",
+  "item.storm_fossil": "Storm Fossil",
+  "item.wind_feather": "Wind Feather",
+  "item.aurora_gem": "Aurora Gem",
+
+  "weatherGathering.title": "Weather Gathering",
+  "weatherGathering.available": "Special items available in this weather!",
+  "weatherGathering.gathered": "Gathered {item}!",
+  "weatherGathering.notification":
+    "The weather changed to {weather}. Rare items can be found!",
+  "weatherGathering.none": "No special items available right now.",
+
+  "achievement.weather_collector.title": "Weather Collector",
+  "achievement.weather_collector.description": "Gather 5 weather-exclusive items.",
+  "achievement.storm_chaser.title": "Storm Chaser",
+  "achievement.storm_chaser.description":
+    "Gather all 5 types of weather-exclusive items.",
 } as const;

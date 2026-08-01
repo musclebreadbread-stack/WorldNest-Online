@@ -641,4 +641,22 @@ export const ko: LocaleMessages = {
   "achievement.garden_master.description": "꽃꽂이를 5개 만드세요.",
   "achievement.competition_winner.title": "대회 우승자",
   "achievement.competition_winner.description": "첫 정원 대회에서 우승하세요.",
+
+  "item.rain_mushroom": "빗물 버섯",
+  "item.snow_crystal": "눈 결정",
+  "item.storm_fossil": "폭풍 화석",
+  "item.wind_feather": "바람 깃털",
+  "item.aurora_gem": "오로라 보석",
+
+  "weatherGathering.title": "날씨 채집",
+  "weatherGathering.available": "이 날씨에 특별한 아이템을 찾을 수 있어요!",
+  "weatherGathering.gathered": "{item}을(를) 채집했습니다!",
+  "weatherGathering.notification":
+    "날씨가 {weather}(으)로 바뀌었습니다. 희귀 아이템을 찾을 수 있어요!",
+  "weatherGathering.none": "지금은 특별한 아이템이 없습니다.",
+
+  "achievement.weather_collector.title": "날씨 수집가",
+  "achievement.weather_collector.description": "날씨 한정 아이템을 5개 채집하세요.",
+  "achievement.storm_chaser.title": "폭풍 추적자",
+  "achievement.storm_chaser.description": "5가지 날씨 한정 아이템을 모두 채집하세요.",
 };

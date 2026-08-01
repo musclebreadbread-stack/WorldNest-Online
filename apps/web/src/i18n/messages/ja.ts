@@ -641,4 +641,22 @@ export const ja: LocaleMessages = {
   "achievement.garden_master.description": "フラワーアレンジメントを5個作ろう。",
   "achievement.competition_winner.title": "大会優勝者",
   "achievement.competition_winner.description": "初めての庭園大会で優勝しよう。",
+
+  "item.rain_mushroom": "雨キノコ",
+  "item.snow_crystal": "雪の結晶",
+  "item.storm_fossil": "嵐の化石",
+  "item.wind_feather": "風の羽",
+  "item.aurora_gem": "オーロラの宝石",
+
+  "weatherGathering.title": "天気採集",
+  "weatherGathering.available": "この天気で特別なアイテムが見つかります！",
+  "weatherGathering.gathered": "{item}を採集しました！",
+  "weatherGathering.notification":
+    "天気が{weather}に変わりました。レアアイテムが見つかるかも！",
+  "weatherGathering.none": "今は特別なアイテムはありません。",
+
+  "achievement.weather_collector.title": "天気コレクター",
+  "achievement.weather_collector.description": "天気限定アイテムを5個採集しよう。",
+  "achievement.storm_chaser.title": "ストームチェイサー",
+  "achievement.storm_chaser.description": "5種類の天気限定アイテムをすべて採集しよう。",
 };

@@ -32,7 +32,9 @@ export type AchievementCondition =
   | { kind: "rare_items_bought"; count: number }
   | { kind: "shops_visited"; count: number }
   | { kind: "garden_arrangements"; count: number }
-  | { kind: "garden_competition_wins"; count: number };
+  | { kind: "garden_competition_wins"; count: number }
+  | { kind: "weather_items_gathered"; count: number }
+  | { kind: "weather_types_gathered"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -72,6 +74,8 @@ export interface AchievementSource {
   shopsVisited: number;
   gardenArrangements: number;
   gardenCompetitionWins: number;
+  weatherItemsGathered: number;
+  weatherTypesGathered: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -285,6 +289,20 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.competition_winner.description",
     rewardCoins: 60,
     condition: { kind: "garden_competition_wins", count: 1 },
+  },
+  {
+    id: "weather_collector",
+    titleKey: "achievement.weather_collector.title",
+    descriptionKey: "achievement.weather_collector.description",
+    rewardCoins: 45,
+    condition: { kind: "weather_items_gathered", count: 5 },
+  },
+  {
+    id: "storm_chaser",
+    titleKey: "achievement.storm_chaser.title",
+    descriptionKey: "achievement.storm_chaser.description",
+    rewardCoins: 100,
+    condition: { kind: "weather_types_gathered", count: 5 },
   },
 ];
 

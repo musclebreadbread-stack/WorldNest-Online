@@ -100,7 +100,12 @@ insert into public.shop_prices (item_id, buy, sell) values
   ('tulip', 20, 9),
   ('sunflower', 25, 12),
   ('garden_plot', 60, 20),
-  ('flower_arrangement', 80, 35)
+  ('flower_arrangement', 80, 35),
+  ('rain_mushroom', 75, 35),
+  ('snow_crystal', 90, 42),
+  ('storm_fossil', 120, 55),
+  ('wind_feather', 85, 40),
+  ('aurora_gem', 200, 90)
 on conflict (item_id) do update
   set buy = excluded.buy,
       sell = excluded.sell;

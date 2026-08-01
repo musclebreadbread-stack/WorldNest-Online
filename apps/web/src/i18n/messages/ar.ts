@@ -638,4 +638,23 @@ export const ar: LocaleMessages = {
   "achievement.garden_master.description": "انشئ 5 تنسيقات زهور.",
   "achievement.competition_winner.title": "الفائز بالمسابقة",
   "achievement.competition_winner.description": "افز بأول مسابقة حديقة لك.",
+
+  "item.rain_mushroom": "فطر المطر",
+  "item.snow_crystal": "بلورة الثلج",
+  "item.storm_fossil": "حفرية العاصفة",
+  "item.wind_feather": "ريشة الرياح",
+  "item.aurora_gem": "جوهرة الشفق",
+
+  "weatherGathering.title": "جمع الطقس",
+  "weatherGathering.available": "هناك عناصر خاصة متاحة في هذا الطقس!",
+  "weatherGathering.gathered": "تم جمع {item}!",
+  "weatherGathering.notification":
+    "تغير الطقس الى {weather}. يمكن العثور على عناصر نادرة!",
+  "weatherGathering.none": "لا توجد عناصر خاصة متاحة حاليا.",
+
+  "achievement.weather_collector.title": "جامع الطقس",
+  "achievement.weather_collector.description": "اجمع 5 عناصر حصرية للطقس.",
+  "achievement.storm_chaser.title": "مطارد العواصف",
+  "achievement.storm_chaser.description":
+    "اجمع جميع انواع العناصر الحصرية للطقس الخمسة.",
 };

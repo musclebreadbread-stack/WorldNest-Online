@@ -288,6 +288,8 @@ export class AchievementSystem extends System {
       shopsVisited,
       gardenArrangements: 0,
       gardenCompetitionWins: 0,
+      weatherItemsGathered: 0,
+      weatherTypesGathered: 0,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

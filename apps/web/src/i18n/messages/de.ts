@@ -653,4 +653,23 @@ export const de: LocaleMessages = {
   "achievement.competition_winner.title": "Wettbewerbsgewinner",
   "achievement.competition_winner.description":
     "Gewinne deinen ersten Gartenwettbewerb.",
+
+  "item.rain_mushroom": "Regenpilz",
+  "item.snow_crystal": "Schneekristall",
+  "item.storm_fossil": "Sturmfossil",
+  "item.wind_feather": "Windfeder",
+  "item.aurora_gem": "Polarlichjuwel",
+
+  "weatherGathering.title": "Wettersammlung",
+  "weatherGathering.available": "Bei diesem Wetter gibt es besondere Gegenstande!",
+  "weatherGathering.gathered": "{item} gesammelt!",
+  "weatherGathering.notification":
+    "Das Wetter hat sich zu {weather} geandert. Seltene Gegenstande sind auffindbar!",
+  "weatherGathering.none": "Derzeit keine besonderen Gegenstande verfugbar.",
+
+  "achievement.weather_collector.title": "Wettersammler",
+  "achievement.weather_collector.description": "Sammle 5 wetterexklusive Gegenstande.",
+  "achievement.storm_chaser.title": "Sturmjager",
+  "achievement.storm_chaser.description":
+    "Sammle alle 5 Arten wetterexklusiver Gegenstande.",
 };

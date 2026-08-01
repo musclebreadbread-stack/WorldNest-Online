@@ -86,6 +86,10 @@ export function checkCondition(
       return source.gardenArrangements >= condition.count;
     case "garden_competition_wins":
       return source.gardenCompetitionWins >= condition.count;
+    case "weather_items_gathered":
+      return source.weatherItemsGathered >= condition.count;
+    case "weather_types_gathered":
+      return source.weatherTypesGathered >= condition.count;
   }
 }
 

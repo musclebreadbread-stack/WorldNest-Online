@@ -654,4 +654,24 @@ export const fr: LocaleMessages = {
   "achievement.competition_winner.title": "Gagnant du Concours",
   "achievement.competition_winner.description":
     "Gagnez votre premier concours de jardin.",
+
+  "item.rain_mushroom": "Champignon de Pluie",
+  "item.snow_crystal": "Cristal de Neige",
+  "item.storm_fossil": "Fossile de Tempete",
+  "item.wind_feather": "Plume de Vent",
+  "item.aurora_gem": "Gemme d'Aurore",
+
+  "weatherGathering.title": "Recolte Meteorologique",
+  "weatherGathering.available": "Des objets speciaux sont disponibles par ce temps !",
+  "weatherGathering.gathered": "Vous avez recolte {item} !",
+  "weatherGathering.notification":
+    "Le temps est devenu {weather}. Des objets rares peuvent etre trouves !",
+  "weatherGathering.none": "Aucun objet special disponible actuellement.",
+
+  "achievement.weather_collector.title": "Collectionneur Meteo",
+  "achievement.weather_collector.description":
+    "Recoltez 5 objets exclusifs meteorologiques.",
+  "achievement.storm_chaser.title": "Chasseur de Tempetes",
+  "achievement.storm_chaser.description":
+    "Recoltez les 5 types d'objets exclusifs meteorologiques.",
 };

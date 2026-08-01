@@ -635,4 +635,21 @@ export const zh: LocaleMessages = {
   "achievement.garden_master.description": "制作5个插花作品。",
   "achievement.competition_winner.title": "比赛冠军",
   "achievement.competition_winner.description": "赢得你的第一场花园比赛。",
+
+  "item.rain_mushroom": "雨蘑菇",
+  "item.snow_crystal": "雪晶",
+  "item.storm_fossil": "风暴化石",
+  "item.wind_feather": "风之羽",
+  "item.aurora_gem": "极光宝石",
+
+  "weatherGathering.title": "天气采集",
+  "weatherGathering.available": "这种天气下有特殊物品可以采集！",
+  "weatherGathering.gathered": "采集了{item}！",
+  "weatherGathering.notification": "天气变成了{weather}。可以找到稀有物品！",
+  "weatherGathering.none": "目前没有特殊物品可采集。",
+
+  "achievement.weather_collector.title": "天气收集者",
+  "achievement.weather_collector.description": "采集5个天气限定物品。",
+  "achievement.storm_chaser.title": "追风者",
+  "achievement.storm_chaser.description": "采集所有5种天气限定物品。",
 };

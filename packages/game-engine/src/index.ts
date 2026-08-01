@@ -48,6 +48,7 @@ export {
   ExplorationComponent,
   MissionComponent,
   GardeningComponent,
+  WeatherGatheringComponent,
 } from "./components";
 export type {
   KeyState,
@@ -248,6 +249,28 @@ export type {
   GardenPlot,
   GardeningState,
 } from "./gardening";
+
+// Gathering (pure; weather-enhanced collectibles and availability)
+export {
+  WEATHER_EXCLUSIVE_ITEM_IDS,
+  WEATHER_GATHER_CHANCE,
+  WEATHER_GATHER_COOLDOWN_MS,
+  WEATHER_GATHER_ITEMS,
+  WEATHER_GATHER_TABLE,
+  calculateWeatherItemValue,
+  canGatherWeatherItem,
+  getAvailableWeatherItems,
+  getDistinctWeatherTypesGathered,
+  getTotalWeatherItemsGathered,
+  pushWeatherNotification,
+  recordWeatherGather,
+  rollWeatherGather,
+} from "./gathering";
+export type {
+  WeatherGatherItem,
+  WeatherGatheringState,
+  WeatherNotification,
+} from "./gathering";
 
 // Missions (pure; daily/weekly rotating objectives with streak bonuses)
 export {
@@ -526,6 +549,7 @@ export {
   ExplorationSystem,
   MissionSystem,
   GardeningSystem,
+  WeatherGatheringSystem,
 } from "./systems";
 export type {
   RenderData,
@@ -556,6 +580,7 @@ export type {
   MissionWeekGetter,
   SeasonGetter,
   ShopDayGetter,
+  WeatherRngFn,
 } from "./systems";
 
 // World Generation

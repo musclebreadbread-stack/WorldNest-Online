@@ -652,4 +652,24 @@ export const es: LocaleMessages = {
   "achievement.garden_master.description": "Crea 5 arreglos florales.",
   "achievement.competition_winner.title": "Ganador del Concurso",
   "achievement.competition_winner.description": "Gana tu primer concurso de jardin.",
+
+  "item.rain_mushroom": "Hongo de Lluvia",
+  "item.snow_crystal": "Cristal de Nieve",
+  "item.storm_fossil": "Fosil de Tormenta",
+  "item.wind_feather": "Pluma de Viento",
+  "item.aurora_gem": "Gema de Aurora",
+
+  "weatherGathering.title": "Recoleccion Climatica",
+  "weatherGathering.available": "Hay objetos especiales disponibles con este clima!",
+  "weatherGathering.gathered": "Recolectaste {item}!",
+  "weatherGathering.notification":
+    "El clima cambio a {weather}. Se pueden encontrar objetos raros!",
+  "weatherGathering.none": "No hay objetos especiales disponibles ahora.",
+
+  "achievement.weather_collector.title": "Coleccionista del Clima",
+  "achievement.weather_collector.description":
+    "Recolecta 5 objetos exclusivos del clima.",
+  "achievement.storm_chaser.title": "Cazador de Tormentas",
+  "achievement.storm_chaser.description":
+    "Recolecta los 5 tipos de objetos exclusivos del clima.",
 };

@@ -73,6 +73,11 @@ const EXPECTED_IDS: ItemId[] = [
   "sunflower",
   "garden_plot",
   "flower_arrangement",
+  "rain_mushroom",
+  "snow_crystal",
+  "storm_fossil",
+  "wind_feather",
+  "aurora_gem",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

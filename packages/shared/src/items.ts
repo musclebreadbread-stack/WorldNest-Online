@@ -67,7 +67,12 @@ export type ItemId =
   | "tulip"
   | "sunflower"
   | "garden_plot"
-  | "flower_arrangement";
+  | "flower_arrangement"
+  | "rain_mushroom"
+  | "snow_crystal"
+  | "storm_fossil"
+  | "wind_feather"
+  | "aurora_gem";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -304,6 +309,31 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     id: "flower_arrangement",
     displayName: "Flower Arrangement",
     stackSize: 5,
+  },
+  rain_mushroom: {
+    id: "rain_mushroom",
+    displayName: "Rain Mushroom",
+    stackSize: 20,
+  },
+  snow_crystal: {
+    id: "snow_crystal",
+    displayName: "Snow Crystal",
+    stackSize: 20,
+  },
+  storm_fossil: {
+    id: "storm_fossil",
+    displayName: "Storm Fossil",
+    stackSize: 20,
+  },
+  wind_feather: {
+    id: "wind_feather",
+    displayName: "Wind Feather",
+    stackSize: 20,
+  },
+  aurora_gem: {
+    id: "aurora_gem",
+    displayName: "Aurora Gem",
+    stackSize: 10,
   },
 };
 
