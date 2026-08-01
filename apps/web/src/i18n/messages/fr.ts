@@ -616,4 +616,42 @@ export const fr: LocaleMessages = {
   "achievement.window_shopper.title": "Leche-Vitrines",
   "achievement.window_shopper.description":
     "Visitez les 4 boutiques specialisees de PNJ.",
+
+  "npc.flora.name": "Flora la Jardiniere",
+  "npc.activity.gardening": "Jardinage",
+  "dialogue.flora.greeting":
+    "Bonjour, amateur de fleurs ! Mon jardin est toujours fleuri. Voulez-vous planter des fleurs ou participer a un concours ?",
+  "dialogue.flora.planting":
+    "Plantez une fleur dans votre jardin, arrosez-la regulierement et recoltez-la une fois ecluse !",
+  "dialogue.flora.competition":
+    "Composez un bouquet avec vos plus belles fleurs et participez a mon concours. Le jury decerne bronze, argent ou or !",
+  "dialogue.flora.option.plant": "Parlez-moi de la plantation",
+  "dialogue.flora.option.compete": "Participer au concours",
+
+  "item.rose": "Rose",
+  "item.lily": "Lys",
+  "item.tulip": "Tulipe",
+  "item.sunflower": "Tournesol",
+  "item.garden_plot": "Parcelle de Jardin",
+  "item.flower_arrangement": "Composition Florale",
+
+  "gardening.title": "Jardin",
+  "gardening.plant": "Planter une fleur",
+  "gardening.water": "Arroser le jardin",
+  "gardening.arrange": "Creer une composition",
+  "gardening.compete": "Participer au concours",
+  "gardening.score": "Score de beaute : {score}",
+  "gardening.competition.enter": "Participation au concours...",
+  "gardening.competition.bronze": "Bronze ! Vous avez gagne {coins} pieces.",
+  "gardening.competition.silver": "Argent ! Vous avez gagne {coins} pieces.",
+  "gardening.competition.gold": "Or ! Vous avez gagne {coins} pieces.",
+
+  "achievement.first_arrangement.title": "Premier Bouquet",
+  "achievement.first_arrangement.description":
+    "Creez votre premiere composition florale.",
+  "achievement.garden_master.title": "Maitre Jardinier",
+  "achievement.garden_master.description": "Creez 5 compositions florales.",
+  "achievement.competition_winner.title": "Gagnant du Concours",
+  "achievement.competition_winner.description":
+    "Gagnez votre premier concours de jardin.",
 };

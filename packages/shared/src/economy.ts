@@ -115,6 +115,13 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   season_ticket: { buy: 250, sell: 80 },
   rare_seed_pack: { buy: 220, sell: 70 },
   golden_fishing_rod: { buy: 300, sell: 100 },
+  // Gardening: flowers and arrangements
+  rose: { buy: 18, sell: 8 },
+  lily: { buy: 22, sell: 10 },
+  tulip: { buy: 20, sell: 9 },
+  sunflower: { buy: 25, sell: 12 },
+  garden_plot: { buy: 60, sell: 20 },
+  flower_arrangement: { buy: 80, sell: 35 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

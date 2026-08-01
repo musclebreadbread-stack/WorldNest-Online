@@ -600,4 +600,39 @@ export const zh: LocaleMessages = {
   "achievement.rare_collector.description": "从NPC商店购买3件稀有物品。",
   "achievement.window_shopper.title": "逛店达人",
   "achievement.window_shopper.description": "访问全部4家NPC特色商店。",
+
+  "npc.flora.name": "园丁弗洛拉",
+  "npc.activity.gardening": "园艺中",
+  "dialogue.flora.greeting":
+    "你好，爱花的朋友！我的花园里总是鲜花盛开。想种花或参加比赛吗？",
+  "dialogue.flora.planting": "在花圃里种花，定期浇水，花开后就可以收获了！",
+  "dialogue.flora.competition":
+    "用你最美的花做成花束参加比赛吧。评委会颁发铜、银、金奖！",
+  "dialogue.flora.option.plant": "教我种花",
+  "dialogue.flora.option.compete": "参加比赛",
+
+  "item.rose": "玫瑰",
+  "item.lily": "百合",
+  "item.tulip": "郁金香",
+  "item.sunflower": "向日葵",
+  "item.garden_plot": "花圃",
+  "item.flower_arrangement": "插花",
+
+  "gardening.title": "花园",
+  "gardening.plant": "种花",
+  "gardening.water": "浇水",
+  "gardening.arrange": "制作插花",
+  "gardening.compete": "参加比赛",
+  "gardening.score": "美观分数: {score}",
+  "gardening.competition.enter": "正在参加比赛...",
+  "gardening.competition.bronze": "铜奖！获得 {coins} 金币。",
+  "gardening.competition.silver": "银奖！获得 {coins} 金币。",
+  "gardening.competition.gold": "金奖！获得 {coins} 金币。",
+
+  "achievement.first_arrangement.title": "第一束花",
+  "achievement.first_arrangement.description": "制作你的第一个插花作品。",
+  "achievement.garden_master.title": "花园大师",
+  "achievement.garden_master.description": "制作5个插花作品。",
+  "achievement.competition_winner.title": "比赛冠军",
+  "achievement.competition_winner.description": "赢得你的第一场花园比赛。",
 };

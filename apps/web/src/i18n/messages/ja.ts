@@ -604,4 +604,41 @@ export const ja: LocaleMessages = {
     "NPCショップでレアアイテムを3個購入しよう。",
   "achievement.window_shopper.title": "ウィンドウショッパー",
   "achievement.window_shopper.description": "4つのNPC専門店すべてを訪問しよう。",
+
+  "npc.flora.name": "庭師フローラ",
+  "npc.activity.gardening": "園芸中",
+  "dialogue.flora.greeting":
+    "こんにちは、お花好きさん！私の庭はいつも花が咲いていますよ。花を植えたり、大会に参加したりしませんか？",
+  "dialogue.flora.planting":
+    "花壇に花を植えて、水をあげると花が咲きます。咲いたら収穫できますよ！",
+  "dialogue.flora.competition":
+    "一番きれいな花でブーケを作って、大会に参加しましょう。審査員が銅・銀・金を授与します！",
+  "dialogue.flora.option.plant": "植え方を教えて",
+  "dialogue.flora.option.compete": "大会に参加する",
+
+  "item.rose": "バラ",
+  "item.lily": "ユリ",
+  "item.tulip": "チューリップ",
+  "item.sunflower": "ヒマワリ",
+  "item.garden_plot": "花壇",
+  "item.flower_arrangement": "フラワーアレンジメント",
+
+  "gardening.title": "庭園",
+  "gardening.plant": "花を植える",
+  "gardening.water": "水をやる",
+  "gardening.arrange": "アレンジメントを作る",
+  "gardening.compete": "大会に参加",
+  "gardening.score": "美しさスコア: {score}",
+  "gardening.competition.enter": "大会に参加中...",
+  "gardening.competition.bronze": "銅賞！{coins}コインを獲得しました。",
+  "gardening.competition.silver": "銀賞！{coins}コインを獲得しました。",
+  "gardening.competition.gold": "金賞！{coins}コインを獲得しました。",
+
+  "achievement.first_arrangement.title": "初めてのブーケ",
+  "achievement.first_arrangement.description":
+    "初めてのフラワーアレンジメントを作ろう。",
+  "achievement.garden_master.title": "庭園マスター",
+  "achievement.garden_master.description": "フラワーアレンジメントを5個作ろう。",
+  "achievement.competition_winner.title": "大会優勝者",
+  "achievement.competition_winner.description": "初めての庭園大会で優勝しよう。",
 };

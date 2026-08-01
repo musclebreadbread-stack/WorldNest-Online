@@ -277,6 +277,10 @@ describe("Exploration achievements integration", () => {
       mapCompletionPercent: 50,
       missionsCompleted: 0,
       missionStreak: 0,
+      rareItemsBought: 0,
+      shopsVisited: 0,
+      gardenArrangements: 0,
+      gardenCompetitionWins: 0,
       isCategoryComplete: () => false,
     };
     expect(checkCondition({ kind: "biomes_discovered", count: 1 }, source)).toBe(true);

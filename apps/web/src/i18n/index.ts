@@ -165,6 +165,12 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   season_ticket: "item.season_ticket",
   rare_seed_pack: "item.rare_seed_pack",
   golden_fishing_rod: "item.golden_fishing_rod",
+  rose: "item.rose",
+  lily: "item.lily",
+  tulip: "item.tulip",
+  sunflower: "item.sunflower",
+  garden_plot: "item.garden_plot",
+  flower_arrangement: "item.flower_arrangement",
 };
 
 /**
@@ -191,6 +197,7 @@ export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
   cooking: "npc.activity.cooking",
   ranch: "npc.activity.ranch",
   teaching: "npc.activity.teaching",
+  gardening: "npc.activity.gardening",
 };
 
 /**

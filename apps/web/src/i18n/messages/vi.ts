@@ -607,4 +607,40 @@ export const vi: LocaleMessages = {
   "achievement.rare_collector.description": "Mua 3 vat pham hiem tu cua hang NPC.",
   "achievement.window_shopper.title": "Nguoi xem cua hang",
   "achievement.window_shopper.description": "Ghe tham ca 4 cua hang chuyen dung NPC.",
+
+  "npc.flora.name": "Flora nguoi lam vuon",
+  "npc.activity.gardening": "Lam vuon",
+  "dialogue.flora.greeting":
+    "Xin chao, nguoi yeu hoa! Vuon cua toi luc nao cung no hoa. Ban muon trong hoa hay tham gia cuoc thi khong?",
+  "dialogue.flora.planting":
+    "Trong hoa vao luong vuon, tuoi nuoc deu dan va thu hoach khi hoa no!",
+  "dialogue.flora.competition":
+    "Cam nhung bong hoa dep nhat thanh bo hoa va tham gia cuoc thi. Ban giam khao se trao giai dong, bac hoac vang!",
+  "dialogue.flora.option.plant": "Ke toi nghe ve trong hoa",
+  "dialogue.flora.option.compete": "Tham gia cuoc thi",
+
+  "item.rose": "Hoa hong",
+  "item.lily": "Hoa lily",
+  "item.tulip": "Hoa tulip",
+  "item.sunflower": "Hoa huong duong",
+  "item.garden_plot": "Luong vuon",
+  "item.flower_arrangement": "Cam hoa",
+
+  "gardening.title": "Vuon",
+  "gardening.plant": "Trong hoa",
+  "gardening.water": "Tuoi vuon",
+  "gardening.arrange": "Tao cam hoa",
+  "gardening.compete": "Tham gia cuoc thi",
+  "gardening.score": "Diem tham my: {score}",
+  "gardening.competition.enter": "Dang tham gia cuoc thi...",
+  "gardening.competition.bronze": "Dong! Ban nhan duoc {coins} xu.",
+  "gardening.competition.silver": "Bac! Ban nhan duoc {coins} xu.",
+  "gardening.competition.gold": "Vang! Ban nhan duoc {coins} xu.",
+
+  "achievement.first_arrangement.title": "Bo hoa dau tien",
+  "achievement.first_arrangement.description": "Tao tac pham cam hoa dau tien.",
+  "achievement.garden_master.title": "Chuyen gia vuon",
+  "achievement.garden_master.description": "Tao 5 tac pham cam hoa.",
+  "achievement.competition_winner.title": "Nguoi thang cuoc thi",
+  "achievement.competition_winner.description": "Thang cuoc thi vuon dau tien cua ban.",
 };

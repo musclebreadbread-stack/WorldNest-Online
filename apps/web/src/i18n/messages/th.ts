@@ -603,4 +603,40 @@ export const th: LocaleMessages = {
   "achievement.rare_collector.description": "ซื้อของหายาก 3 ชิ้นจากร้านค้า NPC",
   "achievement.window_shopper.title": "นักเดินดูร้าน",
   "achievement.window_shopper.description": "เยี่ยมชมร้านค้าเฉพาะทาง NPC ทั้ง 4 ร้าน",
+
+  "npc.flora.name": "ฟลอร่าชาวสวน",
+  "npc.activity.gardening": "ทำสวน",
+  "dialogue.flora.greeting":
+    "สวัสดีค่ะ คนรักดอกไม้! สวนของฉันบานสะพรั่งเสมอ อยากปลูกดอกไม้หรือเข้าแข่งขันไหมคะ?",
+  "dialogue.flora.planting":
+    "ปลูกดอกไม้ในแปลงสวน รดน้ำเป็นประจำ แล้วเก็บเกี่ยวเมื่อดอกบาน!",
+  "dialogue.flora.competition":
+    "จัดดอกไม้ที่สวยที่สุดของคุณเป็นช่อแล้วเข้าแข่งขัน กรรมการจะมอบเหรียญทองแดง เงิน หรือทอง!",
+  "dialogue.flora.option.plant": "เล่าเรื่องการปลูกให้ฟัง",
+  "dialogue.flora.option.compete": "เข้าร่วมการแข่งขัน",
+
+  "item.rose": "กุหลาบ",
+  "item.lily": "ลิลลี่",
+  "item.tulip": "ทิวลิป",
+  "item.sunflower": "ทานตะวัน",
+  "item.garden_plot": "แปลงสวน",
+  "item.flower_arrangement": "การจัดดอกไม้",
+
+  "gardening.title": "สวน",
+  "gardening.plant": "ปลูกดอกไม้",
+  "gardening.water": "รดน้ำสวน",
+  "gardening.arrange": "สร้างการจัดดอกไม้",
+  "gardening.compete": "เข้าร่วมการแข่งขัน",
+  "gardening.score": "คะแนนความสวยงาม: {score}",
+  "gardening.competition.enter": "กำลังเข้าร่วมการแข่งขัน...",
+  "gardening.competition.bronze": "เหรียญทองแดง! คุณได้รับ {coins} เหรียญ",
+  "gardening.competition.silver": "เหรียญเงิน! คุณได้รับ {coins} เหรียญ",
+  "gardening.competition.gold": "เหรียญทอง! คุณได้รับ {coins} เหรียญ",
+
+  "achievement.first_arrangement.title": "ช่อดอกไม้แรก",
+  "achievement.first_arrangement.description": "สร้างการจัดดอกไม้ชิ้นแรกของคุณ",
+  "achievement.garden_master.title": "ปรมาจารย์สวน",
+  "achievement.garden_master.description": "สร้างการจัดดอกไม้ 5 ชิ้น",
+  "achievement.competition_winner.title": "ผู้ชนะการแข่งขัน",
+  "achievement.competition_winner.description": "ชนะการแข่งขันสวนครั้งแรกของคุณ",
 };

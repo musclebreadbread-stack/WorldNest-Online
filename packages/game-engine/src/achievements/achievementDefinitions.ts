@@ -30,7 +30,9 @@ export type AchievementCondition =
   | { kind: "missions_completed"; count: number }
   | { kind: "mission_streak"; days: number }
   | { kind: "rare_items_bought"; count: number }
-  | { kind: "shops_visited"; count: number };
+  | { kind: "shops_visited"; count: number }
+  | { kind: "garden_arrangements"; count: number }
+  | { kind: "garden_competition_wins"; count: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -68,6 +70,8 @@ export interface AchievementSource {
   missionStreak: number;
   rareItemsBought: number;
   shopsVisited: number;
+  gardenArrangements: number;
+  gardenCompetitionWins: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -260,6 +264,27 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.window_shopper.description",
     rewardCoins: 30,
     condition: { kind: "shops_visited", count: 4 },
+  },
+  {
+    id: "first_arrangement",
+    titleKey: "achievement.first_arrangement.title",
+    descriptionKey: "achievement.first_arrangement.description",
+    rewardCoins: 20,
+    condition: { kind: "garden_arrangements", count: 1 },
+  },
+  {
+    id: "garden_master",
+    titleKey: "achievement.garden_master.title",
+    descriptionKey: "achievement.garden_master.description",
+    rewardCoins: 50,
+    condition: { kind: "garden_arrangements", count: 5 },
+  },
+  {
+    id: "competition_winner",
+    titleKey: "achievement.competition_winner.title",
+    descriptionKey: "achievement.competition_winner.description",
+    rewardCoins: 60,
+    condition: { kind: "garden_competition_wins", count: 1 },
   },
 ];
 

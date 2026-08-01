@@ -47,6 +47,7 @@ export {
   FriendshipComponent,
   ExplorationComponent,
   MissionComponent,
+  GardeningComponent,
 } from "./components";
 export type {
   KeyState,
@@ -218,6 +219,35 @@ export {
   recordTilesExplored,
 } from "./exploration";
 export type { ExplorationState, LandmarkDefinition } from "./exploration";
+
+// Gardening (pure; flower arrangements, competitions, garden plots)
+export {
+  ARRANGEMENT_FLOWER_COUNT,
+  COMPETITION_REWARDS,
+  COMPETITION_THRESHOLDS,
+  CompetitionTier,
+  FLOWER_BEAUTY_POINTS,
+  FLOWER_GROWTH_TIME_MS,
+  FLOWER_VARIETIES,
+  FlowerVariety,
+  MAX_WATER_LEVEL,
+  SEASONAL_BONUS_MULTIPLIER,
+  VARIETY_BONUS_MULTIPLIER,
+  WATER_PER_ACTION,
+  createArrangement,
+  enterCompetition,
+  harvestFlower,
+  judgeCompetition,
+  plantFlower,
+  scoreArrangement,
+  waterGarden,
+} from "./gardening";
+export type {
+  Arrangement,
+  CompetitionEntry,
+  GardenPlot,
+  GardeningState,
+} from "./gardening";
 
 // Missions (pure; daily/weekly rotating objectives with streak bonuses)
 export {
@@ -495,6 +525,7 @@ export {
   FriendshipSystem,
   ExplorationSystem,
   MissionSystem,
+  GardeningSystem,
 } from "./systems";
 export type {
   RenderData,

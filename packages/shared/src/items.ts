@@ -61,7 +61,13 @@ export type ItemId =
   | "lucky_charm"
   | "season_ticket"
   | "rare_seed_pack"
-  | "golden_fishing_rod";
+  | "golden_fishing_rod"
+  | "rose"
+  | "lily"
+  | "tulip"
+  | "sunflower"
+  | "garden_plot"
+  | "flower_arrangement";
 
 export interface ItemDefinition {
   id: ItemId;
@@ -288,6 +294,16 @@ export const ITEM_DEFINITIONS: Record<ItemId, ItemDefinition> = {
     id: "golden_fishing_rod",
     displayName: "Golden Fishing Rod",
     stackSize: 1,
+  },
+  rose: { id: "rose", displayName: "Rose", stackSize: 50 },
+  lily: { id: "lily", displayName: "Lily", stackSize: 50 },
+  tulip: { id: "tulip", displayName: "Tulip", stackSize: 50 },
+  sunflower: { id: "sunflower", displayName: "Sunflower", stackSize: 50 },
+  garden_plot: { id: "garden_plot", displayName: "Garden Plot", stackSize: 10 },
+  flower_arrangement: {
+    id: "flower_arrangement",
+    displayName: "Flower Arrangement",
+    stackSize: 5,
   },
 };
 

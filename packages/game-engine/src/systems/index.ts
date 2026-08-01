@@ -53,3 +53,4 @@ export type { GiftGivenListener, FriendshipMaxListener } from "./FriendshipSyste
 export { ExplorationSystem } from "./ExplorationSystem";
 export { MissionSystem } from "./MissionSystem";
 export type { MissionDayGetter, MissionWeekGetter } from "./MissionSystem";
+export { GardeningSystem } from "./GardeningSystem";

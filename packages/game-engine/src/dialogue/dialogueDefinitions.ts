@@ -295,4 +295,33 @@ export const DIALOGUE_DEFINITIONS: Record<string, DialogueDefinition> = {
       },
     },
   },
+
+  // Flora the Gardener: flower arrangements and competitions.
+  flora_garden: {
+    rootNodeId: "greeting",
+    nodes: {
+      greeting: {
+        textKey: "dialogue.flora.greeting",
+        options: [
+          { labelKey: "dialogue.flora.option.plant", next: "planting" },
+          { labelKey: "dialogue.flora.option.compete", next: "competition" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      planting: {
+        textKey: "dialogue.flora.planting",
+        options: [
+          { labelKey: "dialogue.option.back", next: "greeting" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+      competition: {
+        textKey: "dialogue.flora.competition",
+        options: [
+          { labelKey: "dialogue.option.back", next: "greeting" },
+          { labelKey: "dialogue.option.bye", action: { kind: "close" } },
+        ],
+      },
+    },
+  },
 };

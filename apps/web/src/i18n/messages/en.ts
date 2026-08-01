@@ -609,4 +609,40 @@ export const en = {
   "achievement.rare_collector.description": "Purchase 3 rare items from NPC shops.",
   "achievement.window_shopper.title": "Window Shopper",
   "achievement.window_shopper.description": "Visit all 4 NPC specialty shops.",
+
+  "npc.flora.name": "Flora the Gardener",
+  "npc.activity.gardening": "Gardening",
+  "dialogue.flora.greeting":
+    "Hello, flower lover! My garden is always in bloom. Would you like to plant some flowers or enter a competition?",
+  "dialogue.flora.planting":
+    "Plant a flower in one of your garden plots, water it regularly, and harvest it when it blooms!",
+  "dialogue.flora.competition":
+    "Arrange your best flowers into a bouquet and enter my competition. The judges award bronze, silver, or gold!",
+  "dialogue.flora.option.plant": "Tell me about planting",
+  "dialogue.flora.option.compete": "Enter a competition",
+
+  "item.rose": "Rose",
+  "item.lily": "Lily",
+  "item.tulip": "Tulip",
+  "item.sunflower": "Sunflower",
+  "item.garden_plot": "Garden Plot",
+  "item.flower_arrangement": "Flower Arrangement",
+
+  "gardening.title": "Garden",
+  "gardening.plant": "Plant flower",
+  "gardening.water": "Water garden",
+  "gardening.arrange": "Create arrangement",
+  "gardening.compete": "Enter competition",
+  "gardening.score": "Beauty score: {score}",
+  "gardening.competition.enter": "Entering competition...",
+  "gardening.competition.bronze": "Bronze tier! You earned {coins} coins.",
+  "gardening.competition.silver": "Silver tier! You earned {coins} coins.",
+  "gardening.competition.gold": "Gold tier! You earned {coins} coins.",
+
+  "achievement.first_arrangement.title": "First Bouquet",
+  "achievement.first_arrangement.description": "Create your first flower arrangement.",
+  "achievement.garden_master.title": "Garden Master",
+  "achievement.garden_master.description": "Create 5 flower arrangements.",
+  "achievement.competition_winner.title": "Competition Winner",
+  "achievement.competition_winner.description": "Win your first garden competition.",
 } as const;

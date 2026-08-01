@@ -603,4 +603,39 @@ export const ar: LocaleMessages = {
   "achievement.rare_collector.description": "اشتر 3 اغراض نادرة من متاجر الشخصيات.",
   "achievement.window_shopper.title": "متسوق الواجهات",
   "achievement.window_shopper.description": "قم بزيارة متاجر الشخصيات الاربعة.",
+
+  "npc.flora.name": "فلورا البستانية",
+  "npc.activity.gardening": "بستنة",
+  "dialogue.flora.greeting":
+    "مرحبا يا محب الزهور! حديقتي مزهرة دائما. هل تريد زراعة الزهور او المشاركة في مسابقة؟",
+  "dialogue.flora.planting": "ازرع زهرة في حديقتك واسقها بانتظام واحصدها عندما تتفتح!",
+  "dialogue.flora.competition":
+    "رتب اجمل زهورك في باقة وشارك في مسابقتي. يمنح الحكام برونز او فضة او ذهب!",
+  "dialogue.flora.option.plant": "اخبرني عن الزراعة",
+  "dialogue.flora.option.compete": "المشاركة في المسابقة",
+
+  "item.rose": "وردة",
+  "item.lily": "زنبق",
+  "item.tulip": "خزامى",
+  "item.sunflower": "عباد الشمس",
+  "item.garden_plot": "حوض زراعي",
+  "item.flower_arrangement": "تنسيق زهور",
+
+  "gardening.title": "الحديقة",
+  "gardening.plant": "زراعة زهرة",
+  "gardening.water": "سقي الحديقة",
+  "gardening.arrange": "انشاء تنسيق",
+  "gardening.compete": "المشاركة في المسابقة",
+  "gardening.score": "درجة الجمال: {score}",
+  "gardening.competition.enter": "جاري المشاركة في المسابقة...",
+  "gardening.competition.bronze": "برونز! حصلت على {coins} عملة.",
+  "gardening.competition.silver": "فضة! حصلت على {coins} عملة.",
+  "gardening.competition.gold": "ذهب! حصلت على {coins} عملة.",
+
+  "achievement.first_arrangement.title": "اول باقة",
+  "achievement.first_arrangement.description": "انشئ اول تنسيق زهور لك.",
+  "achievement.garden_master.title": "سيد الحديقة",
+  "achievement.garden_master.description": "انشئ 5 تنسيقات زهور.",
+  "achievement.competition_winner.title": "الفائز بالمسابقة",
+  "achievement.competition_winner.description": "افز بأول مسابقة حديقة لك.",
 };

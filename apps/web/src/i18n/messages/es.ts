@@ -616,4 +616,40 @@ export const es: LocaleMessages = {
   "achievement.window_shopper.title": "Mirador de Tiendas",
   "achievement.window_shopper.description":
     "Visita las 4 tiendas especializadas de NPC.",
+
+  "npc.flora.name": "Flora la Jardinera",
+  "npc.activity.gardening": "Jardineria",
+  "dialogue.flora.greeting":
+    "Hola, amante de las flores! Mi jardin siempre esta en flor. Quieres plantar flores o participar en un concurso?",
+  "dialogue.flora.planting":
+    "Planta una flor en tu jardin, riegala con frecuencia y cosechala cuando florezca!",
+  "dialogue.flora.competition":
+    "Arregla tus mejores flores en un ramo y participa en mi concurso. Los jueces otorgan bronce, plata u oro!",
+  "dialogue.flora.option.plant": "Cuentame sobre plantar",
+  "dialogue.flora.option.compete": "Participar en concurso",
+
+  "item.rose": "Rosa",
+  "item.lily": "Lirio",
+  "item.tulip": "Tulipan",
+  "item.sunflower": "Girasol",
+  "item.garden_plot": "Parcela de Jardin",
+  "item.flower_arrangement": "Arreglo Floral",
+
+  "gardening.title": "Jardin",
+  "gardening.plant": "Plantar flor",
+  "gardening.water": "Regar jardin",
+  "gardening.arrange": "Crear arreglo",
+  "gardening.compete": "Participar en concurso",
+  "gardening.score": "Puntuacion de belleza: {score}",
+  "gardening.competition.enter": "Participando en concurso...",
+  "gardening.competition.bronze": "Bronce! Ganaste {coins} monedas.",
+  "gardening.competition.silver": "Plata! Ganaste {coins} monedas.",
+  "gardening.competition.gold": "Oro! Ganaste {coins} monedas.",
+
+  "achievement.first_arrangement.title": "Primer Ramo",
+  "achievement.first_arrangement.description": "Crea tu primer arreglo floral.",
+  "achievement.garden_master.title": "Maestro Jardinero",
+  "achievement.garden_master.description": "Crea 5 arreglos florales.",
+  "achievement.competition_winner.title": "Ganador del Concurso",
+  "achievement.competition_winner.description": "Gana tu primer concurso de jardin.",
 };

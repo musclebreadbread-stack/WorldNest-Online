@@ -39,7 +39,7 @@ describe("scheduledEntry", () => {
         const entry = scheduledEntry(definition.schedule, makeSnapshot(hour));
         expect(entry, `${definition.id} at hour ${hour}`).toBeDefined();
         expect(entry.activity).toMatch(
-          /^(home|work|market|rest|museum|cooking|ranch|teaching)$/,
+          /^(home|work|market|rest|museum|cooking|ranch|teaching|gardening)$/,
         );
       }
     }
@@ -91,6 +91,7 @@ describe("scheduledEntry", () => {
       "cooking",
       "ranch",
       "teaching",
+      "gardening",
     ]);
     for (const definition of NPC_DEFINITIONS) {
       if (!definition.schedule) continue;

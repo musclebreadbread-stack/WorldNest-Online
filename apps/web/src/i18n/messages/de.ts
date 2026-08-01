@@ -616,4 +616,41 @@ export const de: LocaleMessages = {
     "Kaufe 3 seltene Gegenstaende in NPC-Laeden.",
   "achievement.window_shopper.title": "Schaufensterbummler",
   "achievement.window_shopper.description": "Besuche alle 4 NPC-Fachgeschaefte.",
+
+  "npc.flora.name": "Flora die Gaertnerin",
+  "npc.activity.gardening": "Gaertnern",
+  "dialogue.flora.greeting":
+    "Hallo, Blumenfreund! Mein Garten blueht immer. Moechtest du Blumen pflanzen oder an einem Wettbewerb teilnehmen?",
+  "dialogue.flora.planting":
+    "Pflanze eine Blume in dein Beet, giesse sie regelmaessig und ernte sie, wenn sie blueht!",
+  "dialogue.flora.competition":
+    "Stelle aus deinen schoensten Blumen einen Strauss zusammen und nimm an meinem Wettbewerb teil. Die Jury vergibt Bronze, Silber oder Gold!",
+  "dialogue.flora.option.plant": "Erzaehl mir vom Pflanzen",
+  "dialogue.flora.option.compete": "Am Wettbewerb teilnehmen",
+
+  "item.rose": "Rose",
+  "item.lily": "Lilie",
+  "item.tulip": "Tulpe",
+  "item.sunflower": "Sonnenblume",
+  "item.garden_plot": "Gartenbeet",
+  "item.flower_arrangement": "Blumengesteck",
+
+  "gardening.title": "Garten",
+  "gardening.plant": "Blume pflanzen",
+  "gardening.water": "Garten giessen",
+  "gardening.arrange": "Gesteck erstellen",
+  "gardening.compete": "Am Wettbewerb teilnehmen",
+  "gardening.score": "Schoenheitspunktzahl: {score}",
+  "gardening.competition.enter": "Teilnahme am Wettbewerb...",
+  "gardening.competition.bronze": "Bronze! Du hast {coins} Muenzen verdient.",
+  "gardening.competition.silver": "Silber! Du hast {coins} Muenzen verdient.",
+  "gardening.competition.gold": "Gold! Du hast {coins} Muenzen verdient.",
+
+  "achievement.first_arrangement.title": "Erster Strauss",
+  "achievement.first_arrangement.description": "Erstelle dein erstes Blumengesteck.",
+  "achievement.garden_master.title": "Gartenmeister",
+  "achievement.garden_master.description": "Erstelle 5 Blumengestecke.",
+  "achievement.competition_winner.title": "Wettbewerbsgewinner",
+  "achievement.competition_winner.description":
+    "Gewinne deinen ersten Gartenwettbewerb.",
 };

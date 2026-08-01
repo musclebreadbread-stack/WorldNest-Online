@@ -82,6 +82,10 @@ export function checkCondition(
       return source.rareItemsBought >= condition.count;
     case "shops_visited":
       return source.shopsVisited >= condition.count;
+    case "garden_arrangements":
+      return source.gardenArrangements >= condition.count;
+    case "garden_competition_wins":
+      return source.gardenCompetitionWins >= condition.count;
   }
 }
 

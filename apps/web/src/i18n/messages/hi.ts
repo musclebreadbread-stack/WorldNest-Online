@@ -608,4 +608,40 @@ export const hi: LocaleMessages = {
   "achievement.rare_collector.description": "NPC दुकानों से 3 दुर्लभ वस्तुएं खरीदें।",
   "achievement.window_shopper.title": "दुकान दर्शक",
   "achievement.window_shopper.description": "सभी 4 NPC विशेष दुकानों पर जाएं।",
+
+  "npc.flora.name": "माली फ्लोरा",
+  "npc.activity.gardening": "बागवानी",
+  "dialogue.flora.greeting":
+    "नमस्ते, फूल प्रेमी! मेरा बगीचा हमेशा खिला रहता है। क्या आप फूल लगाना या प्रतियोगिता में भाग लेना चाहेंगे?",
+  "dialogue.flora.planting":
+    "अपनी क्यारी में फूल लगाएं, नियमित पानी दें और खिलने पर तोड़ लें!",
+  "dialogue.flora.competition":
+    "अपने सबसे सुंदर फूलों का गुलदस्ता बनाकर मेरी प्रतियोगिता में भाग लें। जज कांस्य, रजत या स्वर्ण देते हैं!",
+  "dialogue.flora.option.plant": "रोपण के बारे में बताएं",
+  "dialogue.flora.option.compete": "प्रतियोगिता में भाग लें",
+
+  "item.rose": "गुलाब",
+  "item.lily": "लिली",
+  "item.tulip": "ट्यूलिप",
+  "item.sunflower": "सूरजमुखी",
+  "item.garden_plot": "बगीचे की क्यारी",
+  "item.flower_arrangement": "फूलों की सजावट",
+
+  "gardening.title": "बगीचा",
+  "gardening.plant": "फूल लगाएं",
+  "gardening.water": "पानी दें",
+  "gardening.arrange": "सजावट बनाएं",
+  "gardening.compete": "प्रतियोगिता में भाग लें",
+  "gardening.score": "सुंदरता अंक: {score}",
+  "gardening.competition.enter": "प्रतियोगिता में भाग ले रहे हैं...",
+  "gardening.competition.bronze": "कांस्य! आपने {coins} सिक्के जीते।",
+  "gardening.competition.silver": "रजत! आपने {coins} सिक्के जीते।",
+  "gardening.competition.gold": "स्वर्ण! आपने {coins} सिक्के जीते।",
+
+  "achievement.first_arrangement.title": "पहला गुलदस्ता",
+  "achievement.first_arrangement.description": "अपनी पहली फूल सजावट बनाएं।",
+  "achievement.garden_master.title": "बगीचा विशेषज्ञ",
+  "achievement.garden_master.description": "5 फूल सजावट बनाएं।",
+  "achievement.competition_winner.title": "प्रतियोगिता विजेता",
+  "achievement.competition_winner.description": "अपनी पहली बगीचा प्रतियोगिता जीतें।",
 };

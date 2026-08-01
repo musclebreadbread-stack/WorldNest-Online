@@ -19,7 +19,8 @@ export type NpcRole =
   | "chef"
   | "rancher"
   | "teacher"
-  | "musician";
+  | "musician"
+  | "gardener";
 
 export interface NpcDefinition {
   id: string;
@@ -163,6 +164,21 @@ export const NPC_DEFINITIONS: readonly NpcDefinition[] = [
       { fromHour: 7, activity: "work", tileX: 10, tileY: 10 },
       { fromHour: 13, activity: "market", tileX: 17, tileY: 11 },
       { fromHour: 20, activity: "rest", tileX: 10, tileY: 11 },
+    ],
+  },
+  {
+    id: "gardener_flora",
+    nameKey: "npc.flora.name",
+    dialogueId: "flora_garden",
+    anchorTileX: 11,
+    anchorTileY: 14,
+    textureKey: "npc_gardener",
+    role: "gardener",
+    schedule: [
+      { fromHour: 0, activity: "rest", tileX: 11, tileY: 15 },
+      { fromHour: 6, activity: "gardening", tileX: 11, tileY: 14 },
+      { fromHour: 12, activity: "market", tileX: 17, tileY: 11 },
+      { fromHour: 19, activity: "rest", tileX: 11, tileY: 15 },
     ],
   },
 ];

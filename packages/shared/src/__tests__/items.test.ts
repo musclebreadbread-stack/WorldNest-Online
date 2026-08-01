@@ -67,6 +67,12 @@ const EXPECTED_IDS: ItemId[] = [
   "season_ticket",
   "rare_seed_pack",
   "golden_fishing_rod",
+  "rose",
+  "lily",
+  "tulip",
+  "sunflower",
+  "garden_plot",
+  "flower_arrangement",
 ];
 
 describe("ITEM_DEFINITIONS", () => {

@@ -286,6 +286,8 @@ export class AchievementSystem extends System {
       missionStreak,
       rareItemsBought,
       shopsVisited,
+      gardenArrangements: 0,
+      gardenCompetitionWins: 0,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

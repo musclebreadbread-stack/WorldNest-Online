@@ -385,6 +385,8 @@ describe("Shop expansion achievements", () => {
       missionStreak: 0,
       rareItemsBought: 0,
       shopsVisited: 0,
+      gardenArrangements: 0,
+      gardenCompetitionWins: 0,
       isCategoryComplete: () => false,
       ...overrides,
     };

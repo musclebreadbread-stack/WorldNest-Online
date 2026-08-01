@@ -15,6 +15,7 @@ const NPC_COLORS: Record<NpcRole, { tunic: number; accent: number }> = {
   rancher: { tunic: 0x8d6e63, accent: 0xa5d6a7 },
   teacher: { tunic: 0x7e57c2, accent: 0xfff176 },
   musician: { tunic: 0xf06292, accent: 0x80deea },
+  gardener: { tunic: 0x4caf50, accent: 0xffeb3b },
 };
 
 /**

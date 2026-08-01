@@ -71,6 +71,8 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "settings.contrast.standard",
   // "Table" is a legitimate French word identical to English.
   "item.table",
+  // "Rose" is a legitimate word in French and German, identical to English.
+  "item.rose",
 ];
 
 describe("message catalogue", () => {

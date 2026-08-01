@@ -605,4 +605,40 @@ export const ko: LocaleMessages = {
     "NPC 상점에서 희귀 아이템 3개를 구매하세요.",
   "achievement.window_shopper.title": "구경꾼",
   "achievement.window_shopper.description": "4개의 NPC 전문 상점을 모두 방문하세요.",
+
+  "npc.flora.name": "정원사 플로라",
+  "npc.activity.gardening": "원예 중",
+  "dialogue.flora.greeting":
+    "안녕하세요, 꽃을 좋아하시나요! 제 정원은 항상 꽃이 피어 있어요. 꽃을 심거나 대회에 참가할래요?",
+  "dialogue.flora.planting":
+    "정원 화단에 꽃을 심고, 물을 주면 꽃이 피어요. 꽃이 피면 수확할 수 있어요!",
+  "dialogue.flora.competition":
+    "가장 예쁜 꽃으로 꽃다발을 만들어 대회에 참가하세요. 심사위원이 동, 은, 금을 수여해요!",
+  "dialogue.flora.option.plant": "심기에 대해 알려주세요",
+  "dialogue.flora.option.compete": "대회에 참가하기",
+
+  "item.rose": "장미",
+  "item.lily": "백합",
+  "item.tulip": "튤립",
+  "item.sunflower": "해바라기",
+  "item.garden_plot": "정원 화단",
+  "item.flower_arrangement": "꽃꽂이",
+
+  "gardening.title": "정원",
+  "gardening.plant": "꽃 심기",
+  "gardening.water": "물 주기",
+  "gardening.arrange": "꽃꽂이 만들기",
+  "gardening.compete": "대회 참가",
+  "gardening.score": "아름다움 점수: {score}",
+  "gardening.competition.enter": "대회 참가 중...",
+  "gardening.competition.bronze": "동상! {coins} 코인을 획득했습니다.",
+  "gardening.competition.silver": "은상! {coins} 코인을 획득했습니다.",
+  "gardening.competition.gold": "금상! {coins} 코인을 획득했습니다.",
+
+  "achievement.first_arrangement.title": "첫 번째 꽃다발",
+  "achievement.first_arrangement.description": "첫 번째 꽃꽂이를 만드세요.",
+  "achievement.garden_master.title": "정원 달인",
+  "achievement.garden_master.description": "꽃꽂이를 5개 만드세요.",
+  "achievement.competition_winner.title": "대회 우승자",
+  "achievement.competition_winner.description": "첫 정원 대회에서 우승하세요.",
 };
