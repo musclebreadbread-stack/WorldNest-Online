@@ -523,4 +523,32 @@ export const vi: LocaleMessages = {
   "achievement.first_gift.description": "Tang mon qua dau tien cho NPC.",
   "achievement.best_friends.title": "Tri ky tot nhat",
   "achievement.best_friends.description": "Dat tinh ban toi da voi bat ky NPC nao.",
+
+  "exploration.title": "Nhat ky kham pha",
+  "exploration.biomeDiscovered": "Phat hien quần xa moi: {name}",
+  "exploration.landmarkDiscovered": "Phat hien dia danh: {name}",
+  "exploration.mapCompletion": "Ban do kham pha: {percent}%",
+  "exploration.reward": "Phan thuong kham pha: {coins} xu",
+  "landmark.tundra_peak.name": "Dinh Dong Lanh",
+  "landmark.tundra_peak.description":
+    "Dinh nui dong bang nhin xuong dong bang bang gia rong lon.",
+  "landmark.taiga_grove.name": "Rung Taiga",
+  "landmark.taiga_grove.description":
+    "Cum cay xanh la co dai bao ve cac sinh vat rung.",
+  "landmark.meadow_spring.name": "Suoi Dong Co",
+  "landmark.meadow_spring.description":
+    "Suoi nuoc trong veo chay giua nhung bong hoa dai.",
+  "landmark.ancient_forest.name": "Rung Co Dai",
+  "landmark.ancient_forest.description":
+    "Nhung cay co thu co re bam vao dat tu hang the ky.",
+  "landmark.savanna_oasis.name": "Oc Dao Savanna",
+  "landmark.savanna_oasis.description": "Mot ho nuoc an giua dam co cao va cay keo.",
+  "landmark.desert_shrine.name": "Den Sa Mac",
+  "landmark.desert_shrine.description": "Mot bia da co bi cat vang vui nua phan.",
+  "achievement.first_biome.title": "Buoc dau tien",
+  "achievement.first_biome.description": "Kham pha quan xa dau tien cua ban.",
+  "achievement.cartographer.title": "Nha ban do",
+  "achievement.cartographer.description": "Kham pha tat ca 6 quan xa trong the gioi.",
+  "achievement.landmark_hunter.title": "Tho san dia danh",
+  "achievement.landmark_hunter.description": "Kham pha 3 dia danh.",
 };

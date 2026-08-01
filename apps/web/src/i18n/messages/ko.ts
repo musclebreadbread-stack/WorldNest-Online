@@ -521,4 +521,31 @@ export const ko: LocaleMessages = {
   "achievement.first_gift.description": "NPC에게 첫 선물을 주세요.",
   "achievement.best_friends.title": "절친 사이",
   "achievement.best_friends.description": "NPC와 최고 우정에 도달하세요.",
+
+  "exploration.title": "탐험 기록",
+  "exploration.biomeDiscovered": "새 생물 군계 발견: {name}",
+  "exploration.landmarkDiscovered": "랜드마크 발견: {name}",
+  "exploration.mapCompletion": "지도 완성도: {percent}%",
+  "exploration.reward": "탐험 보상: {coins} 코인",
+  "landmark.tundra_peak.name": "툰드라 봉우리",
+  "landmark.tundra_peak.description":
+    "얼어붙은 평원을 내려다보는 전경이 펼쳐지는 빙하 정상.",
+  "landmark.taiga_grove.name": "타이가 숲",
+  "landmark.taiga_grove.description": "숲속 생물을 보호하는 고대 상록수 군락.",
+  "landmark.meadow_spring.name": "초원의 샘",
+  "landmark.meadow_spring.description": "들꽃 사이에서 솟아오르는 맑은 샘물.",
+  "landmark.ancient_forest.name": "고대의 숲",
+  "landmark.ancient_forest.description":
+    "수백 년 동안 땅을 움켜쥐고 있는 우뚝 선 거목들.",
+  "landmark.savanna_oasis.name": "사바나 오아시스",
+  "landmark.savanna_oasis.description":
+    "키 큰 풀과 아카시아 나무에 둘러싸인 숨겨진 연못.",
+  "landmark.desert_shrine.name": "사막의 신전",
+  "landmark.desert_shrine.description": "황금빛 모래에 반쯤 파묻힌 풍화된 돌 기념비.",
+  "achievement.first_biome.title": "첫 발걸음",
+  "achievement.first_biome.description": "첫 번째 생물 군계를 발견하세요.",
+  "achievement.cartographer.title": "지도 제작자",
+  "achievement.cartographer.description": "세계의 6개 생물 군계를 모두 발견하세요.",
+  "achievement.landmark_hunter.title": "랜드마크 사냥꾼",
+  "achievement.landmark_hunter.description": "랜드마크를 3곳 발견하세요.",
 };

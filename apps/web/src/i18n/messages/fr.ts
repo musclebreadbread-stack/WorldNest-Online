@@ -527,4 +527,34 @@ export const fr: LocaleMessages = {
   "achievement.first_gift.description": "Offrez votre premier cadeau a un PNJ.",
   "achievement.best_friends.title": "Meilleurs amis",
   "achievement.best_friends.description": "Atteignez l'amitie maximale avec un PNJ.",
+
+  "exploration.title": "Journal d'exploration",
+  "exploration.biomeDiscovered": "Nouveau biome decouvert : {name}",
+  "exploration.landmarkDiscovered": "Point d'interet decouvert : {name}",
+  "exploration.mapCompletion": "Carte completee : {percent} %",
+  "exploration.reward": "Recompense d'exploration : {coins} pieces",
+  "landmark.tundra_peak.name": "Sommet de la Toundra",
+  "landmark.tundra_peak.description":
+    "Un sommet gele offrant une vue panoramique sur les plaines glacees.",
+  "landmark.taiga_grove.name": "Bosquet de la Taiga",
+  "landmark.taiga_grove.description":
+    "Un groupe dense de coniferes ancestraux abritant les creatures des bois.",
+  "landmark.meadow_spring.name": "Source de la Prairie",
+  "landmark.meadow_spring.description":
+    "Une source cristalline jaillissant parmi les fleurs sauvages.",
+  "landmark.ancient_forest.name": "Foret Ancestrale",
+  "landmark.ancient_forest.description":
+    "Des arbres immenses dont les racines s'accrochent a la terre depuis des siecles.",
+  "landmark.savanna_oasis.name": "Oasis de la Savane",
+  "landmark.savanna_oasis.description":
+    "Un bassin cache entoure de hautes herbes et d'acacias.",
+  "landmark.desert_shrine.name": "Sanctuaire du Desert",
+  "landmark.desert_shrine.description":
+    "Un monument de pierre erode a moitie enfoui dans le sable dore.",
+  "achievement.first_biome.title": "Premiers pas",
+  "achievement.first_biome.description": "Decouvrez votre premier biome.",
+  "achievement.cartographer.title": "Cartographe",
+  "achievement.cartographer.description": "Decouvrez les 6 biomes du monde.",
+  "achievement.landmark_hunter.title": "Chasseur de sites",
+  "achievement.landmark_hunter.description": "Decouvrez 3 points d'interet.",
 };

@@ -68,6 +68,12 @@ export function checkCondition(
       return source.highestFriendshipLevel >= condition.level;
     case "total_gifts":
       return source.totalGiftsGiven >= condition.count;
+    case "biomes_discovered":
+      return source.biomesDiscovered >= condition.count;
+    case "landmarks_discovered":
+      return source.landmarksDiscovered >= condition.count;
+    case "map_completion":
+      return source.mapCompletionPercent >= condition.percent;
   }
 }
 

@@ -45,6 +45,7 @@ export {
   MusicComponent,
   TransportComponent,
   FriendshipComponent,
+  ExplorationComponent,
 } from "./components";
 export type {
   KeyState,
@@ -201,6 +202,21 @@ export type {
   GiftReaction,
   GiftResult,
 } from "./friendship";
+
+// Exploration (pure; biome discovery, landmarks, map completion)
+export {
+  BIOME_DISCOVERY_REWARDS,
+  LANDMARK_DEFINITIONS,
+  LANDMARK_IDS,
+  discoverBiome,
+  discoverLandmark,
+  getExplorationReward,
+  getLandmark,
+  getMapCompletion,
+  getNextMilestoneKey,
+  recordTilesExplored,
+} from "./exploration";
+export type { ExplorationState, LandmarkDefinition } from "./exploration";
 
 // Festivals (pure; seasonal timed world events)
 export {
@@ -440,6 +456,7 @@ export {
   MusicSystem,
   TransportSystem,
   FriendshipSystem,
+  ExplorationSystem,
 } from "./systems";
 export type {
   RenderData,

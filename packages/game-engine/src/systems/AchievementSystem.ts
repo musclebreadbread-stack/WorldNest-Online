@@ -3,6 +3,7 @@ import type { Entity } from "../ecs/Entity";
 import { System } from "../ecs/System";
 import { AchievementComponent } from "../components/AchievementComponent";
 import { CollectionComponent } from "../components/CollectionComponent";
+import { ExplorationComponent } from "../components/ExplorationComponent";
 import { FriendshipComponent } from "../components/FriendshipComponent";
 import { HousingComponent } from "../components/HousingComponent";
 import { InventoryComponent } from "../components/InventoryComponent";
@@ -16,6 +17,7 @@ import {
   getHighestFriendshipLevel,
   getTotalGiftsGiven,
 } from "../friendship/friendshipOps";
+import { getMapCompletion } from "../exploration/explorationOps";
 import {
   ACHIEVEMENT_DEFINITIONS,
   type AchievementSource,
@@ -190,12 +192,26 @@ export class AchievementSystem extends System {
           achievement.totalGiftsGiven = fGifts;
         }
       }
+      // Track exploration progress
+      const explorationComp = entity.getComponent<ExplorationComponent>("exploration");
+      const biomesDiscovered = explorationComp
+        ? explorationComp.discoveredBiomes.size
+        : 0;
+      const landmarksDiscovered = explorationComp
+        ? explorationComp.discoveredLandmarks.size
+        : 0;
+      const mapCompletionPercent = explorationComp
+        ? getMapCompletion(explorationComp)
+        : 0;
       const source = this.buildSource(
         inventory,
         collection,
         wallet,
         achievement,
         housingHappiness,
+        biomesDiscovered,
+        landmarksDiscovered,
+        mapCompletionPercent,
       );
 
       // Check each achievement that has not been unlocked yet
@@ -224,6 +240,9 @@ export class AchievementSystem extends System {
     _wallet: WalletComponent,
     achievement: AchievementComponent,
     housingHappiness: number,
+    biomesDiscovered: number,
+    landmarksDiscovered: number,
+    mapCompletionPercent: number,
   ): AchievementSource {
     return {
       itemCount: (itemId: string) => countItem(inventory, itemId as ItemId),
@@ -242,6 +261,9 @@ export class AchievementSystem extends System {
       waterTilesTraversed: achievement.totalWaterTilesTraversed,
       highestFriendshipLevel: achievement.highestFriendshipLevel,
       totalGiftsGiven: achievement.totalGiftsGiven,
+      biomesDiscovered,
+      landmarksDiscovered,
+      mapCompletionPercent,
       isCategoryComplete: (categoryId: string) =>
         isCategoryComplete(collection, categoryId),
     };

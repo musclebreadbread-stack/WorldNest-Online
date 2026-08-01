@@ -528,4 +528,34 @@ export const de: LocaleMessages = {
   "achievement.best_friends.title": "Beste Freunde",
   "achievement.best_friends.description":
     "Erreiche maximale Freundschaft mit einem NPC.",
+
+  "exploration.title": "Erkundungstagebuch",
+  "exploration.biomeDiscovered": "Neues Biom entdeckt: {name}",
+  "exploration.landmarkDiscovered": "Wahrzeichen entdeckt: {name}",
+  "exploration.mapCompletion": "Karte erkundet: {percent} %",
+  "exploration.reward": "Erkundungsbelohnung: {coins} Muenzen",
+  "landmark.tundra_peak.name": "Tundragipfel",
+  "landmark.tundra_peak.description":
+    "Ein vereister Gipfel mit Panoramablick auf die eisigen Ebenen.",
+  "landmark.taiga_grove.name": "Taigahain",
+  "landmark.taiga_grove.description":
+    "Ein dichter Bestand uralter Nadelbaeume, die Waldtiere schuetzen.",
+  "landmark.meadow_spring.name": "Wiesenquelle",
+  "landmark.meadow_spring.description":
+    "Eine kristallklare Quelle, die zwischen Wildblumen sprudelt.",
+  "landmark.ancient_forest.name": "Uralter Wald",
+  "landmark.ancient_forest.description":
+    "Riesige Baeume, deren Wurzeln seit Jahrhunderten die Erde umklammern.",
+  "landmark.savanna_oasis.name": "Savannenoase",
+  "landmark.savanna_oasis.description":
+    "Ein versteckter Teich, umgeben von hohem Gras und Akazien.",
+  "landmark.desert_shrine.name": "Wuestenschrein",
+  "landmark.desert_shrine.description":
+    "Ein verwittertes Steinmonument, halb im goldenen Sand vergraben.",
+  "achievement.first_biome.title": "Erste Schritte",
+  "achievement.first_biome.description": "Entdecke dein erstes Biom.",
+  "achievement.cartographer.title": "Kartograph",
+  "achievement.cartographer.description": "Entdecke alle 6 Biome der Welt.",
+  "achievement.landmark_hunter.title": "Wahrzeichen-Jaeger",
+  "achievement.landmark_hunter.description": "Entdecke 3 Wahrzeichen.",
 };

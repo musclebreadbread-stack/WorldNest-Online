@@ -522,4 +522,34 @@ export const hi: LocaleMessages = {
   "achievement.best_friends.title": "सबसे अच्छे दोस्त",
   "achievement.best_friends.description":
     "किसी NPC के साथ अधिकतम मित्रता प्राप्त करें।",
+
+  "exploration.title": "अन्वेषण लॉग",
+  "exploration.biomeDiscovered": "नया बायोम खोजा: {name}",
+  "exploration.landmarkDiscovered": "स्थलचिह्न खोजा: {name}",
+  "exploration.mapCompletion": "नक्शा पूर्णता: {percent}%",
+  "exploration.reward": "अन्वेषण पुरस्कार: {coins} सिक्के",
+  "landmark.tundra_peak.name": "टुंड्रा शिखर",
+  "landmark.tundra_peak.description":
+    "एक जमी हुई चोटी जहां से बर्फीले मैदान दिखते हैं।",
+  "landmark.taiga_grove.name": "टैगा वाटिका",
+  "landmark.taiga_grove.description":
+    "प्राचीन सदाबहार वृक्षों का घना झुरमुट जो वन्य जीवों को आश्रय देता है।",
+  "landmark.meadow_spring.name": "घास के मैदान का झरना",
+  "landmark.meadow_spring.description":
+    "जंगली फूलों के बीच से उगता हुआ स्वच्छ जल स्रोत।",
+  "landmark.ancient_forest.name": "प्राचीन वन",
+  "landmark.ancient_forest.description":
+    "विशाल वृक्ष जिनकी जड़ें सदियों से धरती को थामे हुई हैं।",
+  "landmark.savanna_oasis.name": "सवाना मरूद्यान",
+  "landmark.savanna_oasis.description":
+    "ऊंची घास और बबूल के पेड़ों से घिरा एक छिपा हुआ तालाब।",
+  "landmark.desert_shrine.name": "मरुस्थल का मंदिर",
+  "landmark.desert_shrine.description":
+    "सुनहरी रेत में आधा दबा एक प्राचीन पत्थर का स्मारक।",
+  "achievement.first_biome.title": "पहला कदम",
+  "achievement.first_biome.description": "अपना पहला बायोम खोजें।",
+  "achievement.cartographer.title": "मानचित्रकार",
+  "achievement.cartographer.description": "दुनिया के सभी 6 बायोम खोजें।",
+  "achievement.landmark_hunter.title": "स्थलचिह्न शिकारी",
+  "achievement.landmark_hunter.description": "3 स्थलचिह्न खोजें।",
 };

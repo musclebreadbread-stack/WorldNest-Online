@@ -43,3 +43,4 @@ export { CraftingComponent } from "./CraftingComponent";
 export { MusicComponent } from "./MusicComponent";
 export { TransportComponent } from "./TransportComponent";
 export { FriendshipComponent } from "./FriendshipComponent";
+export { ExplorationComponent } from "./ExplorationComponent";

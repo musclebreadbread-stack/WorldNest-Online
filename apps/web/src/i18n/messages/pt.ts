@@ -524,4 +524,34 @@ export const pt: LocaleMessages = {
   "achievement.first_gift.description": "De seu primeiro presente a qualquer NPC.",
   "achievement.best_friends.title": "Melhores amigos",
   "achievement.best_friends.description": "Alcance amizade maxima com qualquer NPC.",
+
+  "exploration.title": "Registro de exploracao",
+  "exploration.biomeDiscovered": "Novo bioma descoberto: {name}",
+  "exploration.landmarkDiscovered": "Marco descoberto: {name}",
+  "exploration.mapCompletion": "Mapa explorado: {percent}%",
+  "exploration.reward": "Recompensa de exploracao: {coins} moedas",
+  "landmark.tundra_peak.name": "Pico da Tundra",
+  "landmark.tundra_peak.description":
+    "Um cume congelado com vista panoramica das planicies geladas.",
+  "landmark.taiga_grove.name": "Bosque da Taiga",
+  "landmark.taiga_grove.description":
+    "Um agrupamento denso de coniferas ancestrais que abriga criaturas da floresta.",
+  "landmark.meadow_spring.name": "Nascente do Prado",
+  "landmark.meadow_spring.description":
+    "Uma nascente cristalina brotando entre flores silvestres.",
+  "landmark.ancient_forest.name": "Floresta Ancestral",
+  "landmark.ancient_forest.description":
+    "Arvores gigantescas cujas raizes agarram a terra ha seculos.",
+  "landmark.savanna_oasis.name": "Oasis da Savana",
+  "landmark.savanna_oasis.description":
+    "Uma lagoa escondida cercada por gramado alto e acacia.",
+  "landmark.desert_shrine.name": "Santuario do Deserto",
+  "landmark.desert_shrine.description":
+    "Um monumento de pedra desgastado, semienterrado na areia dourada.",
+  "achievement.first_biome.title": "Primeiros passos",
+  "achievement.first_biome.description": "Descubra seu primeiro bioma.",
+  "achievement.cartographer.title": "Cartografo",
+  "achievement.cartographer.description": "Descubra todos os 6 biomas do mundo.",
+  "achievement.landmark_hunter.title": "Cacador de marcos",
+  "achievement.landmark_hunter.description": "Descubra 3 marcos.",
 };

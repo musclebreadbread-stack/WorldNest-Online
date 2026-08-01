@@ -527,4 +527,34 @@ export const es: LocaleMessages = {
   "achievement.best_friends.title": "Mejores amigos",
   "achievement.best_friends.description":
     "Alcanza la amistad maxima con cualquier NPC.",
+
+  "exploration.title": "Registro de exploracion",
+  "exploration.biomeDiscovered": "Nuevo bioma descubierto: {name}",
+  "exploration.landmarkDiscovered": "Lugar de interes descubierto: {name}",
+  "exploration.mapCompletion": "Mapa completado: {percent}%",
+  "exploration.reward": "Recompensa de exploracion: {coins} monedas",
+  "landmark.tundra_peak.name": "Cumbre de la Tundra",
+  "landmark.tundra_peak.description":
+    "Una cima helada con vistas panoramicas de las llanuras congeladas.",
+  "landmark.taiga_grove.name": "Arboleda de la Taiga",
+  "landmark.taiga_grove.description":
+    "Un denso grupo de coniferas ancestrales que protegen a las criaturas del bosque.",
+  "landmark.meadow_spring.name": "Manantial del Prado",
+  "landmark.meadow_spring.description":
+    "Un manantial cristalino que brota entre flores silvestres.",
+  "landmark.ancient_forest.name": "Bosque Ancestral",
+  "landmark.ancient_forest.description":
+    "Arboles gigantes cuyas raices se aferran a la tierra desde hace siglos.",
+  "landmark.savanna_oasis.name": "Oasis de la Sabana",
+  "landmark.savanna_oasis.description":
+    "Una laguna oculta rodeada de pastos altos y acacias.",
+  "landmark.desert_shrine.name": "Santuario del Desierto",
+  "landmark.desert_shrine.description":
+    "Un monumento de piedra desgastado, semienterrado en arena dorada.",
+  "achievement.first_biome.title": "Primeros pasos",
+  "achievement.first_biome.description": "Descubre tu primer bioma.",
+  "achievement.cartographer.title": "Cartografo",
+  "achievement.cartographer.description": "Descubre los 6 biomas del mundo.",
+  "achievement.landmark_hunter.title": "Cazador de lugares",
+  "achievement.landmark_hunter.description": "Descubre 3 lugares de interes.",
 };

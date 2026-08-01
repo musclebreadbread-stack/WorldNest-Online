@@ -523,4 +523,34 @@ export const en = {
   "achievement.first_gift.description": "Give your first gift to any NPC.",
   "achievement.best_friends.title": "Best Friends",
   "achievement.best_friends.description": "Reach maximum friendship with any NPC.",
+
+  "exploration.title": "Exploration Log",
+  "exploration.biomeDiscovered": "New biome discovered: {name}",
+  "exploration.landmarkDiscovered": "Landmark discovered: {name}",
+  "exploration.mapCompletion": "Map completion: {percent}%",
+  "exploration.reward": "Exploration reward: {coins} coins",
+  "landmark.tundra_peak.name": "Tundra Peak",
+  "landmark.tundra_peak.description":
+    "A frozen summit offering panoramic views of the icy plains below.",
+  "landmark.taiga_grove.name": "Taiga Grove",
+  "landmark.taiga_grove.description":
+    "A dense cluster of ancient evergreens sheltering woodland creatures.",
+  "landmark.meadow_spring.name": "Meadow Spring",
+  "landmark.meadow_spring.description":
+    "A crystal-clear spring bubbling up among wildflowers.",
+  "landmark.ancient_forest.name": "Ancient Forest",
+  "landmark.ancient_forest.description":
+    "Towering trees whose roots have gripped the earth for centuries.",
+  "landmark.savanna_oasis.name": "Savanna Oasis",
+  "landmark.savanna_oasis.description":
+    "A hidden pool surrounded by tall grasses and acacia trees.",
+  "landmark.desert_shrine.name": "Desert Shrine",
+  "landmark.desert_shrine.description":
+    "A weathered stone monument half-buried in golden sand.",
+  "achievement.first_biome.title": "First Steps",
+  "achievement.first_biome.description": "Discover your first biome.",
+  "achievement.cartographer.title": "Cartographer",
+  "achievement.cartographer.description": "Discover all 6 biomes in the world.",
+  "achievement.landmark_hunter.title": "Landmark Hunter",
+  "achievement.landmark_hunter.description": "Discover 3 landmarks.",
 } as const;

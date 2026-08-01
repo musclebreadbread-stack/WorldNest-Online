@@ -23,7 +23,10 @@ export type AchievementCondition =
   | { kind: "mount_bond"; level: number }
   | { kind: "water_travel"; tiles: number }
   | { kind: "friendship_level"; level: number }
-  | { kind: "total_gifts"; count: number };
+  | { kind: "total_gifts"; count: number }
+  | { kind: "biomes_discovered"; count: number }
+  | { kind: "landmarks_discovered"; count: number }
+  | { kind: "map_completion"; percent: number };
 
 export interface AchievementDefinition {
   id: string;
@@ -54,6 +57,9 @@ export interface AchievementSource {
   waterTilesTraversed: number;
   highestFriendshipLevel: number;
   totalGiftsGiven: number;
+  biomesDiscovered: number;
+  landmarksDiscovered: number;
+  mapCompletionPercent: number;
   isCategoryComplete: (categoryId: string) => boolean;
 }
 
@@ -197,6 +203,27 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
     descriptionKey: "achievement.best_friends.description",
     rewardCoins: 75,
     condition: { kind: "friendship_level", level: 4 },
+  },
+  {
+    id: "first_biome",
+    titleKey: "achievement.first_biome.title",
+    descriptionKey: "achievement.first_biome.description",
+    rewardCoins: 15,
+    condition: { kind: "biomes_discovered", count: 1 },
+  },
+  {
+    id: "cartographer",
+    titleKey: "achievement.cartographer.title",
+    descriptionKey: "achievement.cartographer.description",
+    rewardCoins: 60,
+    condition: { kind: "biomes_discovered", count: 6 },
+  },
+  {
+    id: "landmark_hunter",
+    titleKey: "achievement.landmark_hunter.title",
+    descriptionKey: "achievement.landmark_hunter.description",
+    rewardCoins: 45,
+    condition: { kind: "landmarks_discovered", count: 3 },
   },
 ];
 
