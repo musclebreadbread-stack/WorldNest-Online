@@ -29,6 +29,8 @@ export interface MissionState {
   dailyStreak: number;
   lastCompletedDay: number;
   weeklyProgress: number;
+  /** Lifetime count of missions completed (never resets on refresh). */
+  totalMissionsCompleted: number;
   version: number;
   lastRefreshDay: number;
   lastRefreshWeek: number;
@@ -146,6 +148,7 @@ export function completeMission(
   if (entry.progress < def.objective.count) return false;
 
   entry.completed = true;
+  state.totalMissionsCompleted++;
   if (def.tier === "DAILY") {
     state.lastCompletedDay = currentDay;
   } else {

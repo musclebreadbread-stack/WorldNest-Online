@@ -20,6 +20,8 @@ export class MissionComponent extends Component {
   public lastRefreshWeek: number;
   /** Weekly missions completed this week. */
   public weeklyProgress: number;
+  /** Lifetime count of missions completed (never resets on refresh). */
+  public totalMissionsCompleted: number;
   /** Bumped by every accepted change for HUD change detection. */
   public version: number;
   /** Mission id the HUD wants to claim a reward for, or null. */
@@ -33,6 +35,7 @@ export class MissionComponent extends Component {
     this.lastRefreshDay = -1;
     this.lastRefreshWeek = -1;
     this.weeklyProgress = 0;
+    this.totalMissionsCompleted = 0;
     this.version = 0;
     this.requestedClaim = null;
   }

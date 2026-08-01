@@ -189,6 +189,29 @@ describe("missionOps", () => {
       completeMission(mission, daily.id, 7);
       expect(mission.lastCompletedDay).toBe(7);
     });
+
+    it("should increment totalMissionsCompleted lifetime counter", () => {
+      refreshDailyMissions(mission, 0);
+      const daily = getDailyMissionForDay(0);
+      recordMissionProgress(mission, daily.id, daily.objective.count);
+      expect(mission.totalMissionsCompleted).toBe(0);
+      completeMission(mission, daily.id, 0);
+      expect(mission.totalMissionsCompleted).toBe(1);
+    });
+
+    it("should preserve totalMissionsCompleted across day refresh", () => {
+      refreshDailyMissions(mission, 0);
+      const daily0 = getDailyMissionForDay(0);
+      recordMissionProgress(mission, daily0.id, daily0.objective.count);
+      completeMission(mission, daily0.id, 0);
+      expect(mission.totalMissionsCompleted).toBe(1);
+
+      // Refresh to next day removes the completed mission entry
+      refreshDailyMissions(mission, 1);
+      expect(mission.activeMissions[daily0.id]).toBeUndefined();
+      // But the lifetime counter persists
+      expect(mission.totalMissionsCompleted).toBe(1);
+    });
   });
 
   describe("claimMissionReward", () => {

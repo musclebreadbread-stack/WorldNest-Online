@@ -126,14 +126,17 @@ export class ExplorationSystem extends System {
     exploration: ExplorationComponent,
     wallet: WalletComponent,
   ): void {
-    const milestoneKey = getNextMilestoneKey(exploration, exploration.rewardsClaimed);
-    if (milestoneKey) {
+    // Loop to pay all eligible milestones in one frame. This handles the case
+    // where a player crosses multiple thresholds (e.g. via teleport or batch
+    // tile recording) without waiting for subsequent frames.
+    let milestoneKey = getNextMilestoneKey(exploration, exploration.rewardsClaimed);
+    while (milestoneKey) {
       const reward = getExplorationReward(exploration, exploration.rewardsClaimed);
-      if (reward > 0) {
-        wallet.coins += reward;
-        exploration.rewardsClaimed.add(milestoneKey);
-        exploration.version++;
-      }
+      if (reward <= 0) break;
+      wallet.coins += reward;
+      exploration.rewardsClaimed.add(milestoneKey);
+      exploration.version++;
+      milestoneKey = getNextMilestoneKey(exploration, exploration.rewardsClaimed);
     }
   }
 }

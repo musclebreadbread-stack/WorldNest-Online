@@ -73,6 +73,9 @@ export const NPC_SHOP_CATALOGUES: Record<string, NpcShopCatalogue> = {
 export const SEASONAL_DISCOUNT_RATE = 0.2;
 
 /** Multiplier applied to rare/premium items. */
+// NOTE: Rare items bypass the specialty discount by design because no rare items
+// appear in any NPC's catalogue item list. If a rare item is ever added to a
+// catalogue, the markup would be partially offset by the specialty discount.
 export const RARE_ITEM_MARKUP = 1.5;
 
 /** Items considered season-appropriate for discounts. */

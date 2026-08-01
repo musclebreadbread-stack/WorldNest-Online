@@ -290,6 +290,15 @@ describe("ShopSystem NPC expansion", () => {
     system.update([entity], 1 / 60);
     expect(shop.currentNpcShopItems).not.toBeNull();
     expect(shop.currentNpcShopItems!.length).toBeGreaterThan(0);
+    // In spring, day 1: juno has no spring-seasonal items, so flag is false
+    expect(shop.seasonalDiscountActive).toBe(false);
+  });
+
+  it("should set seasonalDiscountActive when NPC has seasonal items", () => {
+    // Chef Bao carries wheat_seed, which is seasonal in spring
+    const { entity, shop } = createTrader();
+    shop.requestedOpenNpcId = "chef_bao";
+    system.update([entity], 1 / 60);
     expect(shop.seasonalDiscountActive).toBe(true);
   });
 

@@ -234,6 +234,23 @@ describe("ExplorationSystem", () => {
     expect(exploration.rewardsClaimed.has("milestone_25")).toBe(true);
     expect(wallet.coins).toBeGreaterThan(BIOME_DISCOVERY_REWARDS[Biome.GRASSLAND]);
   });
+
+  it("should pay all eligible milestones in a single frame", () => {
+    const { entity, exploration, position, wallet } = createExplorer(0, 0);
+    exploration.totalMapTiles = 100;
+    // Pre-explore enough tiles to cross multiple milestones at once
+    exploration.mapTilesExplored = 99;
+    // Move to a new tile so the system records tile 100 and crosses all thresholds
+    position.x = 1;
+    system.update([entity], 1 / 60);
+    expect(exploration.rewardsClaimed.has("milestone_25")).toBe(true);
+    expect(exploration.rewardsClaimed.has("milestone_50")).toBe(true);
+    expect(exploration.rewardsClaimed.has("milestone_75")).toBe(true);
+    expect(exploration.rewardsClaimed.has("milestone_100")).toBe(true);
+    // All milestone rewards: 25 + 50 + 75 + 100 = 250
+    const biomeReward = BIOME_DISCOVERY_REWARDS[Biome.GRASSLAND];
+    expect(wallet.coins).toBe(biomeReward + 250);
+  });
 });
 
 describe("Exploration achievements integration", () => {

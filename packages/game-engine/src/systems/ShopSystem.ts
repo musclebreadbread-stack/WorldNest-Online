@@ -5,7 +5,7 @@ import { ShopComponent, type ShopTrade } from "../components/ShopComponent";
 import { WalletComponent } from "../components/WalletComponent";
 import { addItem, countItem, hasSpaceFor, removeItem } from "../inventory/inventoryOps";
 import { applyTrade } from "../shop/shopOps";
-import { NPC_SHOP_CATALOGUES } from "../shop/shopCatalogue";
+import { NPC_SHOP_CATALOGUES, getSeasonalDiscount } from "../shop/shopCatalogue";
 import {
   getEffectivePrice,
   getNpcShopItems,
@@ -181,8 +181,13 @@ export class ShopSystem extends System {
     const catalogue = NPC_SHOP_CATALOGUES[npcId];
     if (catalogue) {
       const day = this.getDay();
+      const season = this.getSeason();
       shop.currentNpcShopItems = getNpcShopItems(npcId, day);
-      shop.seasonalDiscountActive = true;
+      // Only flag seasonal discount as active if at least one item in the
+      // catalogue actually has a seasonal discount for the current season.
+      shop.seasonalDiscountActive = shop.currentNpcShopItems.some(
+        (itemId) => getSeasonalDiscount(season, itemId) > 0,
+      );
     } else {
       shop.currentNpcShopItems = null;
       shop.seasonalDiscountActive = false;

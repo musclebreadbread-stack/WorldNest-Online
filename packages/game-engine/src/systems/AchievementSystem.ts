@@ -207,9 +207,7 @@ export class AchievementSystem extends System {
         : 0;
       // Track mission progress
       const missionComp = entity.getComponent<MissionComponent>("mission");
-      const missionsCompleted = missionComp
-        ? Object.values(missionComp.activeMissions).filter((e) => e.completed).length
-        : 0;
+      const missionsCompleted = missionComp ? missionComp.totalMissionsCompleted : 0;
       const missionStreak = missionComp ? missionComp.dailyStreak : 0;
       // Track shop expansion progress
       const shopComp = entity.getComponent<ShopComponent>("shop");

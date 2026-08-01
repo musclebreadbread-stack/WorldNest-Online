@@ -30,6 +30,9 @@ export class MissionSystem extends System {
   private getWeek: MissionWeekGetter;
 
   /** Accumulated fish caught via listener. */
+  // NOTE: Pending event counters are accumulated at the system level and applied
+  // to every entity in the update loop. This is correct for single-player (one
+  // player entity), but would need per-entity tracking for multiplayer support.
   private pendingFishCaught = 0;
   /** Accumulated donations via listener. */
   private pendingDonations = 0;
