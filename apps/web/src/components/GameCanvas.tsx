@@ -63,9 +63,8 @@ export function GameCanvas() {
 
     // Dynamic import to avoid SSR issues (Phaser requires window)
     const { createPhaserGame } = await import("../game/PhaserGame");
-    const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } = await import(
-      "../game/createGameWorld"
-    );
+    const { DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y } =
+      await import("../game/createGameWorld");
     const { loadSession } = await import("../game/loadSession");
 
     // Saved world and player state, or null when Supabase is unconfigured
@@ -112,7 +111,7 @@ export function GameCanvas() {
 
     // Mirror the coin purse and the open shop into their stores
     game.events.on(WALLET_CHANGED_EVENT, (event: WalletChangedEvent) => {
-      setCoins(event.coins);
+      setCoins(event.coins, event.adjustments);
     });
 
     game.events.on(SHOP_CHANGED_EVENT, (event: ShopChangedEvent) => {

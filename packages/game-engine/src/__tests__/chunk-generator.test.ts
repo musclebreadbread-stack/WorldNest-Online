@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ChunkGenerator } from "../world/ChunkGenerator";
 import { TileType } from "../world/Tilemap";
+import { WorldLayer } from "../world/WorldLayer";
 import { CHUNK_SIZE } from "@worldnest/shared";
 
 describe("ChunkGenerator", () => {
@@ -22,6 +23,14 @@ describe("ChunkGenerator", () => {
     const tiles2 = gen2.generateChunk(5, 3);
 
     expect(tiles1).toEqual(tiles2);
+  });
+
+  it("should default generation to the surface layer", () => {
+    const generator = new ChunkGenerator(42);
+
+    expect(generator.generateChunk(5, 3)).toEqual(
+      generator.generateChunk(5, 3, WorldLayer.SURFACE),
+    );
   });
 
   it("should produce different results with different seeds", () => {

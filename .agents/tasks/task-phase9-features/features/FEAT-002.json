@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Transportation and Mounts system - boats for water travel and mounts for faster land movement. Includes rideable mount entities (horse, donkey, camel), a craftable boat item for crossing water tiles, speed multipliers, stamina for mounts, feeding/bonding mechanics, and mount persistence.",
+  "status": "completed",
+  "steps": [
+    "Create packages/game-engine/src/transport/ directory with index.ts, transportDefinitions.ts, transportOps.ts, and transportState.ts",
+    "In transportDefinitions.ts: define MountSpecies union (horse, donkey, camel), MountDefinition interface (species, speedMultiplier, stamina, feedItem), MOUNT_DEFINITIONS record with 3 mounts (horse: 2.0x speed/100 stamina, donkey: 1.5x/150 stamina, camel: 1.8x/120 stamina), BOAT_SPEED_MULTIPLIER (1.5), MOUNT_STAMINA_DRAIN_PER_SECOND, MOUNT_FEED_RESTORE constants",
+    "In transportState.ts: define TransportMode type (walking/mounted/boating), MountState interface (species, stamina, maxStamina, bondLevel, feedCount)",
+    "In transportOps.ts: pure functions - canMount (check if player owns a mount), canBoard (check boat in inventory + facing water), mount/dismount state transitions, tickMountStamina (drain over time), feedMount (restore stamina + increase bond, use animal_feed item), calculateSpeed (base speed * mount/boat multiplier), isMountExhausted (stamina <= 0 forces dismount), getMountBondLevel (bond thresholds: 0-2 from feedCount), boatCanTraverse (only water tiles)",
+    "Create packages/game-engine/src/components/TransportComponent.ts extending Component with type 'transport': fields for mode, mountState (MountState|null), boatActive, version",
+    "Create packages/game-engine/src/systems/TransportSystem.ts: requires ['position','interaction','inventory','stats','transport'], on interact while holding mount_saddle near a mount NPC or owned mount: toggle mount/dismount; on interact while holding boat and facing water: board; tick stamina drain while mounted; force dismount on exhaustion; modify movement speed (expose getSpeedMultiplier for MovementSystem to query)",
+    "Add items to packages/shared/src/items.ts: 'mount_saddle' (stackSize: 1), 'boat' (stackSize: 1), 'horse_whistle'|'donkey_whistle'|'camel_whistle' (stackSize: 1, summon mount)",
+    "Add ITEM_NAME_KEYS for all new transport items in apps/web/src/i18n/index.ts",
+    "Add achievement conditions: { kind: 'mount_bond', level: number } and { kind: 'water_travel', tiles: number } to AchievementCondition + AchievementSource",
+    "Add 2 achievements: 'first_ride' (mount any animal) with 20 coins and 'sea_explorer' (travel 100 water tiles by boat) with 40 coins",
+    "Add i18n keys to all 12 locale files: transport.mount, transport.dismount, transport.board, transport.disembark, transport.exhausted, transport.feed, transport.bond, transport.noStamina, item.mount_saddle, item.boat, item.horse_whistle, item.donkey_whistle, item.camel_whistle, achievement.first_ride.*, achievement.sea_explorer.*",
+    "Export all transport module types and functions from packages/game-engine/src/index.ts",
+    "Register TransportComponent and TransportSystem in components/index.ts and systems/index.ts",
+    "Create packages/game-engine/src/__tests__/transport.test.ts: canMount/canBoard checks, stamina drain and feed restore, speed multiplier calculation, mount/dismount state transitions, exhaustion auto-dismount, boat water-only traversal, bond level progression, system integration with entities"
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with no errors",
+    "pnpm test passes with all new transport tests green",
+    "pnpm lint passes with zero warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have matching keys for transport strings",
+    "No file exceeds 300 lines",
+    "TransportSystem correctly handles mount/dismount state transitions",
+    "Stamina drains while mounted and restores on feed",
+    "Speed multiplier correctly applies for each mount species and boat",
+    "Exhaustion at 0 stamina forces automatic dismount"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": "Added mount_bond and water_travel achievement conditions. Added mountBondLevel and waterTilesTraversed to AchievementSource. Achievement count increased from 16 to 18. Items test EXPECTED_IDS needed updating. Economy test requires all items to have ITEM_PRICES entries. SQL migration 004 needed new item rows. highestMountBondLevel on AchievementComponent starts at -1 so mount_bond:0 only triggers after first ride. Transport uses the listener pattern (MountRideListener) for first-ride tracking like FishCaughtListener."
+}

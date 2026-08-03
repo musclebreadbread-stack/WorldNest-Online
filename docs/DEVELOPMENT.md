@@ -69,10 +69,10 @@ The web app starts at `http://localhost:3000`.
 
 ## Environment Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | `https://xxxxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key | `eyJhbGciOi...` |
+| Variable                        | Description                 | Example                     |
+| ------------------------------- | --------------------------- | --------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL   | `https://xxxxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key | `eyJhbGciOi...`             |
 
 Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never put secret keys in these variables.
 
@@ -80,12 +80,12 @@ Environment variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. N
 
 Three types make up the engine core (`packages/game-engine/src/ecs/`):
 
-| Type | Contract |
-|------|----------|
-| `Component` | `constructor(type: string)`. Components are **pure data**; the string `type` is the lookup key. |
-| `Entity` | `addComponent(c)` (chainable), `getComponent<T>(type: string)`, `hasComponent(type)`, `removeComponent(type)`. |
-| `System` | `constructor(requiredComponents: string[])`, `matches(entity)`, and the abstract `update(entities: Entity[], deltaTime: number): void`. |
-| `World` | `addEntity`, `removeEntity(id)`, `getEntity(id)`, `addSystem`, `update(deltaTime)`. Systems run in **insertion order**, and matching entities are cached until an entity or its component set changes. |
+| Type        | Contract                                                                                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Component` | `constructor(type: string)`. Components are **pure data**; the string `type` is the lookup key.                                                                                                        |
+| `Entity`    | `addComponent(c)` (chainable), `getComponent<T>(type: string)`, `hasComponent(type)`, `removeComponent(type)`.                                                                                         |
+| `System`    | `constructor(requiredComponents: string[])`, `matches(entity)`, and the abstract `update(entities: Entity[], deltaTime: number): void`.                                                                |
+| `World`     | `addEntity`, `removeEntity(id)`, `getEntity(id)`, `addSystem`, `update(deltaTime)`. Systems run in **insertion order**, and matching entities are cached until an entity or its component set changes. |
 
 Two consequences worth remembering:
 
@@ -267,13 +267,13 @@ The world generator lives in `packages/game-engine/src/world/`.
 
 `ChunkGenerator.generateChunk(chunkX, chunkY)` returns a `CHUNK_SIZE x CHUNK_SIZE` grid of tile types from **five** seeded simplex-noise layers:
 
-| Layer | Seed offset | Scale | Decides |
-|-------|-------------|-------|---------|
-| elevation | `seed` | 0.02 | water, sand and stone thresholds, and a lapse rate on temperature |
-| moisture | `+ 1000` | 0.015 | half of the biome classification |
-| detail | `+ 2000` | 0.1 | accent-tile scatter, ore veins |
-| temperature | `+ 3000` | 0.008 | the other half of the classification |
-| caves | `+ 4000` | 0.06 | which high rock is hollowed out |
+| Layer       | Seed offset | Scale | Decides                                                           |
+| ----------- | ----------- | ----- | ----------------------------------------------------------------- |
+| elevation   | `seed`      | 0.02  | water, sand and stone thresholds, and a lapse rate on temperature |
+| moisture    | `+ 1000`    | 0.015 | half of the biome classification                                  |
+| detail      | `+ 2000`    | 0.1   | accent-tile scatter, ore veins                                    |
+| temperature | `+ 3000`    | 0.008 | the other half of the classification                              |
+| caves       | `+ 4000`    | 0.06  | which high rock is hollowed out                                   |
 
 Each is seeded from `WORLD_SEED` through `mulberry32`, so generation is a pure function of the seed and the world coordinate. To add a feature: sample another layer at its own seed offset, combine it in `getTileType()`, and keep it deterministic.
 
@@ -283,40 +283,40 @@ Dry land is not chosen by the generator directly — `classifyBiome(elevation, m
 
 `WorldManager` owns chunk lifecycle **and** the terrain modification overlay, and implements the `TileQuery` interface the gameplay systems consume:
 
-| Member | Purpose |
-|--------|---------|
-| `updateLoadedChunks(centerChunkX, centerChunkY)` | Loads chunks in range, unloads the rest (driven by `ChunkSystem`) |
-| `getTileAt(tileX, tileY)` | Override layer first, then the owning chunk, generating it on demand |
-| `isWalkableAt(pixelX, pixelY)` | `TILE_PROPERTIES[...].walkable` for the tile under a pixel |
-| `setTileOverride(tileX, tileY, type)` | Records the change and fires the tile-change callback |
-| `getTileOverrides()` / `applyTileOverrides(entries)` | The persistable diff, keyed `"tileX,tileY"` via `getTileKey` |
-| `setCallbacks(onLoad, onUnload)` | Chunk drawing hooks used by `ChunkRenderer` |
-| `setTileChangeCallback(fn)` | Fires on every override; the client both repaints that one tile and persists it |
+| Member                                               | Purpose                                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `updateLoadedChunks(centerChunkX, centerChunkY)`     | Loads chunks in range, unloads the rest (driven by `ChunkSystem`)               |
+| `getTileAt(tileX, tileY)`                            | Override layer first, then the owning chunk, generating it on demand            |
+| `isWalkableAt(pixelX, pixelY)`                       | `TILE_PROPERTIES[...].walkable` for the tile under a pixel                      |
+| `setTileOverride(tileX, tileY, type)`                | Records the change and fires the tile-change callback                           |
+| `getTileOverrides()` / `applyTileOverrides(entries)` | The persistable diff, keyed `"tileX,tileY"` via `getTileKey`                    |
+| `setCallbacks(onLoad, onUnload)`                     | Chunk drawing hooks used by `ChunkRenderer`                                     |
+| `setTileChangeCallback(fn)`                          | Fires on every override; the client both repaints that one tile and persists it |
 
 ## Gameplay Subsystems Cheat Sheet
 
-| Area | Where the logic lives | Notes |
-|------|----------------------|-------|
-| Collision | `CollisionSystem` + `ColliderComponent` | Velocity veto per axis, probing the collider's four corners; gives wall sliding for free |
-| World clock | `WorldClock`, `TimeComponent`, `TimeSystem` | Derived from wall-clock time, never from accumulated deltas |
-| Terrain edits | `WorldManager` override layer | The only way player changes reach the map |
-| Inventory | `InventoryComponent` + `inventory/inventoryOps.ts` | Pure `addItem`/`removeItem`/`countItem`/`selectSlot`/...; every mutation bumps `version`, which is the HUD's change signal |
-| Interaction | `InteractionComponent` + `interaction/facing.ts` | `getFacedTile()` is the single target resolver shared by harvest, plant and build |
-| Harvesting | `HarvestSystem` | Crops first, then tiles; refuses to consume a tile when the yield would not fit |
-| Farming | `PlantSystem`, `CropGrowthSystem`, `world/Crops.ts` | `CropComponent.itemId` is the **seed**; stage is a function of the clock, not of frames |
-| Building | `BuildSystem`, `StructureComponent`, `world/StructureQuery.ts` | Owns the occupancy index that `CollisionSystem` reads as walls |
-| Animation | `AnimationComponent`, `AnimationSystem`, `animation/animationOps.ts` | Direction from the dominant movement axis; `directionalTextureKey()` builds the `player_<dir>_<n>` key both `BootScene` and `SpriteSync` use |
-| Persistence | `apps/web/src/lib/persistence.ts`, `game/loadSession.ts`, `game/SessionPersistence.ts`, `lib/questSnapshot.ts` | `SaveScheduler` debounces; structures and crops are diffed from the owning systems' indexes; coins ride the `player_state` upsert and quests get their own write |
-| Chat | `packages/database/src/chat.ts`, `realtime.ts`, `apps/web/src/game/ChatBridge.ts` | Broadcast for latency, a row for durability |
-| Biomes and caves | `world/Biomes.ts`, `world/ChunkGenerator.ts` | `classifyBiome` is pure; caves are a fifth noise channel on the single tile layer |
-| Minimap | `world/minimap.ts` (engine), `game/Minimap.ts` + `game/minimapLayout.ts` (client) | Sampling is a pure engine function; the layout module exists because camera zoom scales a `scrollFactor(0)` object |
-| NPCs and dialogue | `world/NpcCatalogue.ts`, `world/npcPlacement.ts`, `dialogue/`, `systems/NpcSystem.ts` | Static, deterministic placement; every string is an i18n **key** |
-| Shop and coins | `packages/shared/src/economy.ts`, `shop/shopOps.ts`, `systems/ShopSystem.ts` | Fixed prices, `sell < buy` enforced by test, no player-to-player trading |
-| Quests | `quests/questDefinitions.ts`, `quests/questOps.ts`, `systems/QuestSystem.ts` | Objectives are polled, never pushed; a turn-in that would not fit is refused whole |
-| Audio | `game/audio/{soundSpecs,SoundSynth,soundDiff,SoundManager,MusicLoop}.ts` | Synthesised WebAudio; cues come from a per-frame state diff |
-| Touch input | `stores/touchStore.ts`, `game/inputMerge.ts`, `components/TouchControls.tsx` | Virtual axis merged with the keyboard, which wins outright |
-| Input gating | `game/keyBindings.ts`, `game/panelStack.ts` | `isHudModal()` gates movement and toggles; `closeTopmostPanel()` gives `Esc` its precedence |
-| i18n | `src/i18n/`, `stores/localeStore.ts`, `components/DocumentLocale.tsx` | `en` is the source of truth; five parity tests guard the twelve catalogues |
+| Area              | Where the logic lives                                                                                          | Notes                                                                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Collision         | `CollisionSystem` + `ColliderComponent`                                                                        | Velocity veto per axis, probing the collider's four corners; gives wall sliding for free                                                                         |
+| World clock       | `WorldClock`, `TimeComponent`, `TimeSystem`                                                                    | Derived from wall-clock time, never from accumulated deltas                                                                                                      |
+| Terrain edits     | `WorldManager` override layer                                                                                  | The only way player changes reach the map                                                                                                                        |
+| Inventory         | `InventoryComponent` + `inventory/inventoryOps.ts`                                                             | Pure `addItem`/`removeItem`/`countItem`/`selectSlot`/...; every mutation bumps `version`, which is the HUD's change signal                                       |
+| Interaction       | `InteractionComponent` + `interaction/facing.ts`                                                               | `getFacedTile()` is the single target resolver shared by harvest, plant and build                                                                                |
+| Harvesting        | `HarvestSystem`                                                                                                | Crops first, then tiles; refuses to consume a tile when the yield would not fit                                                                                  |
+| Farming           | `PlantSystem`, `CropGrowthSystem`, `world/Crops.ts`                                                            | `CropComponent.itemId` is the **seed**; stage is a function of the clock, not of frames                                                                          |
+| Building          | `BuildSystem`, `StructureComponent`, `world/StructureQuery.ts`                                                 | Owns the occupancy index that `CollisionSystem` reads as walls                                                                                                   |
+| Animation         | `AnimationComponent`, `AnimationSystem`, `animation/animationOps.ts`                                           | Direction from the dominant movement axis; `directionalTextureKey()` builds the `player_<dir>_<n>` key both `BootScene` and `SpriteSync` use                     |
+| Persistence       | `apps/web/src/lib/persistence.ts`, `game/loadSession.ts`, `game/SessionPersistence.ts`, `lib/questSnapshot.ts` | `SaveScheduler` debounces; structures and crops are diffed from the owning systems' indexes; coins ride the `player_state` upsert and quests get their own write |
+| Chat              | `packages/database/src/chat.ts`, `realtime.ts`, `apps/web/src/game/ChatBridge.ts`                              | Broadcast for latency, a row for durability                                                                                                                      |
+| Biomes and caves  | `world/Biomes.ts`, `world/ChunkGenerator.ts`                                                                   | `classifyBiome` is pure; caves are a fifth noise channel on the single tile layer                                                                                |
+| Minimap           | `world/minimap.ts` (engine), `game/Minimap.ts` + `game/minimapLayout.ts` (client)                              | Sampling is a pure engine function; the layout module exists because camera zoom scales a `scrollFactor(0)` object                                               |
+| NPCs and dialogue | `world/NpcCatalogue.ts`, `world/npcPlacement.ts`, `dialogue/`, `systems/NpcSystem.ts`                          | Static, deterministic placement; every string is an i18n **key**                                                                                                 |
+| Shop and coins    | `packages/shared/src/economy.ts`, `shop/shopOps.ts`, `systems/ShopSystem.ts`                                   | Fixed prices, `sell < buy` enforced by test, no player-to-player trading                                                                                         |
+| Quests            | `quests/questDefinitions.ts`, `quests/questOps.ts`, `systems/QuestSystem.ts`                                   | Objectives are polled, never pushed; a turn-in that would not fit is refused whole                                                                               |
+| Audio             | `game/audio/{soundSpecs,SoundSynth,soundDiff,SoundManager,MusicLoop}.ts`                                       | Synthesised WebAudio; cues come from a per-frame state diff                                                                                                      |
+| Touch input       | `stores/touchStore.ts`, `game/inputMerge.ts`, `components/TouchControls.tsx`                                   | Virtual axis merged with the keyboard, which wins outright                                                                                                       |
+| Input gating      | `game/keyBindings.ts`, `game/panelStack.ts`                                                                    | `isHudModal()` gates movement and toggles; `closeTopmostPanel()` gives `Esc` its precedence                                                                      |
+| i18n              | `src/i18n/`, `stores/localeStore.ts`, `components/DocumentLocale.tsx`                                          | `en` is the source of truth; five parity tests guard the twelve catalogues                                                                                       |
 
 ## How to Add a Translatable String or a Language
 
@@ -385,7 +385,7 @@ Two edits, sometimes three:
 
 1. A row in `SOUND_SPECS` (`apps/web/src/game/audio/soundSpecs.ts`) — waveform, start/end frequency, duration, gain. Pure data, no WebAudio import, so the table is testable on its own.
 2. A comparison in `diffCues` (`audio/soundDiff.ts`), which turns a per-frame `SoundState` diff into cues.
-3. If the diff cannot see the signal, add the field to `SoundState` **and** to `readSoundState`. The latter takes an `Entity` and is Phaser-free, so it is testable against a world built by `createGameWorld`. Two cues needed this: `plant` and `build` change the *world*, not the player, so `readSoundState` takes an optional `WorldCounts { crops(); structures() }` injected by `GameScene`.
+3. If the diff cannot see the signal, add the field to `SoundState` **and** to `readSoundState`. The latter takes an `Entity` and is Phaser-free, so it is testable against a world built by `createGameWorld`. Two cues needed this: `plant` and `build` change the _world_, not the player, so `readSoundState` takes an optional `WorldCounts { crops(); structures() }` injected by `GameScene`.
 
 Never call `playSound()` from a system. Cues are derived from state, which is what keeps the engine free of an event bus.
 
@@ -453,14 +453,14 @@ For a touch equivalent, raise a flag in `touchStore`, consume it in `PlayerContr
 
 ## Testing
 
-| Suite | Command | Scope |
-|-------|---------|-------|
-| `@worldnest/shared` | `pnpm --filter @worldnest/shared test` | Tunables, coordinate helpers, item catalogue |
-| `@worldnest/game-engine` | `pnpm --filter @worldnest/game-engine test` | ECS core plus every system, with fake `TileQuery`/clock injections |
-| `@worldnest/web` | `pnpm --filter @worldnest/web test` | Stores, pure helpers, React panels via `@testing-library/react`, and Phaser-free ECS wiring driven through `createGameWorld` under jsdom |
-| E2E | `pnpm test:e2e` | Playwright smoke specs against a production build |
-| SQL | `pnpm db:verify` | Every migration and the seed against a dockerised Postgres |
-| Docs | `pnpm docs:check` | The Korean guide and its Word mirror have the same headings |
+| Suite                    | Command                                     | Scope                                                                                                                                    |
+| ------------------------ | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `@worldnest/shared`      | `pnpm --filter @worldnest/shared test`      | Tunables, coordinate helpers, item catalogue                                                                                             |
+| `@worldnest/game-engine` | `pnpm --filter @worldnest/game-engine test` | ECS core plus every system, with fake `TileQuery`/clock injections                                                                       |
+| `@worldnest/web`         | `pnpm --filter @worldnest/web test`         | Stores, pure helpers, React panels via `@testing-library/react`, and Phaser-free ECS wiring driven through `createGameWorld` under jsdom |
+| E2E                      | `pnpm test:e2e`                             | Playwright smoke specs against a production build                                                                                        |
+| SQL                      | `pnpm db:verify`                            | Every migration and the seed against a dockerised Postgres                                                                               |
+| Docs                     | `pnpm docs:check`                           | The Korean guide and its Word mirror have the same headings                                                                              |
 
 `pnpm test` runs the three Vitest suites through Turborepo and stays browser-free; Playwright is deliberately excluded so it can be run separately (and in its own CI job).
 
@@ -476,18 +476,19 @@ Three things to know before writing a web test:
 
 ### Root Level
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start all packages in dev/watch mode |
-| `pnpm build` | Build all packages (respects dependency order) |
-| `pnpm test` | Run the Vitest suites across the monorepo |
-| `pnpm test:e2e` | Run the Playwright smoke specs (needs `pnpm build` first) |
-| `pnpm lint` | Run ESLint across all packages |
-| `pnpm db:verify` | Apply the migrations to a throwaway dockerised Postgres and assert the schema |
-| `pnpm docs:check` | Assert `docs/SETUP_GUIDE_KR.md` and its `.doc` mirror have matching headings |
-| `pnpm format` | Format all files with Prettier |
+| Command             | Description                                                                   |
+| ------------------- | ----------------------------------------------------------------------------- |
+| `pnpm dev`          | Start all packages in dev/watch mode                                          |
+| `pnpm build`        | Build all packages (respects dependency order)                                |
+| `pnpm test`         | Run the Vitest suites across the monorepo                                     |
+| `pnpm test:e2e`     | Run the Playwright smoke specs (needs `pnpm build` first)                     |
+| `pnpm lint`         | Run ESLint across all packages                                                |
+| `pnpm db:verify`    | Apply the migrations to a throwaway dockerised Postgres and assert the schema |
+| `pnpm docs:check`   | Assert `docs/SETUP_GUIDE_KR.md` and its `.doc` mirror have matching headings  |
+| `pnpm format`       | Format all files with Prettier                                                |
+| `pnpm format:check` | Assert every file is already formatted (run in CI)                            |
 
-> `pnpm format` currently rewrites files it did not need to: `.prettierrc` sets `printWidth: 100` while the tree is hand-wrapped at ~88 columns. Until that is reconciled in a dedicated formatting commit, check only what you touched: `npx prettier --check <your files>`.
+> The tree is fully formatted and `.prettierrc` sets `printWidth: 88`, which is the width the code was hand-wrapped at all along, so `pnpm format` only rewrites what you actually changed. Run it before committing; `pnpm format:check` fails the `ci` job if anything drifts. `.prettierignore` excludes build output, `pnpm-lock.yaml` and `.agents/`, so the historical implementation plans stay byte-exact.
 
 ### Package-Specific
 

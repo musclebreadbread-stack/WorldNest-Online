@@ -1,4 +1,9 @@
-import type { DayPhase } from "@worldnest/game-engine";
+import type {
+  DayPhase,
+  NpcActivity,
+  Season,
+  WeatherKind,
+} from "@worldnest/game-engine";
 import type { ItemId } from "@worldnest/shared";
 import { ar } from "./messages/ar";
 import { de } from "./messages/de";
@@ -88,6 +93,13 @@ export const MESSAGES: Record<Locale, Partial<LocaleMessages>> = {
 export const DEFAULT_LOCALE: Locale = "en";
 
 /**
+ * The default locale presented to users who have not made a choice yet.
+ * Drives `resolveLocale` fallback and the initial UI language for unknown
+ * browsers. Settings UI lets users switch to any of the 12 locales.
+ */
+export const DEFAULT_USER_LOCALE: Locale = "ko";
+
+/**
  * Display-name key for every catalogue item.
  *
  * A `Record` rather than a `` `item.${id}` `` template so both directions are
@@ -102,8 +114,68 @@ export const ITEM_NAME_KEYS: Record<ItemId, MessageKey> = {
   flower: "item.flower",
   wheat_seed: "item.wheat_seed",
   wheat: "item.wheat",
+  carrot_seed: "item.carrot_seed",
+  carrot: "item.carrot",
+  melon_seed: "item.melon_seed",
+  melon: "item.melon",
   fence: "item.fence",
   chest: "item.chest",
+  path_stone: "item.path_stone",
+  fishing_rod: "item.fishing_rod",
+  fish_common: "item.fish_common",
+  fish_rare: "item.fish_rare",
+  fish_tropical: "item.fish_tropical",
+  bread: "item.bread",
+  fish_pie: "item.fish_pie",
+  carrot_soup: "item.carrot_soup",
+  fruit_salad: "item.fruit_salad",
+  animal_feed: "item.animal_feed",
+  pet_treat: "item.pet_treat",
+  house_deed: "item.house_deed",
+  table: "item.table",
+  chair: "item.chair",
+  bed: "item.bed",
+  lamp: "item.lamp",
+  bookshelf: "item.bookshelf",
+  rug: "item.rug",
+  painting: "item.painting",
+  plant_pot: "item.plant_pot",
+  window_curtain: "item.window_curtain",
+  iron_ingot: "item.iron_ingot",
+  plank: "item.plank",
+  cloth: "item.cloth",
+  stone_axe: "item.stone_axe",
+  iron_axe: "item.iron_axe",
+  stone_pickaxe: "item.stone_pickaxe",
+  iron_pickaxe: "item.iron_pickaxe",
+  workbench: "item.workbench",
+  rhythm_drum: "item.rhythm_drum",
+  rhythm_flute: "item.rhythm_flute",
+  rhythm_harp: "item.rhythm_harp",
+  rhythm_xylophone: "item.rhythm_xylophone",
+  mount_saddle: "item.mount_saddle",
+  boat: "item.boat",
+  horse_whistle: "item.horse_whistle",
+  donkey_whistle: "item.donkey_whistle",
+  camel_whistle: "item.camel_whistle",
+  gift_box: "item.gift_box",
+  explorer_compass: "item.explorer_compass",
+  treasure_map: "item.treasure_map",
+  lucky_charm: "item.lucky_charm",
+  season_ticket: "item.season_ticket",
+  rare_seed_pack: "item.rare_seed_pack",
+  golden_fishing_rod: "item.golden_fishing_rod",
+  rose: "item.rose",
+  lily: "item.lily",
+  tulip: "item.tulip",
+  sunflower: "item.sunflower",
+  garden_plot: "item.garden_plot",
+  flower_arrangement: "item.flower_arrangement",
+  rain_mushroom: "item.rain_mushroom",
+  snow_crystal: "item.snow_crystal",
+  storm_fossil: "item.storm_fossil",
+  wind_feather: "item.wind_feather",
+  aurora_gem: "item.aurora_gem",
 };
 
 /**
@@ -115,6 +187,47 @@ export const CLOCK_PHASE_KEYS: Record<DayPhase, MessageKey> = {
   day: "clock.phase.day",
   dusk: "clock.phase.dusk",
   night: "clock.phase.night",
+};
+
+/**
+ * Name key for each NPC activity. The engine reports the activity as an
+ * `NpcActivity`; the translation of it lives here, not in the engine.
+ */
+export const NPC_ACTIVITY_KEYS: Record<NpcActivity, MessageKey> = {
+  home: "npc.activity.home",
+  work: "npc.activity.work",
+  market: "npc.activity.market",
+  rest: "npc.activity.rest",
+  museum: "npc.activity.museum",
+  cooking: "npc.activity.cooking",
+  ranch: "npc.activity.ranch",
+  teaching: "npc.activity.teaching",
+  gardening: "npc.activity.gardening",
+};
+
+/**
+ * Name key for each weather kind. The engine reports the weather as a
+ * `WeatherKind`; the translation of it lives here.
+ */
+export const WEATHER_KEYS: Record<WeatherKind, MessageKey> = {
+  clear: "weather.clear",
+  rain: "weather.rain",
+  snow: "weather.snow",
+  fog: "weather.fog",
+  storm: "weather.storm",
+  rainbow: "weather.rainbow",
+  aurora: "weather.aurora",
+  wind: "weather.wind",
+};
+
+/**
+ * Name key for each season.
+ */
+export const SEASON_KEYS: Record<Season, MessageKey> = {
+  0: "season.spring",
+  1: "season.summer",
+  2: "season.autumn",
+  3: "season.winter",
 };
 
 export type TranslateParams = Record<string, string | number>;
@@ -139,15 +252,16 @@ export function isMessageKey(value: string): value is MessageKey {
 
 /**
  * Best supported locale for a browser language tag.
- * Matches the full tag first, then the primary subtag, so `ko-KR` → `ko` and
- * `pt-BR` → `pt`; anything unknown falls back to English.
+ * Matches the full tag first, then the primary subtag, so `ko-KR` -> `ko` and
+ * `pt-BR` -> `pt`; anything unknown falls back to Korean (the default user
+ * locale).
  */
 export function resolveLocale(navigatorLanguage: string): Locale {
   const tag = navigatorLanguage.trim().toLowerCase();
   if (isLocale(tag)) return tag;
 
   const primary = tag.split(/[-_]/)[0];
-  return isLocale(primary) ? primary : DEFAULT_LOCALE;
+  return isLocale(primary) ? primary : DEFAULT_USER_LOCALE;
 }
 
 /** Writing direction for a locale. */

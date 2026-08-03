@@ -1,7 +1,4 @@
-export {
-  DIALOGUE_DEFINITIONS,
-  MAX_DIALOGUE_OPTIONS,
-} from "./dialogueDefinitions";
+export { DIALOGUE_DEFINITIONS, MAX_DIALOGUE_OPTIONS } from "./dialogueDefinitions";
 export type {
   DialogueAction,
   DialogueDefinition,

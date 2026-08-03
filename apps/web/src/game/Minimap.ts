@@ -89,12 +89,7 @@ export class Minimap implements SceneOverlay {
     this.lastTileX = tileX;
     this.lastTileY = tileY;
     this.sinceRedrawMs = 0;
-    this.sample = sampleMinimap(
-      ctx.worldManager,
-      tileX,
-      tileY,
-      MINIMAP_RADIUS_TILES,
-    );
+    this.sample = sampleMinimap(ctx.worldManager, tileX, tileY, MINIMAP_RADIUS_TILES);
 
     this.layout();
     this.redraw(position);
@@ -159,13 +154,7 @@ export class Minimap implements SceneOverlay {
       const position = remotePosition(entity);
       if (!position) continue;
 
-      this.drawDot(
-        sample,
-        position.x,
-        position.y,
-        REMOTE_DOT_COLOR,
-        REMOTE_DOT_RADIUS,
-      );
+      this.drawDot(sample, position.x, position.y, REMOTE_DOT_COLOR, REMOTE_DOT_RADIUS);
     }
   }
 

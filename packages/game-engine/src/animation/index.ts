@@ -1,1 +1,5 @@
-export { advanceAnimation, directionFromDelta, directionalTextureKey } from "./animationOps";
+export {
+  advanceAnimation,
+  directionFromDelta,
+  directionalTextureKey,
+} from "./animationOps";

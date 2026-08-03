@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Gardening/Flower Arrangement system - decorative garden plots, flower varieties (rose, lily, tulip, sunflower), arrangement beauty scoring, garden competitions (NPC judged), new NPC gardener judge Flora",
+  "status": "completed",
+  "steps": [
+    "Add new flower/gardening items to packages/shared/src/items.ts: rose, lily, tulip, sunflower, garden_plot, flower_arrangement. Add to ItemId union type and ITEM_DEFINITIONS with appropriate stackSizes.",
+    "Add prices for the new items in packages/shared/src/economy.ts ITEM_PRICES.",
+    "Create packages/game-engine/src/gardening/gardeningDefinitions.ts with FlowerVariety enum (ROSE, LILY, TULIP, SUNFLOWER), GardenPlot interface, ArrangementScoring rules (beauty points per flower, variety bonus, seasonal bonus), CompetitionTier enum (bronze, silver, gold), and NPC judge scoring thresholds.",
+    "Create packages/game-engine/src/gardening/gardeningOps.ts with pure functions: plantFlower, waterGarden, harvestFlower, createArrangement, scoreArrangement, enterCompetition, judgeCompetition. These operate on a GardeningState interface.",
+    "Create packages/game-engine/src/gardening/index.ts exporting all definitions, types, and ops.",
+    "Create packages/game-engine/src/components/GardeningComponent.ts extending Component with type 'gardening'. Data: gardenPlots array, arrangements array, competitionHistory, waterLevel, lastWateredTime, version counter, and request fields (pendingPlant, pendingWater, pendingArrange, pendingCompete).",
+    "Create packages/game-engine/src/systems/GardeningSystem.ts extending System with requiredComponents ['gardening', 'inventory', 'wallet']. Consumes request fields, calls gardeningOps, awards coins for competition wins.",
+    "Add new NPC 'gardener_flora' to packages/game-engine/src/world/NpcCatalogue.ts with role 'gardener' (add to NpcRole type), schedule entries, anchorTile near village.",
+    "Add 'npc.activity.gardening' to the NpcActivity type in world/npcSchedule.ts and the NPC_ACTIVITY_KEYS in apps/web/src/i18n/index.ts.",
+    "Add new achievement conditions to packages/game-engine/src/achievements/achievementDefinitions.ts: { kind: 'garden_arrangements'; count: number }, { kind: 'garden_competition_wins'; count: number }. Add corresponding fields to AchievementSource interface. Add 3 achievement definitions: first_arrangement, garden_master (5 arrangements), competition_winner.",
+    "Add GardeningComponent export to packages/game-engine/src/components/index.ts, GardeningSystem to systems/index.ts, and add all gardening exports to packages/game-engine/src/index.ts.",
+    "Create packages/game-engine/src/__tests__/gardening.test.ts with comprehensive tests for gardeningOps (planting, watering, harvesting, arrangement scoring, competition judging) and GardeningSystem (request consumption, inventory interactions, wallet rewards).",
+    "Add all i18n keys to apps/web/src/i18n/messages/en.ts: npc.flora.name, dialogue.flora.*, item.rose, item.lily, item.tulip, item.sunflower, item.garden_plot, item.flower_arrangement, gardening.title, gardening.plant, gardening.water, gardening.arrange, gardening.compete, gardening.score, gardening.competition.*, achievement.first_arrangement.*, achievement.garden_master.*, achievement.competition_winner.*",
+    "Add ITEM_NAME_KEYS entries for the 6 new items in apps/web/src/i18n/index.ts.",
+    "Add translations to all 11 non-English locale files (ko, ja, zh, es, fr, de, pt, ar, hi, th, vi) with properly translated strings (not English copies).",
+    "Run pnpm format to auto-format all changes, then verify with pnpm format:check && pnpm lint && pnpm build && pnpm test."
+  ],
+  "acceptance_criteria": [
+    "6 new items added to shared items.ts with prices in economy.ts",
+    "gardeningDefinitions.ts and gardeningOps.ts implement full flower/arrangement/competition logic",
+    "GardeningComponent is a pure data container, GardeningSystem consumes requests and calls ops",
+    "New NPC Flora added to NpcCatalogue with gardener role and schedule",
+    "3 new achievements tied to gardening system",
+    "All i18n keys present in all 12 locales, translations differ from English",
+    "gardening.test.ts covers planting, watering, harvesting, scoring, competition, and system integration",
+    "pnpm build passes, pnpm test passes, pnpm lint passes, pnpm format:check passes"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": "1. AchievementSource interface requires new fields in ALL existing test files that construct inline source objects (achievements.test.ts, shopExpansion.test.ts, exploration.test.ts). 2. NPC_DEFINITIONS count test (npc.test.ts) and ACHIEVEMENT_DEFINITIONS count test (achievements.test.ts) must be updated when adding NPCs/achievements. 3. The npcSchedule.test.ts has both a regex and a Set checking valid activities. 4. SQL migration 004_authority_schema.sql must be updated for new item prices. 5. French 'Rose' == English 'Rose' triggers the i18n parity test - added to LOCALE_AGNOSTIC_KEYS. 6. ITEM_NAME_KEYS and NPC_ACTIVITY_KEYS in i18n/index.ts are typed Records requiring all ItemIds/NpcActivities. 7. npcTextures.ts in web app has NPC_COLORS Record<NpcRole> that must include all roles. 8. dialogueDefinitions.ts must have a matching tree for every NPC's dialogueId."
+}

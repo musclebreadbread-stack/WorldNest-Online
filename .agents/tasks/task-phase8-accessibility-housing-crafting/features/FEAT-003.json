@@ -1,0 +1,44 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Advanced crafting system: multi-step recipes, tool upgrading, and resource refinement. Extends the existing cooking/recipe system with workbench-based crafting that produces tools, building materials, and upgraded items.",
+  "status": "completed",
+  "steps": [
+    "Add new crafting items to packages/shared/src/items.ts ItemId union: 'iron_ingot', 'plank', 'cloth', 'stone_axe', 'iron_axe', 'stone_pickaxe', 'iron_pickaxe', 'workbench'. Add ITEM_DEFINITIONS entries. Mark workbench as placeableStructure with structureCollidable: false.",
+    "Add prices for new items in packages/shared/src/economy.ts. Iron ingot/plank/cloth are intermediate materials (cheap buy, lower sell). Tools cost 50-100+ coins but crafting them from raw materials is cheaper.",
+    "Create packages/game-engine/src/crafting/craftingDefinitions.ts defining: CraftingStation enum (hand, workbench), CraftingRecipe (id, station, ingredients[], resultItemId, resultQuantity, craftTimeMs, titleKey), ToolTier (stone, iron), ToolBonus (defines harvest speed multiplier per tier). Define 8+ recipes: ore->iron_ingot (workbench), wood->plank (hand), fiber->cloth (hand), plank+iron_ingot->workbench (hand), stone+wood->stone_axe (hand), iron_ingot+plank->iron_axe (workbench), stone+wood->stone_pickaxe (hand), iron_ingot+plank->iron_pickaxe (workbench).",
+    "Create packages/game-engine/src/crafting/craftingOps.ts with pure functions: canCraft(inventory, recipeId, station) checks ingredients and station requirement, startCraft(state, recipeId) begins timer, tickCraft(state, deltaMs) advances, completeCraft(recipeId, inventory) consumes ingredients/adds result, getToolBonus(inventory, toolType) returns harvest speed multiplier based on best tool held, getAvailableRecipes(station) filters by station type.",
+    "Create packages/game-engine/src/crafting/craftingState.ts with CraftingState interface (state: 'idle'|'crafting'|'done'|'failed', selectedRecipe: string|null, timer: number, station: CraftingStation).",
+    "Create packages/game-engine/src/crafting/index.ts exporting all.",
+    "Create packages/game-engine/src/components/CraftingComponent.ts with type 'crafting', fields: state (CraftingState), station (CraftingStation - what station is nearby), requestedCraft (string|null), version number.",
+    "Create packages/game-engine/src/systems/CraftingSystem.ts following the CookingSystem pattern exactly: requires ['crafting', 'inventory'], processes requestedCraft, validates station proximity, runs timer, completes craft. Resets terminal states after one frame.",
+    "Integrate tool bonuses into HarvestSystem: read the player's inventory to check for axes (wood harvesting speed) and pickaxes (stone/ore harvesting speed). Add a getToolMultiplier helper that the HarvestSystem calls to scale energy cost or yield.",
+    "Add crafting i18n keys to all 12 locale files: crafting.title, crafting.station.hand, crafting.station.workbench, crafting.start, crafting.inProgress, crafting.done, crafting.failed, crafting.needStation, recipe names for all 8+ recipes, item names for new items.",
+    "Add new achievements: 'first_craft' (condition: {kind: 'craft', count: 1}), 'tool_master' (condition: {kind: 'craft', count: 5}). Add 'craft' condition kind to AchievementCondition union and AchievementSource interface.",
+    "Export new components, system, and crafting module from packages/game-engine/src/index.ts.",
+    "Register CraftingSystem in apps/web/src/game/createGameWorld.ts.",
+    "Write tests in packages/game-engine/src/__tests__/crafting.test.ts covering: recipe definitions, canCraft with/without ingredients, canCraft station requirement, startCraft/tickCraft/completeCraft lifecycle, tool bonus calculation, system integration harness. At least 30 test cases.",
+    "Create apps/web/src/stores/craftingStore.ts (Zustand) bridging CraftingComponent state.",
+    "Create apps/web/src/components/CraftingPanel.tsx showing available recipes filtered by current station, ingredient requirements, craft button, progress bar. Wire into GameUI.tsx with 'C' keybinding."
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with crafting module compiled",
+    "pnpm test passes with at least 30 new crafting tests",
+    "pnpm lint passes with no new warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have new crafting i18n keys",
+    "8+ new items in the item catalogue",
+    "8+ crafting recipes defined",
+    "Tool bonuses integrated into harvest system",
+    "CraftingSystem registered in createGameWorld",
+    "No file exceeds 300 lines"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": "All 1021 tests pass (29 shared + 12 database + 656 game-engine + 324 web). 46 new crafting tests added. Existing items.test.ts and achievements.test.ts needed updating for new items/achievements. The CraftingState type is exported as CraftingMachineState from the barrel to avoid name collision with the CookingState type alias. Tool bonus integration in HarvestSystem uses Math.floor on multiplied quantity."
+}

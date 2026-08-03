@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QuestComponent } from "@worldnest/game-engine";
-import type { WalletComponent } from "@worldnest/game-engine";
+import { QuestComponent, TileType, WorldLayer } from "@worldnest/game-engine";
+import type { InventoryComponent, WalletComponent } from "@worldnest/game-engine";
 import {
   createGameWorld,
   DEFAULT_SPAWN_X,
@@ -27,7 +27,8 @@ vi.mock("@worldnest/database", () => {
   };
 });
 
-const { savePlayerState, saveQuests } = await import("@worldnest/database");
+const { savePlayerState, saveQuests, saveWorldModification } =
+  await import("@worldnest/database");
 
 const BOOTSTRAP: GameBootstrap = {
   playerId: "user-1",
@@ -41,15 +42,17 @@ function startSession(bootstrap: GameBootstrap = BOOTSTRAP) {
   const context = createGameWorld(bootstrap);
   const persistence = createSessionPersistence(bootstrap, context)!;
   const wallet = context.playerEntity.getComponent<WalletComponent>("wallet")!;
+  const inventory = context.playerEntity.getComponent<InventoryComponent>("inventory")!;
   const quests = context.playerEntity.getComponent<QuestComponent>("quest")!;
 
-  return { context, persistence, wallet, quests };
+  return { context, persistence, wallet, inventory, quests };
 }
 
 describe("SessionPersistence", () => {
   beforeEach(() => {
     vi.mocked(savePlayerState).mockClear();
     vi.mocked(saveQuests).mockClear();
+    vi.mocked(saveWorldModification).mockClear();
   });
 
   it("should not persist anything without a world id", () => {
@@ -58,16 +61,41 @@ describe("SessionPersistence", () => {
     expect(createSessionPersistence(bootstrap, createGameWorld(bootstrap))).toBeNull();
   });
 
-  it("should write the coin balance with the player row", () => {
+  it("should preserve the terrain layer in an immediate tile write", () => {
+    const { persistence } = startSession();
+
+    persistence.saveTile(WorldLayer.UNDERGROUND, 17, 23, TileType.CAVE_FLOOR);
+
+    expect(saveWorldModification).toHaveBeenCalledWith("world-1", {
+      layer: WorldLayer.UNDERGROUND,
+      tileX: 17,
+      tileY: 23,
+      tileType: TileType.CAVE_FLOOR,
+      modifiedBy: "user-1",
+    });
+  });
+
+  it("should not persist the player's current layer", () => {
+    const { persistence, context } = startSession();
+
+    context.worldManager.setLayer(WorldLayer.UNDERGROUND);
+    persistence.flush();
+
+    const [, payload] = vi.mocked(savePlayerState).mock.calls[0]!;
+    expect(payload).not.toHaveProperty("layer");
+  });
+
+  it("should never send the coin balance with the player row", () => {
     const { persistence, wallet } = startSession();
 
     wallet.coins = 137;
     persistence.flush();
 
-    expect(savePlayerState).toHaveBeenCalledWith(
-      "user-1",
-      expect.objectContaining({ coins: 137 }),
-    );
+    // The column is not writable by a signed-in client any more, and Postgres
+    // refuses the whole upsert over one ungranted column — so naming coins here
+    // would silently stop position and inventory persisting too.
+    const [, payload] = vi.mocked(savePlayerState).mock.calls[0]!;
+    expect(payload).not.toHaveProperty("coins");
   });
 
   it("should write the quest log to its own table", () => {
@@ -78,21 +106,36 @@ describe("SessionPersistence", () => {
     persistence.flush();
 
     expect(saveQuests).toHaveBeenCalledWith("user-1", [
-      { questId: "collect_wood", state: "active", progress: 3 },
+      { questId: "collect_wood", state: "active", progress: 3, baseline: 0 },
     ]);
   });
 
-  it("should collapse a burst of coin changes into one save per flush", () => {
-    const { persistence, wallet } = startSession();
+  it("should collapse a burst of inventory changes into one save per flush", () => {
+    const { persistence, inventory } = startSession();
 
     for (let frame = 0; frame < 20; frame++) {
-      wallet.coins -= 1;
+      inventory.version += 1;
       persistence.update();
     }
     persistence.flush();
 
     // The autosave interval has not elapsed, so the 20 marks are one write
     expect(savePlayerState).toHaveBeenCalledTimes(1);
+  });
+
+  // Coins are written by the authority functions now, so a balance moving is
+  // news from the server rather than something to send back
+  it("should not mark the session dirty for a coin change alone", () => {
+    const { persistence, wallet } = startSession();
+
+    persistence.flush();
+    vi.mocked(savePlayerState).mockClear();
+
+    wallet.coins -= 10;
+    persistence.update();
+    persistence.flush();
+
+    expect(savePlayerState).not.toHaveBeenCalled();
   });
 
   it("should not rewrite the quest rows when only the position moved", () => {

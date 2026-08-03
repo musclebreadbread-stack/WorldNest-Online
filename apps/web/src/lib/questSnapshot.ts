@@ -15,6 +15,7 @@ export function toPersistedQuests(quest: QuestComponent): PersistedQuest[] {
     questId,
     state: entry.state,
     progress: entry.progress,
+    baseline: entry.baseline ?? 0,
   }));
 }
 
@@ -59,7 +60,16 @@ function parseEntry(row: PersistedQuest): QuestEntry | null {
   if (!isQuestState(row.state)) return null;
   if (typeof row.progress !== "number" || !Number.isFinite(row.progress)) return null;
 
-  return { state: row.state, progress: Math.max(0, Math.floor(row.progress)) };
+  const baseline =
+    typeof row.baseline === "number" && Number.isFinite(row.baseline)
+      ? Math.max(0, Math.floor(row.baseline))
+      : 0;
+
+  return {
+    state: row.state,
+    progress: Math.max(0, Math.floor(row.progress)),
+    baseline,
+  };
 }
 
 function isQuestState(state: string): state is QuestState {

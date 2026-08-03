@@ -9,8 +9,10 @@ import { BuildMenu } from "./BuildMenu";
 import { ChatPanel } from "./ChatPanel";
 import { ClockHud } from "./ClockHud";
 import { CoinCounter } from "./CoinCounter";
+import { CraftingPanel } from "./CraftingPanel";
 import { DialoguePanel } from "./DialoguePanel";
 import { HotBar } from "./HotBar";
+import { HousingPanel } from "./HousingPanel";
 import { InventoryPanel } from "./InventoryPanel";
 import { QuestLog } from "./QuestLog";
 import { QuestTracker } from "./QuestTracker";
@@ -132,6 +134,8 @@ export function GameUI() {
         <QuestLog />
         <ShopPanel />
         <SettingsPanel />
+        <HousingPanel />
+        <CraftingPanel />
       </div>
 
       {/* Thumb-stick and action buttons, on touch devices only */}

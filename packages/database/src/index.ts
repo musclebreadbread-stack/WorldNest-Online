@@ -1,11 +1,14 @@
 export { createSupabaseClient } from "./client";
 export type { Database, Tables, Inserts, DbResult } from "./types";
-export { signUp, signIn, signOut, onAuthStateChange, getSession, getUser } from "./auth";
 export {
-  RealtimeManager,
-  joinRoom,
-  broadcastPosition,
-} from "./realtime";
+  signUp,
+  signIn,
+  signOut,
+  onAuthStateChange,
+  getSession,
+  getUser,
+} from "./auth";
+export { RealtimeManager, joinRoom, broadcastPosition } from "./realtime";
 export type {
   PlayerPosition,
   PlayerPresence,
@@ -16,6 +19,13 @@ export type {
 } from "./realtime";
 export { loadRecentMessages, sendMessage, CHAT_MESSAGE_MAX_LENGTH } from "./chat";
 export type { ChatMessage, ChatMessageRow } from "./chat";
+export {
+  sendMessageViaRpc,
+  mutePlayer,
+  unmutePlayer,
+  getMuteList,
+} from "./chatModeration";
+export type { SendChatResult, MuteEntry } from "./chatModeration";
 export { getProfile, upsertProfile } from "./profiles";
 export type { Profile } from "./profiles";
 export { loadPlayerState, savePlayerState } from "./playerState";
@@ -27,6 +37,13 @@ export type {
 } from "./playerState";
 export { loadQuests, saveQuest, saveQuests } from "./progression";
 export type { PlayerQuest, PersistedQuest } from "./progression";
+export {
+  shopTrade,
+  claimQuestReward,
+  loadCoinLedger,
+  parseAuthorityResult,
+} from "./authority";
+export type { AuthorityResult, CoinLedgerEntry } from "./authority";
 export { getDefaultWorld, DEFAULT_WORLD_NAME } from "./worlds";
 export type { World } from "./worlds";
 export {

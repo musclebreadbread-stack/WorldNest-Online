@@ -2,21 +2,31 @@ import { describe, it, expect } from "vitest";
 import { CHUNK_SIZE, WORLD_SEED } from "@worldnest/shared";
 import { ChunkGenerator } from "../world/ChunkGenerator";
 import { TILE_PROPERTIES, TileType } from "../world/Tilemap";
+import { WorldLayer } from "../world/WorldLayer";
 
 /** Tiles surveyed on each axis. Six chunks square, enough to hit a mountain. */
 const SURVEY_TILES = 96;
 
-const CAVE_TILES: TileType[] = [TileType.CAVE_FLOOR, TileType.CAVE_WALL, TileType.ORE];
+const CAVE_TILES: TileType[] = [
+  TileType.CAVE_FLOOR,
+  TileType.CAVE_WALL,
+  TileType.ORE,
+  TileType.CAVE_ENTRANCE,
+];
 
 /** Row-major tile survey of the region `(0, 0)` to `(size - 1, size - 1)`. */
-function surveyTiles(generator: ChunkGenerator, size: number): TileType[][] {
+function surveyTiles(
+  generator: ChunkGenerator,
+  size: number,
+  layer: WorldLayer = WorldLayer.SURFACE,
+): TileType[][] {
   const grid: TileType[][] = [];
   const chunks = size / CHUNK_SIZE;
 
   for (let chunkY = 0; chunkY < chunks; chunkY++) {
     const chunkRow = [];
     for (let chunkX = 0; chunkX < chunks; chunkX++) {
-      chunkRow.push(generator.generateChunk(chunkX, chunkY));
+      chunkRow.push(generator.generateChunk(chunkX, chunkY, layer));
     }
     for (let localY = 0; localY < CHUNK_SIZE; localY++) {
       const tiles: TileType[] = [];
@@ -91,10 +101,13 @@ describe("cave generation", () => {
     }
   });
 
-  it("should make cave floors and ore walkable but cave walls solid", () => {
+  it("should make cave floors, ore and entrances walkable but cave walls solid", () => {
     expect(TILE_PROPERTIES[TileType.CAVE_FLOOR].walkable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_FLOOR].buildable).toBe(false);
     expect(TILE_PROPERTIES[TileType.ORE].walkable).toBe(true);
     expect(TILE_PROPERTIES[TileType.ORE].harvestable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_ENTRANCE].walkable).toBe(true);
+    expect(TILE_PROPERTIES[TileType.CAVE_ENTRANCE].buildable).toBe(false);
     expect(TILE_PROPERTIES[TileType.CAVE_WALL].walkable).toBe(false);
   });
 
@@ -104,7 +117,7 @@ describe("cave generation", () => {
 
     for (let tileY = 0; tileY < SURVEY_TILES; tileY++) {
       for (let tileX = 0; tileX < SURVEY_TILES; tileX++) {
-        if (grid[tileY][tileX] !== TileType.CAVE_FLOOR) continue;
+        if (grid[tileY][tileX] !== TileType.CAVE_ENTRANCE) continue;
 
         const walkableOutside = neighboursOf(tileX, tileY).some(
           (tile) => !CAVE_TILES.includes(tile) && TILE_PROPERTIES[tile].walkable,
@@ -120,6 +133,54 @@ describe("cave generation", () => {
     const other = new ChunkGenerator(WORLD_SEED);
 
     expect(surveyTiles(other, SURVEY_TILES)).toEqual(grid);
+  });
+});
+
+describe("underground generation", () => {
+  const underground = surveyTiles(
+    new ChunkGenerator(WORLD_SEED),
+    SURVEY_TILES,
+    WorldLayer.UNDERGROUND,
+  );
+  const undergroundCounts = countTiles(underground);
+
+  it("should contain only cave floors, walls and ore", () => {
+    for (const tile of CAVE_TILES) {
+      expect(undergroundCounts.get(tile) ?? 0).toBeGreaterThan(0);
+    }
+
+    for (const row of underground) {
+      for (const tile of row) {
+        expect(CAVE_TILES).toContain(tile);
+      }
+    }
+  });
+
+  it("should be deterministic for the same seed", () => {
+    expect(
+      surveyTiles(new ChunkGenerator(WORLD_SEED), SURVEY_TILES, WorldLayer.UNDERGROUND),
+    ).toEqual(underground);
+  });
+
+  it("should keep every surface mouth and its underground landing walkable", () => {
+    let entrances = 0;
+    for (let tileY = 1; tileY < SURVEY_TILES - 1; tileY++) {
+      for (let tileX = 1; tileX < SURVEY_TILES - 1; tileX++) {
+        if (grid[tileY][tileX] !== TileType.CAVE_ENTRANCE) continue;
+        const outside = [
+          grid[tileY][tileX + 1],
+          grid[tileY][tileX - 1],
+          grid[tileY + 1][tileX],
+          grid[tileY - 1][tileX],
+        ].some((tile) => !CAVE_TILES.includes(tile) && TILE_PROPERTIES[tile].walkable);
+        if (!outside) continue;
+
+        entrances++;
+        expect(TILE_PROPERTIES[underground[tileY][tileX]].walkable).toBe(true);
+      }
+    }
+
+    expect(entrances).toBeGreaterThan(0);
   });
 });
 

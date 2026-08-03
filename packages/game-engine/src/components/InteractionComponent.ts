@@ -14,6 +14,12 @@ export class InteractionComponent extends Component {
   /** Asked to place the selected item on the faced tile this frame. */
   public buildRequested: boolean;
   public lastBuildAt: number;
+  /**
+   * Counter of refused interactions (e.g. biome/season gating on crops).
+   * Bumped by systems that reject an action, read by `readSoundState` to
+   * play the deny cue.
+   */
+  public refusals: number;
 
   constructor(facing: Facing = "down") {
     super("interaction");
@@ -22,5 +28,6 @@ export class InteractionComponent extends Component {
     this.lastInteractAt = 0;
     this.buildRequested = false;
     this.lastBuildAt = 0;
+    this.refusals = 0;
   }
 }

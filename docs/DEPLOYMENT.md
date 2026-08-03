@@ -7,32 +7,32 @@ only you can do, because it needs your own Supabase and Vercel accounts.
 Read it in order. Steps 1-3 build the backend, step 4 proves the tree is deployable before you spend
 a Vercel build on it, steps 5-9 put it online, and step 10 is how you know it worked.
 
-| Step | What it produces | Where |
-|------|------------------|-------|
-| 1 | A Supabase project, its URL and anon key | Supabase dashboard |
-| 2 | The schema: three migrations, optionally the test accounts | Supabase SQL Editor |
-| 3 | Sign-up that works without a confirmation mail | Supabase Auth settings |
-| 4 | Confidence: the same build and the same production server Vercel runs | Your terminal |
-| 5 | The branch Vercel will import | GitHub |
-| 6 | A deployment | Vercel dashboard |
-| 7 | The two `NEXT_PUBLIC_*` variables in all three environments | Vercel dashboard |
-| 8 | Sign-in that redirects back to *your* domain | Supabase Auth settings |
-| 9 | A custom domain (optional) | Vercel dashboard |
-| 10 | A signed-off smoke pass | A browser, twice |
+| Step | What it produces                                                      | Where                  |
+| ---- | --------------------------------------------------------------------- | ---------------------- |
+| 1    | A Supabase project, its URL and anon key                              | Supabase dashboard     |
+| 2    | The schema: three migrations, optionally the test accounts            | Supabase SQL Editor    |
+| 3    | Sign-up that works without a confirmation mail                        | Supabase Auth settings |
+| 4    | Confidence: the same build and the same production server Vercel runs | Your terminal          |
+| 5    | The branch Vercel will import                                         | GitHub                 |
+| 6    | A deployment                                                          | Vercel dashboard       |
+| 7    | The two `NEXT_PUBLIC_*` variables in all three environments           | Vercel dashboard       |
+| 8    | Sign-in that redirects back to _your_ domain                          | Supabase Auth settings |
+| 9    | A custom domain (optional)                                            | Vercel dashboard       |
+| 10   | A signed-off smoke pass                                               | A browser, twice       |
 
 There is a Korean walkthrough of the same path in [`SETUP_GUIDE_KR.md`](SETUP_GUIDE_KR.md), section 9.
 
 ## Prerequisites
 
-| Requirement | Version / note |
-|-------------|----------------|
-| Node.js | 22+ (LTS) |
-| pnpm | 10+ — `corepack enable` |
-| Git | any recent version |
-| GitHub account | the repository has to be pushed somewhere Vercel can read |
-| Supabase account | free tier is enough |
-| Vercel account | free Hobby tier is enough |
-| Docker (optional) | only for `pnpm db:verify` and the `Dockerfile` |
+| Requirement       | Version / note                                            |
+| ----------------- | --------------------------------------------------------- |
+| Node.js           | 22+ (LTS)                                                 |
+| pnpm              | 10+ — `corepack enable`                                   |
+| Git               | any recent version                                        |
+| GitHub account    | the repository has to be pushed somewhere Vercel can read |
+| Supabase account  | free tier is enough                                       |
+| Vercel account    | free Hobby tier is enough                                 |
+| Docker (optional) | only for `pnpm db:verify` and the `Dockerfile`            |
 
 You do **not** need any binary game assets: every texture and every sound is synthesised at runtime,
 so there is no asset pipeline, no CDN step and nothing to license.
@@ -54,12 +54,12 @@ so there is no asset pipeline, no CDN step and nothing to license.
 
 Open **SQL Editor → New query**, paste each file whole, and run them **in this order**:
 
-| Order | File | What it creates |
-|-------|------|-----------------|
-| 1 | `packages/database/supabase/migrations/001_initial_schema.sql` | `profiles`, `player_state`, `worlds`, RLS, the seeded `Default World` row |
-| 2 | `packages/database/supabase/migrations/002_gameplay_schema.sql` | the `handle_new_user` trigger, `world_modifications`, `structures`, `crops`, `chat_messages` |
-| 3 | `packages/database/supabase/migrations/003_progression_schema.sql` | `player_state.coins` and `player_quests` |
-| 4 (optional) | `packages/database/supabase/seed/test_accounts.sql` | three ready-to-use test logins |
+| Order        | File                                                               | What it creates                                                                              |
+| ------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| 1            | `packages/database/supabase/migrations/001_initial_schema.sql`     | `profiles`, `player_state`, `worlds`, RLS, the seeded `Default World` row                    |
+| 2            | `packages/database/supabase/migrations/002_gameplay_schema.sql`    | the `handle_new_user` trigger, `world_modifications`, `structures`, `crops`, `chat_messages` |
+| 3            | `packages/database/supabase/migrations/003_progression_schema.sql` | `player_state.coins` and `player_quests`                                                     |
+| 4 (optional) | `packages/database/supabase/seed/test_accounts.sql`                | three ready-to-use test logins                                                               |
 
 Order is load-bearing. `002` installs the trigger that creates a `profiles` row on sign-up, so
 without it nothing a player does can be saved, and the seed in step 4 relies on that same trigger.
@@ -69,8 +69,8 @@ without it nothing a player does can be saved, and the seed in step 4 relies on 
 `seed/test_accounts.sql` creates three confirmed accounts so you can sign in immediately, and sign in
 as two different players at once to test chat and remote players:
 
-| Email | Password | Username |
-|-------|----------|----------|
+| Email                    | Password       | Username  |
+| ------------------------ | -------------- | --------- |
 | `tester1@worldnest.test` | `worldnest123` | `Tester1` |
 | `tester2@worldnest.test` | `worldnest123` | `Tester2` |
 | `tester3@worldnest.test` | `worldnest123` | `Tester3` |
@@ -146,12 +146,12 @@ request and merge first.
 2. Leave **Root Directory** at the repository root. That is what makes the committed
    [`vercel.json`](../vercel.json) apply:
 
-   | Setting | Value (from `vercel.json`) |
-   |---------|----------------------------|
-   | Framework Preset | `nextjs` |
-   | Install Command | `pnpm install --frozen-lockfile` |
-   | Build Command | `pnpm exec turbo run build --filter=@worldnest/web...` |
-   | Output Directory | `apps/web/.next` |
+   | Setting          | Value (from `vercel.json`)                             |
+   | ---------------- | ------------------------------------------------------ |
+   | Framework Preset | `nextjs`                                               |
+   | Install Command  | `pnpm install --frozen-lockfile`                       |
+   | Build Command    | `pnpm exec turbo run build --filter=@worldnest/web...` |
+   | Output Directory | `apps/web/.next`                                       |
 
 3. Set the environment variables (step 7) **before** the first build, then click **Deploy**.
 
@@ -160,11 +160,11 @@ at `apps/web` instead, the root `vercel.json` is ignored and you must fill the s
 by hand in **Settings → Build & Development Settings**, remembering that the install and build have
 to run at the workspace root:
 
-| Setting | Value when Root Directory is `apps/web` |
-|---------|------------------------------------------|
-| Install Command | `cd ../.. && pnpm install --frozen-lockfile` |
-| Build Command | `cd ../.. && pnpm exec turbo run build --filter=@worldnest/web...` |
-| Output Directory | `.next` |
+| Setting          | Value when Root Directory is `apps/web`                            |
+| ---------------- | ------------------------------------------------------------------ |
+| Install Command  | `cd ../.. && pnpm install --frozen-lockfile`                       |
+| Build Command    | `cd ../.. && pnpm exec turbo run build --filter=@worldnest/web...` |
+| Output Directory | `.next`                                                            |
 
 Leaving the Root Directory alone is the simpler of the two, and it is the one this repository is
 configured for.
@@ -174,9 +174,9 @@ configured for.
 **Settings → Environment Variables.** Add both, and tick **Production**, **Preview** _and_
 **Development** for each:
 
-| Name | Value |
-|------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | your Project URL from step 1 |
+| Name                            | Value                            |
+| ------------------------------- | -------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | your Project URL from step 1     |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your anon public key from step 1 |
 
 If they are missing the build still succeeds — the app is written to boot without Supabase — and you
@@ -192,9 +192,9 @@ told about.
 
 **Authentication → URL Configuration:**
 
-| Field | Value |
-|-------|-------|
-| **Site URL** | your production URL, e.g. `https://worldnest-online.vercel.app` |
+| Field             | Value                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Site URL**      | your production URL, e.g. `https://worldnest-online.vercel.app`                                                                                                                    |
 | **Redirect URLs** | add `https://worldnest-online.vercel.app/**`, your custom domain if any, `https://*-yourteam.vercel.app/**` for preview deployments, and `http://localhost:3000/**` for local work |
 
 Add every host you will actually open the game from. Preview deployments get a new hostname per
@@ -230,16 +230,16 @@ repository can reach, which is exactly why it is a checklist.
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Sign-in bounces back to `/auth`, or redirects to `localhost` | the deployed domain is not in the Auth allow-list | step 8 — add both the Site URL and the redirect URL |
-| Vercel build fails with `Cannot find module '@worldnest/shared'` (or `game-engine`, `ui`, `database`) | the web app was built without its workspace dependencies | use the `--filter=@worldnest/web...` build command from step 6; check the Root Directory matches the table you filled in |
-| Vercel build fails in the install step with a lockfile error | `pnpm-lock.yaml` is out of date on the branch | run `pnpm install` locally, commit the lockfile, push |
-| The game loads but there are no accounts, no chat and nothing saves | the `NEXT_PUBLIC_*` variables are missing from that environment | step 7, then **redeploy** — they are inlined at build time |
-| Sign-up succeeds but sign-in fails | email confirmation is on and the mail was never clicked | step 3, or use the seeded accounts |
-| Everything works except saving | `002` and/or `003` never ran, so there is no `profiles` row | run the missing migration, then register again — the trigger only fires for accounts created after it exists |
-| No sound until you click | every browser's autoplay policy | expected; the audio context is created on your first gesture |
-| `next start` warns about `output: "standalone"` | `next.config.js` sets it for the Dockerfile | expected and harmless, locally and on Vercel |
+| Symptom                                                                                               | Cause                                                           | Fix                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Sign-in bounces back to `/auth`, or redirects to `localhost`                                          | the deployed domain is not in the Auth allow-list               | step 8 — add both the Site URL and the redirect URL                                                                      |
+| Vercel build fails with `Cannot find module '@worldnest/shared'` (or `game-engine`, `ui`, `database`) | the web app was built without its workspace dependencies        | use the `--filter=@worldnest/web...` build command from step 6; check the Root Directory matches the table you filled in |
+| Vercel build fails in the install step with a lockfile error                                          | `pnpm-lock.yaml` is out of date on the branch                   | run `pnpm install` locally, commit the lockfile, push                                                                    |
+| The game loads but there are no accounts, no chat and nothing saves                                   | the `NEXT_PUBLIC_*` variables are missing from that environment | step 7, then **redeploy** — they are inlined at build time                                                               |
+| Sign-up succeeds but sign-in fails                                                                    | email confirmation is on and the mail was never clicked         | step 3, or use the seeded accounts                                                                                       |
+| Everything works except saving                                                                        | `002` and/or `003` never ran, so there is no `profiles` row     | run the missing migration, then register again — the trigger only fires for accounts created after it exists             |
+| No sound until you click                                                                              | every browser's autoplay policy                                 | expected; the audio context is created on your first gesture                                                             |
+| `next start` warns about `output: "standalone"`                                                       | `next.config.js` sets it for the Dockerfile                     | expected and harmless, locally and on Vercel                                                                             |
 
 ## Deploying the container instead
 

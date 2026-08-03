@@ -2,6 +2,7 @@ import { activeNode, getNpcDefinition } from "@worldnest/game-engine";
 import type {
   DialogueComponent,
   Entity,
+  EnvironmentComponent,
   InventoryComponent,
   PositionComponent,
   QuestComponent,
@@ -13,6 +14,7 @@ import type {
 import {
   CLOCK_CHANGED_EVENT,
   DIALOGUE_CHANGED_EVENT,
+  ENVIRONMENT_CHANGED_EVENT,
   INVENTORY_CHANGED_EVENT,
   PLAYER_POSITION_EVENT,
   QUESTS_CHANGED_EVENT,
@@ -20,6 +22,7 @@ import {
   STATS_CHANGED_EVENT,
   WALLET_CHANGED_EVENT,
   type DialogueChangedEvent,
+  type EnvironmentChangedEvent,
   type InventoryChangedEvent,
   type PlayerPositionEvent,
   type QuestsChangedEvent,
@@ -50,10 +53,15 @@ export class HudBridge {
    * publishes nothing on the first frame. */
   private lastDialogueVersion = 0;
   private lastCoins = -1;
+  /** Starts at the component's own initial count, so a purse nobody has
+   * reconciled publishes no adjustment. */
+  private lastAdjustments = 0;
   /** Same rule as the dialogue version: an untouched quest log publishes nothing. */
   private lastQuestVersion = 0;
   /** Same rule as the dialogue version: an untouched shop publishes nothing. */
   private lastShopVersion = 0;
+  /** Same rule: environment published only when weather/season actually shifts. */
+  private lastEnvironmentVersion = 0;
 
   constructor(emitter: HudEventEmitter, playerEntity: Entity, clockEntity: Entity) {
     this.emitter = emitter;
@@ -71,6 +79,7 @@ export class HudBridge {
     this.emitWallet();
     this.emitShop();
     this.emitQuests();
+    this.emitEnvironment();
   }
 
   private emitPosition(): void {
@@ -125,13 +134,27 @@ export class HudBridge {
     this.emitter.emit(STATS_CHANGED_EVENT, payload);
   }
 
-  /** Coins are a single integer, so the balance itself is the change detector. */
+  /**
+   * Coins are a single integer, so the balance itself is the change detector —
+   * plus the adjustment counter, because a server balance that happens to match
+   * a purchase the player already saw is still worth telling them about.
+   */
   private emitWallet(): void {
     const wallet = this.playerEntity.getComponent<WalletComponent>("wallet");
-    if (!wallet || wallet.coins === this.lastCoins) return;
+    if (!wallet) return;
+    if (
+      wallet.coins === this.lastCoins &&
+      wallet.adjustments === this.lastAdjustments
+    ) {
+      return;
+    }
 
     this.lastCoins = wallet.coins;
-    const payload: WalletChangedEvent = { coins: wallet.coins };
+    this.lastAdjustments = wallet.adjustments;
+    const payload: WalletChangedEvent = {
+      coins: wallet.coins,
+      adjustments: wallet.adjustments,
+    };
     this.emitter.emit(WALLET_CHANGED_EVENT, payload);
   }
 
@@ -196,5 +219,24 @@ export class HudBridge {
       options: node?.options ?? [],
     };
     this.emitter.emit(DIALOGUE_CHANGED_EVENT, payload);
+  }
+
+  /**
+   * Publish the environment whenever the weather/season/biome actually changes.
+   */
+  private emitEnvironment(): void {
+    const env = this.clockEntity.getComponent<EnvironmentComponent>("environment");
+    if (!env || env.version === this.lastEnvironmentVersion) return;
+    if (env.season === null || env.weather === null || env.biome === null) return;
+
+    this.lastEnvironmentVersion = env.version;
+    const payload: EnvironmentChangedEvent = {
+      season: env.season,
+      weather: env.weather,
+      biome: env.biome,
+      temperature: env.temperature,
+      energyRegenMultiplier: env.energyRegenMultiplier,
+    };
+    this.emitter.emit(ENVIRONMENT_CHANGED_EVENT, payload);
   }
 }

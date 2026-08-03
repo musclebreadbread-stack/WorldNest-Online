@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Collection/Museum system for tracking item discoveries. Adds a CollectionComponent that records which items a player has found at least once (donated to the museum). A new NPC 'Curator Milo' runs the museum. Players donate items to unlock entries in a collection book. Completing category sets (e.g., all fish, all crops) awards badge items. This is horizontal progression that incentivizes exploration without adding power creep. Integrates with the existing inventory, NPC, and dialogue patterns.",
+  "status": "completed",
+  "steps": [
+    "Step 1 - Define collection categories in packages/game-engine/src/collection/collectionDefinitions.ts: interface CollectionEntry { itemId: ItemId, categoryId: string }, interface CollectionCategory { id: string, titleKey: string, entries: ItemId[], rewardItemId?: ItemId, rewardCoins: number }. Define categories: 'gathering' (wood, stone, ore, fiber, flower), 'farming' (wheat, carrot, melon), 'fishing' (fish_common, fish_rare, fish_tropical), 'crafted' (fence, chest, path_stone). Each category has a completion reward in coins.",
+    "Step 2 - Add packages/game-engine/src/collection/collectionOps.ts with pure functions: canDonate(inventory, itemId) => boolean, donate(collection, inventory, itemId) => boolean (removes 1 from inventory, marks discovered), getCategoryProgress(collection, categoryId) => {discovered: number, total: number}, isCategoryComplete(collection, categoryId) => boolean, claimCategoryReward(collection, wallet, categoryId) => boolean. Follow the questOps.ts pattern of pure functions over plain data.",
+    "Step 3 - Add CollectionComponent in packages/game-engine/src/components/CollectionComponent.ts. Fields: discovered (Set<ItemId>), categoryRewardsClaimed (Set<string>), version (number). Export from components/index.ts.",
+    "Step 4 - Add CollectionSystem in packages/game-engine/src/systems/CollectionSystem.ts. Required components: ['collection', 'inventory', 'wallet']. Consumes requestedDonation (ItemId|null) field on CollectionComponent. On request: validates item exists in inventory, calls donate, bumps version. Checks category completion and auto-marks for reward claiming.",
+    "Step 5 - Add Curator Milo NPC to packages/game-engine/src/world/NpcCatalogue.ts: id 'curator_milo', role 'curator' (add to NpcRole union), anchorTileX: 20, anchorTileY: 13, with a schedule. Add dialogue tree 'milo_museum' in packages/game-engine/src/dialogue/dialogueDefinitions.ts with nodes: greeting, donate (action: {kind: 'openCollection'}), categories, rewards. Add DialogueAction kind 'openCollection'.",
+    "Step 6 - Add a new quest 'donate_first' (objective kind 'donate', count 1) given by Ada to teach the museum mechanic. This requires adding 'donate' to QuestObjective in questDefinitions.ts. Update questOps.ts objectiveProgress to handle 'donate' by reading collection.discovered.size. Add to Ada's dialogue tree.",
+    "Step 7 - Add comprehensive tests in packages/game-engine/src/__tests__/collection.test.ts: donate adds to discovered set, duplicate donate refused, category progress tracks correctly, category completion triggers reward availability, reward claiming adds coins, cannot claim reward twice, quest objective 'donate' tracks correctly.",
+    "Step 8 - Add i18n keys to all 12 locale files: 'npc.milo.name' = 'Milo the Curator', 'collection.title' = 'Collection Book', 'collection.donate' = 'Donate', 'collection.donated' = 'Already donated', 'collection.progress' = '{current} / {total}', 'collection.categoryComplete' = 'Category complete!', 'collection.claimReward' = 'Claim reward', 'collection.rewardClaimed' = 'Reward claimed', 'dialogue.milo.greeting', 'dialogue.milo.option.donate', 'dialogue.milo.option.categories', 'quest.donate_first.title' = 'First Donation', 'quest.donate_first.description' = 'Donate any item to Milo at the museum.', 'npc.activity.museum' = 'At the museum', plus category title keys 'collection.category.gathering/farming/fishing/crafted'.",
+    "Step 9 - Register CollectionSystem in systems/index.ts, export from game-engine/src/index.ts. Update packages/database/supabase/migrations/004_authority_schema.sql to add quest_rewards entry for donate_first and update shop_prices count. Ensure pnpm build, pnpm lint, pnpm test, pnpm format:check all pass."
+  ],
+  "acceptance_criteria": [
+    "CollectionComponent tracks discovered items correctly",
+    "Donating removes 1 item from inventory and marks it in collection",
+    "Duplicate donations are refused",
+    "Category progress calculation is correct",
+    "Category completion reward can be claimed exactly once",
+    "Curator Milo NPC is placed near spawn with schedule",
+    "Dialogue tree for Milo has donate/categories/rewards paths",
+    "New quest objective kind 'donate' integrates with existing quest system",
+    "All 12 locale files contain new keys",
+    "pnpm build passes",
+    "pnpm test passes with new collection tests",
+    "pnpm lint passes",
+    "pnpm format:check passes"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check"
+  ],
+  "blocked_reason": null,
+  "findings": "1. NpcRole union now has 4 values: villager, shopkeeper, questgiver, curator. Any Record<NpcRole, ...> needs updating (e.g., npcTextures.ts). 2. NpcActivity union now has 5 values including museum. Tests with hardcoded activity sets need the new value. 3. Ada's quest/report nodes now have 4 options (max) with the 4th having next:greeting to satisfy the canLeave test. 4. collection.progress key is locale-agnostic (same format in all languages), added to LOCALE_AGNOSTIC_KEYS. 5. QUEST_DEFINITIONS now has 4 quests covering 4 objective kinds. 6. NPC_DEFINITIONS.length is now 4. 7. dialogueQuestIds() now returns 4 quest ids."
+}

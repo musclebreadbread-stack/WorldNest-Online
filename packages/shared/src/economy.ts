@@ -48,9 +48,86 @@ export const ITEM_PRICES: Partial<Record<ItemId, ItemPrice>> = {
   // is profitable — but only by a fixed amount per seed, never compounding.
   wheat_seed: { buy: 10, sell: 3 },
   wheat: { buy: 20, sell: 9 },
+  // Cool-climate crop: carrots grow in tundra, taiga and grassland
+  carrot_seed: { buy: 12, sell: 4 },
+  carrot: { buy: 24, sell: 11 },
+  // Hot-climate crop: melons grow in desert, savanna and forest
+  melon_seed: { buy: 14, sell: 5 },
+  melon: { buy: 28, sell: 13 },
   // Crafted goods the player cannot make yet, which is why they are worth buying
   fence: { buy: 20, sell: 6 },
   chest: { buy: 60, sell: 20 },
+  // Decorative path stones, cheap enough to place freely
+  path_stone: { buy: 5, sell: 2 },
+  // Fishing: rod is a one-time purchase, fish are biome-specific catches
+  fishing_rod: { buy: 40, sell: 12 },
+  fish_common: { buy: 15, sell: 7 },
+  fish_rare: { buy: 35, sell: 16 },
+  fish_tropical: { buy: 45, sell: 21 },
+  // Cooked food: ingredients cost less than the finished product, so cooking
+  // is profitable if you grow or catch your own materials.
+  bread: { buy: 25, sell: 12 },
+  fish_pie: { buy: 50, sell: 24 },
+  carrot_soup: { buy: 40, sell: 18 },
+  fruit_salad: { buy: 35, sell: 16 },
+  // Animal items: feed for taming, treats for pet happiness
+  animal_feed: { buy: 15, sell: 5 },
+  pet_treat: { buy: 20, sell: 8 },
+  // Housing: a deed is a one-time purchase, furniture is affordable decoration
+  house_deed: { buy: 200, sell: 60 },
+  table: { buy: 40, sell: 13 },
+  chair: { buy: 25, sell: 8 },
+  bed: { buy: 60, sell: 20 },
+  lamp: { buy: 30, sell: 10 },
+  bookshelf: { buy: 50, sell: 16 },
+  rug: { buy: 20, sell: 7 },
+  painting: { buy: 45, sell: 15 },
+  plant_pot: { buy: 15, sell: 5 },
+  window_curtain: { buy: 35, sell: 12 },
+  // Crafting: intermediate materials refined from raw resources
+  iron_ingot: { buy: 40, sell: 18 },
+  plank: { buy: 12, sell: 5 },
+  cloth: { buy: 10, sell: 4 },
+  // Crafting: tools that boost harvesting efficiency
+  stone_axe: { buy: 50, sell: 15 },
+  iron_axe: { buy: 100, sell: 35 },
+  stone_pickaxe: { buy: 50, sell: 15 },
+  iron_pickaxe: { buy: 100, sell: 35 },
+  // Crafting: workbench unlocks advanced recipes
+  workbench: { buy: 80, sell: 25 },
+  // Music: instruments for the rhythm mini-game
+  rhythm_drum: { buy: 30, sell: 10 },
+  rhythm_flute: { buy: 40, sell: 13 },
+  rhythm_harp: { buy: 50, sell: 16 },
+  rhythm_xylophone: { buy: 60, sell: 20 },
+  // Transport: mounts and boats for faster travel
+  mount_saddle: { buy: 80, sell: 25 },
+  boat: { buy: 120, sell: 40 },
+  horse_whistle: { buy: 100, sell: 30 },
+  donkey_whistle: { buy: 70, sell: 22 },
+  camel_whistle: { buy: 90, sell: 28 },
+  // Friendship: gift wrapping for bonus friendship points
+  gift_box: { buy: 25, sell: 8 },
+  // Rare/premium items: exclusive shop rotation
+  explorer_compass: { buy: 200, sell: 65 },
+  treasure_map: { buy: 180, sell: 60 },
+  lucky_charm: { buy: 150, sell: 50 },
+  season_ticket: { buy: 250, sell: 80 },
+  rare_seed_pack: { buy: 220, sell: 70 },
+  golden_fishing_rod: { buy: 300, sell: 100 },
+  // Gardening: flowers and arrangements
+  rose: { buy: 18, sell: 8 },
+  lily: { buy: 22, sell: 10 },
+  tulip: { buy: 20, sell: 9 },
+  sunflower: { buy: 25, sell: 12 },
+  garden_plot: { buy: 60, sell: 20 },
+  flower_arrangement: { buy: 80, sell: 35 },
+  // Weather-exclusive: rare collectibles only found during specific weather
+  rain_mushroom: { buy: 75, sell: 35 },
+  snow_crystal: { buy: 90, sell: 42 },
+  storm_fossil: { buy: 120, sell: 55 },
+  wind_feather: { buy: 85, sell: 40 },
+  aurora_gem: { buy: 200, sell: 90 },
 };
 
 /** Coins a brand-new player starts with: enough for a first handful of fences. */

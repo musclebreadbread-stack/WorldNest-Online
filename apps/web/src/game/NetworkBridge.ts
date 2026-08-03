@@ -138,9 +138,8 @@ export class NetworkBridge {
       return;
     }
 
-    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    )!;
+    const interpolation =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation")!;
     interpolation.targetX = x;
     interpolation.targetY = y;
 

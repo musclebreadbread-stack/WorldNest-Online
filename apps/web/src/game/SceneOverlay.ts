@@ -1,4 +1,9 @@
-import type { DayPhase, Entity, WorldManager } from "@worldnest/game-engine";
+import type {
+  DayPhase,
+  Entity,
+  WorldLayer,
+  WorldManager,
+} from "@worldnest/game-engine";
 
 /**
  * Everything a visual layer is allowed to read each frame.
@@ -9,6 +14,7 @@ import type { DayPhase, Entity, WorldManager } from "@worldnest/game-engine";
  */
 export interface OverlayContext {
   phase: DayPhase;
+  layer: WorldLayer;
   buildMode: boolean;
   playerEntity: Entity;
   worldManager: WorldManager;

@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase9-features",
+  "task_description": "Implement Phase 9 of WorldNest Online with 3 high-value features: Music/Rhythm mini-game, Transportation/Mounts, and NPC Friendship system. Each feature adds a new ECS module with definitions, ops, component, system, tests, and 12-locale i18n support.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

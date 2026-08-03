@@ -23,7 +23,11 @@ import {
 } from "../i18n";
 import { en } from "../i18n/messages/en";
 import { ko } from "../i18n/messages/ko";
-import { LOCALE_STORAGE_KEY, detectLocale, useLocaleStore } from "../stores/localeStore";
+import {
+  LOCALE_STORAGE_KEY,
+  detectLocale,
+  useLocaleStore,
+} from "../stores/localeStore";
 
 const EN_KEYS = Object.keys(en) as MessageKey[];
 
@@ -37,6 +41,38 @@ const LOCALE_AGNOSTIC_KEYS: MessageKey[] = [
   "auth.emailPlaceholder",
   "hud.coordinates",
   "quest.progress",
+  "mission.progress",
+  "collection.progress",
+  // Quiz answers: proper nouns, numbers, and universal terms that are
+  // legitimately identical across many languages.
+  "quiz.answer.nature_3_c",
+  "quiz.answer.science_3_b",
+  "quiz.answer.science_3_c",
+  "quiz.answer.science_4_a",
+  "quiz.answer.science_4_b",
+  "quiz.answer.science_4_c",
+  "quiz.answer.culture_1_a",
+  "quiz.answer.culture_1_b",
+  "quiz.answer.culture_2_c",
+  "quiz.answer.culture_3_c",
+  "quiz.answer.geography_2_a",
+  "quiz.answer.geography_2_b",
+  "quiz.answer.geography_2_c",
+  "quiz.answer.geography_3_a",
+  "quiz.answer.geography_3_b",
+  "quiz.answer.geography_3_c",
+  "quiz.answer.geography_4_a",
+  "quiz.answer.geography_4_b",
+  "quiz.answer.science_2_b",
+  "quiz.answer.culture_4_c",
+  "quiz.answer.culture_3_b",
+  // Accessibility: "Standard" is a loanword used identically in
+  // French, German, and other European languages.
+  "settings.contrast.standard",
+  // "Table" is a legitimate French word identical to English.
+  "item.table",
+  // "Rose" is a legitimate word in French and German, identical to English.
+  "item.rose",
 ];
 
 describe("message catalogue", () => {
@@ -210,9 +246,9 @@ describe("translate", () => {
   });
 
   it("should interpolate into the translated string, not the English one", () => {
-    expect(translate("ko", "clock.format", { day: 4, time: "07:20", phase: "새벽" })).toBe(
-      "4일차 · 07:20 · 새벽",
-    );
+    expect(
+      translate("ko", "clock.format", { day: 4, time: "07:20", phase: "새벽" }),
+    ).toBe("4일차 · 07:20 · 새벽");
   });
 });
 
@@ -229,10 +265,10 @@ describe("resolveLocale", () => {
     expect(resolveLocale("es_MX")).toBe("es");
   });
 
-  it("should fall back to English for anything unsupported", () => {
-    expect(resolveLocale("xx")).toBe("en");
-    expect(resolveLocale("")).toBe("en");
-    expect(resolveLocale("sv-SE")).toBe("en");
+  it("should fall back to Korean for anything unsupported", () => {
+    expect(resolveLocale("xx")).toBe("ko");
+    expect(resolveLocale("")).toBe("ko");
+    expect(resolveLocale("sv-SE")).toBe("ko");
   });
 
   it("should recognise supported locales only", () => {

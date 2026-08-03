@@ -52,7 +52,7 @@ export class QuestSystem extends System {
       }
 
       if (quest.requestedOffer !== null) {
-        this.accept(quest, quest.requestedOffer);
+        this.accept(quest, quest.requestedOffer, source);
         quest.requestedOffer = null;
       }
 
@@ -94,8 +94,12 @@ export class QuestSystem extends System {
    * Take a quest on. Ada offers and accepts in one option, so this does both;
    * asking again for a quest already taken is a refusal, not a silent no-op.
    */
-  private accept(quest: QuestComponent, questId: string): void {
+  private accept(
+    quest: QuestComponent,
+    questId: string,
+    source: QuestProgressSource,
+  ): void {
     offerQuest(quest, questId);
-    if (!activateQuest(quest, questId)) quest.refusals++;
+    if (!activateQuest(quest, questId, source)) quest.refusals++;
   }
 }

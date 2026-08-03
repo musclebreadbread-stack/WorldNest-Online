@@ -1,0 +1,45 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Music/Rhythm mini-game system - play instruments, compose melodies, and complete rhythm timing challenges. Includes a new NPC (Melody the Musician) who hosts the rhythm game, new items (instruments), a rhythm state machine with timing windows, melody composition with note sequences, and integration with achievements.",
+  "status": "completed",
+  "steps": [
+    "Create packages/game-engine/src/music/ directory with index.ts, musicDefinitions.ts, musicOps.ts, and musicState.ts",
+    "In musicDefinitions.ts: define InstrumentType union (drum, flute, harp, xylophone), RhythmNote interface (timing, lane), SongDefinition interface (id, name, bpm, notes array), NOTE_TIMING_WINDOW_MS constants (perfect/good/miss thresholds), INSTRUMENT_DEFINITIONS with buyable instruments, and 4 built-in songs of increasing difficulty",
+    "In musicState.ts: define MusicState type (idle/playing/composing/complete), RhythmResult type (perfect/good/miss), PerformanceScore interface (perfectCount, goodCount, missCount, maxCombo, totalScore)",
+    "In musicOps.ts: pure functions - canStartRhythm (check instrument in inventory), startSong (init state from definition), tickRhythm (advance song timer, emit pending notes), hitNote (evaluate timing against window, return RhythmResult), completeSong (calculate final score + coin reward), composeMelody (validate note sequence length 4-16 notes), getComboMultiplier (combo streak bonus)",
+    "Create packages/game-engine/src/components/MusicComponent.ts extending Component with type 'music': fields for state, currentSongId, songTimer, noteIndex, combo, maxCombo, score, instrument, composedMelody, version",
+    "Create packages/game-engine/src/systems/MusicSystem.ts following FishingSystem pattern: requires ['position','interaction','inventory','stats','music'], handles interact requests near the music NPC, advances rhythm timer, processes note hits from a requestHit field, transitions through the state machine, awards coins on completion",
+    "Add 'rhythm_drum'|'rhythm_flute'|'rhythm_harp'|'rhythm_xylophone' to ItemId in packages/shared/src/items.ts with ITEM_DEFINITIONS entries (stackSize: 1)",
+    "Add ITEM_NAME_KEYS entries for the 4 instruments in apps/web/src/i18n/index.ts",
+    "Add new NPC 'musician_melody' to packages/game-engine/src/world/NpcCatalogue.ts with role 'musician' (add to NpcRole union), anchorTileX: 10, anchorTileY: 10, schedule with work/rest/market",
+    "Add dialogue tree 'melody_music' in packages/game-engine/src/dialogue/dialogueDefinitions.ts with greeting, play rhythm game option (new action kind 'startMusic'), buy instrument option, and explain rules node",
+    "Add DialogueAction kind 'startMusic' to the union in dialogueDefinitions.ts",
+    "Add achievement conditions: { kind: 'rhythm_perfect', count: number } and { kind: 'rhythm_score', score: number } to AchievementCondition union and AchievementSource in achievementDefinitions.ts",
+    "Add 2 achievements: 'first_rhythm' (play one song) with 15 coins reward and 'rhythm_master' (get 3 perfect scores) with 50 coins reward",
+    "Add i18n keys to all 12 locale files: npc.melody.name, dialogue.melody.*, music.title, music.start, music.perfect, music.good, music.miss, music.combo, music.score, music.complete, music.compose, item.rhythm_drum/flute/harp/xylophone, achievement.first_rhythm.*, achievement.rhythm_master.*",
+    "Export all music module types and functions from packages/game-engine/src/index.ts",
+    "Register MusicComponent and MusicSystem in packages/game-engine/src/components/index.ts and systems/index.ts",
+    "Create packages/game-engine/src/__tests__/music.test.ts with comprehensive tests: song timing, note hit evaluation (perfect/good/miss windows), combo tracking, score calculation, state machine transitions, composition validation, canStartRhythm checks, system integration tests with entity/world"
+  ],
+  "acceptance_criteria": [
+    "pnpm build passes with no errors",
+    "pnpm test passes with all new music tests green",
+    "pnpm lint passes with zero warnings",
+    "pnpm format:check passes",
+    "All 12 locale files have matching keys for music-related strings",
+    "No file exceeds 300 lines",
+    "MusicSystem correctly processes the rhythm state machine through idle->playing->complete",
+    "Note hit timing correctly classifies as perfect/good/miss based on defined windows",
+    "Combo multiplier increases on consecutive hits and resets on miss",
+    "Achievement integration: rhythm_perfect_count and rhythm_score fields on AchievementSource"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": "Added 'musician' role to NpcRole union which also required updating apps/web/src/game/scenes/npcTextures.ts NPC_COLORS record. Achievement test expected exact definition count (had to update from 14 to 16). NPC test expected exact NPC count (7 to 8). Economy test required new items in ITEM_PRICES and the SQL migration. i18n test enforces no untranslated strings (values identical to English fail), so locales that use 'Combo' as a loanword needed distinct translations."
+}

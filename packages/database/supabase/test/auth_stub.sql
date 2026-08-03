@@ -118,3 +118,34 @@ stable
 as $$
   select nullif(current_setting('request.jwt.claim.email', true), '');
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Default table grants on the public schema
+-- ---------------------------------------------------------------------------
+-- A real Supabase project grants `anon`, `authenticated` and `service_role`
+-- every privilege on everything in `public`, through default privileges set up
+-- when the project is created. That is why row level security has been the only
+-- thing protecting these tables, and it is precisely why the revokes in
+-- `004_authority_schema.sql` are the security change rather than a formality.
+--
+-- A bare Postgres grants those roles *nothing*, so without this a `select` as
+-- `authenticated` fails with `permission denied for table player_state` and the
+-- harness would be testing a privilege set no real project has - it would pass
+-- for the wrong reason, and it would keep passing if 004's revokes were deleted.
+--
+-- The `alter default privileges` is the part that matters: the migrations run
+-- after this file, so there are no tables to grant on yet. The `grant ... on all`
+-- statements are there for the case where this file is re-applied to a database
+-- that already has them.
+grant usage on schema public to anon, authenticated, service_role;
+
+alter default privileges in schema public
+  grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public
+  grant all on sequences to anon, authenticated, service_role;
+alter default privileges in schema public
+  grant all on functions to anon, authenticated, service_role;
+
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+grant all on all functions in schema public to anon, authenticated, service_role;

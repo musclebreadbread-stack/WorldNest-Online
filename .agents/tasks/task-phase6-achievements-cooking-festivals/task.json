@@ -1,0 +1,14 @@
+{
+  "task_id": "task-phase6-achievements-cooking-festivals",
+  "task_description": "Phase 6 implementation: Achievement/Badge system for horizontal progression, Cooking mini-game with recipe system and Chef Bao NPC, and Seasonal festivals/events using the existing clock/season infrastructure. All features add new ECS components/systems, i18n keys across 12 locales, and comprehensive tests.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "All 770 tests pass (457 game-engine + 313 web). Format, lint, and build all green. v2 review fixes applied: totalCoinsEarned now uses delta detection on wallet.coins (captures all income sources), totalFishCaught wired via FishCaughtListener from FishingSystem to AchievementSystem.recordFishCaught(), totalQuestsCompleted polled from QuestComponent.entries each frame."
+  }
+}

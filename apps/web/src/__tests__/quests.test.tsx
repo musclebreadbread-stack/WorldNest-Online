@@ -83,15 +83,16 @@ describe("questStore", () => {
       },
     });
 
-    expect(orderedQuests(useQuestStore.getState().entries).map((q) => q.questId)).toEqual([
-      "collect_wood",
-      "greet_pip",
-    ]);
+    expect(
+      orderedQuests(useQuestStore.getState().entries).map((q) => q.questId),
+    ).toEqual(["collect_wood", "greet_pip"]);
   });
 
   it("should track the first active quest and nothing else", () => {
     expect(trackedQuest({})).toBeNull();
-    expect(trackedQuest({ collect_wood: { state: "available", progress: 0 } })).toBeNull();
+    expect(
+      trackedQuest({ collect_wood: { state: "available", progress: 0 } }),
+    ).toBeNull();
     expect(
       trackedQuest({
         greet_pip: { state: "completed", progress: 1 },
@@ -205,7 +206,7 @@ describe("HudBridge quest events", () => {
     bridge.flush();
 
     expect(emitter.questEvents()).toEqual([
-      { entries: { collect_wood: { state: "active", progress: 0 } } },
+      { entries: { collect_wood: { state: "active", progress: 0, baseline: 0 } } },
     ]);
 
     // The published snapshot is a copy, so the next frame cannot mutate React's

@@ -18,7 +18,7 @@ import type {
   QuestComponent,
   StructureComponent,
   TileType,
-  WalletComponent,
+  WorldLayer,
 } from "@worldnest/game-engine";
 import { getChunkKey } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
@@ -49,7 +49,6 @@ export class SessionPersistence {
   private lastX = Number.NaN;
   private lastY = Number.NaN;
   private lastInventoryVersion = -1;
-  private lastCoins = Number.NaN;
   private lastQuestVersion = -1;
   private writtenQuestVersion = -1;
   private knownStructures = new Set<string>();
@@ -91,9 +90,10 @@ export class SessionPersistence {
   }
 
   /** Persist a tile the player just changed. */
-  saveTile(tileX: number, tileY: number, tileType: TileType): void {
+  saveTile(layer: WorldLayer, tileX: number, tileY: number, tileType: TileType): void {
     this.write(() =>
       saveWorldModification(this.worldId, {
+        layer,
         tileX,
         tileY,
         tileType,
@@ -116,21 +116,23 @@ export class SessionPersistence {
   }
 
   /**
-   * Mark the session dirty when the player moved, or their inventory, coins or
-   * quest log changed. Coins and quests are diffed here rather than written
-   * eagerly so a shopping spree still costs one save per interval.
+   * Mark the session dirty when the player moved, or their inventory or quest log
+   * changed. Quests are diffed here rather than written eagerly so a busy session
+   * still costs one save per interval.
+   *
+   * The purse is deliberately not one of the four: coins are written by the
+   * authority functions now, so a balance changing is news from the server rather
+   * than something this layer has to send back.
    */
   private trackPlayerState(): void {
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
-    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet")!;
     const quests = this.playerEntity.getComponent<QuestComponent>("quest")!;
 
     if (
       position.x === this.lastX &&
       position.y === this.lastY &&
       inventory.version === this.lastInventoryVersion &&
-      wallet.coins === this.lastCoins &&
       quests.version === this.lastQuestVersion
     ) {
       return;
@@ -139,7 +141,6 @@ export class SessionPersistence {
     this.lastX = position.x;
     this.lastY = position.y;
     this.lastInventoryVersion = inventory.version;
-    this.lastCoins = wallet.coins;
     this.lastQuestVersion = quests.version;
     this.scheduler.markDirty();
   }
@@ -149,10 +150,14 @@ export class SessionPersistence {
     this.writeQuests();
   }
 
+  /**
+   * Write position and inventory. Coins are absent on purpose: the column is no
+   * longer writable by a signed-in client, and a statement naming it is refused
+   * along with everything else in the same upsert.
+   */
   private writePlayerState(): void {
     const position = this.playerEntity.getComponent<PositionComponent>("position")!;
     const inventory = this.playerEntity.getComponent<InventoryComponent>("inventory")!;
-    const wallet = this.playerEntity.getComponent<WalletComponent>("wallet")!;
 
     this.write(() =>
       savePlayerState(this.playerId, {
@@ -160,7 +165,6 @@ export class SessionPersistence {
         y: position.y,
         chunk: getChunkKey(position.chunkX, position.chunkY),
         inventory: toPersistedInventory(inventory),
-        coins: wallet.coins,
       }),
     );
   }

@@ -8,6 +8,9 @@ import type {
   DialogueOption,
   InventorySlot,
   QuestEntry,
+  Season,
+  WeatherKind,
+  Biome,
 } from "@worldnest/game-engine";
 
 export const PLAYERS_CHANGED_EVENT = "players-changed";
@@ -48,9 +51,16 @@ export interface StatsChangedEvent {
 
 export const WALLET_CHANGED_EVENT = "wallet-changed";
 
-/** The local player's coin balance, published whenever the integer changes. */
+/**
+ * The local player's coin balance, published whenever it changes.
+ *
+ * `adjustments` is `WalletComponent`'s counter of how many times the server
+ * disagreed with the local balance, so the HUD can say so once per disagreement
+ * without polling — the same shape the refusal counters have.
+ */
 export interface WalletChangedEvent {
   coins: number;
+  adjustments: number;
 }
 
 export const SHOP_CHANGED_EVENT = "shop-changed";
@@ -92,4 +102,18 @@ export interface DialogueChangedEvent {
   nameKey: string | null;
   textKey: string | null;
   options: DialogueOption[];
+}
+
+export const ENVIRONMENT_CHANGED_EVENT = "environment-changed";
+
+/**
+ * Current season, weather and biome, published whenever the environment
+ * component's version bumps. The HUD and weather overlay read this.
+ */
+export interface EnvironmentChangedEvent {
+  season: Season;
+  weather: WeatherKind;
+  biome: Biome;
+  temperature: number;
+  energyRegenMultiplier: number;
 }

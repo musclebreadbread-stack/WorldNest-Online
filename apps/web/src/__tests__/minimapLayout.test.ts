@@ -13,11 +13,7 @@ import {
 } from "../game/minimapLayout";
 
 /** Where Phaser actually renders a scroll-locked object under a camera zoom. */
-function renderedAt(
-  objectValue: number,
-  cameraExtent: number,
-  zoom: number,
-): number {
+function renderedAt(objectValue: number, cameraExtent: number, zoom: number): number {
   const mid = cameraExtent / 2;
   return mid + (objectValue - mid) * zoom;
 }

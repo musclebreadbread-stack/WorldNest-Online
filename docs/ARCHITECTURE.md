@@ -47,18 +47,18 @@ The client runs entirely in the browser as a Next.js application with Phaser han
 
 ### State Management (Zustand)
 
-| Store | Contents |
-|-------|----------|
-| `authStore` | Signed-in user, session, loading flag |
-| `gameStore` | Player position/chunk, inventory mirror, stats mirror, coins, online players, connection status |
-| `uiStore` | Panel toggles (inventory, minimap, quest log, settings), build mode, latest clock snapshot |
-| `chatStore` | Message list (capped at 100), unread count, a monotonic `received` counter, `inputFocused`, the injected send function |
-| `localeStore` | Active locale, `hydrated` flag; persisted to `localStorage["worldnest.locale"]` |
-| `audioStore` | Master volume, music volume, muted; persisted to `localStorage["worldnest.audio"]` |
-| `touchStore` | Virtual axis and the one-shot interact/place flags written by the on-screen controls |
-| `dialogueStore` | The open conversation node and its options, plus the injected `respond`/`close` |
-| `shopStore` | The open shop, plus the injected `trade`/`close` |
-| `questStore` | The quest log mirror, plus the injected `turnIn` |
+| Store           | Contents                                                                                                               |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `authStore`     | Signed-in user, session, loading flag                                                                                  |
+| `gameStore`     | Player position/chunk, inventory mirror, stats mirror, coins, online players, connection status                        |
+| `uiStore`       | Panel toggles (inventory, minimap, quest log, settings), build mode, latest clock snapshot                             |
+| `chatStore`     | Message list (capped at 100), unread count, a monotonic `received` counter, `inputFocused`, the injected send function |
+| `localeStore`   | Active locale, `hydrated` flag; persisted to `localStorage["worldnest.locale"]`                                        |
+| `audioStore`    | Master volume, music volume, muted; persisted to `localStorage["worldnest.audio"]`                                     |
+| `touchStore`    | Virtual axis and the one-shot interact/place flags written by the on-screen controls                                   |
+| `dialogueStore` | The open conversation node and its options, plus the injected `respond`/`close`                                        |
+| `shopStore`     | The open shop, plus the injected `trade`/`close`                                                                       |
+| `questStore`    | The quest log mirror, plus the injected `turnIn`                                                                       |
 
 Zustand was chosen for its minimal boilerplate, TypeScript support, and compatibility with React's concurrent features.
 
@@ -95,25 +95,26 @@ React → ECS       an injected callback writing a request field on a component,
                   consumed by the owning system on the next frame (see above)
 ```
 
-`HudBridge` publishes eight events, listed in `apps/web/src/game/events.ts`: `players-changed`, `player-position`, `clock-changed`, `inventory-changed`, `stats-changed`, `wallet-changed`, `shop-changed`, `quests-changed` and `dialogue-changed`. Each has its own `lastX` field rather than a generic diff map, which is what makes "did this actually change?" a single comparison.
+`HudBridge` publishes nine events, listed in `apps/web/src/game/events.ts`: `players-changed`, `player-position`, `clock-changed`, `inventory-changed`, `stats-changed`, `wallet-changed`, `shop-changed`, `quests-changed`, `dialogue-changed` and `environment-changed`. Each has its own `lastX` field rather than a generic diff map, which is what makes "did this actually change?" a single comparison.
 
 The Phaser side of `apps/web/src/game/` is deliberately split so no file approaches the ~300-line cap in `CONTRIBUTING.md`:
 
-| File | Responsibility |
-|------|----------------|
-| `createGameWorld.ts` | ECS assembly and system registration — **Phaser-free**, which is what makes gameplay testable under jsdom |
-| `savedWorld.ts` | Restoring persisted terrain, structures and crops into a fresh world |
-| `PlayerController.ts` | Movement polling, facing, and the rate-limited request helpers |
-| `keyBindings.ts` | `ONE_SHOT_BINDINGS`, the number-key handler and the `whenPlaying` gate (imports Phaser) |
-| `panelStack.ts` | `isTyping()`, `isHudModal()`, `closeTopmostPanel()` — **Phaser-free on purpose** (see below) |
-| `SpriteSync.ts` + `NameTags.ts` | Every sprite, its depth and tint; every floating label |
-| `ChunkRenderer.ts` | One `RenderTexture` per loaded chunk, plus single-tile repaints |
-| `SceneOverlay.ts` | The `SceneOverlay` / `OverlayContext` contract and the `OverlayStack` |
-| `DayNightOverlay.ts`, `BuildGhost.ts`, `Minimap.ts` (+ `minimapLayout.ts`), `audio/SoundManager.ts` | The registered overlays |
-| `HudBridge.ts` | The one per-frame ECS → React publisher |
-| `ChatBridge.ts`, `DialogueBridge.ts`, `ShopBridge.ts`, `QuestBridge.ts` | Callback injection and action routing |
-| `NetworkBridge.ts` | All realtime plumbing, behind a narrow `NetworkTransport` interface |
-| `loadSession.ts`, `SessionPersistence.ts` | Session load and autosave |
+| File                                                                                                | Responsibility                                                                                            |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `createGameWorld.ts`                                                                                | ECS assembly and system registration — **Phaser-free**, which is what makes gameplay testable under jsdom |
+| `savedWorld.ts`                                                                                     | Restoring persisted terrain, structures and crops into a fresh world                                      |
+| `playerEntity.ts`                                                                                   | `GameBootstrap`, the local and remote player component assembly, and the starting-kit rules               |
+| `PlayerController.ts`                                                                               | Movement polling, facing, and the rate-limited request helpers                                            |
+| `keyBindings.ts`                                                                                    | `ONE_SHOT_BINDINGS`, the number-key handler and the `whenPlaying` gate (imports Phaser)                   |
+| `panelStack.ts`                                                                                     | `isTyping()`, `isHudModal()`, `closeTopmostPanel()` — **Phaser-free on purpose** (see below)              |
+| `SpriteSync.ts` + `NameTags.ts`                                                                     | Every sprite, its depth and tint; every floating label                                                    |
+| `ChunkRenderer.ts`                                                                                  | One `RenderTexture` per loaded chunk, plus single-tile repaints                                           |
+| `SceneOverlay.ts`                                                                                   | The `SceneOverlay` / `OverlayContext` contract and the `OverlayStack`                                     |
+| `DayNightOverlay.ts`, `BuildGhost.ts`, `Minimap.ts` (+ `minimapLayout.ts`), `audio/SoundManager.ts` | The registered overlays                                                                                   |
+| `HudBridge.ts`                                                                                      | The one per-frame ECS → React publisher                                                                   |
+| `ChatBridge.ts`, `DialogueBridge.ts`, `ShopBridge.ts`, `QuestBridge.ts`                             | Callback injection and action routing                                                                     |
+| `NetworkBridge.ts`                                                                                  | All realtime plumbing, behind a narrow `NetworkTransport` interface                                       |
+| `loadSession.ts`, `SessionPersistence.ts`                                                           | Session load and autosave                                                                                 |
 
 Two of those splits exist for a reason worth remembering: **importing Phaser under jsdom throws** (inside `checkInverseAlpha`), so anything a Vitest suite needs to reason about must live in a module that does not import it. That is why `panelStack.ts` is separate from `keyBindings.ts` and `minimapLayout.ts` separate from `Minimap.ts`.
 
@@ -158,29 +159,30 @@ Anything external a system needs is injected through its constructor: a `TileQue
 
 ### Components
 
-| Component | Type key | Data |
-|-----------|----------|------|
-| `PositionComponent` | `position` | x, y, chunkX, chunkY |
-| `VelocityComponent` | `velocity` | vx, vy |
-| `SpriteComponent` | `sprite` | textureKey, frame, visible |
-| `AnimationComponent` | `animation` | state, direction, elapsed, frameIndex, frameDurationMs, frameCount |
-| `PlayerComponent` | `player` | playerId, username, isLocal |
-| `ChunkComponent` | `chunk` | chunkX, chunkY |
-| `InputComponent` | `input` | key state |
-| `NetworkComponent` | `network` | dirty flag, last sync time |
-| `RemoteInterpolationComponent` | `remoteInterpolation` | targetX, targetY, lerpFactor |
-| `ColliderComponent` | `collider` | width, height, enabled |
-| `TimeComponent` | `time` | latest `ClockSnapshot` |
-| `InventoryComponent` | `inventory` | slots, selectedSlot, version |
-| `StatsComponent` | `stats` | health, maxHealth, energy, maxEnergy, regenPerMinute |
-| `InteractionComponent` | `interaction` | facing, interactRequested/lastInteractAt, buildRequested/lastBuildAt |
-| `CropComponent` | `crop` | seed itemId, plantedAtMinute, stage, stageCount, minutesPerStage, tileX, tileY |
-| `StructureComponent` | `structure` | itemId, tileX, tileY, collidable |
-| `NpcComponent` | `npc` | npcId, nameKey, dialogueId, role, tileX, tileY |
-| `DialogueComponent` | `dialogue` | activeNpcId, dialogueId, nodeId, requestedOption, closeRequested, version |
-| `WalletComponent` | `wallet` | coins |
-| `ShopComponent` | `shop` | openNpcId, requestedOpenNpcId, closeRequested, requestedTrade, refusals, version |
-| `QuestComponent` | `quest` | entries (`Record<questId, { state, progress }>`), requestedOffer, requestedTurnIn, refusals, version |
+| Component                      | Type key              | Data                                                                                                           |
+| ------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `PositionComponent`            | `position`            | x, y, chunkX, chunkY                                                                                           |
+| `VelocityComponent`            | `velocity`            | vx, vy                                                                                                         |
+| `SpriteComponent`              | `sprite`              | textureKey, frame, visible                                                                                     |
+| `AnimationComponent`           | `animation`           | state, direction, elapsed, frameIndex, frameDurationMs, frameCount                                             |
+| `PlayerComponent`              | `player`              | playerId, username, isLocal                                                                                    |
+| `ChunkComponent`               | `chunk`               | chunkX, chunkY                                                                                                 |
+| `InputComponent`               | `input`               | key state                                                                                                      |
+| `NetworkComponent`             | `network`             | dirty flag, last sync time                                                                                     |
+| `RemoteInterpolationComponent` | `remoteInterpolation` | targetX, targetY, lerpFactor                                                                                   |
+| `ColliderComponent`            | `collider`            | width, height, enabled                                                                                         |
+| `TimeComponent`                | `time`                | latest `ClockSnapshot`                                                                                         |
+| `InventoryComponent`           | `inventory`           | slots, selectedSlot, version                                                                                   |
+| `StatsComponent`               | `stats`               | health, maxHealth, energy, maxEnergy, regenPerMinute                                                           |
+| `InteractionComponent`         | `interaction`         | facing, interactRequested/lastInteractAt, buildRequested/lastBuildAt                                           |
+| `CropComponent`                | `crop`                | seed itemId, plantedAtMinute, stage, stageCount, minutesPerStage, tileX, tileY                                 |
+| `StructureComponent`           | `structure`           | itemId, tileX, tileY, collidable                                                                               |
+| `NpcComponent`                 | `npc`                 | npcId, nameKey, dialogueId, role, tileX, tileY                                                                 |
+| `DialogueComponent`            | `dialogue`            | activeNpcId, dialogueId, nodeId, requestedOption, closeRequested, version                                      |
+| `WalletComponent`              | `wallet`              | coins                                                                                                          |
+| `ShopComponent`                | `shop`                | openNpcId, requestedOpenNpcId, closeRequested, requestedTrade, refusals, version                               |
+| `QuestComponent`               | `quest`               | entries (`Record<questId, { state, progress, baseline }>`), requestedOffer, requestedTurnIn, refusals, version |
+| `EnvironmentComponent`         | `environment`         | season, weather, biome, temperature, energyRegenMultiplier, version                                            |
 
 The last three follow one shape deliberately: a **request** field React writes, a **state** field only the system writes, a `refusals` counter (which is what the apologetic `deny` sound is played from) and a `version` bumped **only** by accepted changes, so the HUD never re-renders on a no-op.
 
@@ -188,25 +190,27 @@ The last three follow one shape deliberately: a **request** field React writes, 
 
 Registered in `apps/web/src/game/createGameWorld.ts`; insertion order **is** execution order, and several positions are load-bearing:
 
-| # | System | Why it sits here |
-|---|--------|------------------|
-| 1 | `TimeSystem` | Refreshes the clock first so every later system sees the same instant |
-| 2 | `InputSystem` | Turns key state into velocity |
-| 3 | `CollisionSystem` | Vetoes velocity **before** it is integrated, which is what makes per-axis wall sliding trivial |
-| 4 | `MovementSystem` | Integrates the surviving velocity |
-| 5 | `ChunkSystem` | Streams chunks around the new position |
-| 6 | `InterpolationSystem` | Eases remote players toward their network target (and animates them) |
-| 7 | `StatsSystem` | Regenerates energy, at double rate at night |
-| 8 | `NpcSystem` | Spawns the catalogue NPCs, owns their occupancy index, opens/advances conversations. **Before planting**, so talking to a villager can never till the ground under them — it consumes `interactRequested` first |
-| 9 | `ShopSystem` | Resolves open/trade/close requests, so a shop a conversation asked for opens in that same frame |
-| 10 | `QuestSystem` | Polls objective progress, records greetings, pays out turn-ins — after the conversation that triggered them |
-| 11 | `PlantSystem` | Tills/sows; only clears `interactRequested` when it acted |
-| 12 | `CropGrowthSystem` | Recomputes crop stages from the clock |
-| 13 | `BuildSystem` | Consumes `buildRequested`, spawns structures, owns the occupancy index |
-| 14 | `HarvestSystem` | Last consumer of `interactRequested`, so it sees requests planting ignored |
-| 15 | `NetworkSyncSystem` | Emits throttled position payloads |
-| 16 | `AnimationSystem` | Runs after velocity has settled, so a player pressed against a wall reads as idle |
-| 17 | `RenderSystem` | Collects `renderData` for the Phaser layer |
+| #   | System                | Why it sits here                                                                                                                                                                                                |
+| --- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `TimeSystem`          | Refreshes the clock first so every later system sees the same instant                                                                                                                                           |
+| 2   | `EnvironmentSystem`   | Derives season, weather, temperature and energy-regen multiplier from the clock and the player's biome, so every later system sees this frame's weather                                                         |
+| 3   | `InputSystem`         | Turns key state into velocity                                                                                                                                                                                   |
+| 4   | `CollisionSystem`     | Vetoes velocity **before** it is integrated, which is what makes per-axis wall sliding trivial                                                                                                                  |
+| 5   | `MovementSystem`      | Integrates the surviving velocity                                                                                                                                                                               |
+| 6   | `ChunkSystem`         | Streams chunks around the new position                                                                                                                                                                          |
+| 7   | `InterpolationSystem` | Eases remote players toward their network target (and animates them)                                                                                                                                            |
+| 8   | `StatsSystem`         | Regenerates energy, at double rate at night                                                                                                                                                                     |
+| 9   | `NpcSystem`           | Spawns the catalogue NPCs, owns their occupancy index, opens/advances conversations. **Before planting**, so talking to a villager can never till the ground under them - it consumes `interactRequested` first |
+| 10  | `ShopSystem`          | Resolves open/trade/close requests, so a shop a conversation asked for opens in that same frame                                                                                                                 |
+| 11  | `QuestSystem`         | Polls objective progress, records greetings, pays out turn-ins - after the conversation that triggered them                                                                                                     |
+| 12  | `LayerSystem`         | Consumes an interaction at a cave entrance before planting, while leaving every ignored request available to later systems                                                                                      |
+| 13  | `PlantSystem`         | Tills/sows; only clears `interactRequested` when it acted                                                                                                                                                       |
+| 14  | `CropGrowthSystem`    | Recomputes crop stages from the clock                                                                                                                                                                           |
+| 15  | `BuildSystem`         | Consumes `buildRequested`, spawns structures or overrides tiles, owns the occupancy index                                                                                                                       |
+| 16  | `HarvestSystem`       | Last consumer of `interactRequested`, so it sees requests planting ignored                                                                                                                                      |
+| 17  | `NetworkSyncSystem`   | Emits throttled position payloads                                                                                                                                                                               |
+| 18  | `AnimationSystem`     | Runs after velocity has settled, so a player pressed against a wall reads as idle                                                                                                                               |
+| 19  | `RenderSystem`        | Collects `renderData` for the Phaser layer                                                                                                                                                                      |
 
 This list is not documentation on trust: `apps/web/src/__tests__/gameWorld.test.ts` asserts `Object.keys(context.systems)` equals it verbatim, so changing the registration order without updating this table fails the suite.
 
@@ -221,16 +225,16 @@ This list is not documentation on trust: `apps/web/src/__tests__/gameWorld.test.
 - **D7 Web unit tests exclude Phaser.** `createGameWorld` is Phaser-free, so gameplay wiring is asserted at the ECS level under jsdom; canvas behaviour belongs to Playwright.
 - **D8 One migration per phase.** Gameplay tables land in `002_gameplay_schema.sql` and progression in `003_progression_schema.sql`, so a fresh project needs three SQL runs in a fixed order and no migration is ever edited after it ships.
 - **D9 Biomes are a noise layer, not a generator rewrite.** A temperature channel plus a pure `classifyBiome(elevation, moisture, temperature)` decides what dry land is made of. Determinism, the existing elevation thresholds and the coastline shape are all untouched, and the classification is unit-testable without generating a chunk.
-- **D10 Caves stay on the single tile layer.** A real cave dimension would need a layer key threaded through the override map, `world_modifications`, chunk keys, the renderer and persistence, for the same visible result. Recorded as a future option, not built.
+- **D10 The cave dimension is a layer owned by `WorldManager`.** The player is on exactly one layer at a time (`SURFACE` or `UNDERGROUND`), and `TileQuery` stays a two-argument interface. `WorldManager` tracks the active layer; `setLayer` unloads every chunk and resets the streaming guard so the next frame reloads. Surface override keys keep `"x,y"` format; underground keys are prefixed `"1:x,y"`. `CAVE_ENTRANCE` tiles serve as ladders between layers.
 - **D11 The minimap samples in the engine and paints in Phaser.** `sampleMinimap()` is a pure function returning tile ids, so it is testable with no canvas. A React canvas fed by a HUD event was rejected: it would push a few thousand tile ids across the bridge on every redraw.
 - **D12 i18n is hand-rolled, not `next-intl`.** Every route is already `"use client"` and `middleware.ts` is doing auth, so locale routing would fight both. A typed message record, a `translate()` with English fallback, one store and one hook add no dependency and turn "all 12 locales have the same keys" into a unit test.
 - **D13 React writes to the engine only through injected callbacks.** See [the injected-callback seam](#the-injected-callback-seam-d13).
 - **D14 Audio is synthesised at runtime, not shipped as assets.** There is not one binary asset in this repository — `BootScene` already draws every texture programmatically, so sound follows suit as WebAudio oscillator envelopes described by a pure data table. No asset pipeline, no licensing question, and fully testable against a fake `AudioContext`.
 - **D15 Sound cues come from state diffs, not from new engine events.** `SoundManager` diffs a snapshot once per frame, exactly as `HudBridge` does, instead of sprinkling `playSound()` through six systems.
 - **D16 Touch controls are DOM, not Phaser.** A React overlay writes a virtual axis into `touchStore` and `PlayerController` merges it with the keyboard, so input still funnels through one place — and the buttons get real 44 px targets, Tailwind styling and `aria-label`s instead of being drawn into the canvas.
-- **D17 NPCs are static and deterministically placed.** Wandering NPCs would drift per client for the same reason an accumulated-delta clock does, and syncing them needs a server. A spiral search snaps each catalogue anchor to the nearest suitable tile, so every client agrees and a biome change can never bury a shopkeeper in water.
+- **D17 NPCs follow schedules derived from the wall clock.** `scheduledEntry(schedule, snapshot)` is a pure function of the clock, so every client computes the same anchor for the same minute. The tile index jumps deterministically; only the sprite is smoothed via `RemoteInterpolationComponent`. A spiral search snaps each scheduled anchor to the nearest walkable non-cave tile, so every client agrees on placement.
 - **D18 No player-to-player trading.** See [Economy and its security posture](#economy-and-its-security-posture).
-- **D19 Coins are a column on `player_state`, not a table.** That row is already written by every autosave; a `player_wallet` table would double the write traffic for one integer.
+- **D19 Coins are server-authoritative, enforced by column privileges.** Direct writes to `player_state.coins` are revoked for `authenticated`; all movement goes through `worldnest_shop_trade` and `worldnest_claim_quest_reward` security-definer RPCs. The `coin_ledger` records every movement.
 
 ## World Generation
 
@@ -249,13 +253,13 @@ The world is divided into fixed-size chunks (`CHUNK_SIZE = 16` tiles of `TILE_SI
 
 ### The five noise channels
 
-| Channel | Seed | Scale | What it decides |
-|---------|------|-------|-----------------|
-| elevation | `seed` | 0.02 | Water, shore and rock; also a lapse rate on temperature |
-| moisture | `seed + 1000` | 0.015 | Half of the biome classification |
-| detail | `seed + 2000` | 0.1 | Accent-tile scatter, and where an ore vein sits |
+| Channel     | Seed          | Scale | What it decides                                                                  |
+| ----------- | ------------- | ----- | -------------------------------------------------------------------------------- |
+| elevation   | `seed`        | 0.02  | Water, shore and rock; also a lapse rate on temperature                          |
+| moisture    | `seed + 1000` | 0.015 | Half of the biome classification                                                 |
+| detail      | `seed + 2000` | 0.1   | Accent-tile scatter, and where an ore vein sits                                  |
 | temperature | `seed + 3000` | 0.008 | The other half of the classification — broadest scale, so climate bands are wide |
-| caves | `seed + 4000` | 0.06 | Which high rock is hollowed out |
+| caves       | `seed + 4000` | 0.06  | Which high rock is hollowed out                                                  |
 
 `getTileType()` resolves them in a fixed priority order, and the order is the design:
 
@@ -271,14 +275,14 @@ otherwise          → the biome's surfaceTile, or its accentTile where detail >
 
 `classifyBiome(elevation, moisture, temperature)` in `world/Biomes.ts` is pure, total over the whole noise cube, and free of the generator. It first applies elevation as a **lapse rate** — `effective = temperature - max(0, elevation) * 0.25`, so highlands are colder than lowlands at the same latitude — then splits on temperature and moisture:
 
-| Biome | Surface | Accent |
-|-------|---------|--------|
-| `TUNDRA` | snow | stone |
-| `TAIGA` | forest | snow |
-| `GRASSLAND` | grass | flowers |
-| `FOREST` | forest | flowers |
-| `SAVANNA` | grass | forest |
-| `DESERT` | sand | stone |
+| Biome       | Surface | Accent  |
+| ----------- | ------- | ------- |
+| `TUNDRA`    | snow    | stone   |
+| `TAIGA`     | forest  | snow    |
+| `GRASSLAND` | grass   | flowers |
+| `FOREST`    | forest  | flowers |
+| `SAVANNA`   | grass   | forest  |
+| `DESERT`    | sand    | stone   |
 
 The chill constant is deliberately small. A larger one turned every mountain fringe into tundra and removed the grass-beside-stone tiles the gameplay tests search for. `WorldManager.getBiomeAt(tileX, tileY)` exposes the classification and deliberately **ignores the override layer** — a tilled field is still in the biome it was dug from — which is why it is a method on the class and not part of `TileQuery`.
 
@@ -300,21 +304,23 @@ Generation is a pure function of `WORLD_SEED` (42, in `@worldnest/shared`) and t
 
 ### Tile Types
 
-| Tile | Value | Source | walkable | buildable | harvestable |
-|------|-------|--------|----------|-----------|-------------|
-| Grass | 0 | elevation default | yes | yes | no |
-| Water | 1 | elevation `< -0.3` | **no** | no | no |
-| Sand | 2 | elevation `< -0.1` | yes | yes | no |
-| Forest | 3 | moisture `> 0.2` and elevation `> 0.1` | yes | no | yes → wood |
-| Stone | 4 | elevation `> 0.6` | yes | no | yes → stone |
-| Flowers | 5 | biome accent (grassland, forest) | yes | no | yes → flower |
-| Farmland | 6 | **override layer only** (tilling) | yes | yes | no |
-| Snow | 7 | tundra surface, taiga accent | yes | yes | no |
-| Cave floor | 8 | cave channel | yes | yes | no |
-| Cave wall | 9 | cave boundary against solid rock | **no** | no | no |
-| Ore | 10 | cave interior, high detail | yes | no | yes → ore |
+| Tile          | Value | Source                                 | walkable | buildable | harvestable   |
+| ------------- | ----- | -------------------------------------- | -------- | --------- | ------------- |
+| Grass         | 0     | elevation default                      | yes      | yes       | no            |
+| Water         | 1     | elevation `< -0.3`                     | **no**   | no        | no            |
+| Sand          | 2     | elevation `< -0.1`                     | yes      | yes       | no            |
+| Forest        | 3     | moisture `> 0.2` and elevation `> 0.1` | yes      | no        | yes -> wood   |
+| Stone         | 4     | elevation `> 0.6`                      | yes      | no        | yes -> stone  |
+| Flowers       | 5     | biome accent (grassland, forest)       | yes      | no        | yes -> flower |
+| Farmland      | 6     | **override layer only** (tilling)      | yes      | yes       | no            |
+| Snow          | 7     | tundra surface, taiga accent           | yes      | yes       | no            |
+| Cave floor    | 8     | cave channel                           | yes      | **no**    | no            |
+| Cave wall     | 9     | cave boundary against solid rock       | **no**   | no        | no            |
+| Ore           | 10    | cave interior, high detail             | yes      | no        | yes -> ore    |
+| Cave entrance | 11    | cave mouth (ladder between layers)     | yes      | **no**    | no            |
+| Path          | 12    | **override layer only** (path_stone)   | yes      | yes       | no            |
 
-New generated tile ids start at 7 on purpose: `FARMLAND = 6` is override-only and must stay so, and every id is a persisted `world_modifications.tile_type` smallint that cannot be renumbered.
+New generated tile ids start at 7 on purpose: `FARMLAND = 6` is override-only and must stay so, and every id is a persisted `world_modifications.tile_type` smallint that cannot be renumbered. `PATH = 12` is also override-only, placed by the `path_stone` item through `BuildSystem`'s tile-placing branch.
 
 Water and cave walls are the only tiles that block movement. Harvest yields and their energy costs live in `TILE_HARVEST_YIELD`; a harvested tile is replaced through the override layer — with grass by default, or with `replacementTile` where that would be absurd (ore becomes cave floor) — which repaints just that tile and queues it for persistence.
 
@@ -336,7 +342,9 @@ Water and cave walls are the only tiles that block movement. Harvest yields and 
 
 ### Farming
 
-`CROP_DEFINITIONS` is keyed by **seed** item id, so persistence only stores the seed plus `planted_at_minute`. Interacting with grass while holding a seed tills it to farmland; interacting again sows a crop entity and consumes one seed. `CropGrowthSystem` derives `stage = clamp(floor((nowMinutes - plantedAtMinute) / minutesPerStage), 0, stageCount - 1)` from the shared clock, which is why two clients always see the same stage. `wheat_seed` → 4 stages × 30 game minutes → 2 `wheat`.
+`CROP_DEFINITIONS` is keyed by **seed** item id, so persistence only stores the seed plus `planted_at_minute`. Interacting with grass while holding a seed tills it to farmland; interacting again sows a crop entity and consumes one seed. `CropGrowthSystem` derives `stage = clamp(floor((nowMinutes - plantedAtMinute) / minutesPerStage), 0, stageCount - 1)` from the shared clock, which is why two clients always see the same stage. `wheat_seed` -> 4 stages x 30 game minutes -> 2 `wheat`.
+
+Crops support optional `biomes` and `seasons` allow-lists. `PlantSystem` refuses to sow outside them and bumps `InteractionComponent.refusals`, which plays the `deny` sound cue. Two climate-gated crops exist: `carrot_seed` (cool biomes, not summer) and `melon_seed` (hot biomes, not winter). Wheat has no restrictions and sows anywhere.
 
 ### Building
 
@@ -350,6 +358,8 @@ Water and cave walls are the only tiles that block movement. Harvest yields and 
 
 `NPC_DEFINITIONS` holds three villagers anchored a few tiles from the default spawn: `villager_pip` the gardener, `shopkeeper_juno` and `questgiver_ada`. `resolveNpcTile()` snaps each anchor to the nearest **walkable, buildable, non-cave** tile by a deterministic spiral search, skipping any NPC with nowhere to stand within 12 tiles rather than relocating them out to sea. `buildable` is what keeps them off forest and stone without a second list to maintain.
 
+Each NPC has an optional schedule (`NpcScheduleEntry[]`) derived from the wall clock. `scheduledEntry(schedule, snapshot)` picks the current entry by hour, and `NpcSystem` re-resolves the NPC's tile when the entry changes. The tile index jumps deterministically; the sprite is smoothed via `RemoteInterpolationComponent`. Pip tends the garden by day and rests at dusk; Juno opens the stall in the morning; Ada waits by the noticeboard.
+
 `NpcSystem` owns the resulting tile index and **implements `StructureQuery`**, so `composeBlockers(build, npc)` makes a villager as solid as a fence without `CollisionSystem` knowing either exists. `BuildSystem` takes the same index as a second occupancy source, so a fence cannot be dropped on someone.
 
 A dialogue tree is `{ rootNodeId, nodes: Record<string, DialogueNode> }`, where every option carries a `labelKey` plus either a `next` node or an `action` (`close`, `openShop`, `offerQuest`, `turnInQuest`). `dialogueOps` holds every transition as a pure function over a `DialogueState`, and the invariants are asserted rather than hoped for: every root exists, every option resolves, `MAX_DIALOGUE_OPTIONS = 4` (the UI binds number keys `1`-`4`, so a fifth would be keyboard-unreachable), and every node is leaveable, so no conversation can trap a player. An out-of-range option index is ignored **and does not bump `version`**, so a stale click from a panel that has already moved on publishes nothing.
@@ -358,25 +368,39 @@ A dialogue tree is `{ rootNodeId, nodes: Record<string, DialogueNode> }`, where 
 
 ### Economy and its security posture
 
-The economy is an **NPC shop with fixed prices** plus a `coins` wallet starting at 50. `ITEM_PRICES` in `@worldnest/shared` covers nine items, and two invariants are enforced by tests rather than intended:
+The economy is an **NPC shop with fixed prices** plus a `coins` wallet starting at 50. `ITEM_PRICES` in `@worldnest/shared` covers fourteen items, and two invariants are enforced by tests rather than intended:
 
 - **`sell < buy` for every single item**, so there is no buy-then-sell arbitrage loop.
 - A wheat seed costs less than the wheat it yields, so farming is profitable (+8 coins per seed) but fixed and non-compounding.
 
-Ore is the most valuable raw material (30/14), which is what makes the caves worth walking into. `shopOps` is pure and returns a boolean per trade, so a refused trade — not enough coins, no space, an item you do not hold, an untradable item — changes **nothing**, and in particular never takes the coins.
+Ore is the most valuable raw material (30/14), which is what makes the caves worth walking into. `shopOps` is pure and returns a boolean per trade, so a refused trade changes **nothing**.
 
-**Why there is no player-to-player trading, and why that is a security decision, not a scope cut:** this architecture is client-authoritative and anti-cheat is explicitly out of scope. A malicious client can already forge its own coins, inventory, harvests and quest progress — all of it is client-authored and none of it is validated anywhere. A market or a direct trade would let that client mint value _for other players too_, turning a local cheat into an economy-wide one. Fixed NPC prices keep the blast radius at one save file.
+#### What is authoritative and what is not
 
-For the same audience reason (ages 10-18) there is no gambling, no randomised rewards, no loot boxes and no real-money path anywhere in the game. Server-side validation would need Postgres RPC or Supabase Edge Functions and is a separate project.
+| Dimension         | Authority  | Mechanism                                                                                                                      |
+| ----------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Coin balance      | **Server** | Column privileges revoke direct writes; all movement goes through `worldnest_shop_trade` / `worldnest_claim_quest_reward` RPCs |
+| Quest completion  | **Server** | Only a `security definer` function can write `state = 'completed'`; rewards paid at most once                                  |
+| Inventory         | Client     | No server-side simulation; forgeable                                                                                           |
+| Position          | Client     | Broadcast but not validated                                                                                                    |
+| Harvests          | Client     | No server tick to verify                                                                                                       |
+| Crops and terrain | Client     | Client-authored overrides                                                                                                      |
+
+The `coin_ledger` table records every coin movement with a balance snapshot and is append-only (no write policy or grant for `authenticated`). A rate limit of 60 operations per minute bounds abuse.
+
+The client keeps its optimistic simulation: the engine trades and pays out instantly, and `AuthorityBridge` fires the matching RPC asynchronously. If the server disagrees, `WalletComponent.requestedBalance` snaps the balance to the server's answer and the player is told once via `hud.coinsAdjusted`.
+
+**Why there is no player-to-player trading:** a trade moves _items_, and items are still client-authored, so a modified client could mint goods for other players even with a perfect coin ledger. Trading needs authoritative inventory, which needs the server to know what a legal harvest is, which needs a server-side simulation. That is a separate project.
 
 ### Quests
 
-Three starter quests, all given by Ada, one per objective kind: `collect_wood` (5 wood), `build_fence` (2 fences) and `greet_pip` (talk to Pip). Objectives are limited to `collect`, `build` and `talk` because all three can be judged by **polling state the engine already owns** — no event bus is needed. `build_fence` needs 2 fences at 20 coins each against 50 starting coins, so it teaches the shop and cannot be brute-forced on day one.
+Three starter quests, all given by Ada, one per objective kind: `collect_wood` (5 wood), `build_fence` (2 fences) and `greet_pip` (talk to Pip). Objectives are limited to `collect`, `build` and `talk` because all three can be judged by **polling state the engine already owns** - no event bus is needed. `build_fence` needs 2 fences at 20 coins each against 50 starting coins, so it teaches the shop and cannot be brute-forced on day one.
 
-Two rules worth knowing:
+Three rules worth knowing:
 
-- A turn-in is **refused whole** if the reward items would not fit, and the quest stays active. Space is checked by replaying the additions on a copy of the inventory, because two rewards can each fit alone and not fit together. Same promise `HarvestSystem` makes: nothing is ever silently destroyed.
-- Turning a quest in **does not consume** the collected items. Progress is polled from the inventory, so "show it to Ada" is the honest wording, and that is what the description keys say in all twelve languages.
+- A `build` objective records a **baseline** (the existing structure count at quest acceptance) so only structures placed _after_ the quest was taken on count toward it. Without this, reloading would re-complete the quest.
+- A turn-in is **refused whole** if the reward items would not fit, and the quest stays active. Space is checked by replaying the additions on a copy of the inventory, because two rewards can each fit alone and not fit together.
+- Turning a quest in **does not consume** the collected items. Progress is polled from the inventory, so "show it to Ada" is the honest wording.
 
 The quest ids are pinned to Ada's dialogue tree by a test (`dialogueQuestIds()` must equal `Object.keys(QUEST_DEFINITIONS)`), so a quest can never be offered by a conversation that no longer exists, or exist with no way to take it.
 
@@ -465,29 +489,29 @@ Meanwhile:
     InterpolationSystem eases position (and animates)
 ```
 
-**Anti-cheat is out of scope.** The client is authoritative by design, so a malicious client can forge positions, harvests, inventory, **coins and quest progress** — all of it is client-authored and none of it is validated anywhere. Server-side validation would require Postgres RPC or Edge Functions and is a separate project. That consequence is not just accepted, it is _designed around_: see [Economy and its security posture](#economy-and-its-security-posture) for why it rules out player-to-player trading.
+**Anti-cheat is partially addressed.** Coin balance and quest completion are server-authoritative (enforced by column privileges and security-definer RPCs). However, the client remains authoritative for positions, inventory, harvests, crops and terrain edits, so a malicious client can still forge those. Server-side validation of inventory would require a server-side simulation and is a separate project. See [Economy and its security posture](#economy-and-its-security-posture) for the full breakdown.
 
 ## Rendering Pipeline (Phaser 3)
 
 ### Scene structure
 
-| Scene | Responsibility |
-|-------|----------------|
+| Scene       | Responsibility                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BootScene` | Generates every placeholder texture — one `tile_<n>` per `TileType` (derived from `Object.values(TileType)`, so a new tile can never be missed), `crop_wheat_0..3`, `structure_*`, one `npc_<role>` per catalogue role (via `scenes/npcTextures.ts`), and the 4-direction × 2-frame `player_<dir>_<n>` spritesheet — then starts the other scenes. **There are no binary assets in this repository** |
-| `GameScene` | Owns the ECS world, chunk textures, camera, input, networking and persistence wiring |
-| `UIScene` | A minimal canvas-side position/chunk readout (depth 1000, scroll factor 0); the real HUD is React |
+| `GameScene` | Owns the ECS world, chunk textures, camera, input, networking and persistence wiring                                                                                                                                                                                                                                                                                                                 |
+| `UIScene`   | A minimal canvas-side position/chunk readout (depth 1000, scroll factor 0); the real HUD is React                                                                                                                                                                                                                                                                                                    |
 
 ### Depth layers
 
-| Depth | Contents |
-|-------|----------|
-| 1000 | `UIScene`'s canvas-side position/chunk readout |
-| 900 | Day/night tint, then the minimap — registered after it, so the map is not dimmed at night |
-| 110 | Remote player and NPC labels (`NameTags`) |
-| 100 / 99 / 98 | Local player / remote players / NPCs |
-| 61 / 60 | Build ghost / placed structures |
-| 50 | Crops and other world-bound sprites |
-| 0 | Chunk render textures drawn by `ChunkRenderer` |
+| Depth         | Contents                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| 1000          | `UIScene`'s canvas-side position/chunk readout                                            |
+| 900           | Day/night tint, then the minimap — registered after it, so the map is not dimmed at night |
+| 110           | Remote player and NPC labels (`NameTags`)                                                 |
+| 100 / 99 / 98 | Local player / remote players / NPCs                                                      |
+| 61 / 60       | Build ghost / placed structures                                                           |
+| 50            | Crops and other world-bound sprites                                                       |
+| 0             | Chunk render textures drawn by `ChunkRenderer`                                            |
 
 `NameTags` compares `label.text` every pass, so switching language relabels the whole village without a reload.
 
@@ -528,36 +552,58 @@ Item ids read back from the database are validated with `isItemId()`, so removin
 
 ## Database Schema
 
-PostgreSQL via Supabase. **Three** migrations, run in order, in `packages/database/supabase/migrations/`, plus an optional development-only seed in `packages/database/supabase/seed/`.
+PostgreSQL via Supabase. **Five** migrations, run in order, in `packages/database/supabase/migrations/`, plus an optional development-only seed in `packages/database/supabase/seed/`.
 
-`pnpm db:verify` applies all of them to a throwaway dockerised Postgres and asserts what they promise — the policy counts, the seeded world, the trigger, RLS on the new table, the composite-key upsert and the `state` check constraint. Treat that command, not this document, as the authoritative statement of how many policies exist: a number written here would drift, and a dropped policy is a silent security regression.
+`pnpm db:verify` applies all of them to a throwaway dockerised Postgres and asserts what they promise - the policy counts, the seeded world, the trigger, RLS, column privileges, the authority RPCs, and the composite-key upsert. Treat that command, not this document, as the authoritative statement of how many policies exist.
 
 ### 001_initial_schema.sql
 
-| Table | Key columns | Notes |
-|-------|-------------|-------|
-| `profiles` | `id` → `auth.users`, `username`, `avatar`, `created_at` | Public read, owner-only writes |
-| `player_state` | `player_id` → `profiles`, `x`, `y`, `chunk`, `inventory` jsonb, `last_online` | Owner-only read **and** write |
-| `worlds` | `id`, `name`, `seed`, `created_at` | Public read; seeded with `('Default World', 42)` |
+| Table          | Key columns                                                                   | Notes                                            |
+| -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------ |
+| `profiles`     | `id` → `auth.users`, `username`, `avatar`, `created_at`                       | Public read, owner-only writes                   |
+| `player_state` | `player_id` → `profiles`, `x`, `y`, `chunk`, `inventory` jsonb, `last_online` | Owner-only read **and** write                    |
+| `worlds`       | `id`, `name`, `seed`, `created_at`                                            | Public read; seeded with `('Default World', 42)` |
 
 ### 002_gameplay_schema.sql
 
-| Object | Purpose |
-|--------|---------|
+| Object                                               | Purpose                                                                                                                                                                                                          |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `handle_new_user()` + `on_auth_user_created` trigger | `security definer`, inserts a `profiles` row and a `player_state` row on sign-up (`on conflict do nothing`). Without it the `player_state` foreign key is unusable, because nothing else ever creates a profile. |
-| `world_modifications` | PK `(world_id, tile_x, tile_y)`, `tile_type`, `modified_by` (`on delete set null`), `updated_at` — the terrain diff |
-| `structures` | `id`, `world_id`, `owner_id`, `item_id`, tile, unique `(world_id, tile_x, tile_y)` |
-| `crops` | as above plus `planted_at_minute`; `item_id` is the **seed** |
-| `chat_messages` | `id`, `world_id`, `sender_id`, `username`, `body`, `created_at`, indexed `(world_id, created_at desc)` |
+| `world_modifications`                                | PK `(world_id, tile_x, tile_y)`, `tile_type`, `modified_by` (`on delete set null`), `updated_at` — the terrain diff                                                                                              |
+| `structures`                                         | `id`, `world_id`, `owner_id`, `item_id`, tile, unique `(world_id, tile_x, tile_y)`                                                                                                                               |
+| `crops`                                              | as above plus `planted_at_minute`; `item_id` is the **seed**                                                                                                                                                     |
+| `chat_messages`                                      | `id`, `world_id`, `sender_id`, `username`, `body`, `created_at`, indexed `(world_id, created_at desc)`                                                                                                           |
 
 ### 003_progression_schema.sql
 
-| Object | Purpose |
-|--------|---------|
-| `player_state.coins` | `integer default 0 not null`, added with `add column if not exists`. One column rather than a `player_wallet` table (D19), because that row is already written by every autosave |
-| `player_quests` | Primary key `(player_id, quest_id)`, `state text` with a `check (state in ('available','active','completed'))`, `progress integer`, `updated_at`. `player_id` cascades from `profiles` |
+| Object               | Purpose                                                                                                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `player_state.coins` | `integer default 0 not null`, added with `add column if not exists`. One column rather than a `player_wallet` table (D19), because that row is already written by every autosave       |
+| `player_quests`      | Primary key `(player_id, quest_id)`, `state text` with a `check (state in ('available','active','completed'))`, `progress integer`, `updated_at`. `player_id` cascades from `profiles` |
 
 `quest_id` is plain `text` and **deliberately not a foreign key**: the quest catalogue lives in the client, so a quest removed from it must leave a harmless orphan row rather than break the schema. The client validates ids on the way back in. The `check` constraint is the only thing stopping a typo'd state reaching a session, which is why `pnpm db:verify` asserts it rejects one.
+
+### 004_authority_schema.sql
+
+| Object                         | Purpose                                                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `shop_prices`                  | Server's own copy of the price list (14 rows), seeded from `ITEM_PRICES`; pinned by a parity test        |
+| `quest_rewards`                | Server's own reward list (3 rows), seeded from `QUEST_DEFINITIONS`; pinned by a parity test              |
+| `coin_ledger`                  | Append-only audit log of every coin movement; no write grant for `authenticated`                         |
+| Column privilege lockdown      | `revoke insert, update` on `player_state`/`player_quests`, re-grant per-column excluding `coins`/`state` |
+| `worldnest_shop_trade` RPC     | `security definer`; validates item, direction, quantity, balance; writes ledger; returns `{ok, coins}`   |
+| `worldnest_claim_quest_reward` | `security definer`; validates progress, pays once, sets `state = 'completed'`; returns `{ok, coins}`     |
+| `player_state.coins` default   | Changed from 0 to 50 (the starting purse); backfills existing zero rows                                  |
+
+The migration is re-runnable (`create table if not exists`, `create or replace function`, `insert ... on conflict do update`). A rate limit of 60 ledger entries per minute per player bounds abuse.
+
+### 005_world_layer_schema.sql
+
+| Object                                         | Purpose                                                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `world_modifications.layer`                    | `smallint default 0 not null`; surface overrides keep layer 0, underground overrides use 1 |
+| PK swap to `(world_id, layer, tile_x, tile_y)` | Two overrides differing only by layer can coexist for one coordinate                       |
+| `player_quests.baseline`                       | `integer default 0 not null`; structure count at quest acceptance for `build` objectives   |
 
 ### seed/test_accounts.sql (development only)
 

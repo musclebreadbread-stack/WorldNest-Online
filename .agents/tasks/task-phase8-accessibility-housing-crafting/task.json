@@ -1,0 +1,14 @@
+{
+  "task_id": "task-phase8-accessibility-housing-crafting",
+  "task_description": "Phase 8 implementation: accessibility improvements (keyboard navigation, high contrast, screen reader, reduced motion, color-blind palettes), player housing interior (rooms, furniture, decoration, happiness), and advanced crafting (multi-step recipes, tool upgrading, resource refinement, workbench station).",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "All tests pass (656 game-engine + 324 web + 29 shared + 12 database). format:check passes. lint passes. build passes. Post-review fixes applied: craft achievement callback wired, HousingPanel renders translated names, announcement queue capped at 10."
+  }
+}

@@ -35,8 +35,26 @@ export class ShopComponent extends Component {
    * is what the refusal sound is played from.
    */
   public refusals: number;
+  /**
+   * The last trade `ShopSystem` actually made, or `null` before the first one.
+   *
+   * Written on an **accepted** trade only, together with `tradeSeq`, so whoever
+   * reports trades to the server has something to send and never reports one the
+   * shop turned down.
+   */
+  public lastTrade: ShopTrade | null;
+  /** Bumped alongside `lastTrade`, so a repeat of the same trade still reads as new. */
+  public tradeSeq: number;
   /** Bumped by every accepted change, so the HUD can publish without diffing. */
   public version: number;
+  /** Items available in the current NPC shop, or null when no NPC shop is open. */
+  public currentNpcShopItems: ItemId[] | null;
+  /** Whether a seasonal discount is active for the current shop context. */
+  public seasonalDiscountActive: boolean;
+  /** Total rare items purchased (lifetime counter for achievements). */
+  public rareItemsPurchased: number;
+  /** Set of NPC shop ids the player has visited (lifetime, for achievements). */
+  public shopsVisited: Set<string>;
 
   constructor() {
     super("shop");
@@ -45,6 +63,12 @@ export class ShopComponent extends Component {
     this.closeRequested = false;
     this.requestedTrade = null;
     this.refusals = 0;
+    this.lastTrade = null;
+    this.tradeSeq = 0;
     this.version = 0;
+    this.currentNpcShopItems = null;
+    this.seasonalDiscountActive = false;
+    this.rareItemsPurchased = 0;
+    this.shopsVisited = new Set();
   }
 }

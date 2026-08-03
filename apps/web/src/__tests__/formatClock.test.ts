@@ -51,11 +51,8 @@ describe("clock readout", () => {
   });
 
   it("should have a phase key for every phase the engine reports", () => {
-    expect(Object.keys(CLOCK_PHASE_KEYS).sort()).toEqual([
-      "dawn",
-      "dusk",
-      "day",
-      "night",
-    ].sort());
+    expect(Object.keys(CLOCK_PHASE_KEYS).sort()).toEqual(
+      ["dawn", "dusk", "day", "night"].sort(),
+    );
   });
 });

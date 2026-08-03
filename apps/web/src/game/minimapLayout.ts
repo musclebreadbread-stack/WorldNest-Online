@@ -86,7 +86,10 @@ export function minimapDotOffset(
 }
 
 /** Tile the player currently stands on, which is what triggers a redraw. */
-export function tileOf(worldX: number, worldY: number): { tileX: number; tileY: number } {
+export function tileOf(
+  worldX: number,
+  worldY: number,
+): { tileX: number; tileY: number } {
   return {
     tileX: Math.floor(worldX / TILE_SIZE),
     tileY: Math.floor(worldY / TILE_SIZE),

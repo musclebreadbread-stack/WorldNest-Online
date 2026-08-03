@@ -6,13 +6,17 @@ import { DialogueComponent } from "../components/DialogueComponent";
 import { InteractionComponent } from "../components/InteractionComponent";
 import { NpcComponent } from "../components/NpcComponent";
 import { PositionComponent } from "../components/PositionComponent";
+import { RemoteInterpolationComponent } from "../components/RemoteInterpolationComponent";
 import { SpriteComponent } from "../components/SpriteComponent";
 import { advanceDialogue, closeDialogue, openDialogue } from "../dialogue/dialogueOps";
 import { getFacedTile } from "../interaction/facing";
 import { NPC_DEFINITIONS, type NpcDefinition } from "../world/NpcCatalogue";
+import { scheduledEntry, type NpcScheduleEntry } from "../world/npcSchedule";
 import { resolveNpcTile } from "../world/npcPlacement";
 import type { StructureQuery } from "../world/StructureQuery";
 import { getTileKey, type TileQuery } from "../world/TileQuery";
+import type { ClockSnapshot } from "../world/WorldClock";
+import { WorldLayer } from "../world/WorldLayer";
 
 /** Entity id of a placed NPC. Stable, because placement is deterministic. */
 export function npcEntityId(npcId: string): string {
@@ -27,6 +31,9 @@ export function npcEntityId(npcId: string): string {
  * this and runs one system later, so a greeting lands in the frame it happened.
  */
 export type TalkListener = (npcId: string) => void;
+
+/** Returns the current clock snapshot. */
+export type ClockSnapshotGetter = () => ClockSnapshot;
 
 /**
  * NpcSystem places the catalogue's NPCs and runs every conversation.
@@ -47,8 +54,14 @@ export class NpcSystem extends System implements StructureQuery {
   private addEntity: AddEntity;
   private definitions: readonly NpcDefinition[];
   private onTalk?: TalkListener;
+  private getLayer: () => WorldLayer;
+  private getClock?: ClockSnapshotGetter;
   /** Placed NPCs keyed by `"tileX,tileY"`. */
   private npcs: Map<string, Entity> = new Map();
+  /** Definitions keyed by entity id for schedule lookup. */
+  private defByEntity: Map<string, NpcDefinition> = new Map();
+  /** Last active schedule entry per NPC id. */
+  private lastEntry: Map<string, NpcScheduleEntry> = new Map();
   private spawned = false;
 
   constructor(
@@ -56,16 +69,21 @@ export class NpcSystem extends System implements StructureQuery {
     addEntity: AddEntity,
     definitions: readonly NpcDefinition[] = NPC_DEFINITIONS,
     onTalk?: TalkListener,
+    getLayer: () => WorldLayer = () => WorldLayer.SURFACE,
+    getClock?: ClockSnapshotGetter,
   ) {
     super(["position", "interaction", "dialogue"]);
     this.tileQuery = tileQuery;
     this.addEntity = addEntity;
     this.definitions = definitions;
     this.onTalk = onTalk;
+    this.getLayer = getLayer;
+    this.getClock = getClock;
   }
 
   update(entities: Entity[], _deltaTime: number): void {
     if (!this.spawned) this.spawnAll();
+    this.updateSchedules();
 
     for (const entity of entities) {
       const dialogue = entity.getComponent<DialogueComponent>("dialogue")!;
@@ -109,17 +127,30 @@ export class NpcSystem extends System implements StructureQuery {
     this.spawned = true;
 
     for (const definition of this.definitions) {
+      // Use the schedule's current entry as the anchor if the NPC has one
+      const anchor = this.currentAnchor(definition);
       const tile = resolveNpcTile(
         this.tileQuery,
-        definition.anchorTileX,
-        definition.anchorTileY,
+        anchor.tileX,
+        anchor.tileY,
         undefined,
         (tileX, tileY) => this.hasStructureAt(tileX, tileY),
       );
       if (!tile) continue;
 
       const key = getTileKey(tile.tileX, tile.tileY);
-      this.npcs.set(key, this.spawnNpc(definition, tile));
+      const entity = this.spawnNpc(definition, tile);
+      this.npcs.set(key, entity);
+      this.defByEntity.set(entity.id, definition);
+
+      // Record the initial schedule entry so the first schedule check
+      // does not trigger a spurious move
+      if (definition.schedule && this.getClock) {
+        const entry = scheduledEntry(definition.schedule, this.getClock());
+        this.lastEntry.set(definition.id, entry);
+        const npc = entity.getComponent<NpcComponent>("npc")!;
+        npc.activity = entry.activity;
+      }
     }
   }
 
@@ -145,10 +176,100 @@ export class NpcSystem extends System implements StructureQuery {
           tile.tileX,
           tile.tileY,
         ),
+      )
+      .addComponent(
+        new RemoteInterpolationComponent(
+          tile.tileX * TILE_SIZE + TILE_SIZE / 2,
+          tile.tileY * TILE_SIZE + TILE_SIZE / 2,
+          0.15,
+        ),
       );
 
     this.addEntity(entity);
     return entity;
+  }
+
+  /**
+   * Resolve the current anchor for an NPC definition: the scheduled entry's
+   * tile if the NPC has a schedule, otherwise the catalogue anchor.
+   */
+  private currentAnchor(definition: NpcDefinition): {
+    tileX: number;
+    tileY: number;
+  } {
+    if (definition.schedule && this.getClock) {
+      const entry = scheduledEntry(definition.schedule, this.getClock());
+      return { tileX: entry.tileX, tileY: entry.tileY };
+    }
+    return { tileX: definition.anchorTileX, tileY: definition.anchorTileY };
+  }
+
+  /**
+   * Check each scheduled NPC and relocate it if the active entry changed.
+   * The tile index _jumps_ (collision is always correct); only the sprite is
+   * smoothed by `RemoteInterpolationComponent` + `InterpolationSystem`.
+   */
+  private updateSchedules(): void {
+    if (!this.getClock) return;
+
+    const snapshot = this.getClock();
+
+    for (const [key, entity] of this.npcs) {
+      const definition = this.defByEntity.get(entity.id);
+      if (!definition?.schedule) continue;
+
+      const entry = scheduledEntry(definition.schedule, snapshot);
+      const last = this.lastEntry.get(definition.id);
+      if (entry === last) continue;
+
+      this.lastEntry.set(definition.id, entry);
+      this.relocateNpc(entity, definition, entry, key);
+    }
+  }
+
+  /**
+   * Move an NPC to a new tile for a schedule change.
+   */
+  private relocateNpc(
+    entity: Entity,
+    definition: NpcDefinition,
+    entry: NpcScheduleEntry,
+    oldKey: string,
+  ): void {
+    const tile = resolveNpcTile(
+      this.tileQuery,
+      entry.tileX,
+      entry.tileY,
+      undefined,
+      (tileX, tileY) => {
+        // Allow the NPC's own tile so it does not block itself
+        const npc = entity.getComponent<NpcComponent>("npc")!;
+        if (tileX === npc.tileX && tileY === npc.tileY) return false;
+        return this.hasStructureAt(tileX, tileY);
+      },
+    );
+    if (!tile) return;
+
+    // Update the tile index
+    this.npcs.delete(oldKey);
+    const newKey = getTileKey(tile.tileX, tile.tileY);
+    this.npcs.set(newKey, entity);
+
+    // Update the NPC component
+    const npc = entity.getComponent<NpcComponent>("npc")!;
+    npc.tileX = tile.tileX;
+    npc.tileY = tile.tileY;
+    npc.activity = entry.activity;
+
+    // Set the interpolation target so the sprite eases toward the new tile
+    const targetX = tile.tileX * TILE_SIZE + TILE_SIZE / 2;
+    const targetY = tile.tileY * TILE_SIZE + TILE_SIZE / 2;
+    const interp =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation");
+    if (interp) {
+      interp.targetX = targetX;
+      interp.targetY = targetY;
+    }
   }
 
   /**
@@ -181,6 +302,8 @@ export class NpcSystem extends System implements StructureQuery {
     interaction: InteractionComponent,
     dialogue: DialogueComponent,
   ): boolean {
+    if (this.getLayer() !== WorldLayer.SURFACE) return false;
+
     const position = entity.getComponent<PositionComponent>("position")!;
     const { tileX, tileY } = getFacedTile(position.x, position.y, interaction.facing);
     const npcEntity = this.getNpcAt(tileX, tileY);

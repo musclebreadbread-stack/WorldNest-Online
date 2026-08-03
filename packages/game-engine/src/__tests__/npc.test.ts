@@ -16,6 +16,7 @@ import { composeBlockers, type StructureQuery } from "../world/StructureQuery";
 import { TILE_PROPERTIES, TileType } from "../world/Tilemap";
 import { WorldManager } from "../world/WorldManager";
 import { getTileKey, type TileQuery } from "../world/TileQuery";
+import { WorldLayer } from "../world/WorldLayer";
 
 /** Tile source backed by an explicit map; everything else is grass. */
 class FakeTileQuery implements TileQuery {
@@ -61,7 +62,7 @@ function createTalker(
 
 describe("NPC_DEFINITIONS", () => {
   it("should give every NPC a dialogue tree that exists", () => {
-    expect(NPC_DEFINITIONS.length).toBe(3);
+    expect(NPC_DEFINITIONS.length).toBe(9);
 
     for (const definition of NPC_DEFINITIONS) {
       expect(DIALOGUE_DEFINITIONS[definition.dialogueId], definition.id).toBeDefined();
@@ -234,17 +235,22 @@ describe("NpcSystem conversations", () => {
   /** Put one NPC on a known tile with a player facing it. */
   function createHarness(onTalk?: (npcId: string) => void) {
     const tileQuery = new FakeTileQuery();
-    const system = new NpcSystem(tileQuery, () => undefined, [
-      {
-        id: "villager_pip",
-        nameKey: "npc.pip.name",
-        dialogueId: "pip_welcome",
-        anchorTileX: 5,
-        anchorTileY: 4,
-        textureKey: "npc_villager",
-        role: "villager",
-      },
-    ], onTalk);
+    const system = new NpcSystem(
+      tileQuery,
+      () => undefined,
+      [
+        {
+          id: "villager_pip",
+          nameKey: "npc.pip.name",
+          dialogueId: "pip_welcome",
+          anchorTileX: 5,
+          anchorTileY: 4,
+          textureKey: "npc_villager",
+          role: "villager",
+        },
+      ],
+      onTalk,
+    );
     const talker = createTalker(4, 4, "right");
 
     return { ...talker, system, tileQuery };
@@ -269,6 +275,34 @@ describe("NpcSystem conversations", () => {
     interaction.facing = "left";
 
     interaction.interactRequested = true;
+    system.update([entity], 1 / 60);
+
+    expect(dialogue.activeNpcId).toBeNull();
+    expect(interaction.interactRequested).toBe(true);
+  });
+
+  it("should leave surface NPC interactions untouched underground", () => {
+    const tileQuery = new FakeTileQuery();
+    const system = new NpcSystem(
+      tileQuery,
+      () => undefined,
+      [
+        {
+          id: "villager_pip",
+          nameKey: "npc.pip.name",
+          dialogueId: "pip_welcome",
+          anchorTileX: 5,
+          anchorTileY: 4,
+          textureKey: "npc_villager",
+          role: "villager",
+        },
+      ],
+      undefined,
+      () => WorldLayer.UNDERGROUND,
+    );
+    const { entity, interaction, dialogue } = createTalker(4, 4, "right");
+    interaction.interactRequested = true;
+
     system.update([entity], 1 / 60);
 
     expect(dialogue.activeNpcId).toBeNull();

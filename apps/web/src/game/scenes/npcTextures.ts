@@ -10,6 +10,12 @@ const NPC_COLORS: Record<NpcRole, { tunic: number; accent: number }> = {
   villager: { tunic: 0x66bb6a, accent: 0xf8bbd0 },
   shopkeeper: { tunic: 0xab47bc, accent: 0xffd54f },
   questgiver: { tunic: 0xff8a65, accent: 0xfff8e1 },
+  curator: { tunic: 0x42a5f5, accent: 0xffe0b2 },
+  chef: { tunic: 0xffffff, accent: 0xe53935 },
+  rancher: { tunic: 0x8d6e63, accent: 0xa5d6a7 },
+  teacher: { tunic: 0x7e57c2, accent: 0xfff176 },
+  musician: { tunic: 0xf06292, accent: 0x80deea },
+  gardener: { tunic: 0x4caf50, accent: 0xffeb3b },
 };
 
 /**
@@ -46,11 +52,7 @@ export function generateNpcTextures(scene: Phaser.Scene): void {
     graphics.fillStyle(accent, 1);
     graphics.fillRect(11, 7, 4, 4);
 
-    graphics.generateTexture(
-      definition.textureKey,
-      NPC_TEXTURE_SIZE,
-      NPC_TEXTURE_SIZE,
-    );
+    graphics.generateTexture(definition.textureKey, NPC_TEXTURE_SIZE, NPC_TEXTURE_SIZE);
     graphics.destroy();
   }
 }

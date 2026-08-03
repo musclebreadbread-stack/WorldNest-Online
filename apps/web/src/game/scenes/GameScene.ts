@@ -27,6 +27,7 @@ import {
   createSessionPersistence,
   type SessionPersistence,
 } from "../SessionPersistence";
+import { createAuthorityBridge, type AuthorityBridge } from "../AuthorityBridge";
 import {
   createGameWorld,
   BOOTSTRAP_REGISTRY_KEY,
@@ -35,6 +36,7 @@ import {
   type GameBootstrap,
 } from "../createGameWorld";
 import { useUIStore } from "../../stores/uiStore";
+import { isActiveLayerChange } from "../layerVisibility";
 
 const FALLBACK_BOOTSTRAP: GameBootstrap = {
   playerId: "local",
@@ -69,6 +71,8 @@ export class GameScene extends Phaser.Scene {
   private network!: NetworkBridge;
   /** Writes position, inventory and world changes back to Supabase. */
   private persistence: SessionPersistence | null = null;
+  /** Reports coin movements to the server and reconciles its answer. */
+  private authority: AuthorityBridge | null = null;
   /** Owns the Phaser sprites mirrored from RenderSystem.renderData. */
   private spriteSync!: SpriteSync;
 
@@ -105,6 +109,9 @@ export class GameScene extends Phaser.Scene {
     // Saved state was already restored by createGameWorld; from here on every
     // change is written back through this layer.
     this.persistence = createSessionPersistence(bootstrap, context);
+    // Coins are the one thing the client does not get the last word on: trades
+    // and quest rewards are reported here and the server's balance wins.
+    this.authority = createAuthorityBridge(bootstrap, context);
 
     // Chunk rendering
     this.chunkRenderer = new ChunkRenderer(this);
@@ -114,13 +121,16 @@ export class GameScene extends Phaser.Scene {
     );
     // Harvested/modified tiles repaint in place instead of rebuilding the chunk,
     // and the same diff is what gets persisted
-    this.worldManager.setTileChangeCallback((tileX, tileY, tileType) => {
+    this.worldManager.setTileChangeCallback((layer, tileX, tileY, tileType) => {
+      if (!isActiveLayerChange(this.worldManager.getLayer(), layer)) return;
       this.chunkRenderer.redrawTile(tileX, tileY, tileType);
-      this.persistence?.saveTile(tileX, tileY, tileType);
+      this.persistence?.saveTile(layer, tileX, tileY, tileType);
     });
 
     // Prime the ECS once so chunks load and the render pass creates sprites
-    this.spriteSync = new SpriteSync(this, this.ecsWorld);
+    this.spriteSync = new SpriteSync(this, this.ecsWorld, () =>
+      this.worldManager.getLayer(),
+    );
     this.ecsWorld.update(0);
     this.spriteSync.sync(this.renderSystem.renderData);
 
@@ -139,7 +149,11 @@ export class GameScene extends Phaser.Scene {
     );
 
     // React HUD bridge
-    this.hudBridge = new HudBridge(this.game.events, this.playerEntity, this.clockEntity);
+    this.hudBridge = new HudBridge(
+      this.game.events,
+      this.playerEntity,
+      this.clockEntity,
+    );
     // Dialogue answers, shop trades and quest requests travel back the other
     // way, through injected callbacks (decision D13)
     const unwireDialogue = wireDialogue(this.playerEntity);
@@ -153,6 +167,7 @@ export class GameScene extends Phaser.Scene {
       this.spriteSync.destroy();
       this.persistence?.flush();
       this.persistence?.destroy();
+      this.authority?.destroy();
     });
 
     // Setup camera on the local player sprite created by the render pass
@@ -195,6 +210,9 @@ export class GameScene extends Phaser.Scene {
     // Autosave position/inventory and push new structures and crops
     this.persistence?.update();
 
+    // Report this frame's trade or quest completion to the coin authority
+    this.authority?.update();
+
     // Publish the state the React HUD consumes
     this.hudBridge.flush();
   }
@@ -208,6 +226,7 @@ export class GameScene extends Phaser.Scene {
   private getOverlayContext(deltaMs: number): OverlayContext {
     return {
       phase: this.getClockSnapshot().phase,
+      layer: this.worldManager.getLayer(),
       buildMode: useUIStore.getState().buildMode,
       playerEntity: this.playerEntity,
       worldManager: this.worldManager,
@@ -221,8 +240,7 @@ export class GameScene extends Phaser.Scene {
    */
   private getBootstrap(): GameBootstrap {
     const bootstrap = this.registry.get(BOOTSTRAP_REGISTRY_KEY) as
-      | GameBootstrap
-      | undefined;
+      GameBootstrap | undefined;
     return bootstrap ?? FALLBACK_BOOTSTRAP;
   }
 

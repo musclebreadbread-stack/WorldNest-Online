@@ -118,9 +118,8 @@ describe("NetworkBridge remote players", () => {
     bridge.updateRemotePlayer("remote-1", 160, 260);
 
     const entity = context.world.getEntity(remotePlayerEntityId("remote-1"))!;
-    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    )!;
+    const interpolation =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation")!;
     const position = entity.getComponent<PositionComponent>("position")!;
 
     expect([interpolation.targetX, interpolation.targetY]).toEqual([160, 260]);
@@ -185,7 +184,11 @@ describe("NetworkBridge transport", () => {
     transport.onLeft!("remote-3");
 
     expect(context.world.getEntity(remotePlayerEntityId("remote-3"))).toBeUndefined();
-    expect(emitter.events.map((event) => event.type)).toEqual(["join", "move", "leave"]);
+    expect(emitter.events.map((event) => event.type)).toEqual([
+      "join",
+      "move",
+      "leave",
+    ]);
   });
 
   it("should broadcast pending sync payloads and refresh presence", () => {

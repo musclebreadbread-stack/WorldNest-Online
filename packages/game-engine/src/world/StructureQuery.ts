@@ -1,3 +1,5 @@
+import { WorldLayer } from "./WorldLayer";
+
 /**
  * Read-only occupancy view of placed structures, maintained by `BuildSystem`.
  *
@@ -25,5 +27,18 @@ export function composeBlockers(...queries: StructureQuery[]): StructureQuery {
       queries.some((query) => query.hasStructureAt(tileX, tileY)),
     isBlockedByStructure: (tileX, tileY) =>
       queries.some((query) => query.isBlockedByStructure(tileX, tileY)),
+  };
+}
+
+/** Surface occupancy must never block or claim the same coordinates underground. */
+export function layerGuardedBlockers(
+  getLayer: () => WorldLayer,
+  query: StructureQuery,
+): StructureQuery {
+  return {
+    hasStructureAt: (tileX, tileY) =>
+      getLayer() === WorldLayer.SURFACE && query.hasStructureAt(tileX, tileY),
+    isBlockedByStructure: (tileX, tileY) =>
+      getLayer() === WorldLayer.SURFACE && query.isBlockedByStructure(tileX, tileY),
   };
 }

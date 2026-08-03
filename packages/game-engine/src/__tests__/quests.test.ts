@@ -31,7 +31,9 @@ const FENCE_QUEST = QUEST_DEFINITIONS.build_fence;
 const TALK_QUEST = QUEST_DEFINITIONS.greet_pip;
 
 /** A progress source that counts nothing, so a test can opt in per objective. */
-function emptySource(overrides: Partial<QuestProgressSource> = {}): QuestProgressSource {
+function emptySource(
+  overrides: Partial<QuestProgressSource> = {},
+): QuestProgressSource {
   return { itemCount: () => 0, structureCount: () => 0, ...overrides };
 }
 
@@ -88,7 +90,9 @@ describe("QUEST_DEFINITIONS", () => {
     }
 
     const kinds = QUEST_IDS.map((id) => QUEST_DEFINITIONS[id].objective.kind);
-    expect(new Set(kinds)).toEqual(new Set(["collect", "build", "talk"]));
+    expect(new Set(kinds)).toEqual(
+      new Set(["collect", "build", "talk", "donate", "tame"]),
+    );
   });
 
   it("should aim every talk objective at an NPC that exists", () => {
@@ -117,6 +121,7 @@ describe("offerQuest and activateQuest", () => {
     expect(getEntry(quest, "collect_wood")).toEqual({
       state: "available",
       progress: 0,
+      baseline: 0,
     });
     expect(quest.version).toBe(1);
 
@@ -160,7 +165,11 @@ describe("objectiveProgress", () => {
     const entry = { state: "active" as const, progress: 0 };
 
     expect(
-      objectiveProgress(WOOD_QUEST.objective, entry, emptySource({ itemCount: () => 2 })),
+      objectiveProgress(
+        WOOD_QUEST.objective,
+        entry,
+        emptySource({ itemCount: () => 2 }),
+      ),
     ).toBe(2);
     expect(
       objectiveProgress(
@@ -186,10 +195,18 @@ describe("objectiveProgress", () => {
   // A visit is a moment, not a state, so it is recorded rather than polled
   it("should read a talk objective back off the entry", () => {
     expect(
-      objectiveProgress(TALK_QUEST.objective, { state: "active", progress: 1 }, emptySource()),
+      objectiveProgress(
+        TALK_QUEST.objective,
+        { state: "active", progress: 1 },
+        emptySource(),
+      ),
     ).toBe(1);
     expect(
-      objectiveProgress(TALK_QUEST.objective, { state: "active", progress: 0 }, emptySource()),
+      objectiveProgress(
+        TALK_QUEST.objective,
+        { state: "active", progress: 0 },
+        emptySource(),
+      ),
     ).toBe(0);
   });
 

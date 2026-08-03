@@ -66,9 +66,7 @@ export function ChatPanel() {
               transition={{ duration: 0.15 }}
               className="hud-bubble w-fit max-w-full rounded bg-black/70 px-2 py-1 text-white"
             >
-              <span className="font-semibold text-emerald-300">
-                {message.username}
-              </span>
+              <span className="font-semibold text-emerald-300">{message.username}</span>
               <span className="ml-1 break-words">{message.body}</span>
             </motion.div>
           ))}

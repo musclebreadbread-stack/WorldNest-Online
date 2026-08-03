@@ -1,24 +1,10 @@
 import {
   World,
   Entity,
-  PositionComponent,
-  VelocityComponent,
-  SpriteComponent,
-  PlayerComponent,
-  InputComponent,
-  NetworkComponent,
-  RemoteInterpolationComponent,
-  ColliderComponent,
   TimeComponent,
-  InventoryComponent,
-  StatsComponent,
-  InteractionComponent,
-  DialogueComponent,
-  QuestComponent,
-  ShopComponent,
-  WalletComponent,
-  AnimationComponent,
   TimeSystem,
+  EnvironmentSystem,
+  EnvironmentComponent,
   InputSystem,
   CollisionSystem,
   MovementSystem,
@@ -28,6 +14,7 @@ import {
   NpcSystem,
   ShopSystem,
   QuestSystem,
+  LayerSystem,
   PlantSystem,
   CropGrowthSystem,
   BuildSystem,
@@ -36,44 +23,38 @@ import {
   AnimationSystem,
   RenderSystem,
   WorldManager,
-  addItem,
   composeBlockers,
+  layerGuardedBlockers,
+  AccessibilitySystem,
+  HousingSystem,
+  CraftingSystem,
+  AchievementSystem,
 } from "@worldnest/game-engine";
-import type { QuestEntry, TileType } from "@worldnest/game-engine";
-import { STARTING_COINS, SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
-import type { PersistedInventory } from "@worldnest/database";
-import { restoreInventory } from "../lib/inventorySnapshot";
-import { restoreQuests } from "../lib/questSnapshot";
-import { restoreSavedWorld, type SavedWorldState } from "./savedWorld";
+import type { TileType } from "@worldnest/game-engine";
+import { SYNC_INTERVAL_MS, WORLD_SEED } from "@worldnest/shared";
+import { restoreSavedWorld } from "./savedWorld";
+import { createPlayerEntity, type GameBootstrap } from "./playerEntity";
 
 // Restoring the shared world lives in `savedWorld.ts`; re-exported here because
 // this module is what `loadSession` and the persistence layer import from.
 export type { SavedCrop, SavedStructure, SavedWorldState } from "./savedWorld";
 
-/**
- * Identity, spawn and saved state handed to the game by React through the
- * Phaser registry. Everything past the identity is optional so the game still
- * boots when Supabase is unconfigured.
- */
-export interface GameBootstrap {
-  playerId: string;
-  username: string;
-  spawnX: number;
-  spawnY: number;
-  /** World rows are written against this id; `null` disables persistence. */
-  worldId?: string | null;
-  /** Saved inventory; when absent the starting kit is granted instead. */
-  inventory?: PersistedInventory | null;
-  /** Saved coin balance; when absent the starting purse is granted instead. */
-  coins?: number | null;
-  /** Saved quest log; when absent the player starts with no quests taken. */
-  quests?: Record<string, QuestEntry> | null;
-  /** Saved shared-world state, applied before the first chunk load. */
-  savedWorld?: SavedWorldState | null;
-}
+// Assembling player entities lives in `playerEntity.ts`, for the same reason.
+// Everything it exports is re-exported here so every existing importer keeps
+// working: this module is still the app's single entry point into the wiring.
+export type { GameBootstrap } from "./playerEntity";
+export {
+  LOCAL_PLAYER_ENTITY_ID,
+  PLAYER_COLLIDER_SIZE,
+  STARTING_WHEAT_SEEDS,
+  createPlayerEntity,
+  createRemotePlayerEntity,
+  remotePlayerEntityId,
+} from "./playerEntity";
 
 export interface GameWorldSystems {
   time: TimeSystem;
+  environment: EnvironmentSystem;
   input: InputSystem;
   collision: CollisionSystem;
   movement: MovementSystem;
@@ -83,6 +64,7 @@ export interface GameWorldSystems {
   npc: NpcSystem;
   shop: ShopSystem;
   quest: QuestSystem;
+  layer: LayerSystem;
   plant: PlantSystem;
   cropGrowth: CropGrowthSystem;
   build: BuildSystem;
@@ -90,6 +72,10 @@ export interface GameWorldSystems {
   networkSync: NetworkSyncSystem;
   animation: AnimationSystem;
   render: RenderSystem;
+  accessibility: AccessibilitySystem;
+  housing: HousingSystem;
+  crafting: CraftingSystem;
+  achievement: AchievementSystem;
 }
 
 export interface GameWorldContext {
@@ -103,8 +89,6 @@ export interface GameWorldContext {
 /** Registry key the bootstrap payload is published under. */
 export const BOOTSTRAP_REGISTRY_KEY = "bootstrap";
 
-export const LOCAL_PLAYER_ENTITY_ID = "local-player";
-
 /** Singleton entity carrying the shared world clock snapshot. */
 export const WORLD_CLOCK_ENTITY_ID = "world-clock";
 
@@ -116,12 +100,6 @@ export const WORLD_CLOCK_ENTITY_ID = "world-clock";
  */
 export const DEFAULT_SPAWN_X = 496;
 export const DEFAULT_SPAWN_Y = 336;
-
-/** Player collision box, slightly smaller than a tile so doorways feel forgiving. */
-export const PLAYER_COLLIDER_SIZE = 24;
-
-/** Seeds handed to a new player so the farming loop is playable immediately. */
-export const STARTING_WHEAT_SEEDS = 5;
 
 /**
  * Build the ECS world, its systems and the local player entity.
@@ -137,7 +115,9 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   // The clock entity exists up front so systems can read the phase through a getter
   const clockEntity = new Entity(WORLD_CLOCK_ENTITY_ID);
   const timeComponent = new TimeComponent();
+  const environmentComponent = new EnvironmentComponent();
   clockEntity.addComponent(timeComponent);
+  clockEntity.addComponent(environmentComponent);
 
   // Terrain edits go through the override layer, never into the generator
   const setTileOverride = (tileX: number, tileY: number, tileType: TileType) =>
@@ -161,23 +141,48 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     (entity) => world.addEntity(entity),
     undefined,
     (npcId) => quest.recordTalk(npcId),
+    () => worldManager.getLayer(),
   );
 
   // Building owns the structure occupancy index, which collision reads as walls.
   // It takes the NPC index as well, so a fence cannot be dropped on a villager.
-  const build = new BuildSystem(worldManager, (entity) => world.addEntity(entity), npc);
+  const build = new BuildSystem(
+    worldManager,
+    (entity) => world.addEntity(entity),
+    layerGuardedBlockers(() => worldManager.getLayer(), npc),
+    setTileOverride,
+  );
 
   // Quests poll the inventory themselves and the structure index through this
   // getter, so no system has to announce anything.
   const quest = new QuestSystem((itemId) => build.countStructures(itemId));
+  const layer = new LayerSystem(
+    worldManager,
+    () => worldManager.getLayer(),
+    (nextLayer) => worldManager.setLayer(nextLayer),
+  );
+
+  // AchievementSystem tracks lifetime counters and polls conditions each frame.
+  // It is declared here so the CraftingSystem can reference it in its callback.
+  const achievement = new AchievementSystem((itemId) => build.countStructures(itemId));
 
   const systems: GameWorldSystems = {
     // The clock runs first so every other system sees the same time this frame
     time: new TimeSystem(),
+    // Environment derives season/weather/temperature from the clock immediately
+    // after it refreshes, so every later system sees this frame's weather.
+    environment: new EnvironmentSystem(() => {
+      const spawnTileX = Math.floor(DEFAULT_SPAWN_X / 32);
+      const spawnTileY = Math.floor(DEFAULT_SPAWN_Y / 32);
+      return worldManager.getBiomeAt(spawnTileX, spawnTileY);
+    }),
     input: new InputSystem(),
     // Collision runs between input and movement: it vetoes velocity before it is
     // integrated, which gives per-axis wall sliding for free.
-    collision: new CollisionSystem(worldManager, composeBlockers(build, npc)),
+    collision: new CollisionSystem(
+      worldManager,
+      layerGuardedBlockers(() => worldManager.getLayer(), composeBlockers(build, npc)),
+    ),
     movement: new MovementSystem(),
     chunk: new ChunkSystem(worldManager),
     interpolation: new InterpolationSystem(),
@@ -191,6 +196,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // Quests run after both, so a quest taken on in a conversation and a
     // greeting that finishes one both land in the frame they happened
     quest,
+    layer,
     plant,
     cropGrowth: new CropGrowthSystem(() => timeComponent.snapshot.totalMinutes),
     build,
@@ -202,9 +208,14 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     // player held against a wall reads as idle rather than walking on the spot.
     animation: new AnimationSystem(),
     render: new RenderSystem(),
+    accessibility: new AccessibilitySystem(),
+    housing: new HousingSystem(),
+    crafting: new CraftingSystem(() => achievement.recordCraftCompleted()),
+    achievement,
   };
 
   world.addSystem(systems.time);
+  world.addSystem(systems.environment);
   world.addSystem(systems.input);
   world.addSystem(systems.collision);
   world.addSystem(systems.movement);
@@ -214,6 +225,7 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.npc);
   world.addSystem(systems.shop);
   world.addSystem(systems.quest);
+  world.addSystem(systems.layer);
   world.addSystem(systems.plant);
   world.addSystem(systems.cropGrowth);
   world.addSystem(systems.build);
@@ -221,6 +233,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
   world.addSystem(systems.networkSync);
   world.addSystem(systems.animation);
   world.addSystem(systems.render);
+  world.addSystem(systems.accessibility);
+  world.addSystem(systems.housing);
+  world.addSystem(systems.crafting);
+  world.addSystem(systems.achievement);
 
   // Saved terrain, structures and crops go in before the first chunk load so
   // the very first render pass already shows the restored world.
@@ -228,69 +244,10 @@ export function createGameWorld(bootstrap: GameBootstrap): GameWorldContext {
     restoreSavedWorld(worldManager, plant, build, bootstrap.savedWorld);
   }
 
-  const inventory = new InventoryComponent();
-  if (bootstrap.inventory) {
-    restoreInventory(inventory, bootstrap.inventory);
-  } else {
-    addItem(inventory, "wheat_seed", STARTING_WHEAT_SEEDS);
-  }
-
-  // Coins and quests are granted only when nothing was saved, the same rule the
-  // starting seeds follow: a returning player who spent down to zero keeps their
-  // empty purse instead of being handed another fifty on every reload.
-  const wallet = new WalletComponent(bootstrap.coins ?? STARTING_COINS);
-  const questLog = new QuestComponent();
-  if (bootstrap.quests) {
-    restoreQuests(questLog, bootstrap.quests);
-  }
-
-  const playerEntity = new Entity(LOCAL_PLAYER_ENTITY_ID);
-  playerEntity
-    .addComponent(new PositionComponent(bootstrap.spawnX, bootstrap.spawnY))
-    .addComponent(new VelocityComponent(0, 0))
-    .addComponent(new SpriteComponent("player", 0, true))
-    .addComponent(new PlayerComponent(bootstrap.playerId, bootstrap.username, true))
-    .addComponent(new InputComponent())
-    .addComponent(new NetworkComponent())
-    .addComponent(new ColliderComponent(PLAYER_COLLIDER_SIZE, PLAYER_COLLIDER_SIZE))
-    .addComponent(inventory)
-    .addComponent(new StatsComponent())
-    .addComponent(new InteractionComponent())
-    .addComponent(new DialogueComponent())
-    .addComponent(wallet)
-    .addComponent(new ShopComponent())
-    .addComponent(questLog)
-    .addComponent(new AnimationComponent());
+  const playerEntity = createPlayerEntity(bootstrap);
 
   world.addEntity(playerEntity);
   world.addEntity(clockEntity);
 
   return { world, worldManager, systems, playerEntity, clockEntity };
-}
-
-/** Entity id used for the remote player owned by `playerId`. */
-export function remotePlayerEntityId(playerId: string): string {
-  return `remote-${playerId}`;
-}
-
-/**
- * Build a remote player entity. Remote players are real ECS entities so they
- * share the single render path and get network smoothing for free.
- */
-export function createRemotePlayerEntity(
-  playerId: string,
-  username: string,
-  x: number,
-  y: number,
-): Entity {
-  const entity = new Entity(remotePlayerEntityId(playerId));
-  entity
-    .addComponent(new PositionComponent(x, y))
-    .addComponent(new SpriteComponent("player", 0, true))
-    .addComponent(new PlayerComponent(playerId, username, false))
-    .addComponent(new RemoteInterpolationComponent(x, y))
-    // No velocity component: MovementSystem would integrate it and fight the
-    // smoothing, so InterpolationSystem drives this animation instead.
-    .addComponent(new AnimationComponent());
-  return entity;
 }

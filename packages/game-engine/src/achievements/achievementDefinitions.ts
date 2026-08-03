@@ -1,0 +1,340 @@
+/**
+ * Achievement definitions for the horizontal progression badge system.
+ *
+ * Each achievement has a condition (polled or threshold-based) and a coin reward.
+ * Conditions are a tagged union so the system can evaluate them generically.
+ * Every player-visible string is an i18n key (decision D8).
+ */
+
+export type AchievementCondition =
+  | { kind: "collect"; itemId: string; count: number }
+  | { kind: "donate"; count: number }
+  | { kind: "build"; count: number }
+  | { kind: "quest"; count: number }
+  | { kind: "fish"; count: number }
+  | { kind: "total_coins"; amount: number }
+  | { kind: "category_complete"; categoryId: string; donateCount: number }
+  | { kind: "tame"; count: number }
+  | { kind: "quiz_streak"; count: number }
+  | { kind: "housing_happiness"; threshold: number }
+  | { kind: "craft"; count: number }
+  | { kind: "rhythm_perfect"; count: number }
+  | { kind: "rhythm_score"; score: number }
+  | { kind: "mount_bond"; level: number }
+  | { kind: "water_travel"; tiles: number }
+  | { kind: "friendship_level"; level: number }
+  | { kind: "total_gifts"; count: number }
+  | { kind: "biomes_discovered"; count: number }
+  | { kind: "landmarks_discovered"; count: number }
+  | { kind: "map_completion"; percent: number }
+  | { kind: "missions_completed"; count: number }
+  | { kind: "mission_streak"; days: number }
+  | { kind: "rare_items_bought"; count: number }
+  | { kind: "shops_visited"; count: number }
+  | { kind: "garden_arrangements"; count: number }
+  | { kind: "garden_competition_wins"; count: number }
+  | { kind: "weather_items_gathered"; count: number }
+  | { kind: "weather_types_gathered"; count: number }
+  | { kind: "village_tier"; tier: number }
+  | { kind: "contributions"; count: number };
+
+export interface AchievementDefinition {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  rewardCoins: number;
+  condition: AchievementCondition;
+}
+
+/**
+ * Source interface for achievement condition evaluation.
+ * Provides polled counters from the entity state.
+ */
+export interface AchievementSource {
+  itemCount: (itemId: string) => number;
+  donationCount: number;
+  structureCount: number;
+  questCompletionCount: number;
+  fishCaughtCount: number;
+  totalCoinsEarned: number;
+  animalsTamedCount: number;
+  quizStreak: number;
+  housingHappiness: number;
+  craftCount: number;
+  rhythmPerfectCount: number;
+  rhythmScore: number;
+  mountBondLevel: number;
+  waterTilesTraversed: number;
+  highestFriendshipLevel: number;
+  totalGiftsGiven: number;
+  biomesDiscovered: number;
+  landmarksDiscovered: number;
+  mapCompletionPercent: number;
+  missionsCompleted: number;
+  missionStreak: number;
+  rareItemsBought: number;
+  shopsVisited: number;
+  gardenArrangements: number;
+  gardenCompetitionWins: number;
+  weatherItemsGathered: number;
+  weatherTypesGathered: number;
+  villageTier: number;
+  contributionCount: number;
+  isCategoryComplete: (categoryId: string) => boolean;
+}
+
+export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
+  {
+    id: "first_harvest",
+    titleKey: "achievement.first_harvest.title",
+    descriptionKey: "achievement.first_harvest.description",
+    rewardCoins: 10,
+    condition: { kind: "collect", itemId: "wheat", count: 1 },
+  },
+  {
+    id: "first_fish",
+    titleKey: "achievement.first_fish.title",
+    descriptionKey: "achievement.first_fish.description",
+    rewardCoins: 10,
+    condition: { kind: "fish", count: 1 },
+  },
+  {
+    id: "collector_5",
+    titleKey: "achievement.collector_5.title",
+    descriptionKey: "achievement.collector_5.description",
+    rewardCoins: 25,
+    condition: { kind: "donate", count: 5 },
+  },
+  {
+    id: "builder_10",
+    titleKey: "achievement.builder_10.title",
+    descriptionKey: "achievement.builder_10.description",
+    rewardCoins: 30,
+    condition: { kind: "build", count: 10 },
+  },
+  {
+    id: "quest_master",
+    titleKey: "achievement.quest_master.title",
+    descriptionKey: "achievement.quest_master.description",
+    rewardCoins: 50,
+    condition: { kind: "quest", count: 3 },
+  },
+  {
+    id: "big_spender",
+    titleKey: "achievement.big_spender.title",
+    descriptionKey: "achievement.big_spender.description",
+    rewardCoins: 40,
+    condition: { kind: "total_coins", amount: 200 },
+  },
+  {
+    id: "fish_master",
+    titleKey: "achievement.fish_master.title",
+    descriptionKey: "achievement.fish_master.description",
+    rewardCoins: 35,
+    condition: { kind: "fish", count: 10 },
+  },
+  {
+    id: "full_gathering",
+    titleKey: "achievement.full_gathering.title",
+    descriptionKey: "achievement.full_gathering.description",
+    rewardCoins: 60,
+    condition: { kind: "category_complete", categoryId: "gathering", donateCount: 5 },
+  },
+  {
+    id: "first_tame",
+    titleKey: "achievement.first_tame.title",
+    descriptionKey: "achievement.first_tame.description",
+    rewardCoins: 20,
+    condition: { kind: "tame", count: 1 },
+  },
+  {
+    id: "animal_friend",
+    titleKey: "achievement.animal_friend.title",
+    descriptionKey: "achievement.animal_friend.description",
+    rewardCoins: 50,
+    condition: { kind: "tame", count: 3 },
+  },
+  {
+    id: "quiz_streak_3",
+    titleKey: "achievement.quiz_streak_3.title",
+    descriptionKey: "achievement.quiz_streak_3.description",
+    rewardCoins: 30,
+    condition: { kind: "quiz_streak", count: 3 },
+  },
+  {
+    id: "homeowner",
+    titleKey: "achievement.homeowner.title",
+    descriptionKey: "achievement.homeowner.description",
+    rewardCoins: 40,
+    condition: { kind: "housing_happiness", threshold: 50 },
+  },
+  {
+    id: "first_craft",
+    titleKey: "achievement.first_craft.title",
+    descriptionKey: "achievement.first_craft.description",
+    rewardCoins: 15,
+    condition: { kind: "craft", count: 1 },
+  },
+  {
+    id: "tool_master",
+    titleKey: "achievement.tool_master.title",
+    descriptionKey: "achievement.tool_master.description",
+    rewardCoins: 50,
+    condition: { kind: "craft", count: 5 },
+  },
+  {
+    id: "first_rhythm",
+    titleKey: "achievement.first_rhythm.title",
+    descriptionKey: "achievement.first_rhythm.description",
+    rewardCoins: 15,
+    condition: { kind: "rhythm_perfect", count: 1 },
+  },
+  {
+    id: "rhythm_master",
+    titleKey: "achievement.rhythm_master.title",
+    descriptionKey: "achievement.rhythm_master.description",
+    rewardCoins: 50,
+    condition: { kind: "rhythm_score", score: 500 },
+  },
+  {
+    id: "first_ride",
+    titleKey: "achievement.first_ride.title",
+    descriptionKey: "achievement.first_ride.description",
+    rewardCoins: 20,
+    condition: { kind: "mount_bond", level: 0 },
+  },
+  {
+    id: "sea_explorer",
+    titleKey: "achievement.sea_explorer.title",
+    descriptionKey: "achievement.sea_explorer.description",
+    rewardCoins: 40,
+    condition: { kind: "water_travel", tiles: 100 },
+  },
+  {
+    id: "first_gift",
+    titleKey: "achievement.first_gift.title",
+    descriptionKey: "achievement.first_gift.description",
+    rewardCoins: 10,
+    condition: { kind: "total_gifts", count: 1 },
+  },
+  {
+    id: "best_friends",
+    titleKey: "achievement.best_friends.title",
+    descriptionKey: "achievement.best_friends.description",
+    rewardCoins: 75,
+    condition: { kind: "friendship_level", level: 4 },
+  },
+  {
+    id: "first_biome",
+    titleKey: "achievement.first_biome.title",
+    descriptionKey: "achievement.first_biome.description",
+    rewardCoins: 15,
+    condition: { kind: "biomes_discovered", count: 1 },
+  },
+  {
+    id: "cartographer",
+    titleKey: "achievement.cartographer.title",
+    descriptionKey: "achievement.cartographer.description",
+    rewardCoins: 60,
+    condition: { kind: "biomes_discovered", count: 6 },
+  },
+  {
+    id: "landmark_hunter",
+    titleKey: "achievement.landmark_hunter.title",
+    descriptionKey: "achievement.landmark_hunter.description",
+    rewardCoins: 45,
+    condition: { kind: "landmarks_discovered", count: 3 },
+  },
+  {
+    id: "first_mission",
+    titleKey: "achievement.first_mission.title",
+    descriptionKey: "achievement.first_mission.description",
+    rewardCoins: 20,
+    condition: { kind: "missions_completed", count: 1 },
+  },
+  {
+    id: "dedicated_worker",
+    titleKey: "achievement.dedicated_worker.title",
+    descriptionKey: "achievement.dedicated_worker.description",
+    rewardCoins: 50,
+    condition: { kind: "mission_streak", days: 3 },
+  },
+  {
+    id: "rare_collector",
+    titleKey: "achievement.rare_collector.title",
+    descriptionKey: "achievement.rare_collector.description",
+    rewardCoins: 40,
+    condition: { kind: "rare_items_bought", count: 3 },
+  },
+  {
+    id: "window_shopper",
+    titleKey: "achievement.window_shopper.title",
+    descriptionKey: "achievement.window_shopper.description",
+    rewardCoins: 30,
+    condition: { kind: "shops_visited", count: 4 },
+  },
+  {
+    id: "first_arrangement",
+    titleKey: "achievement.first_arrangement.title",
+    descriptionKey: "achievement.first_arrangement.description",
+    rewardCoins: 20,
+    condition: { kind: "garden_arrangements", count: 1 },
+  },
+  {
+    id: "garden_master",
+    titleKey: "achievement.garden_master.title",
+    descriptionKey: "achievement.garden_master.description",
+    rewardCoins: 50,
+    condition: { kind: "garden_arrangements", count: 5 },
+  },
+  {
+    id: "competition_winner",
+    titleKey: "achievement.competition_winner.title",
+    descriptionKey: "achievement.competition_winner.description",
+    rewardCoins: 60,
+    condition: { kind: "garden_competition_wins", count: 1 },
+  },
+  {
+    id: "weather_collector",
+    titleKey: "achievement.weather_collector.title",
+    descriptionKey: "achievement.weather_collector.description",
+    rewardCoins: 45,
+    condition: { kind: "weather_items_gathered", count: 5 },
+  },
+  {
+    id: "storm_chaser",
+    titleKey: "achievement.storm_chaser.title",
+    descriptionKey: "achievement.storm_chaser.description",
+    rewardCoins: 100,
+    condition: { kind: "weather_types_gathered", count: 5 },
+  },
+  {
+    id: "first_contributor",
+    titleKey: "achievement.first_contributor.title",
+    descriptionKey: "achievement.first_contributor.description",
+    rewardCoins: 15,
+    condition: { kind: "contributions", count: 1 },
+  },
+  {
+    id: "village_builder",
+    titleKey: "achievement.village_builder.title",
+    descriptionKey: "achievement.village_builder.description",
+    rewardCoins: 40,
+    condition: { kind: "village_tier", tier: 1 },
+  },
+  {
+    id: "community_leader",
+    titleKey: "achievement.community_leader.title",
+    descriptionKey: "achievement.community_leader.description",
+    rewardCoins: 75,
+    condition: { kind: "village_tier", tier: 2 },
+  },
+];
+
+/** All achievement ids in definition order. */
+export const ACHIEVEMENT_IDS = ACHIEVEMENT_DEFINITIONS.map((a) => a.id);
+
+/** Look up an achievement definition by id. */
+export function getAchievement(id: string): AchievementDefinition | undefined {
+  return ACHIEVEMENT_DEFINITIONS.find((a) => a.id === id);
+}

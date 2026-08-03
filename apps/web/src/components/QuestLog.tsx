@@ -45,7 +45,9 @@ export function QuestLog() {
           transition={{ duration: 0.15 }}
         >
           <Card className="w-[22rem] max-w-[92vw] border-white/10 bg-gray-900/95">
-            <h3 className="mb-3 text-lg font-semibold text-white">{t("quest.title")}</h3>
+            <h3 className="mb-3 text-lg font-semibold text-white">
+              {t("quest.title")}
+            </h3>
 
             {quests.length === 0 ? (
               <p className="text-xs text-gray-400">{t("quest.empty")}</p>

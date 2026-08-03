@@ -1,0 +1,103 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>WorldNest Online - 직접 해야 하는 작업 목록</title>
+<style>
+body { font-family: '맑은 고딕', 'Malgun Gothic', sans-serif; font-size: 11pt; line-height: 1.6; margin: 40px; }
+h1 { font-size: 22pt; color: #1a1a2e; border-bottom: 3px solid #4a90d9; padding-bottom: 10px; }
+h2 { font-size: 16pt; color: #2d3748; margin-top: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
+h3 { font-size: 13pt; color: #4a5568; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; margin: 15px 0; }
+th, td { border: 1px solid #cbd5e0; padding: 8px 12px; text-align: left; }
+th { background-color: #edf2f7; font-weight: bold; }
+code { background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 2px 6px; font-family: 'Consolas', monospace; font-size: 10pt; }
+pre { background-color: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 5px; font-family: 'Consolas', monospace; font-size: 10pt; white-space: pre-wrap; }
+blockquote { border-left: 4px solid #4a90d9; margin: 15px 0; padding: 10px 20px; background-color: #ebf8ff; }
+.warning { border-left: 4px solid #ed8936; background-color: #fffaf0; padding: 10px 20px; margin: 15px 0; }
+.danger { border-left: 4px solid #e53e3e; background-color: #fff5f5; padding: 10px 20px; margin: 15px 0; }
+.success { border-left: 4px solid #48bb78; background-color: #f0fff4; padding: 10px 20px; margin: 15px 0; }
+.checkbox { margin: 5px 0; }
+</style>
+</head>
+<body>
+
+<h1>WorldNest Online - 직접 해야 하는 작업 목록</h1>
+
+<blockquote>
+이 문서는 <code>docs/SETUP_GUIDE_KR.doc</code>의 10번 섹션에서 자동 생성됩니다.
+전체 설정 가이드는 <code>docs/SETUP_GUIDE_KR.doc</code> 또는 <code>docs/SETUP_GUIDE_KR.md</code>를 참조하세요.
+<br><br>
+생성 명령: <code>node scripts/build-manual-work-doc.mjs</code>
+</blockquote>
+
+<h2>10. 직접 해야 하는 작업 체크리스트</h2>
+
+<p>여기까지의 모든 수동 작업을 한 표로 모았습니다. 위에서 아래로 진행하면 됩니다.</p>
+
+<h3>전체 체크리스트</h3>
+
+<table>
+<tr><th>#</th><th>해야 하는 작업</th><th>어디서</th><th>결과물</th><th>확인 방법</th></tr>
+<tr><td>1</td><td>Node.js 22+ 설치</td><td>내 PC</td><td><code>node</code> 명령 사용 가능</td><td><code>node --version</code></td></tr>
+<tr><td>2</td><td>pnpm 10+ 활성화</td><td>내 PC</td><td><code>pnpm</code> 명령 사용 가능</td><td><code>pnpm --version</code></td></tr>
+<tr><td>3</td><td>저장소 클론 + <code>pnpm install</code></td><td>내 PC</td><td><code>node_modules</code> 설치 완료</td><td>오류 없이 종료</td></tr>
+<tr><td>4</td><td>GitHub·Supabase·Vercel 계정 준비</td><td>웹</td><td>로그인 가능한 계정 3개</td><td>각 대시보드 접속</td></tr>
+<tr><td>5</td><td>Supabase 프로젝트 생성</td><td>Supabase</td><td>프로젝트 1개</td><td>대시보드에 프로젝트 표시</td></tr>
+<tr><td>6</td><td>Project URL·anon key 복사</td><td>Supabase Settings → API</td><td>값 2개</td><td>메모해 둠</td></tr>
+<tr><td>7</td><td><code>001_initial_schema.sql</code> 실행</td><td>SQL Editor</td><td>테이블 3개 + 기본 월드</td><td>Table Editor에 3개</td></tr>
+<tr><td>8</td><td><code>002_gameplay_schema.sql</code> 실행</td><td>SQL Editor</td><td>회원가입 트리거 + 테이블 4개</td><td>Table Editor에 7개</td></tr>
+<tr><td>9</td><td><code>003_progression_schema.sql</code> 실행</td><td>SQL Editor</td><td><code>coins</code> 컬럼 + <code>player_quests</code></td><td>Table Editor에 8개, <code>coins</code> 존재</td></tr>
+<tr><td>10</td><td><code>004_authority_schema.sql</code> 실행</td><td>SQL Editor</td><td>서버 권한 + 코인 원장</td><td><code>shop_prices</code>, <code>coin_ledger</code> 존재</td></tr>
+<tr><td>11</td><td><code>005_world_layer_schema.sql</code> 실행</td><td>SQL Editor</td><td>레이어 컬럼 + 퀘스트 기준선</td><td><code>layer</code> 컬럼, <code>baseline</code> 컬럼</td></tr>
+<tr><td>12</td><td>(선택) <code>seed/test_accounts.sql</code> 실행</td><td>SQL Editor</td><td>테스트 계정 3개</td><td>Authentication → Users 에 3명</td></tr>
+<tr><td>13</td><td>(선택) <code>pnpm db:verify</code> 로 SQL 리허설</td><td>내 PC + Docker</td><td>SQL 검증 통과</td><td>종료 코드 0</td></tr>
+<tr><td>14</td><td>Confirm email OFF (개발 중)</td><td>Authentication → Providers</td><td>메일 인증 없이 가입 가능</td><td>새 계정 가입 즉시 로그인됨</td></tr>
+<tr><td>15</td><td><code>.env.local</code> 작성</td><td>내 PC</td><td>환경 변수 2개</td><td><code>pnpm dev</code> 후 에러 없음</td></tr>
+<tr><td>16</td><td><code>pnpm dev</code> 로 로컬 실행</td><td>내 PC</td><td><code>http://localhost:3000</code></td><td><code>/auth</code> 화면 표시</td></tr>
+<tr><td>17</td><td>로그인 후 게임 동작 확인</td><td>브라우저</td><td>월드·이동·채집</td><td>7단계 항목 통과</td></tr>
+<tr><td>18</td><td>저장 확인 (새로고침)</td><td>브라우저</td><td>위치·인벤토리·코인·퀘스트 복원</td><td>새로고침 후 그대로</td></tr>
+<tr><td>19</td><td>동굴 입장 확인</td><td>브라우저</td><td>사다리 상호작용 → 지하 진입</td><td>화면이 어두워지고 동굴 타일 표시</td></tr>
+<tr><td>20</td><td>날씨·계절 HUD 확인</td><td>브라우저</td><td>계절·날씨 아이콘 표시</td><td>우측 상단 HUD에 날씨 표시</td></tr>
+<tr><td>21</td><td>NPC 일과 확인</td><td>브라우저</td><td>NPC가 시간에 따라 이동</td><td>시간 경과 후 NPC 위치 변경</td></tr>
+<tr><td>22</td><td>멀티플레이·채팅 확인</td><td>브라우저 2개</td><td>서로 보이고 채팅됨</td><td>이름표와 메시지 표시</td></tr>
+<tr><td>23</td><td><code>git push</code> 로 브랜치 올리기</td><td>내 PC</td><td>GitHub에 브랜치</td><td>GitHub에서 확인</td></tr>
+<tr><td>24</td><td>Vercel에 저장소 가져오기 + Deploy</td><td>Vercel</td><td><strong>공개 테스트 서버 주소</strong></td><td>배포 URL 접속됨</td></tr>
+<tr><td>25</td><td>Vercel 환경 변수 3개 환경에 등록</td><td>Vercel Settings</td><td>배포본이 Supabase에 연결</td><td>로그인 화면이 정상 동작</td></tr>
+<tr><td>26</td><td>Supabase Site URL·Redirect URLs 등록</td><td>Authentication → URL Config</td><td>배포 주소로 로그인 성공</td><td>로그인 후 <code>/game</code> 유지</td></tr>
+<tr><td>27</td><td>(선택) 커스텀 도메인 연결 + 26번 재등록</td><td>Vercel + Supabase</td><td>내 도메인</td><td>도메인으로 로그인 성공</td></tr>
+<tr><td>28</td><td>배포 후 확인 목록 통과</td><td>브라우저·스마트폰</td><td>서비스 가능 상태</td><td>9단계 체크박스 전부</td></tr>
+<tr><td>29</td><td>계정·주소 정리표 작성 후 전달</td><td>문서</td><td>테스터에게 줄 정보</td><td>표가 채워짐</td></tr>
+<tr><td>30</td><td>테스트 종료 후 시드 계정 삭제</td><td>SQL Editor</td><td>공개 비밀번호 제거</td><td>Users 목록에서 사라짐</td></tr>
+</table>
+
+<h3>자동으로 검증되는 것과 사람이 확인해야 하는 것</h3>
+
+<p>혼동을 줄이기 위해 정리합니다. 아래 왼쪽은 명령 한 줄로 확인되므로 손으로 볼 필요가 없습니다.</p>
+
+<table>
+<tr><th>자동 (명령으로 확인)</th><th>내용</th></tr>
+<tr><td><code>pnpm lint</code></td><td>코드 규칙</td></tr>
+<tr><td><code>pnpm build</code></td><td>5개 패키지 빌드</td></tr>
+<tr><td><code>pnpm test</code></td><td>단위·통합 테스트 전체</td></tr>
+<tr><td><code>pnpm test:e2e</code></td><td>운영 빌드 대상 브라우저 스모크 테스트</td></tr>
+<tr><td><code>pnpm db:verify</code></td><td>마이그레이션 5개 + 시드가 실제 PostgreSQL에 적용되는지</td></tr>
+<tr><td><code>pnpm format:check</code></td><td>코드 포맷 일관성</td></tr>
+<tr><td><code>pnpm docs:check</code></td><td>이 문서와 Word 사본(<code>.doc</code>)의 목차 일치</td></tr>
+</table>
+
+<table>
+<tr><th>사람이 확인해야 하는 것</th><th>이유</th></tr>
+<tr><td>시드 계정으로 실제 로그인</td><td>인증 서버(GoTrue)는 로컬 검증 대상이 아닙니다</td></tr>
+<tr><td>배포된 주소 전체 흐름</td><td>Vercel 계정과 도메인이 필요합니다</td></tr>
+<tr><td>소리가 실제로 들리는지</td><td>검증 환경에 음향 장치가 없습니다</td></tr>
+<tr><td>터치 조작 실제 사용감</td><td>실제 터치 기기가 필요합니다</td></tr>
+<tr><td>화면 배치·색감</td><td>사람 눈으로만 판단할 수 있습니다</td></tr>
+<tr><td>공개 서버의 채팅 관리</td><td>자동 필터가 없어 운영자 확인이 필요합니다</td></tr>
+</table>
+
+<hr>
+
+
+
+</body>
+</html>

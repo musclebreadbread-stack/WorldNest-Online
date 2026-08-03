@@ -18,7 +18,9 @@ export function createSupabaseClient(
   const anonKey = supabaseAnonKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
-    throw new Error("Missing Supabase URL or anon key. Check your environment variables.");
+    throw new Error(
+      "Missing Supabase URL or anon key. Check your environment variables.",
+    );
   }
 
   // Return cached client if URL and key match

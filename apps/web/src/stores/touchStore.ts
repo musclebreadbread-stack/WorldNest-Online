@@ -37,8 +37,7 @@ export const useTouchStore = create<TouchState>((set, get) => ({
 
   // `active` is derived rather than set separately, so releasing the stick can
   // never leave the store claiming a thumb is still down.
-  setAxis: (axisX, axisY) =>
-    set({ axisX, axisY, active: axisX !== 0 || axisY !== 0 }),
+  setAxis: (axisX, axisY) => set({ axisX, axisY, active: axisX !== 0 || axisY !== 0 }),
 
   requestInteract: () => set({ interactRequested: true }),
 

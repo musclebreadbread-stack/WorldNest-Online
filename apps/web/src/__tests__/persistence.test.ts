@@ -9,7 +9,11 @@ import {
   getTileKey,
   structureEntityId,
 } from "@worldnest/game-engine";
-import type { CropComponent, QuestEntry, WalletComponent } from "@worldnest/game-engine";
+import type {
+  CropComponent,
+  QuestEntry,
+  WalletComponent,
+} from "@worldnest/game-engine";
 import { INVENTORY_SLOTS, STARTING_COINS, TILE_SIZE } from "@worldnest/shared";
 import { SaveScheduler } from "../lib/persistence";
 import {
@@ -171,8 +175,8 @@ describe("quest snapshots", () => {
   it("should round-trip a quest log through save and restore", () => {
     const source = new QuestComponent();
     source.entries = {
-      collect_wood: { state: "active", progress: 3 },
-      greet_pip: { state: "completed", progress: 1 },
+      collect_wood: { state: "active", progress: 3, baseline: 0 },
+      greet_pip: { state: "completed", progress: 1, baseline: 0 },
     };
 
     const restored = new QuestComponent();
@@ -191,39 +195,50 @@ describe("quest snapshots", () => {
 
   it("should drop a quest id the catalogue no longer knows", () => {
     const parsed = parsePersistedQuests([
-      { questId: "collect_wood", state: "active", progress: 2 },
-      { questId: "slay_the_dragon", state: "active", progress: 99 },
+      { questId: "collect_wood", state: "active", progress: 2, baseline: 0 },
+      {
+        questId: "slay_the_dragon",
+        state: "active",
+        progress: 99,
+        baseline: 0,
+      },
     ]);
 
-    expect(parsed).toEqual({ collect_wood: { state: "active", progress: 2 } });
+    expect(parsed).toEqual({
+      collect_wood: { state: "active", progress: 2, baseline: 0 },
+    });
   });
 
   it("should drop a row whose state or progress is not usable", () => {
     expect(
       parsePersistedQuests([
-        { questId: "collect_wood", state: "abandoned", progress: 1 },
+        { questId: "collect_wood", state: "abandoned", progress: 1, baseline: 0 },
       ]),
     ).toBeNull();
     expect(
       parsePersistedQuests([
-        { questId: "collect_wood", state: "active", progress: Number.NaN },
+        { questId: "collect_wood", state: "active", progress: Number.NaN, baseline: 0 },
       ]),
     ).toBeNull();
   });
 
   it("should clamp a negative progress rather than restore it", () => {
     const parsed = parsePersistedQuests([
-      { questId: "collect_wood", state: "active", progress: -4.7 },
+      { questId: "collect_wood", state: "active", progress: -4.7, baseline: 0 },
     ]);
 
-    expect(parsed).toEqual({ collect_wood: { state: "active", progress: 0 } });
+    expect(parsed).toEqual({
+      collect_wood: { state: "active", progress: 0, baseline: 0 },
+    });
   });
 
   it("should replace the existing entries rather than merge into them", () => {
     const quests = new QuestComponent();
-    quests.entries = { greet_pip: { state: "active", progress: 0 } };
+    quests.entries = { greet_pip: { state: "active", progress: 0, baseline: 0 } };
 
-    restoreQuests(quests, { collect_wood: { state: "completed", progress: 5 } });
+    restoreQuests(quests, {
+      collect_wood: { state: "completed", progress: 5, baseline: 0 },
+    });
 
     expect(Object.keys(quests.entries)).toEqual(["collect_wood"]);
   });
@@ -260,9 +275,14 @@ describe("progression restore in createGameWorld", () => {
   });
 
   it("should restore a saved quest log", () => {
-    const { quests } = bootWith({ collect_wood: { state: "active", progress: 4 } }, 10);
+    const { quests } = bootWith(
+      { collect_wood: { state: "active", progress: 4, baseline: 0 } },
+      10,
+    );
 
-    expect(quests.entries).toEqual({ collect_wood: { state: "active", progress: 4 } });
+    expect(quests.entries).toEqual({
+      collect_wood: { state: "active", progress: 4, baseline: 0 },
+    });
   });
 });
 

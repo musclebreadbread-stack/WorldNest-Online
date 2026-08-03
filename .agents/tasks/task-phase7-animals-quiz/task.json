@@ -1,0 +1,14 @@
+{
+  "task_id": "task-phase7-animals-quiz",
+  "task_description": "Phase 7 implementation: Animals/Pets system with wild animals, taming, and pet following; Education Quiz system with daily quizzes, rewards, and streak tracking. Both features add new ECS systems, components, pure ops modules, NPC characters, achievements, quests, and full 12-locale i18n.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "885 tests passing (531 game-engine, 313 web, 29 shared, 12 database). All 5 review issues resolved: totalAnimalsTamed now incremented via recordAnimalTamed listener, Hana has turnInQuest node, quiz shuffle uses >>> 0 coercion, fleeTimer caps flee at 5s, Owl has startQuiz action kind. 7 new tests added."
+  }
+}

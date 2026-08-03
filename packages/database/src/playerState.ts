@@ -22,14 +22,20 @@ export type PersistedInventory = {
   selectedSlot: number;
 };
 
-/** The mutable half of a player's saved session. */
+/**
+ * The mutable half of a player's saved session.
+ *
+ * Coins are conspicuously absent: they live on this row (still readable through
+ * `PlayerState`) but they are written only by the authority functions in
+ * `authority.ts`, because migration 004 revokes the column's insert and update
+ * privileges. A save that named them would be refused outright, taking the
+ * position and inventory down with it.
+ */
 export interface PlayerStateSave {
   x: number;
   y: number;
   chunk: string;
   inventory: PersistedInventory;
-  /** Coin balance. A column on this row rather than a table of its own (D15). */
-  coins: number;
 }
 
 /**
@@ -65,7 +71,6 @@ export async function savePlayerState(
     y: state.y,
     chunk: state.chunk,
     inventory: state.inventory,
-    coins: state.coins,
     last_online: new Date().toISOString(),
   });
 

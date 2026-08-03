@@ -1,4 +1,9 @@
-import type { SupabaseClient, User, Session, AuthChangeEvent } from "@supabase/supabase-js";
+import type {
+  SupabaseClient,
+  User,
+  Session,
+  AuthChangeEvent,
+} from "@supabase/supabase-js";
 import { createSupabaseClient } from "./client";
 
 /**

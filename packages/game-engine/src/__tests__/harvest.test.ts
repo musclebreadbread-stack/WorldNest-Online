@@ -105,9 +105,7 @@ describe("HarvestSystem", () => {
     harness.system.update([harness.entity], 1 / 60);
 
     expect(countItem(harness.inventory, "wood")).toBe(1);
-    expect(harness.overrides).toEqual([
-      [TARGET_TILE_X, PLAYER_TILE, TileType.GRASS],
-    ]);
+    expect(harness.overrides).toEqual([[TARGET_TILE_X, PLAYER_TILE, TileType.GRASS]]);
     expect(harness.stats.energy).toBe(
       energyBefore - TILE_HARVEST_YIELD[TileType.FOREST]!.energyCost,
     );
@@ -181,10 +179,7 @@ describe("HarvestSystem", () => {
 
   it("should harvest the tile the entity faces, not the one it stands on", () => {
     const harness = createHarness(TileType.FOREST);
-    harness.tileQuery.tiles.set(
-      getTileKey(PLAYER_TILE, PLAYER_TILE),
-      TileType.STONE,
-    );
+    harness.tileQuery.tiles.set(getTileKey(PLAYER_TILE, PLAYER_TILE), TileType.STONE);
     harness.interaction.interactRequested = true;
 
     harness.system.update([harness.entity], 1 / 60);

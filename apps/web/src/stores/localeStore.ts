@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { DEFAULT_LOCALE, isLocale, resolveLocale, type Locale } from "../i18n";
+import { DEFAULT_USER_LOCALE, isLocale, resolveLocale, type Locale } from "../i18n";
 
 /** Where the chosen language is remembered between sessions. */
 export const LOCALE_STORAGE_KEY = "worldnest.locale";
@@ -25,7 +25,7 @@ interface LocaleState {
  * instead, which is the first point at which the browser's answer is safe to use.
  */
 export const useLocaleStore = create<LocaleState>((set) => ({
-  locale: DEFAULT_LOCALE,
+  locale: DEFAULT_USER_LOCALE,
   hydrated: false,
 
   setLocale: (locale) => {
@@ -38,12 +38,12 @@ export const useLocaleStore = create<LocaleState>((set) => ({
 
 /** Stored choice if there is one, otherwise the browser's preference. */
 export function detectLocale(): Locale {
-  if (typeof window === "undefined") return DEFAULT_LOCALE;
+  if (typeof window === "undefined") return DEFAULT_USER_LOCALE;
 
   const stored = readStoredLocale();
   if (stored) return stored;
 
-  return resolveLocale(window.navigator.language ?? DEFAULT_LOCALE);
+  return resolveLocale(window.navigator.language ?? DEFAULT_USER_LOCALE);
 }
 
 function readStoredLocale(): Locale | null {

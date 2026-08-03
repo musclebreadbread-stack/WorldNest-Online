@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Weather-Enhanced Gathering system - special collectibles only available during specific weather conditions (rain mushrooms, snow crystals, storm fossils, wind feathers), weather-exclusive items with higher value, weather event notifications",
+  "status": "completed",
+  "steps": [
+    "Add new weather-exclusive items to packages/shared/src/items.ts: rain_mushroom, snow_crystal, storm_fossil, wind_feather, aurora_gem. Add to ItemId union and ITEM_DEFINITIONS.",
+    "Add premium prices for the new items in packages/shared/src/economy.ts. These weather-exclusive items should be worth significantly more than standard gathered items.",
+    "Create packages/game-engine/src/gathering/weatherGatheringDefinitions.ts defining: WeatherGatherItem interface (itemId, requiredWeather, rarity, biomeBonus), WEATHER_GATHER_TABLE mapping weather kinds to available items, WEATHER_GATHER_CHANCE base percentages.",
+    "Create packages/game-engine/src/gathering/weatherGatheringOps.ts with pure functions: canGatherWeatherItem (checks current weather matches), rollWeatherGather (deterministic from weather/position/time), getAvailableWeatherItems (returns items for current weather), calculateWeatherItemValue (bonus value based on rarity and weather duration).",
+    "Create packages/game-engine/src/gathering/index.ts exporting all definitions, types, and ops.",
+    "Create packages/game-engine/src/components/WeatherGatheringComponent.ts extending Component with type 'weatherGathering'. Data: gatheredItems map, weatherNotifications queue, lastGatherTime, currentWeatherDuration, pendingGather request field, version counter.",
+    "Create packages/game-engine/src/systems/WeatherGatheringSystem.ts extending System with requiredComponents ['weatherGathering', 'environment', 'inventory', 'position']. Reads current weather from EnvironmentComponent, manages gather cooldowns, adds items to inventory, pushes notifications when weather changes to one that has exclusive items.",
+    "Add new achievement conditions to packages/game-engine/src/achievements/achievementDefinitions.ts: { kind: 'weather_items_gathered'; count: number }. Add field to AchievementSource. Add 2 achievements: weather_collector (gather 5 weather items), storm_chaser (gather all 5 weather-exclusive item types).",
+    "Add WeatherGatheringComponent export to components/index.ts, WeatherGatheringSystem to systems/index.ts, add all gathering exports to packages/game-engine/src/index.ts.",
+    "Create packages/game-engine/src/__tests__/weatherGathering.test.ts testing: weather item availability by weather type, gather chance calculations, cooldown enforcement, notification generation on weather change, inventory integration in system, achievement condition checking.",
+    "Add all i18n keys to apps/web/src/i18n/messages/en.ts: item.rain_mushroom, item.snow_crystal, item.storm_fossil, item.wind_feather, item.aurora_gem, weatherGathering.title, weatherGathering.available, weatherGathering.gathered, weatherGathering.notification, weatherGathering.none, achievement.weather_collector.*, achievement.storm_chaser.*",
+    "Add ITEM_NAME_KEYS entries for the 5 new items in apps/web/src/i18n/index.ts.",
+    "Add translations to all 11 non-English locale files with properly translated strings.",
+    "Run pnpm format, then verify with pnpm format:check && pnpm lint && pnpm build && pnpm test."
+  ],
+  "acceptance_criteria": [
+    "5 new weather-exclusive items added to shared items.ts with premium prices in economy.ts",
+    "weatherGatheringDefinitions.ts maps each weather type to specific collectible items",
+    "weatherGatheringOps.ts handles availability checks, gather rolls, and value calculations",
+    "WeatherGatheringComponent is pure data, WeatherGatheringSystem reads EnvironmentComponent weather state",
+    "Weather notification queue populated when weather changes to a gatherable type",
+    "2 new achievements tied to weather gathering",
+    "All i18n keys in all 12 locales, translations differ from English",
+    "weatherGathering.test.ts covers availability, gathering, cooldowns, notifications, and system integration",
+    "pnpm build passes, pnpm test passes, pnpm lint passes, pnpm format:check passes"
+  ],
+  "verification": [
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm format:check",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm lint",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm build",
+    "export PATH=\"/root/.nvm/versions/node/v22.23.1/bin:$PATH\" && cd /projects/sandbox/WorldNest-Online && pnpm test"
+  ],
+  "blocked_reason": null,
+  "findings": "1. AchievementSource interface requires new fields (weatherItemsGathered, weatherTypesGathered) in ALL test files that construct inline source objects - same pattern as FEAT-001 findings. Updated: achievements.test.ts, exploration.test.ts, gardening.test.ts, shopExpansion.test.ts. 2. AchievementSystem.ts buildSource method also needs the new fields. 3. Achievement count in achievements.test.ts went from 30 to 32 (2 new achievements). 4. EXPECTED_IDS in shared/src/__tests__/items.test.ts must include all 5 new items. 5. SQL migration 004_authority_schema.sql updated with 5 new item prices. 6. No new LOCALE_AGNOSTIC_KEYS needed - all weather item names are unique across locales."
+}

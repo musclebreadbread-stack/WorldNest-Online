@@ -7,7 +7,9 @@ import {
   QUEST_DEFINITIONS,
   TILE_PROPERTIES,
   TileType,
+  WorldLayer,
   WorldManager,
+  sampleMinimap,
   addItem,
   countItem,
   cropEntityId,
@@ -39,7 +41,12 @@ import {
   LOCAL_PLAYER_ENTITY_ID,
   STARTING_WHEAT_SEEDS,
 } from "../game/createGameWorld";
-import { findFacingPair, findWalkableNeighbourOf } from "./helpers/terrain";
+import {
+  findAnyWalkableNeighbourOf,
+  findFacingPair,
+  findWalkableNeighbourOf,
+} from "./helpers/terrain";
+import { filterRenderDataForLayer, isActiveLayerChange } from "../game/layerVisibility";
 
 const BOOTSTRAP = {
   playerId: "user-1",
@@ -56,6 +63,7 @@ const BOOTSTRAP = {
  */
 const DOCUMENTED_SYSTEM_ORDER = [
   "time",
+  "environment",
   "input",
   "collision",
   "movement",
@@ -65,6 +73,7 @@ const DOCUMENTED_SYSTEM_ORDER = [
   "npc",
   "shop",
   "quest",
+  "layer",
   "plant",
   "cropGrowth",
   "build",
@@ -72,6 +81,10 @@ const DOCUMENTED_SYSTEM_ORDER = [
   "networkSync",
   "animation",
   "render",
+  "accessibility",
+  "housing",
+  "crafting",
+  "achievement",
 ];
 
 describe("createGameWorld", () => {
@@ -140,6 +153,78 @@ describe("createGameWorld", () => {
   });
 });
 
+describe("active world layer", () => {
+  it("should descend through an entrance and sample underground cave tiles", () => {
+    const entrance = findAnyWalkableNeighbourOf(
+      new WorldManager(WORLD_SEED, 1),
+      TileType.CAVE_ENTRANCE,
+    );
+    const context = createGameWorld({
+      ...BOOTSTRAP,
+      spawnX: entrance.spawnX,
+      spawnY: entrance.spawnY,
+    });
+    const interaction =
+      context.playerEntity.getComponent<InteractionComponent>("interaction")!;
+    const surface = sampleMinimap(
+      context.worldManager,
+      entrance.standTileX,
+      entrance.standTileY,
+      2,
+    );
+
+    interaction.facing = entrance.facing;
+    interaction.interactRequested = true;
+    context.world.update(0);
+
+    expect(context.worldManager.getLayer()).toBe(WorldLayer.UNDERGROUND);
+    const underground = sampleMinimap(
+      context.worldManager,
+      entrance.standTileX,
+      entrance.standTileY,
+      2,
+    );
+    expect(underground.tiles).not.toEqual(surface.tiles);
+    expect(
+      underground.tiles.every((tile) =>
+        [
+          TileType.CAVE_FLOOR,
+          TileType.CAVE_WALL,
+          TileType.ORE,
+          TileType.CAVE_ENTRANCE,
+        ].includes(tile),
+      ),
+    ).toBe(true);
+  });
+
+  it("should filter sprites and name-tag data down to the local player", () => {
+    const context = createGameWorld(BOOTSTRAP);
+    context.world.addEntity(
+      createRemotePlayerEntity("remote", "Remote", DEFAULT_SPAWN_X, DEFAULT_SPAWN_Y),
+    );
+    context.world.update(0);
+
+    const surface = filterRenderDataForLayer(
+      context.systems.render.renderData,
+      context.world,
+      WorldLayer.SURFACE,
+    );
+    const underground = filterRenderDataForLayer(
+      context.systems.render.renderData,
+      context.world,
+      WorldLayer.UNDERGROUND,
+    );
+
+    expect(surface.length).toBeGreaterThan(underground.length);
+    expect(underground.map((data) => data.entityId)).toEqual([LOCAL_PLAYER_ENTITY_ID]);
+  });
+
+  it("should accept repaint callbacks only for the active layer", () => {
+    expect(isActiveLayerChange(WorldLayer.SURFACE, WorldLayer.SURFACE)).toBe(true);
+    expect(isActiveLayerChange(WorldLayer.SURFACE, WorldLayer.UNDERGROUND)).toBe(false);
+  });
+});
+
 describe("harvest wiring", () => {
   // A grass tile with stone immediately to its east, searched for by seed
   const STONE_PAIR = findFacingPair(
@@ -167,7 +252,7 @@ describe("harvest wiring", () => {
       context.playerEntity.getComponent<InventoryComponent>("inventory")!;
     const stats = context.playerEntity.getComponent<StatsComponent>("stats")!;
     const repainted: Array<[number, number, TileType]> = [];
-    context.worldManager.setTileChangeCallback((tileX, tileY, tileType) =>
+    context.worldManager.setTileChangeCallback((_layer, tileX, tileY, tileType) =>
       repainted.push([tileX, tileY, tileType]),
     );
 
@@ -426,8 +511,7 @@ describe("NPC wiring", () => {
 
   it("should open dialogue on an interact aimed at an NPC, and till nothing", () => {
     const { context, interaction } = createWorldFacingNpc();
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
 
     interaction.interactRequested = true;
     context.world.update(1 / 60);
@@ -446,8 +530,7 @@ describe("NPC wiring", () => {
 
   it("should advance the conversation from the option the HUD requests", () => {
     const { context, interaction } = createWorldFacingNpc();
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
 
     interaction.interactRequested = true;
     context.world.update(1 / 60);
@@ -521,7 +604,8 @@ describe("quest wiring", () => {
       const tileX = npc.tileX + dx;
       const tileY = npc.tileY + dy;
       if (probe.systems.npc.getNpcAt(tileX, tileY)) continue;
-      if (!TILE_PROPERTIES[probe.worldManager.getTileAt(tileX, tileY)].walkable) continue;
+      if (!TILE_PROPERTIES[probe.worldManager.getTileAt(tileX, tileY)].walkable)
+        continue;
 
       return {
         facing,
@@ -542,8 +626,7 @@ describe("quest wiring", () => {
     });
     const interaction =
       context.playerEntity.getComponent<InteractionComponent>("interaction")!;
-    const dialogue =
-      context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
+    const dialogue = context.playerEntity.getComponent<DialogueComponent>("dialogue")!;
     const quest = context.playerEntity.getComponent<QuestComponent>("quest")!;
     const inventory =
       context.playerEntity.getComponent<InventoryComponent>("inventory")!;
@@ -558,7 +641,11 @@ describe("quest wiring", () => {
     // Taking the quest on is a request, exactly as the dialogue action raises it
     quest.requestedOffer = "collect_wood";
     context.world.update(1 / 60);
-    expect(quest.entries.collect_wood).toEqual({ state: "active", progress: 0 });
+    expect(quest.entries.collect_wood).toEqual({
+      state: "active",
+      progress: 0,
+      baseline: 0,
+    });
 
     // Progress is polled off the inventory, so gathering is all it takes
     addItem(inventory, "wood", 5);
@@ -643,9 +730,8 @@ describe("animation wiring", () => {
     const entity = createRemotePlayerEntity("remote-1", "Friend", 0, 0);
     context.world.addEntity(entity);
 
-    const interpolation = entity.getComponent<RemoteInterpolationComponent>(
-      "remoteInterpolation",
-    )!;
+    const interpolation =
+      entity.getComponent<RemoteInterpolationComponent>("remoteInterpolation")!;
     interpolation.targetX = 1000;
 
     // A velocity component would let MovementSystem fight the interpolation

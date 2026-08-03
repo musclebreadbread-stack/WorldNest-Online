@@ -6,7 +6,9 @@ import type { PersistedInventory, PersistedInventorySlot } from "@worldnest/data
  * Convert the live inventory component into the shape stored in
  * `player_state.inventory`.
  */
-export function toPersistedInventory(inventory: InventoryComponent): PersistedInventory {
+export function toPersistedInventory(
+  inventory: InventoryComponent,
+): PersistedInventory {
   return {
     slots: inventory.slots.map((slot) =>
       slot ? { itemId: slot.itemId, quantity: slot.quantity } : null,

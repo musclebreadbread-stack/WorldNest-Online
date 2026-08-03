@@ -32,6 +32,11 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
+      # `.prettierrc` matches the width the tree is written at, so this gate is
+      # cheap to keep green and stops the formatting from silently drifting again.
+      - name: Check formatting
+        run: pnpm format:check
+
       - name: Run build
         run: pnpm build
 
